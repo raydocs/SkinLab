@@ -1,0 +1,124 @@
+{
+  "products": [
+    {
+      "id": "product-001",
+      "name": "B5修复霜",
+      "brand": "La Roche-Posay",
+      "category": "moisturizer",
+      "skinTypes": ["sensitive", "dry"],
+      "concerns": ["sensitivity", "dryness"],
+      "priceRange": "midRange",
+      "ingredients": ["Water", "Panthenol", "Madecassoside", "Glycerin", "Shea Butter"],
+      "effectiveRate": 0.67,
+      "sampleSize": 328
+    },
+    {
+      "id": "product-002",
+      "name": "淡斑精华",
+      "brand": "Olay",
+      "category": "serum",
+      "skinTypes": ["dry", "combination", "oily"],
+      "concerns": ["pigmentation"],
+      "priceRange": "midRange",
+      "ingredients": ["Niacinamide", "Vitamin C", "Hyaluronic Acid", "Tranexamic Acid"],
+      "effectiveRate": 0.72,
+      "sampleSize": 456
+    },
+    {
+      "id": "product-003",
+      "name": "水杨酸棉片",
+      "brand": "Stridex",
+      "category": "exfoliant",
+      "skinTypes": ["oily", "combination"],
+      "concerns": ["acne", "pores"],
+      "priceRange": "budget",
+      "ingredients": ["Salicylic Acid", "Aloe Vera", "Witch Hazel"],
+      "effectiveRate": 0.78,
+      "sampleSize": 892
+    },
+    {
+      "id": "product-004",
+      "name": "精华油",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "skinTypes": ["dry", "sensitive"],
+      "concerns": ["dryness", "aging"],
+      "priceRange": "budget",
+      "ingredients": ["Squalane", "Rosehip Oil", "Vitamin E"],
+      "effectiveRate": 0.65,
+      "sampleSize": 234
+    },
+    {
+      "id": "product-005",
+      "name": "A醇精华",
+      "brand": "Paula's Choice",
+      "category": "serum",
+      "skinTypes": ["oily", "combination"],
+      "concerns": ["aging", "acne"],
+      "priceRange": "premium",
+      "ingredients": ["Retinol", "Peptides", "Vitamin C", "Hyaluronic Acid"],
+      "effectiveRate": 0.81,
+      "sampleSize": 567
+    },
+    {
+      "id": "product-006",
+      "name": "清爽防晒霜",
+      "brand": "Biore",
+      "category": "sunscreen",
+      "skinTypes": ["oily", "combination"],
+      "concerns": [],
+      "priceRange": "budget",
+      "ingredients": ["Zinc Oxide", "Titanium Dioxide", "Hyaluronic Acid"],
+      "effectiveRate": 0.85,
+      "sampleSize": 1234
+    },
+    {
+      "id": "product-007",
+      "name": "氨基酸洁面",
+      "brand": "Freeplus",
+      "category": "cleanser",
+      "skinTypes": ["sensitive", "dry", "combination"],
+      "concerns": ["sensitivity"],
+      "priceRange": "midRange",
+      "ingredients": ["Amino Acids", "Glycerin", "Ceramide"],
+      "effectiveRate": 0.79,
+      "sampleSize": 678
+    },
+    {
+      "id": "product-008",
+      "name": "神仙水",
+      "brand": "SK-II",
+      "category": "toner",
+      "skinTypes": ["dry", "combination", "oily"],
+      "concerns": ["aging", "dryness"],
+      "priceRange": "luxury",
+      "ingredients": ["Pitera", "Galactomyces Ferment Filtrate", "Niacinamide"],
+      "effectiveRate": 0.74,
+      "sampleSize": 890
+    },
+    {
+      "id": "product-009",
+      "name": "积雪草面膜",
+      "brand": "Mediheal",
+      "category": "mask",
+      "skinTypes": ["sensitive", "dry", "combination"],
+      "concerns": ["sensitivity", "redness"],
+      "priceRange": "budget",
+      "ingredients": ["Centella Asiatica", "Madecassoside", "Hyaluronic Acid"],
+      "effectiveRate": 0.71,
+      "sampleSize": 445
+    },
+    {
+      "id": "product-010",
+      "name": "眼霜",
+      "brand": "Kiehl's",
+      "category": "eyeCream",
+      "skinTypes": ["dry", "combination"],
+      "concerns": ["aging"],
+      "priceRange": "premium",
+      "ingredients": ["Avocado Oil", "Shea Butter", "Vitamin E", "Beta-Carotene"],
+      "effectiveRate": 0.68,
+      "sampleSize": 321
+    }
+  ]
+}

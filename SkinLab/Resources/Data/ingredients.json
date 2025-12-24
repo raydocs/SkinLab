@@ -1,0 +1,194 @@
+{
+  "water": {
+    "name": "Water",
+    "function": "solvent",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": ["基础溶剂"],
+    "warnings": null
+  },
+  "niacinamide": {
+    "name": "Niacinamide",
+    "function": "brightening",
+    "safetyRating": 9,
+    "irritationRisk": "low",
+    "benefits": ["美白", "控油", "收缩毛孔", "抗氧化"],
+    "warnings": null
+  },
+  "retinol": {
+    "name": "Retinol",
+    "function": "antiAging",
+    "safetyRating": 6,
+    "irritationRisk": "medium",
+    "benefits": ["抗老", "促进细胞更新", "淡化细纹"],
+    "warnings": ["孕妇禁用", "需要建立耐受", "注意防晒"]
+  },
+  "hyaluronic acid": {
+    "name": "Hyaluronic Acid",
+    "function": "moisturizing",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": ["保湿", "锁水", "填充细纹"],
+    "warnings": null
+  },
+  "salicylic acid": {
+    "name": "Salicylic Acid",
+    "function": "exfoliating",
+    "safetyRating": 7,
+    "irritationRisk": "medium",
+    "benefits": ["祛痘", "去角质", "疏通毛孔"],
+    "warnings": ["敏感肌慎用", "孕妇慎用"]
+  },
+  "ascorbic acid": {
+    "name": "Ascorbic Acid",
+    "function": "brightening",
+    "safetyRating": 8,
+    "irritationRisk": "low",
+    "benefits": ["美白", "抗氧化", "促进胶原蛋白"],
+    "warnings": ["不稳定易氧化", "注意保存"]
+  },
+  "vitamin c": {
+    "name": "Vitamin C",
+    "function": "brightening",
+    "safetyRating": 8,
+    "irritationRisk": "low",
+    "benefits": ["美白", "抗氧化"],
+    "warnings": null
+  },
+  "vitamin e": {
+    "name": "Vitamin E",
+    "function": "moisturizing",
+    "safetyRating": 9,
+    "irritationRisk": "none",
+    "benefits": ["抗氧化", "保湿"],
+    "warnings": null
+  },
+  "panthenol": {
+    "name": "Panthenol",
+    "function": "soothing",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": ["修复", "保湿", "舒缓"],
+    "warnings": null
+  },
+  "centella asiatica": {
+    "name": "Centella Asiatica",
+    "function": "soothing",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": ["修复", "舒缓", "抗炎"],
+    "warnings": null
+  },
+  "madecassoside": {
+    "name": "Madecassoside",
+    "function": "soothing",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": ["修复屏障", "抗炎", "舒缓"],
+    "warnings": null
+  },
+  "ceramide": {
+    "name": "Ceramide",
+    "function": "moisturizing",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": ["修复屏障", "保湿", "锁水"],
+    "warnings": null
+  },
+  "glycerin": {
+    "name": "Glycerin",
+    "function": "moisturizing",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": ["保湿", "温和"],
+    "warnings": null
+  },
+  "squalane": {
+    "name": "Squalane",
+    "function": "moisturizing",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": ["保湿", "抗氧化", "渗透性好"],
+    "warnings": null
+  },
+  "fragrance": {
+    "name": "Fragrance",
+    "function": "fragrance",
+    "safetyRating": 4,
+    "irritationRisk": "medium",
+    "benefits": [],
+    "warnings": ["可能致敏", "敏感肌慎用"]
+  },
+  "alcohol": {
+    "name": "Alcohol Denat.",
+    "function": "solvent",
+    "safetyRating": 5,
+    "irritationRisk": "medium",
+    "benefits": ["促进吸收", "清爽感"],
+    "warnings": ["可能刺激", "干性敏感肌慎用"]
+  },
+  "phenoxyethanol": {
+    "name": "Phenoxyethanol",
+    "function": "preservative",
+    "safetyRating": 7,
+    "irritationRisk": "low",
+    "benefits": ["防腐"],
+    "warnings": ["常规防腐剂，正常使用安全"]
+  },
+  "zinc oxide": {
+    "name": "Zinc Oxide",
+    "function": "sunProtection",
+    "safetyRating": 9,
+    "irritationRisk": "none",
+    "benefits": ["物理防晒", "舒缓"],
+    "warnings": null
+  },
+  "titanium dioxide": {
+    "name": "Titanium Dioxide",
+    "function": "sunProtection",
+    "safetyRating": 9,
+    "irritationRisk": "none",
+    "benefits": ["物理防晒"],
+    "warnings": null
+  },
+  "aha": {
+    "name": "AHA",
+    "function": "exfoliating",
+    "safetyRating": 6,
+    "irritationRisk": "medium",
+    "benefits": ["去角质", "提亮", "抗老"],
+    "warnings": ["注意防晒", "敏感肌慎用", "不要和A醇同时使用"]
+  },
+  "bha": {
+    "name": "BHA",
+    "function": "exfoliating",
+    "safetyRating": 7,
+    "irritationRisk": "medium",
+    "benefits": ["祛痘", "去角质", "疏通毛孔"],
+    "warnings": ["敏感肌慎用"]
+  },
+  "tranexamic acid": {
+    "name": "Tranexamic Acid",
+    "function": "brightening",
+    "safetyRating": 8,
+    "irritationRisk": "low",
+    "benefits": ["淡斑", "均匀肤色"],
+    "warnings": null
+  },
+  "peptides": {
+    "name": "Peptides",
+    "function": "antiAging",
+    "safetyRating": 9,
+    "irritationRisk": "none",
+    "benefits": ["抗老", "紧致", "促进胶原蛋白"],
+    "warnings": null
+  },
+  "shea butter": {
+    "name": "Shea Butter",
+    "function": "moisturizing",
+    "safetyRating": 9,
+    "irritationRisk": "none",
+    "benefits": ["滋润", "修复"],
+    "warnings": null
+  }
+}

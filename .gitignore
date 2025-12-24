@@ -1,0 +1,26 @@
+# Xcode
+*.xcuserstate
+*.xcuserdatad/
+*.xcscmblueprint
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# CocoaPods / SPM
+Pods/
+.build/
+
+# Secrets - NEVER commit!
+Secrets.xcconfig
+*.secrets
+
+# macOS
+.DS_Store
+*.swp
+*~.nib
+
+# Build
+build/
