@@ -5,7 +5,8 @@ struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
     @State private var showEditProfile = false
-    
+    @State private var showPrivacyCenter = false
+
     private var profile: UserProfile? { profiles.first }
     
     var body: some View {
@@ -56,6 +57,9 @@ struct ProfileView: View {
             }
             .sheet(isPresented: $showEditProfile) {
                 EditProfileView()
+            }
+            .sheet(isPresented: $showPrivacyCenter) {
+                PrivacyCenterView()
             }
         }
     }
@@ -267,13 +271,35 @@ struct ProfileView: View {
             }
             
             VStack(spacing: 0) {
-                SettingsRow(icon: "bell.fill", title: "通知设置", iconColor: .skinLabPrimary)
+                Button {
+                    // TODO: Implement notification settings
+                } label: {
+                    SettingsRow(icon: "bell.fill", title: "通知设置", iconColor: .skinLabPrimary)
+                }
+
                 Divider().padding(.leading, 52)
-                SettingsRow(icon: "lock.shield.fill", title: "隐私设置", iconColor: .skinLabSecondary)
+
+                Button {
+                    showPrivacyCenter = true
+                } label: {
+                    SettingsRow(icon: "lock.shield.fill", title: "隐私设置", iconColor: .skinLabSecondary)
+                }
+
                 Divider().padding(.leading, 52)
-                SettingsRow(icon: "square.and.arrow.up.fill", title: "导出数据", iconColor: .skinLabAccent)
+
+                Button {
+                    // TODO: Implement data export
+                } label: {
+                    SettingsRow(icon: "square.and.arrow.up.fill", title: "导出数据", iconColor: .skinLabAccent)
+                }
+
                 Divider().padding(.leading, 52)
-                SettingsRow(icon: "trash.fill", title: "删除所有数据", iconColor: .skinLabError, isDestructive: true)
+
+                Button {
+                    // TODO: Implement data deletion
+                } label: {
+                    SettingsRow(icon: "trash.fill", title: "删除所有数据", iconColor: .skinLabError, isDestructive: true)
+                }
             }
             .background(Color.skinLabCardBackground)
             .cornerRadius(16)

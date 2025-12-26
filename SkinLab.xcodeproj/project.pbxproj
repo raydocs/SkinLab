@@ -31,6 +31,7 @@
 		5837BE7B1D37603512A4AB22 /* ProductEffectAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5440E2EE340E9375719CE6 /* ProductEffectAnalyzer.swift */; };
 		5B50D87F5A179ABAA8BDC039 /* AnomalyDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1269CF193108CA983B327A /* AnomalyDetectorTests.swift */; };
 		6169EE2C112735758342F48A /* MatchCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0524C937D6E7E6A8530533F1 /* MatchCache.swift */; };
+		696A0C9229E697F858F973E3 /* PrivacyCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CB7D333F287D00A4913F54 /* PrivacyCenterView.swift */; };
 		7BCBF3A344692ADF2781885F /* IngredientAIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98D02551ADBF9AEBDF16E24B /* IngredientAIModels.swift */; };
 		7E704BF8034C838F0F952D24 /* UserHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFAD1851E0FB2F410EE993 /* UserHistoryStore.swift */; };
 		7F2A8FC155C0FD73533E4085 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F3B0D89FD0428597A7C0516 /* Foundation.framework */; };
@@ -88,12 +89,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		672AEACD9CCAC771DA15D1B8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 94F8128C52C294599BC4BCB4;
+			remoteInfo = Subproject;
+		};
 		6D9D851B9885AB0FCB9EE1FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = P1000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = F1000001;
 			remoteInfo = SkinLab;
+		};
+		E11E569D87F01AE845C2153B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C1000001;
+			remoteInfo = Subproject;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -114,6 +129,7 @@
 		3F3EB7BFD9E873145B7A021B /* ProductRecommendationEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductRecommendationEngine.swift; sourceTree = "<group>"; };
 		3FC24F5570D8E1F73373DA94 /* IngredientRiskAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IngredientRiskAnalyzer.swift; path = ../../SkinLab/Core/Utils/IngredientRiskAnalyzer.swift; sourceTree = "<group>"; };
 		553386FE85CB219F08ACDA07 /* SkincareRoutine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SkincareRoutine.swift; path = ../../../SkinLab/Features/Analysis/Models/SkincareRoutine.swift; sourceTree = "<group>"; };
+		55CB7D333F287D00A4913F54 /* PrivacyCenterView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrivacyCenterView.swift; sourceTree = "<group>"; };
 		57327F7DE09064ADE7736BAF /* TimeSeriesAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimeSeriesAnalyzer.swift; sourceTree = "<group>"; };
 		5DE694A9EC5F6F030CDF4F89 /* ProductModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductModelTests.swift; sourceTree = "<group>"; };
 		5F3B0D89FD0428597A7C0516 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -132,6 +148,7 @@
 		A06B8226FA6F257A587D6D1B /* RoutineView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RoutineView.swift; path = ../../../SkinLab/Features/Analysis/Views/RoutineView.swift; sourceTree = "<group>"; };
 		A5E2775EF6D0F3ED4872DB5A /* MatchPoolRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchPoolRepository.swift; sourceTree = "<group>"; };
 		AC08BD0191DA4A7A255C5F82 /* ConsentLevel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConsentLevel.swift; sourceTree = "<group>"; };
+		AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SkinLab.xcodeproj; sourceTree = "<group>"; };
 		B1000001 /* SkinLabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinLabApp.swift; sourceTree = "<group>"; };
 		B1000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B1000010 /* GeminiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
@@ -166,6 +183,7 @@
 		C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimeSeriesAnalyzerTests.swift; sourceTree = "<group>"; };
 		C25C4829B04FC75BA0C6D73F /* FeedbackView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		C536C3257C98962220CA8905 /* EnhancedIngredientResultView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EnhancedIngredientResultView.swift; path = ../../../SkinLab/Features/Products/Views/EnhancedIngredientResultView.swift; sourceTree = "<group>"; };
+		C603ED35C01BD0577344538A /* SkinLab */ = {isa = PBXFileReference; includeInIndex = 1; path = SkinLab; sourceTree = "<group>"; };
 		C71175FB49EB76BABEE91712 /* IngredientAIAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientAIAnalyzer.swift; sourceTree = "<group>"; };
 		CC09663356DE55C0E82B5381 /* ShareCardRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ShareCardRenderer.swift; path = ../../SkinLab/Core/Utils/ShareCardRenderer.swift; sourceTree = "<group>"; };
 		D26570A1CAB05DFDBA766336 /* AnalyticsVisualizationViews.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalyticsVisualizationViews.swift; sourceTree = "<group>"; };
@@ -444,6 +462,8 @@
 				F848076F60F586973F2975C4 /* Features */,
 				49BC758B8D9E34325B83E0DF /* Frameworks */,
 				0CBA451B84CCF085BFDC6F9C /* SkinLabTests */,
+				AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */,
+				C603ED35C01BD0577344538A /* SkinLab */,
 			);
 			sourceTree = "<group>";
 		};
@@ -465,6 +485,8 @@
 			children = (
 				C1000001 /* SkinLab.app */,
 				94F8128C52C294599BC4BCB4 /* SkinLabTests.xctest */,
+				E2DB8E99E15BC9E013A2BDFD /* SkinLab.app */,
+				553F3E33E204BC6663873CD5 /* SkinLabTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -633,6 +655,7 @@
 			isa = PBXGroup;
 			children = (
 				B1000071 /* ProfileView.swift */,
+				55CB7D333F287D00A4913F54 /* PrivacyCenterView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -809,6 +832,12 @@
 			mainGroup = E1000001;
 			productRefGroup = E1000003 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E1000003 /* Products */;
+					ProjectRef = AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				F1000001 /* SkinLab */,
@@ -816,6 +845,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		553F3E33E204BC6663873CD5 /* SkinLabTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SkinLabTests.xctest;
+			remoteRef = 672AEACD9CCAC771DA15D1B8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E2DB8E99E15BC9E013A2BDFD /* SkinLab.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = SkinLab.app;
+			remoteRef = E11E569D87F01AE845C2153B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2CBD018B4F66105E4F2EE757 /* Resources */ = {
@@ -906,6 +952,7 @@
 				7BCBF3A344692ADF2781885F /* IngredientAIModels.swift in Sources */,
 				8C220A652E3BF84B034F0F0F /* IngredientAIAnalyzer.swift in Sources */,
 				2CE956CE8AC0B49CBC530845 /* IngredientAIInsightView.swift in Sources */,
+				696A0C9229E697F858F973E3 /* PrivacyCenterView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
