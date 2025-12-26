@@ -56,6 +56,21 @@ struct RegionScores: Codable, Equatable, Sendable {
     )
 }
 
+// MARK: - Image Quality
+struct ImageQuality: Codable, Equatable, Sendable {
+    let lighting: Int
+    let sharpness: Int
+    let angle: Int
+    let occlusion: Int
+    let faceCoverage: Int
+    let notes: [String]
+    
+    static let empty = ImageQuality(
+        lighting: 0, sharpness: 0, angle: 0,
+        occlusion: 0, faceCoverage: 0, notes: []
+    )
+}
+
 // MARK: - Skin Analysis Result
 struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
     let id: UUID
@@ -66,6 +81,8 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
     let regions: RegionScores
     let recommendations: [String]
     let analyzedAt: Date
+    let confidenceScore: Int
+    let imageQuality: ImageQuality?
     
     init(
         id: UUID = UUID(),
@@ -75,7 +92,9 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
         issues: IssueScores,
         regions: RegionScores,
         recommendations: [String],
-        analyzedAt: Date = Date()
+        analyzedAt: Date = Date(),
+        confidenceScore: Int = 70,
+        imageQuality: ImageQuality? = nil
     ) {
         self.id = id
         self.skinType = skinType
@@ -85,6 +104,8 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
         self.regions = regions
         self.recommendations = recommendations
         self.analyzedAt = analyzedAt
+        self.confidenceScore = confidenceScore
+        self.imageQuality = imageQuality
     }
     
     // Mock for previews
@@ -103,7 +124,16 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
             "建议使用温和的水杨酸产品控制T区油脂",
             "加强保湿，选择含透明质酸的产品",
             "日常使用SPF30+防晒霜"
-        ]
+        ],
+        confidenceScore: 85,
+        imageQuality: ImageQuality(
+            lighting: 80,
+            sharpness: 85,
+            angle: 90,
+            occlusion: 95,
+            faceCoverage: 92,
+            notes: ["光线充足", "角度适中", "面部清晰可见"]
+        )
     )
 }
 
@@ -119,6 +149,8 @@ final class SkinAnalysisRecord {
     var recommendations: [String]
     var analyzedAt: Date
     var photoPath: String?
+    var confidenceScore: Int
+    var qualityData: Data?
     
     init(from analysis: SkinAnalysis, photoPath: String? = nil) {
         self.id = analysis.id
@@ -130,6 +162,8 @@ final class SkinAnalysisRecord {
         self.recommendations = analysis.recommendations
         self.analyzedAt = analysis.analyzedAt
         self.photoPath = photoPath
+        self.confidenceScore = analysis.confidenceScore
+        self.qualityData = try? JSONEncoder().encode(analysis.imageQuality)
     }
     
     func toAnalysis() -> SkinAnalysis? {
@@ -137,6 +171,7 @@ final class SkinAnalysisRecord {
         
         let issues = issuesData.flatMap { try? JSONDecoder().decode(IssueScores.self, from: $0) } ?? .empty
         let regions = regionsData.flatMap { try? JSONDecoder().decode(RegionScores.self, from: $0) } ?? .empty
+        let quality = qualityData.flatMap { try? JSONDecoder().decode(ImageQuality.self, from: $0) }
         
         return SkinAnalysis(
             id: id,
@@ -146,7 +181,9 @@ final class SkinAnalysisRecord {
             issues: issues,
             regions: regions,
             recommendations: recommendations,
-            analyzedAt: analyzedAt
+            analyzedAt: analyzedAt,
+            confidenceScore: confidenceScore,
+            imageQuality: quality
         )
     }
 }

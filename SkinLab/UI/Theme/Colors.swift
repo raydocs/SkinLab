@@ -17,6 +17,12 @@ extension Color {
     static let romanticCream = Color(red: 1.0, green: 0.98, blue: 0.96)
     static let romanticWhite = Color(red: 1.0, green: 0.99, blue: 0.98)
 
+    // 暗黑模式色彩
+    static let romanticCreamDark = Color(red: 0.12, green: 0.12, blue: 0.14)
+    static let romanticWhiteDark = Color(red: 0.18, green: 0.18, blue: 0.20)
+    static let romanticTextDark = Color(red: 0.92, green: 0.92, blue: 0.94)
+    static let romanticSubtextDark = Color(red: 0.65, green: 0.65, blue: 0.68)
+
     // 渐变色起点
     static let romanticGradientStart = Color(red: 1.0, green: 0.85, blue: 0.90)
     static let romanticGradientEnd = Color(red: 0.92, green: 0.82, blue: 0.95)
@@ -30,10 +36,34 @@ extension Color {
     static let skinLabGradientEnd = Color.romanticPurpleLight
     static let skinLabLavenderStart = Color.romanticPurpleLight
     static let skinLabLavenderEnd = Color.romanticPinkLight
+
+    // 基础颜色 (亮色模式默认值)
     static let skinLabBackground = Color.romanticCream
     static let skinLabCardBackground = Color.romanticWhite
     static let skinLabText = Color(red: 0.25, green: 0.25, blue: 0.28)
     static let skinLabSubtext = Color(red: 0.55, green: 0.55, blue: 0.58)
+
+    // MARK: - 暗黑模式自适应颜色
+
+    /// 根据颜色模式返回适当的背景色
+    static func adaptiveBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? .romanticCreamDark : .romanticCream
+    }
+
+    /// 根据颜色模式返回适当的卡片背景色
+    static func adaptiveCardBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? .romanticWhiteDark : .romanticWhite
+    }
+
+    /// 根据颜色模式返回适当的文字色
+    static func adaptiveText(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? .romanticTextDark : Color(red: 0.25, green: 0.25, blue: 0.28)
+    }
+
+    /// 根据颜色模式返回适当的副文字色
+    static func adaptiveSubtext(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? .romanticSubtextDark : Color(red: 0.55, green: 0.55, blue: 0.58)
+    }
 
     // 语义色 - 浪漫风格
     static let skinLabSuccess = Color(red: 0.60, green: 0.88, blue: 0.75)
@@ -44,7 +74,7 @@ extension Color {
     static let skinLabScoreFair = Color(red: 1.0, green: 0.88, blue: 0.70)
     static let skinLabScorePoor = Color(red: 1.0, green: 0.78, blue: 0.68)
     static let skinLabScoreBad = Color(red: 1.0, green: 0.60, blue: 0.65)
-    
+
     static func scoreColor(for score: Int) -> Color {
         switch score {
         case 80...100: return .skinLabScoreExcellent

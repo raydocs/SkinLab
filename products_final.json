@@ -1,0 +1,1730 @@
+{
+  "products": [
+    {
+      "id": "product-001",
+      "name": "CeraVe Moisturizing Cream",
+      "brand": "CeraVe",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry",
+        "sensitive"
+      ],
+      "concerns": [
+        "acne",
+        "dryness",
+        "sensitivity"
+      ],
+      "priceRange": "budget",
+      "ingredients": [
+        "Ceramide",
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 3.8,
+      "sampleSize": 5,
+      "description": "A rich, quick-absorbing daily moisturizer formulated with three essential ceramides (1, 3, and 6-II) and hyaluronic acid. It utilizes patented Multivesicular Emulsion (MVE) technology for 24-hour time-released hydration. It is fragrance-free, dermatologist-developed, and designed to restore the skin's natural protective barrier. Suitable for face and body.",
+      "sourceUrl": "https://www.byrdie.com/review-of-cerave-moisturizing-cream-3013233",
+      "userReviews": [
+        {
+          "userName": "Jen Adkins",
+          "userName_citation": "https://www.byrdie.com/review-of-cerave-moisturizing-cream-3013233",
+          "reviewText": "CeraVe's Moisturizing Cream transformed my dry skin. After my first use of the cream, I was hooked. It is effective for sensitive skin, psoriasis, and eczema, noting it is gentle enough for babies.",
+          "reviewText_citation": "https://www.byrdie.com/review-of-cerave-moisturizing-cream-3013233",
+          "rating": 5,
+          "rating_citation": "https://www.byrdie.com/review-of-cerave-moisturizing-cream-3013233"
+        },
+        {
+          "userName": "Ashlynn",
+          "userName_citation": "https://simpleskincarescience.com/cerave-cream-review/",
+          "reviewText": "Literally life changing. It helped me realize malassezia-feeding ingredients were my issue rather than fatty alcohols.",
+          "reviewText_citation": "https://simpleskincarescience.com/cerave-cream-review/",
+          "rating": 5,
+          "rating_citation": "https://simpleskincarescience.com/cerave-cream-review/"
+        },
+        {
+          "userName": "Amy",
+          "userName_citation": "https://simpleskincarescience.com/cerave-cream-review/",
+          "reviewText": "Got breakouts all over my shoulders where I was patch testing it. They look like my typical fungal acne breakouts.",
+          "reviewText_citation": "https://simpleskincarescience.com/cerave-cream-review/",
+          "rating": 2,
+          "rating_citation": "https://simpleskincarescience.com/cerave-cream-review/"
+        }
+      ]
+    },
+    {
+      "id": "product-002",
+      "name": "The Ordinary Niacinamide 10% + Zinc 1% Serum",
+      "brand": "The Ordinary",
+      "category": "serum",
+      "skinTypes": [
+        "dry",
+        "combination",
+        "oily"
+      ],
+      "concerns": [
+        "acne",
+        "sensitivity",
+        "pores",
+        "pigmentation",
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Zinc Oxide",
+        "Niacinamide"
+      ],
+      "averageRating": 4.8,
+      "sampleSize": 4,
+      "description": "A water-based serum with 10% Niacinamide and 1% Zinc PCA designed to target visible shine, enlarged pores, and textural irregularities. It helps reduce signs of congestion, visible sebum activity, and balances skin.",
+      "sourceUrl": "https://www.arelaxedgal.com/2021/11/ordinary-niacinamide-zinc-serum-review.html",
+      "userReviews": [
+        {
+          "userName": "Leah",
+          "userName_citation": "https://www.arelaxedgal.com/2021/11/ordinary-niacinamide-zinc-serum-review.html",
+          "reviewText": "I love it! My skin no longer produces oil as quickly, reducing the need for blotting. Pores are less visible, and scars/dark spots fade more quickly. Breakouts shrink faster when used as a spot treatment.",
+          "reviewText_citation": "https://www.arelaxedgal.com/2021/11/ordinary-niacinamide-zinc-serum-review.html",
+          "rating": 5,
+          "rating_citation": "https://www.arelaxedgal.com/2021/11/ordinary-niacinamide-zinc-serum-review.html"
+        },
+        {
+          "userName": "Laura Kemp",
+          "userName_citation": "https://www.livethatglow.com/the-ordinary-niacinamide-and-zinc-serum-review/",
+          "reviewText": "Initial use caused small bumps and dryness, which resolved when reduced to every other night. Resulted in smoother texture, increased hydration, and fewer breakouts, though it did not blur old acne scars or significantly increase radiance.",
+          "reviewText_citation": "https://www.livethatglow.com/the-ordinary-niacinamide-and-zinc-serum-review/",
+          "rating": 4,
+          "rating_citation": "https://www.livethatglow.com/the-ordinary-niacinamide-and-zinc-serum-review/"
+        },
+        {
+          "userName": "Anonymous Customer",
+          "userName_citation": "https://www.livethatglow.com/the-ordinary-niacinamide-and-zinc-serum-review/",
+          "reviewText": "Experienced a seriously noticeable difference in redness around period-related acne after two days. After three weeks, skin felt softer and pores appeared improved.",
+          "reviewText_citation": "https://www.livethatglow.com/the-ordinary-niacinamide-and-zinc-serum-review/",
+          "rating": 5,
+          "rating_citation": "https://www.livethatglow.com/the-ordinary-niacinamide-and-zinc-serum-review/"
+        }
+      ]
+    },
+    {
+      "id": "product-003",
+      "name": "Olay Cleansing Melts (+ Vitamin C)",
+      "brand": "Olay",
+      "category": "cleanser",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "pigmentation"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Vitamin C"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Waterless cleansing tabs that foam with water; contains Vitamin C to brighten and reduce oiliness.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Brian Underwood",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "They are the perfect amount of product and great for travel because they are waterless.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-004",
+      "name": "SkinCeuticals C E Ferulic",
+      "brand": "SkinCeuticals",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "pigmentation"
+      ],
+      "priceRange": "luxury",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Daytime antioxidant serum with Vitamins C and E. Neutralizes free radical damage from ozone and UV for up to 72 hours while plumping and brightening the skin.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Industry Voter",
+          "userName_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "reviewText": "It's impactful, ingredient-focused skin care storytelling. Clinical testing and before-and-afters show strong reason to believe in the results.",
+          "reviewText_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "rating": 5,
+          "rating_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/"
+        }
+      ]
+    },
+    {
+      "id": "product-005",
+      "name": "La Roche-Posay Anthelios UV Hydra Sunscreen SPF 50",
+      "brand": "La Roche-Posay",
+      "category": "sunscreen",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Non-greasy chemical sunscreen with hyaluronic acid.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Dr. Mina Amin",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "It blends easily without pilling and provides an invisible finish.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-006",
+      "name": "Drunk Elephant T.L.C. Sukari Babyfacial",
+      "brand": "Drunk Elephant",
+      "category": "mask",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "premium",
+      "ingredients": [
+        "AHA",
+        "BHA"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "High-potency 25% AHA/2% BHA mask with chickpea flour and pumpkin ferment.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-007",
+      "name": "Peach & Lily Ginger Melt Oil Cleanser",
+      "brand": "Peach & Lily",
+      "category": "cleanser",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Cleansing oil with ginger root extract, grapeseed oil, and sunflower seed oil that removes makeup and sunscreen while boosting moisture.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Sarah Kinonen",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "This silky elixir is, by far, the best part of my double-cleanse routine.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-008",
+      "name": "Differin Gel",
+      "brand": "Differin",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "acne",
+        "pores"
+      ],
+      "priceRange": "budget",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Adapalene retinoid treatment that prevents clogged pores and acne without inflammation.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Lexi Herrick",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "This might be the most effective over-the-counter acne treatment I've ever used. It's an absolute powerhouse at combating breakouts and keeping cystic flare-ups at bay.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-009",
+      "name": "Rhode Glazing Milk",
+      "brand": "Rhode",
+      "category": "toner",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Ceramide",
+        "Zinc Oxide"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Milky essence with ceramides and a trio of minerals (magnesium, zinc, copper) to bolster the moisture barrier.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Jessica Cruel",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "It's just as good as that Hailey Bieber Erewhon smoothie, but with actual skin benefits. I'm lactose intolerant, but this is my daily dose of milk for a healthy glow.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-010",
+      "name": "Hero Cosmetics Mighty Patch Original",
+      "brand": "Hero Cosmetics",
+      "category": "other",
+      "skinTypes": [
+        "oily"
+      ],
+      "concerns": [
+        "acne"
+      ],
+      "priceRange": "budget",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Hydrocolloid pimple patches that flatten whiteheads and extract impurities overnight.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Jesa Marie Calaor",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "They stick securely onto my skin for hours (no matter how oily I might get) and work quickly to flatten my pimple.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-011",
+      "name": "Lancôme Rénergie H.C.F. Triple Serum Eye",
+      "brand": "Lancôme",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "pigmentation",
+        "aging"
+      ],
+      "priceRange": "luxury",
+      "ingredients": [
+        "Niacinamide",
+        "Peptides"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Triple-chamber serum with a snake venom-inspired peptide, niacinamide, and vitamin F for firming and brightening.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Sarah Kinonen",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "Creates the look and feel of tighter, lifted undereyes. I've started using this treatment every morning and night to combat tired undereyes.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-012",
+      "name": "Tula Skincare Protect + Glow Daily Sunscreen Gel Broad Spectrum SPF 30",
+      "brand": "Tula Skincare",
+      "category": "moisturizer",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "midRange",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Chemical gel sunscreen with ginger root to protect against UV and blue light damage.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Jessica Cruel",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "It has the consistency of a golden whip and melts into a healthy glow on the skin. When I say glowy, I mean high-beam gorgeousness.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-013",
+      "name": "CeraVe Acne Foaming Cream Cleanser",
+      "brand": "CeraVe",
+      "category": "cleanser",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "acne",
+        "dryness"
+      ],
+      "priceRange": "budget",
+      "ingredients": [
+        "Benzoyl Peroxide"
+      ],
+      "averageRating": 5,
+      "sampleSize": 2,
+      "description": "4% benzoyl peroxide cleanser for face and body to battle acne bacteria.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Sabrina Talbert",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "I use it as a go-to cleanser after sweating to handle folliculitis.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        },
+        {
+          "userName": "Lexi Herrick",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "Instead of drying out my skin post-wash, it gives a thorough clean paired with a smooth and soft texture.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-014",
+      "name": "Laneige Lip Sleeping Mask",
+      "brand": "Laneige",
+      "category": "serum",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Overnight lip treatment with berry fruit complex and shea butter.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": [
+        {
+          "userName": "Mary Berry",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "It deeply hydrates and leaves lips soft and supple with a natural shine.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-015",
+      "name": "La Mer Crème de La Mer",
+      "brand": "La Mer",
+      "category": "moisturizer",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "luxury",
+      "ingredients": [],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Iconic luxury cream powered by proprietary Miracle Broth and lime tea.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-016",
+      "name": "Neutrogena Hydro Boost Water Gel",
+      "brand": "Neutrogena",
+      "category": "moisturizer",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "budget",
+      "ingredients": [
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Lightweight gel moisturizer featuring hyaluronic acid.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-017",
+      "name": "Supergoop! Glow Screen SPF 40",
+      "brand": "Supergoop",
+      "category": "sunscreen",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Hyaluronic Acid",
+        "Peptides"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Glowing sunscreen with sea lavender, cocoa peptides, and hyaluronic acid.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": [
+        {
+          "userName": "Multiple Users",
+          "userName_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "reviewText": "Based on 12,000+ five-star reviews.",
+          "reviewText_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "rating": 5,
+          "rating_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/"
+        }
+      ]
+    },
+    {
+      "id": "product-018",
+      "name": "Vintner's Daughter Active Botanical Serum",
+      "brand": "Vintner's Daughter",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "luxury",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 2,
+      "description": "Multi-beneficial whole-plant oil serum.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": [
+        {
+          "userName": "Industry Voter",
+          "userName_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "reviewText": "This makes anyone's skin look and feel better — there's absolutely nothing like it. April is devoted to making the best product as opposed to scaling.",
+          "reviewText_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "rating": 5,
+          "rating_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/"
+        },
+        {
+          "userName": "Industry Voter",
+          "userName_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "reviewText": "It's a serum; it's an oil. Lots of companies have tried to copy; no one has come close.",
+          "reviewText_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "rating": 5,
+          "rating_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/"
+        }
+      ]
+    },
+    {
+      "id": "product-019",
+      "name": "Laneige Radian-C Cream",
+      "brand": "Laneige",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "pigmentation",
+        "dryness",
+        "aging"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Vitamin C"
+      ],
+      "averageRating": 4.0,
+      "sampleSize": 1,
+      "description": "A Vitamin C and E cream designed to hydrate, visibly brighten skin, and treat dark spots and dullness.",
+      "sourceUrl": "https://ashley.reviews/spring-2024-quarterly-product-review/",
+      "userReviews": [
+        {
+          "userName": "Ashley",
+          "userName_citation": "https://ashley.reviews/spring-2024-quarterly-product-review/",
+          "reviewText": "I noticed brighter and healthier-looking skin, though it did not specifically reduce pigmentation. It is a thick cream that leaves a slight residue and is less moisturizing than my standard moisturizer. I was frustrated with the packaging, specifically a ridge that makes it hard to retrieve all the product and a loose plastic applicator that is easy to lose.",
+          "reviewText_citation": "https://ashley.reviews/spring-2024-quarterly-product-review/",
+          "rating": 4,
+          "rating_citation": "https://ashley.reviews/spring-2024-quarterly-product-review/"
+        }
+      ]
+    },
+    {
+      "id": "product-020",
+      "name": "Peace Out Early Stage Acne Dots",
+      "brand": "Peace Out",
+      "category": "other",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "acne",
+        "dryness",
+        "pores"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Salicylic Acid"
+      ],
+      "averageRating": 1.0,
+      "sampleSize": 1,
+      "description": "Acne-fighting pimple patches with Salicylic Acid designed to target blemishes before they surface.",
+      "sourceUrl": "https://ashley.reviews/spring-2024-quarterly-product-review/",
+      "userReviews": [
+        {
+          "userName": "Ashley",
+          "userName_citation": "https://ashley.reviews/spring-2024-quarterly-product-review/",
+          "reviewText": "The product made my acne worse. After leaving a dot on overnight, I woke up with a red, scaly patch of dry skin the size of the dot, while the clogged pore remained underneath.",
+          "reviewText_citation": "https://ashley.reviews/spring-2024-quarterly-product-review/",
+          "rating": 1,
+          "rating_citation": "https://ashley.reviews/spring-2024-quarterly-product-review/"
+        }
+      ]
+    },
+    {
+      "id": "product-021",
+      "name": "Dr. Dennis Gross Alpha Beta Extra Strength Daily Peel",
+      "brand": "Dr. Dennis Gross",
+      "category": "exfoliant",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "acne",
+        "pores"
+      ],
+      "priceRange": "premium",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Two-step peel with seven acids, resveratrol, and green tea.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Mary Berry",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "It gently sloughs dead cells, refines pores, and battles breakouts.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-022",
+      "name": "Drunk Elephant Virgin Marula Luxury Facial Oil",
+      "brand": "Drunk Elephant",
+      "category": "serum",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "premium",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Pure marula oil to lock in moisture.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Dr. Mina Amin",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "It is non-irritating and superior for addressing dryness.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-023",
+      "name": "Tula Skincare 24-7 Moisture Hydrating Day & Night Cream",
+      "brand": "Tula Skincare",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry",
+        "combination",
+        "oily"
+      ],
+      "concerns": [
+        "dryness",
+        "aging"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Peptides"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Hydrating cream with peptides and a probiotic complex for firmness and tone.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Danielle Jackson",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "My all-time favorite; adds moisture without making combination skin feel oily.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-024",
+      "name": "Shani Darden Skin Care Moisture Boost Plumping Serum",
+      "brand": "Shani Darden",
+      "category": "serum",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Glycerin"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Hydrating serum with glycerin and snow mushroom to keep skin plump for hours.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Jennifer Hussein",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "It has a gel-like texture upon application but immediately seeps into your skin without feeling sticky.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-025",
+      "name": "EADEM Cashmere Peel Gentle Exfoliating AHA Toner",
+      "brand": "EADEM",
+      "category": "toner",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "acne",
+        "pigmentation",
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Liquid exfoliant with lactic, azelaic, and tranexamic acids plus colloidal oatmeal to reduce discoloration.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Talia Gutierrez",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "This one has practically eliminated the cystic acne breakout along my jawline without zapping too much moisture.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-026",
+      "name": "Caudalie Beauty Elixir",
+      "brand": "Caudalie",
+      "category": "serum",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Facial mist featuring grape extract and essential oils used to refresh skin and set makeup.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Kassidy Silva",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "A quick spritz every few hours keeps my skin dewy and hydrated without any of my makeup moving out of place.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-027",
+      "name": "Dr. Dennis Gross Skincare Vitamin C Lactic 15% Vitamin C Firm & Bright Serum",
+      "brand": "Dr. Dennis Gross",
+      "category": "serum",
+      "skinTypes": [
+        "sensitive"
+      ],
+      "concerns": [
+        "sensitivity",
+        "pigmentation",
+        "aging"
+      ],
+      "priceRange": "premium",
+      "ingredients": [
+        "Lactic Acid"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Antioxidant serum with L-ascorbic and lactic acids to smooth wrinkles and fade discoloration.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Annie Blay",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "I still love that it's lightweight, effective, and my sensitive skin can tolerate it.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-028",
+      "name": "Aestura Atobarrier 365 Lotion",
+      "brand": "Aestura",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Ceramide"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Lightweight K-beauty lotion for heavy-duty moisture barrier fortification using ceramides.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Sarah Hoffmann",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "It's lightweight but works like a much heavier formula. It kept my skin plump and hydrated through months of using retinol in dry weather.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-029",
+      "name": "Matter of Fact Maximalist Age-Defying Moisturizer",
+      "brand": "Matter of Fact",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry",
+        "combination"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Niacinamide",
+        "Hyaluronic Acid",
+        "Peptides"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Rich cream containing peptides, niacinamide, bakuchiol, and hyaluronic acid.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Sarah Han",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "This is a great night cream for the colder months when my combination skin craves extra moisture and cushioning. My skin looks so fresh and healthy the next morning.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-030",
+      "name": "Blue Lagoon Skincare Mineral Mask",
+      "brand": "Blue Lagoon",
+      "category": "serum",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness",
+        "pores"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Glycerin"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Hydrating mask with electrolyte-rich geothermal water, aloe, glycerin, and jojoba oil.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Jenny Bailly",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "I put it on at the beginning of a 20-hour flight to Singapore and I swear my skin was glowier when I landed than it was at takeoff.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-031",
+      "name": "Dermalogica Daily Microfoliant",
+      "brand": "Dermalogica",
+      "category": "other",
+      "skinTypes": [
+        "sensitive"
+      ],
+      "concerns": [
+        "pigmentation"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "AHA",
+        "Salicylic Acid"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Rice-based exfoliating powder infused with AHAs, salicylic acid, and papaya enzymes to boost brightness.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Annie Blay",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "This gentle scrub was totally worth it every time. It buffs away dead skin cells while the blend of acids brightens and evens out my skin tone.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-032",
+      "name": "La Roche-Posay Facial Moisturizer Toleriane Double Repair",
+      "brand": "La Roche-Posay",
+      "category": "serum",
+      "skinTypes": [
+        "dry",
+        "oily"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Ceramide",
+        "Niacinamide"
+      ],
+      "averageRating": 5,
+      "sampleSize": 2,
+      "description": "Oil-free moisturizer with ceramides, thermal water, and niacinamide for shine control.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Dr. Wallace Nozile",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "Recommend it for all-day shine control and moisture retention.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        },
+        {
+          "userName": "Dr. Mina Amin",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "Recommend it for all-day shine control and moisture retention.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-033",
+      "name": "Paula's Choice Skin Perfecting BHA 2% Liquid Exfoliant",
+      "brand": "Paula's",
+      "category": "exfoliant",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "pores"
+      ],
+      "priceRange": "premium",
+      "ingredients": [
+        "Salicylic Acid"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Liquid exfoliant with salicylic acid and green tea to clear pores.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-034",
+      "name": "SK-II Facial Treatment Essence",
+      "brand": "SK-II",
+      "category": "toner",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "luxury",
+      "ingredients": [],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Essence containing 90 percent Pitera and over 50 micronutrients.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-035",
+      "name": "Estée Lauder Advanced Night Repair Synchronized Multi-Recovery Complex",
+      "brand": "Estée Lauder",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "luxury",
+      "ingredients": [],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Nighttime repair serum targeting cellular functioning and skin repair.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-036",
+      "name": "Kiehl's Ultra Facial Cream",
+      "brand": "Kiehl's",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Squalane",
+        "Glycerin"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Moisturizer with squalane and glycerin designed to hydrate 15 layers deep.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-037",
+      "name": "CeraVe Hydrating Facial Cleanser",
+      "brand": "CeraVe",
+      "category": "cleanser",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "budget",
+      "ingredients": [
+        "Ceramide",
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Non-stripping cleanser comprised of hyaluronic acid and three ceramides.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-038",
+      "name": "Clinique Dramatically Different Moisturizing Lotion+",
+      "brand": "Clinique",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Glycerin"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Hydrating lotion with glycerin, urea, and pro-lipid ingredients.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-039",
+      "name": "Aquaphor Healing Ointment",
+      "brand": "Aquaphor",
+      "category": "other",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "budget",
+      "ingredients": [
+        "Panthenol",
+        "Glycerin"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "41% petrolatum formula with panthenol and glycerin to protect and heal chapped skin.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-040",
+      "name": "Biologique Recherche Lotion P50",
+      "brand": "Biologique Recherche",
+      "category": "toner",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "premium",
+      "ingredients": [],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Customizable daily exfoliating toner designed for the 'initialization' stage of skincare.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-041",
+      "name": "Summer Fridays Jet Lag Mask",
+      "brand": "Summer",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Glycerin",
+        "Niacinamide",
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Hydrating mask with niacinamide, glycerin, hyaluronic acid, and antioxidants.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-042",
+      "name": "Neocutis Lumiere Firm",
+      "brand": "Neocutis",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "premium",
+      "ingredients": [
+        "Peptides"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Rich eye cream with peptides and growth factors targeting lines, dark circles, and puffiness.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Marci Robin",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "This one makes me feel like my eye area is getting heavy-duty—but not heavy—moisture that lasts all day and stays smooth under concealer.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-043",
+      "name": "KraveBeauty Beet the Sun Lightweight Sunscreen Broad Spectrum SPF 40 PA+++",
+      "brand": "KraveBeauty",
+      "category": "sunscreen",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Vitamin E"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Velvety chemical sunscreen with beetroot extract and vitamin E for antioxidant protection.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Annie Blay",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "My favorite element of the formula is how lightweight it is. It doesn't even feel like you're wearing sunscreen.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-044",
+      "name": "La Roche-Posay Anthelios 50 Mineral Sunscreen",
+      "brand": "La Roche-Posay",
+      "category": "sunscreen",
+      "skinTypes": [
+        "sensitive"
+      ],
+      "concerns": [
+        "sensitivity"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Zinc Oxide"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Matte finish mineral sunscreen for sensitive skin using zinc oxide and titanium dioxide.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Nicola Dall'Asen",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "Delivers a no-nonsense, no-cast, no-rubbing-in-for-20-minutes sunscreen. It protects quickly without the greasy mess and chemical smell.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-045",
+      "name": "The Outset Exfoliating Caffeine Micro Polish",
+      "brand": "The Outset",
+      "category": "exfoliant",
+      "skinTypes": [
+        "sensitive"
+      ],
+      "concerns": [
+        "sensitivity",
+        "pigmentation"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Caffeine"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Traditional facial scrub using perlite particles, caffeine, and white tea to brighten and smooth.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Kara McGrath",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "My fellow sensitive girlies, this one's for you. It has a very fine grain, so it doesn't irritate my skin but still gives me the refreshed glow I'm looking for from a scrub.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-046",
+      "name": "Shiseido Benefiance Wrinkle Smoothing Eye Cream",
+      "brand": "Shiseido",
+      "category": "moisturizer",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "aging"
+      ],
+      "priceRange": "luxury",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Targeted eye cream for wrinkles and dark circles.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": [
+        {
+          "userName": "Industry Voter",
+          "userName_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "reviewText": "Dramatically transforms the undereye in just one week – the updated formula makes this longtime eye essential even better.",
+          "reviewText_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+          "rating": 5,
+          "rating_citation": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/"
+        }
+      ]
+    },
+    {
+      "id": "product-047",
+      "name": "MAC Hyper Real Cream-to-Foam Cleanser",
+      "brand": "MAC",
+      "category": "cleanser",
+      "skinTypes": [
+        "dry",
+        "sensitive"
+      ],
+      "concerns": [
+        "sensitivity",
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Glycerin",
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Transforming cleanser with hyaluronic acid and glycerin to hydrate skin while removing makeup.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Kara McGrath",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "It lathers into a luxurious foam that gets rid of all my makeup but isn't so thick that it's difficult to rinse off. Despite the deep-cleaning abilities, it's gentle and hydrating on my sensitive skin.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-048",
+      "name": "Clinique Take the Day Off Facial Cleansing Mousse",
+      "brand": "Clinique",
+      "category": "cleanser",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Glycerin",
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Mousse cleanser containing hyaluronic acid and glycerin that leaves skin soft and smooth while removing impurities.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Marci Robin",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "The lather this cleanser creates is so delightful that I tend to linger for a while just to enjoy it. And when I do finally rinse, my skin is so soft.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-049",
+      "name": "Dr. Loretta Gentle Hydrating Cleanser",
+      "brand": "Dr. Loretta",
+      "category": "cleanser",
+      "skinTypes": [
+        "dry",
+        "sensitive"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Peptides"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Gel cleanser with peptides and calming chamomile that removes makeup and pollution without sulfates.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Andrew Gowen",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "A dime-size amount of this gel cleanser is more than enough to lather up the entire face. It leaves my skin with a hydrated, clean feel.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-050",
+      "name": "Estée Lauder Advanced Night Repair Rescue Solution",
+      "brand": "Estée Lauder",
+      "category": "serum",
+      "skinTypes": [
+        "sensitive"
+      ],
+      "concerns": [
+        "sensitivity"
+      ],
+      "priceRange": "luxury",
+      "ingredients": [
+        "Peptides"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Water-light soothing serum with yeast extract and peptides designed to reduce redness and irritation.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Jenny Bailly",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "Ever since I made this the first step in my evening skin-care routine, I've experienced no irritation from the various retinol and AHA formulas that I use.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-051",
+      "name": "Eau Thermale Avène Cicalfate+ Hydrating Skin Recovery Emulsion",
+      "brand": "Eau Thermale Avène",
+      "category": "moisturizer",
+      "skinTypes": [
+        "dry",
+        "sensitive"
+      ],
+      "concerns": [
+        "sensitivity",
+        "dryness"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Squalane",
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Emulsion with hyaluronic acid, squalane, and postbiotics formulated for sensitive and procedure-recovering skin.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Jesa Marie Calaor",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "This soothed my irritated, sensitive skin as I began using a higher dose of tretinoin. Its lightweight texture felt extra hydrating and worked wonders to bring down redness.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-052",
+      "name": "Mother Science Retinol Synergist",
+      "brand": "Mother Science",
+      "category": "other",
+      "skinTypes": [
+        "sensitive"
+      ],
+      "concerns": [
+        "pigmentation"
+      ],
+      "priceRange": "premium",
+      "ingredients": [
+        "Retinol"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Retinol combined with Malassezin to tackle hyperpigmentation and smooth skin.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Brian Underwood",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "I liked how gentle it is. I swapped to this after another retinoid caused sensitivity and had no issues.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-053",
+      "name": "SkinCeuticals P-Tiox Anti-Wrinkle Serum",
+      "brand": "SkinCeuticals",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "pigmentation"
+      ],
+      "priceRange": "luxury",
+      "ingredients": [
+        "Niacinamide",
+        "Peptides"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Peptide-packed serum with niacinamide and exfoliants to soften expression lines and boost radiance.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Brian Underwood",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "My skin looks glowy and taut after a month. It layers well with other products and causes no sensitivity.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-054",
+      "name": "Eve Lom Cleanser",
+      "brand": "Eve Lom",
+      "category": "cleanser",
+      "skinTypes": [
+        "dry"
+      ],
+      "concerns": [
+        "dryness"
+      ],
+      "priceRange": "premium",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "5-in-1 formula that cleanses, tones, hydrates, removes makeup, and exfoliates.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Mary Berry",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "It easily takes off all makeup, leaving skin super-clean and refreshed. I enjoy the herbal scent and silky texture.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-055",
+      "name": "Lancôme Absolue L'Extrait Elixir Cream",
+      "brand": "Lancôme",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "aging"
+      ],
+      "priceRange": "luxury",
+      "ingredients": [
+        "Salicylic Acid"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Luxury moisturizer with rose extract and salicylic acid to reduce fine lines.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Danielle Jackson",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "It's not too heavy and I can feel my skin getting softer and plumper.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-056",
+      "name": "Philosophy Dose Of Wisdom Eye Cream",
+      "brand": "Philosophy",
+      "category": "moisturizer",
+      "skinTypes": [
+        "sensitive"
+      ],
+      "concerns": [
+        "pigmentation"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Vitamin C",
+        "Caffeine"
+      ],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Fragrance-free eye cream with Vitamin C and caffeine.",
+      "sourceUrl": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+      "userReviews": [
+        {
+          "userName": "Dr. Mina Amin",
+          "userName_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "reviewText": "It is effective for brightening and depuffing the gentle eye area.",
+          "reviewText_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/",
+          "rating": 5,
+          "rating_citation": "https://www.womenshealthmag.com/beauty/a61976001/best-skincare-products-2024/"
+        }
+      ]
+    },
+    {
+      "id": "product-057",
+      "name": "Caudalie Instant Detox Mask",
+      "brand": "Caudalie",
+      "category": "serum",
+      "skinTypes": [
+        "dry",
+        "oily"
+      ],
+      "concerns": [
+        "dryness",
+        "pores"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [],
+      "averageRating": 5,
+      "sampleSize": 1,
+      "description": "Clay mask with kaolin, bentonite, and botanical oils to purify pores and soak up sebum.",
+      "sourceUrl": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+      "userReviews": [
+        {
+          "userName": "Annie Blay",
+          "userName_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "reviewText": "This mask clears the gunk out of my pores stat, but it doesn't leave my skin feeling dry, like most clay masks.",
+          "reviewText_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024",
+          "rating": 5,
+          "rating_citation": "https://www.allure.com/story/best-of-beauty-skin-care-product-winners-2024"
+        }
+      ]
+    },
+    {
+      "id": "product-058",
+      "name": "Sol de Janeiro Brazilian Bum Bum Cream",
+      "brand": "Sol de Janeiro",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "aging"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Firming body cream with guaraná extract and açai oil.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-059",
+      "name": "Tatcha The Rice Polish",
+      "brand": "Tatcha",
+      "category": "exfoliant",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "luxury",
+      "ingredients": [],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Water-activated enzyme powder with Japanese rice powder and silk.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-060",
+      "name": "Glow Recipe Watermelon Glow Niacinamide Dew Drops",
+      "brand": "Glow Recipe",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Niacinamide",
+        "Hyaluronic Acid"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Highlighting serum hybrid with niacinamide, hyaluronic acid, and antioxidants.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    },
+    {
+      "id": "product-061",
+      "name": "Topicals Faded",
+      "brand": "Topicals",
+      "category": "serum",
+      "skinTypes": [
+        "normal"
+      ],
+      "concerns": [
+        "pigmentation"
+      ],
+      "priceRange": "midRange",
+      "ingredients": [
+        "Azelaic Acid"
+      ],
+      "averageRating": 0,
+      "sampleSize": 0,
+      "description": "Brightening serum for sun damage and scarring with kojic and azelaic acids.",
+      "sourceUrl": "https://wwd.com/beauty-industry-news/beauty-features/lists/greatest-skin-care-products-1236205048/",
+      "userReviews": []
+    }
+  ]
+}

@@ -4,8 +4,12 @@ import SwiftData
 struct HomeView: View {
     @Query(sort: [SortDescriptor(\SkinAnalysisRecord.analyzedAt, order: .reverse)])
     private var recentAnalyses: [SkinAnalysisRecord]
+    
+    @Query(filter: #Predicate<TrackingSession> { $0.statusRaw == "active" })
+    private var activeSessions: [TrackingSession]
 
     @State private var showAnalysis = false
+    @State private var showNewTracking = false
 
     var body: some View {
         NavigationStack {
@@ -15,6 +19,7 @@ struct HomeView: View {
                     VStack(spacing: 32) {
                         heroSection
                         quickActionsSection
+                        trackingPromptCard
                         if !recentAnalyses.isEmpty { recentSection }
                         dailyTipSection
                         featuresSection
@@ -38,6 +43,11 @@ struct HomeView: View {
             }
             .fullScreenCover(isPresented: $showAnalysis) {
                 AnalysisView()
+            }
+            .sheet(isPresented: $showNewTracking) {
+                NavigationStack {
+                    TrackingView()
+                }
             }
         }
     }
@@ -114,6 +124,122 @@ struct HomeView: View {
                 }
             }
             .buttonStyle(SkinLabSecondaryButtonStyle())
+        }
+    }
+
+    // MARK: - 28 Day Tracking Prompt Card
+    private var trackingPromptCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.2))
+                        .frame(width: 48, height: 48)
+                    
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                        .font(.system(size: 22))
+                        .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("28天效果验证")
+                        .font(.skinLabHeadline)
+                        .foregroundColor(.skinLabText)
+                    
+                    Text(activeSessionPrompt)
+                        .font(.skinLabCaption)
+                        .foregroundColor(.skinLabSubtext)
+                }
+                
+                Spacer()
+            }
+            
+            if let session = activeSessions.first {
+                // Show progress for active session
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("已记录 \(session.checkIns.count) 次")
+                            .font(.skinLabSubheadline)
+                            .foregroundColor(.skinLabPrimary)
+                        
+                        Spacer()
+                        
+                        if let nextDay = session.nextCheckInDay {
+                            let currentDay = session.duration
+                            let daysUntil = nextDay - currentDay
+                            if daysUntil >= 0 {
+                                Text("第\(nextDay)天打卡")
+                                    .font(.skinLabCaption)
+                                    .foregroundColor(.skinLabSubtext)
+                            }
+                        }
+                    }
+                    
+                    ProgressView(value: Double(session.checkIns.count), total: 5.0)
+                        .tint(LinearGradient.skinLabPrimaryGradient)
+                        .scaleEffect(y: 1.5)
+                    
+                    NavigationLink {
+                        TrackingView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "eye.fill")
+                            Text("查看详情")
+                        }
+                        .font(.skinLabSubheadline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(LinearGradient.skinLabPrimaryGradient)
+                        .cornerRadius(14)
+                    }
+                }
+            } else {
+                // Show start button for new users
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(.skinLabSuccess)
+                        Text("用数据说话，让效果看得见")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabSubtext)
+                    }
+                    
+                    Button {
+                        showNewTracking = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "play.fill")
+                            Text("开始28天验证")
+                        }
+                        .font(.skinLabSubheadline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(LinearGradient.skinLabPrimaryGradient)
+                        .cornerRadius(14)
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(Color.skinLabCardBackground)
+        .cornerRadius(20)
+        .skinLabSoftShadow(radius: 10, y: 5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(LinearGradient.skinLabPrimaryGradient.opacity(0.3), lineWidth: 1.5)
+        )
+    }
+    
+    private var activeSessionPrompt: String {
+        if activeSessions.isEmpty {
+            return "记录护肤效果，科学验证产品是否有效"
+        } else {
+            let session = activeSessions.first!
+            let progress = Int((Double(session.checkIns.count) / 5.0) * 100)
+            return "进行中 · \(progress)% 完成"
         }
     }
 

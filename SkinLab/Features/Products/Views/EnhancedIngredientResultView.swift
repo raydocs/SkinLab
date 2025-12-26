@@ -3,17 +3,24 @@ import SwiftUI
 struct EnhancedIngredientResultView: View {
     let enhancedResult: EnhancedIngredientScanResult
     let profile: UserProfile?
+    var aiStatus: AIAnalysisStatus = .idle
+    var aiResult: IngredientAIResult?
+    var aiErrorMessage: String?
+    var onRetryAI: (() -> Void)?
+    
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab: ResultTab = .overview
     
     enum ResultTab: String, CaseIterable {
         case overview = "总览"
+        case aiInsight = "AI分析"
         case function = "功效分组"
         case personalized = "个性化"
         
         var icon: String {
             switch self {
             case .overview: return "doc.text.fill"
+            case .aiInsight: return "sparkles"
             case .function: return "square.grid.2x2.fill"
             case .personalized: return "person.fill"
             }
@@ -135,6 +142,8 @@ struct EnhancedIngredientResultView: View {
         switch selectedTab {
         case .overview:
             overviewTab
+        case .aiInsight:
+            aiInsightTab
         case .function:
             functionTab
         case .personalized:
@@ -142,9 +151,36 @@ struct EnhancedIngredientResultView: View {
         }
     }
     
+    // MARK: - AI Insight Tab
+    private var aiInsightTab: some View {
+        VStack(spacing: 16) {
+            switch aiStatus {
+            case .idle, .analyzing:
+                AIAnalysisLoadingView()
+            case .success:
+                if let result = aiResult {
+                    IngredientAIInsightView(result: result)
+                } else {
+                    AIAnalysisErrorView(errorMessage: "未能获取分析结果") {
+                        onRetryAI?()
+                    }
+                }
+            case .failed:
+                AIAnalysisErrorView(errorMessage: aiErrorMessage) {
+                    onRetryAI?()
+                }
+            }
+        }
+    }
+    
     // MARK: - Overview Tab
     private var overviewTab: some View {
         VStack(alignment: .leading, spacing: 16) {
+            // Evidence Section (if available)
+            if let aiResult = aiResult, !aiResult.evidence.isEmpty {
+                evidenceSection(aiResult: aiResult)
+            }
+            
             // Highlights
             if !enhancedResult.baseResult.highlights.isEmpty {
                 highlightSection(
@@ -364,6 +400,113 @@ struct EnhancedIngredientResultView: View {
         .padding()
         .background(color.opacity(0.1))
         .cornerRadius(16)
+    }
+    
+    // MARK: - Evidence Section
+    private func evidenceSection(aiResult: IngredientAIResult) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Image(systemName: "checkmark.seal.fill")
+                    .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
+                Text("成分证据等级")
+                    .font(.skinLabTitle3)
+                    .foregroundColor(.skinLabText)
+                
+                Spacer()
+                
+                if let overallLevel = aiResult.overallEvidenceLevel {
+                    HStack(spacing: 4) {
+                        Image(systemName: overallLevel.icon)
+                            .font(.caption)
+                        Text(overallLevel.displayName)
+                            .font(.skinLabCaption)
+                    }
+                    .foregroundColor(evidenceLevelColor(overallLevel))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(evidenceLevelColor(overallLevel).opacity(0.15))
+                    .cornerRadius(10)
+                }
+            }
+            
+            if !aiResult.evidence.isEmpty {
+                VStack(spacing: 10) {
+                    ForEach(aiResult.evidence) { evidence in
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text(evidence.ingredientName)
+                                    .font(.skinLabSubheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.skinLabText)
+                                
+                                Spacer()
+                                
+                                HStack(spacing: 4) {
+                                    Image(systemName: evidence.level.icon)
+                                        .font(.caption2)
+                                    Text(evidence.level.displayName)
+                                        .font(.skinLabCaption)
+                                }
+                                .foregroundColor(evidenceLevelColor(evidence.level))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(evidenceLevelColor(evidence.level).opacity(0.15))
+                                .cornerRadius(8)
+                            }
+                            
+                            if !evidence.sources.isEmpty {
+                                HStack(spacing: 12) {
+                                    ForEach(evidence.sources, id: \.self) { source in
+                                        HStack(spacing: 4) {
+                                            Image(systemName: source.icon)
+                                                .font(.caption2)
+                                            Text(source.displayName)
+                                                .font(.skinLabCaption)
+                                        }
+                                        .foregroundColor(.skinLabSubtext)
+                                    }
+                                    
+                                    if let count = evidence.studyCount {
+                                        Text("\(count)项研究")
+                                            .font(.skinLabCaption)
+                                            .foregroundColor(.skinLabSubtext)
+                                    }
+                                }
+                            }
+                            
+                            if let description = evidence.description {
+                                Text(description)
+                                    .font(.skinLabCaption)
+                                    .foregroundColor(.skinLabSubtext)
+                                    .lineSpacing(2)
+                            }
+                        }
+                        .padding(12)
+                        .background(Color.skinLabCardBackground.opacity(0.5))
+                        .cornerRadius(12)
+                    }
+                }
+            }
+            
+            Text("数据来源于临床研究、专家共识和用户反馈")
+                .font(.skinLabCaption)
+                .foregroundColor(.skinLabSubtext.opacity(0.7))
+        }
+        .padding()
+        .background(LinearGradient(colors: [Color.skinLabPrimary.opacity(0.05), Color.skinLabSecondary.opacity(0.05)], startPoint: .topLeading, endPoint: .bottomTrailing))
+        .cornerRadius(16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(LinearGradient.skinLabPrimaryGradient.opacity(0.2), lineWidth: 1)
+        )
+    }
+    
+    private func evidenceLevelColor(_ level: EvidenceLevel) -> Color {
+        switch level {
+        case .limited: return .gray
+        case .moderate: return .orange
+        case .strong: return .skinLabSuccess
+        }
     }
     
     // MARK: - Helpers

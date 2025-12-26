@@ -43,7 +43,18 @@ struct IngredientScannerFullView: View {
                     scanningView
                 case .result(let baseResult, let enhancedResult):
                     if let enhanced = enhancedResult {
-                        EnhancedIngredientResultView(enhancedResult: enhanced, profile: userProfile)
+                        EnhancedIngredientResultView(
+                            enhancedResult: enhanced,
+                            profile: userProfile,
+                            aiStatus: viewModel.aiStatus,
+                            aiResult: viewModel.aiResult,
+                            aiErrorMessage: viewModel.aiErrorMessage,
+                            onRetryAI: {
+                                Task {
+                                    await viewModel.retryAIAnalysis()
+                                }
+                            }
+                        )
                     } else {
                         resultView(baseResult)
                     }
@@ -618,10 +629,21 @@ class IngredientScannerViewModel: ObservableObject {
     }
     
     @Published var state: State = .idle
+    @Published var aiStatus: AIAnalysisStatus = .idle
+    @Published var aiResult: IngredientAIResult?
+    @Published var aiErrorMessage: String?
     
     private let ocrService = IngredientOCRService.shared
     private let database = IngredientDatabase.shared
     private let riskAnalyzer = IngredientRiskAnalyzer()
+    private let aiAnalyzer = IngredientAIAnalyzer.shared
+    
+    // Store for AI analysis
+    private var currentBaseResult: IngredientScanResult?
+    private var currentEnhancedResult: EnhancedIngredientScanResult?
+    private var currentProfile: UserProfile?
+    private var currentHistoryStore: UserHistoryStore?
+    private var currentPreferences: [UserIngredientPreference] = []
     
     @MainActor
     func scan(
@@ -631,6 +653,9 @@ class IngredientScannerViewModel: ObservableObject {
         preferences: [UserIngredientPreference]
     ) async {
         state = .scanning
+        aiStatus = .idle
+        aiResult = nil
+        aiErrorMessage = nil
 
         do {
             let ingredients = try await ocrService.recognizeIngredients(from: image)
@@ -648,15 +673,55 @@ class IngredientScannerViewModel: ObservableObject {
                 historyStore: historyStore,
                 userPreferences: preferences
             )
+            
+            // Store for AI analysis
+            currentBaseResult = baseResult
+            currentEnhancedResult = enhancedResult
+            currentProfile = profile
+            currentHistoryStore = historyStore
+            currentPreferences = preferences
 
             state = .result(baseResult, enhancedResult)
+            
+            // Start AI analysis in background
+            await runAIAnalysis()
         } catch {
             state = .error(error)
         }
     }
     
+    func runAIAnalysis() async {
+        guard let baseResult = currentBaseResult else { return }
+        
+        aiStatus = .analyzing
+        
+        do {
+            let result = try await aiAnalyzer.analyze(
+                baseResult: baseResult,
+                profile: currentProfile,
+                historyStore: currentHistoryStore,
+                preferences: currentPreferences
+            )
+            
+            aiResult = result
+            aiStatus = .success
+        } catch {
+            aiErrorMessage = error.localizedDescription
+            aiStatus = .failed
+        }
+    }
+    
+    func retryAIAnalysis() async {
+        await runAIAnalysis()
+    }
+    
     func reset() {
         state = .idle
+        aiStatus = .idle
+        aiResult = nil
+        aiErrorMessage = nil
+        currentBaseResult = nil
+        currentEnhancedResult = nil
     }
 }
 

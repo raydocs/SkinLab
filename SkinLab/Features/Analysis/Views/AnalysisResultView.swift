@@ -9,6 +9,7 @@ struct AnalysisResultView: View {
     @State private var generatedRoutine: SkincareRoutine?
     @State private var showRoutine = false
     @State private var routineError: String?
+    @State private var showNewTracking = false
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
     @Query private var trackingSessions: [TrackingSession]
@@ -51,6 +52,8 @@ struct AnalysisResultView: View {
                 VStack(spacing: 24) {
                     scoreHeader
                     skinTypeBadge
+                    confidenceCard
+                    trackingEntryCard
                     primaryActions
                     tabSelector
                     selectedContent
@@ -75,6 +78,18 @@ struct AnalysisResultView: View {
         .onAppear {
             withAnimation(.easeOut(duration: 1.0).delay(0.3)) {
                 animateScore = true
+            }
+        }
+        .sheet(isPresented: $showRoutine) {
+            if let routine = generatedRoutine {
+                NavigationStack {
+                    RoutineView(routine: routine)
+                }
+            }
+        }
+        .sheet(isPresented: $showNewTracking) {
+            NavigationStack {
+                TrackingView()
             }
         }
     }
@@ -275,6 +290,205 @@ struct AnalysisResultView: View {
         .background(Color.skinLabCardBackground)
         .cornerRadius(16)
         .skinLabSoftShadow()
+    }
+
+    // MARK: - Confidence Card
+    @ViewBuilder
+    private var confidenceCard: some View {
+        if analysis.confidenceScore < 80 || analysis.imageQuality != nil {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    ZStack {
+                        Circle()
+                            .fill(confidenceColor.opacity(0.2))
+                            .frame(width: 32, height: 32)
+                        
+                        Image(systemName: confidenceIcon)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(confidenceColor)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("分析可信度")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabSubtext)
+                        
+                        Text("\(analysis.confidenceScore)%")
+                            .font(.skinLabHeadline)
+                            .foregroundColor(.skinLabText)
+                    }
+                    
+                    Spacer()
+                    
+                    // Quality indicator
+                    if let quality = analysis.imageQuality {
+                        let avgQuality = (quality.lighting + quality.sharpness + quality.angle + quality.occlusion + quality.faceCoverage) / 5
+                        Text(avgQuality >= 80 ? "照片质量良好" : "照片质量一般")
+                            .font(.skinLabCaption)
+                            .foregroundColor(avgQuality >= 80 ? .skinLabSuccess : .skinLabWarning)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background((avgQuality >= 80 ? Color.skinLabSuccess : Color.skinLabWarning).opacity(0.1))
+                            .cornerRadius(12)
+                    }
+                }
+                
+                // Quality notes if available
+                if let quality = analysis.imageQuality, !quality.notes.isEmpty {
+                    Divider()
+                        .background(Color.skinLabSubtext.opacity(0.2))
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("拍照建议")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabSubtext)
+                        
+                        ForEach(quality.notes, id: \.self) { note in
+                            HStack(spacing: 8) {
+                                Image(systemName: "lightbulb.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.skinLabWarning)
+                                
+                                Text(note)
+                                    .font(.skinLabCaption)
+                                    .foregroundColor(.skinLabText)
+                            }
+                        }
+                        
+                        // Suggest retake if confidence is low
+                        if analysis.confidenceScore < 70 {
+                            Button {
+                                // TODO: Navigate to camera view
+                            } label: {
+                                HStack {
+                                    Image(systemName: "camera.fill")
+                                    Text("重新拍照")
+                                }
+                                .font(.skinLabSubheadline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(LinearGradient.skinLabPrimaryGradient)
+                                .cornerRadius(12)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding()
+            .background(Color.skinLabCardBackground)
+            .cornerRadius(16)
+            .skinLabSoftShadow()
+        }
+    }
+    
+    private var confidenceColor: Color {
+        if analysis.confidenceScore >= 80 {
+            return .skinLabSuccess
+        } else if analysis.confidenceScore >= 60 {
+            return .skinLabWarning
+        } else {
+            return .skinLabError
+        }
+    }
+    
+    private var confidenceIcon: String {
+        if analysis.confidenceScore >= 80 {
+            return "checkmark.shield.fill"
+        } else if analysis.confidenceScore >= 60 {
+            return "exclamationmark.shield.fill"
+        } else {
+            return "xmark.shield.fill"
+        }
+    }
+
+    // MARK: - Tracking Entry Card
+    @ViewBuilder
+    private var trackingEntryCard: some View {
+        let activeSession = trackingSessions.first { $0.status == .active }
+        
+        if activeSession == nil {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(LinearGradient.skinLabLavenderGradient.opacity(0.2))
+                            .frame(width: 44, height: 44)
+                        
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.system(size: 20))
+                            .foregroundStyle(LinearGradient.skinLabLavenderGradient)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("开始28天效果验证")
+                            .font(.skinLabHeadline)
+                            .foregroundColor(.skinLabText)
+                        
+                        Text("用数据证明护肤效果")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabSubtext)
+                    }
+                    
+                    Spacer()
+                }
+                
+                Divider()
+                    .background(Color.skinLabSubtext.opacity(0.2))
+                
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(.skinLabSuccess)
+                        Text("将本次分析作为第0天基准")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabText)
+                    }
+                    
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(.skinLabSuccess)
+                        Text("定期记录皮肤变化")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabText)
+                    }
+                    
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(.skinLabSuccess)
+                        Text("生成可视化效果报告")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabText)
+                    }
+                }
+                
+                Button {
+                    showNewTracking = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "play.fill")
+                        Text("立即开始追踪")
+                    }
+                    .font(.skinLabSubheadline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 13)
+                    .background(LinearGradient.skinLabLavenderGradient)
+                    .cornerRadius(14)
+                }
+            }
+            .padding()
+            .background(Color.skinLabCardBackground)
+            .cornerRadius(16)
+            .skinLabSoftShadow()
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(LinearGradient.skinLabLavenderGradient.opacity(0.3), lineWidth: 1.5)
+            )
+        }
     }
 
     // MARK: - Primary Actions

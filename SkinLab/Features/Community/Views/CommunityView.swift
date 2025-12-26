@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct CommunityView: View {
+    @State private var showSkinTwinMatch = false
+
     var body: some View {
         ZStack {
             Color.skinLabBackground.ignoresSafeArea()
@@ -32,8 +34,18 @@ struct CommunityView: View {
                     }
                     .padding(.top, 16)
 
-                    communityCard(title: "今日话题", subtitle: "你最近改变了哪一步护肤？", icon: "bubble.left.and.bubble.right.fill", gradient: .skinLabPrimaryGradient)
-                    communityCard(title: "肌肤双胞胎", subtitle: "匹配相似肤质的有效产品", icon: "person.2.fill", gradient: .skinLabLavenderGradient)
+                    communityCard(
+                        title: "今日话题", subtitle: "你最近改变了哪一步护肤？",
+                        icon: "bubble.left.and.bubble.right.fill", gradient: .skinLabPrimaryGradient
+                    )
+
+                    // 肌肤双胞胎卡片 - 添加导航
+                    NavigationLink(destination: SkinTwinMatchView()) {
+                        communityCardContent(
+                            title: "肌肤双胞胎", subtitle: "匹配相似肤质的有效产品", icon: "person.2.fill",
+                            gradient: .skinLabLavenderGradient)
+                    }
+                    .buttonStyle(.plain)
 
                     Button {
                     } label: {
@@ -57,7 +69,42 @@ struct CommunityView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func communityCard(title: String, subtitle: String, icon: String, gradient: LinearGradient) -> some View {
+    private func communityCardContent(
+        title: String, subtitle: String, icon: String, gradient: LinearGradient
+    ) -> some View {
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(gradient.opacity(0.18))
+                    .frame(width: 44, height: 44)
+                Image(systemName: icon)
+                    .font(.system(size: 18))
+                    .foregroundStyle(gradient)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.skinLabHeadline)
+                    .foregroundColor(.skinLabText)
+                Text(subtitle)
+                    .font(.skinLabCaption)
+                    .foregroundColor(.skinLabSubtext)
+            }
+
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.skinLabPrimary.opacity(0.6))
+        }
+        .padding(16)
+        .background(Color.skinLabCardBackground)
+        .cornerRadius(18)
+        .skinLabSoftShadow()
+    }
+
+    private func communityCard(
+        title: String, subtitle: String, icon: String, gradient: LinearGradient
+    ) -> some View {
         HStack(spacing: 14) {
             ZStack {
                 Circle()

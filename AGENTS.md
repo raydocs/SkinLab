@@ -12,7 +12,7 @@ SkinLab是一个AI驱动的皮肤分析与护肤品推荐应用。
 - **UI框架**: SwiftUI
 - **架构**: MVVM + Clean Architecture
 - **存储**: SwiftData
-- **AI**: Gemini 2.0 Flash Vision API
+- **AI**: Gemini 3.0 Flash Vision API
 - **图像处理**: Vision Framework
 
 ## 项目结构

@@ -1,0 +1,54 @@
+{
+  "niacinamide": {
+    "name": "Niacinamide",
+    "aliases": [
+      "vitaminb3",
+      "nicotinamide"
+    ],
+    "function": "brightening",
+    "safetyRating": 9,
+    "irritationRisk": "low",
+    "benefits": [
+      "pore minimizing",
+      "brightening",
+      "anti-aging",
+      "soothing",
+      "barrier repair",
+      "antioxidant",
+      "oil control"
+    ],
+    "warnings": null,
+    "categories": [
+      "antioxidant",
+      "humectant"
+    ],
+    "concentrationRange": "0.2%-20%",
+    "description": "Niacinamide (also known as vitamin B3 or nicotinamide) is a unique skin-restoring ingredient that offers a multitude of benefits for skin. It is best known for its ability to help visibly reduce enlarged pores and improve uneven/dull skin tone. It also strengthens a weakened skin barrier. An advantage of niacinamide's antioxidant power is that it can help visibly repair damage from UV light while offsetting other sources of environmental attack. Another helpful benefit is that niacinamide helps fortify skin's surface against moisture loss and dehydration by boosting its natural production of skin-strengthening ceramides. Studies have also shown niacinamide has a positive effect on reducing wrinkles. Unlike many superstar anti-aging ingredients, niacinamide is stable in the presence of heat and light. It is water soluble and presents as colorless needles or white crystalline powder in material state. Niacinamide offers benefits for skin starting in concentrations as low 0.2%, and the Cosmetic Ingredient Review Expert Panel concluded it is safe in concentrations all the way up to 20%.",
+    "sourceUrl": "https://www.paulaschoice.com/ingredient-dictionary/ingredient-niacinamide.html",
+    "extractedAt": "2025-12-24T22:30:00Z",
+    "rating": "BEST"
+  },
+  "hyaluronicacid": {
+    "name": "Hyaluronic Acid",
+    "aliases": ["hyaluronate", "sodium hyaluronate"],
+    "function": "moisturizing",
+    "safetyRating": 10,
+    "irritationRisk": "none",
+    "benefits": [
+      "hydration",
+      "moisture retention",
+      "anti-aging",
+      "soothing",
+      "antioxidant",
+      "barrier protection",
+      "plumping"
+    ],
+    "warnings": null,
+    "categories": ["humectant", "antioxidant", "texture enhancer"],
+    "concentrationRange": "0.1%-2%",
+    "description": "Component of skin tissue. Synthetic variations are used in skin care products to function as a superior skin-replenishing ingredient. Hyaluronic acid has restorative abilities and can boost skin's moisture content, soothe, and defend against moisture loss. It is capable of holding up to 1,000 times its own weight in water, making it an optimal hydrator for all skin types. In addition to its function as a superior skin-restoring ingredient, hyaluronic acid also provides an antioxidant defense against environmental assault. Consumed orally via supplements, hyaluronic acid (both low and high molecular weights) can improve skin's ability to stay hydrated, visibly decrease wrinkle depth and surface roughness, and help reinforce skin's protective barrier.",
+    "sourceUrl": "https://www.paulaschoice.com/ingredient-dictionary/ingredient-hyaluronic-acid.html",
+    "extractedAt": "2025-12-24T22:35:00Z",
+    "rating": "BEST"
+  }
+}

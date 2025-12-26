@@ -11,7 +11,7 @@ enum ProductCategory: String, Codable, CaseIterable {
     case mask
     case exfoliant
     case eyeCream
-    
+
     var displayName: String {
         switch self {
         case .cleanser: return "洁面"
@@ -24,7 +24,7 @@ enum ProductCategory: String, Codable, CaseIterable {
         case .eyeCream: return "眼霜"
         }
     }
-    
+
     var icon: String {
         switch self {
         case .cleanser: return "drop.circle"
@@ -41,11 +41,11 @@ enum ProductCategory: String, Codable, CaseIterable {
 
 // MARK: - Price Range
 enum PriceRange: String, Codable, CaseIterable {
-    case budget      // < ¥100
-    case midRange    // ¥100-300
-    case premium     // ¥300-800
-    case luxury      // > ¥800
-    
+    case budget  // < ¥100
+    case midRange  // ¥100-300
+    case premium  // ¥300-800
+    case luxury  // > ¥800
+
     var displayName: String {
         switch self {
         case .budget: return "平价 (<¥100)"
@@ -57,7 +57,7 @@ enum PriceRange: String, Codable, CaseIterable {
 }
 
 // MARK: - Ingredient
-struct Ingredient: Codable, Identifiable, Equatable {
+struct Ingredient: Codable, Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
     let aliases: [String]
@@ -67,7 +67,7 @@ struct Ingredient: Codable, Identifiable, Equatable {
     let benefits: [String]
     let warnings: [String]?
     let concentration: String?
-    
+
     init(
         id: UUID = UUID(),
         name: String,
@@ -102,7 +102,7 @@ enum IngredientFunction: String, Codable {
     case preservative
     case fragrance
     case other
-    
+
     var displayName: String {
         switch self {
         case .moisturizing: return "保湿"
@@ -121,7 +121,7 @@ enum IngredientFunction: String, Codable {
 
 enum IrritationLevel: String, Codable {
     case none, low, medium, high
-    
+
     var displayName: String {
         switch self {
         case .none: return "无刺激"
@@ -130,7 +130,7 @@ enum IrritationLevel: String, Codable {
         case .high: return "高刺激"
         }
     }
-    
+
     var color: String {
         switch self {
         case .none: return "green"
@@ -142,7 +142,7 @@ enum IrritationLevel: String, Codable {
 }
 
 // MARK: - Product
-struct Product: Codable, Identifiable, Equatable {
+struct Product: Codable, Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
     let brand: String
@@ -153,12 +153,12 @@ struct Product: Codable, Identifiable, Equatable {
     let priceRange: PriceRange
     let imageUrl: String?
     let purchaseLinks: [PurchaseLink]?
-    
+
     // Community data
     var effectiveRate: Double?
     var sampleSize: Int?
     var averageRating: Double?
-    
+
     init(
         id: UUID = UUID(),
         name: String,
@@ -188,7 +188,7 @@ struct Product: Codable, Identifiable, Equatable {
         self.sampleSize = sampleSize
         self.averageRating = averageRating
     }
-    
+
     static let mock = Product(
         name: "B5修复霜",
         brand: "La Roche-Posay",
@@ -202,7 +202,7 @@ struct Product: Codable, Identifiable, Equatable {
     )
 }
 
-struct PurchaseLink: Codable, Equatable {
+struct PurchaseLink: Codable, Equatable, Hashable {
     let platform: String
     let url: String
     let price: Double?
@@ -224,7 +224,7 @@ final class ProductRecord {
     var sampleSize: Int?
     var averageRating: Double?
     var updatedAt: Date
-    
+
     init(from product: Product) {
         self.id = product.id
         self.name = product.name

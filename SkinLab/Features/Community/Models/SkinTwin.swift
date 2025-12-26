@@ -2,15 +2,15 @@
 import Foundation
 
 /// 皮肤双胞胎匹配结果
-struct SkinTwin: Identifiable, Codable {
+struct SkinTwin: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
-    let userId: UUID                    // 双胞胎用户ID
-    let similarity: Double              // 相似度 0-1
-    let matchLevel: MatchLevel          // 匹配等级
-    let anonymousProfile: AnonymousProfile // 匿名化资料
-    var effectiveProducts: [EffectiveProduct] // 有效产品列表
-    let matchedAt: Date                 // 匹配时间
-    
+    let userId: UUID  // 双胞胎用户ID
+    let similarity: Double  // 相似度 0-1
+    let matchLevel: MatchLevel  // 匹配等级
+    let anonymousProfile: AnonymousProfile  // 匿名化资料
+    var effectiveProducts: [EffectiveProduct]  // 有效产品列表
+    let matchedAt: Date  // 匹配时间
+
     init(
         id: UUID = UUID(),
         userId: UUID,
@@ -28,19 +28,19 @@ struct SkinTwin: Identifiable, Codable {
         self.effectiveProducts = effectiveProducts
         self.matchedAt = matchedAt
     }
-    
+
     /// 相似度百分比显示
     var similarityPercent: Int {
         Int(similarity * 100)
     }
-    
+
     /// 共同关注点
     func commonConcerns(with userConcerns: [SkinConcern]) -> [SkinConcern] {
         let twinConcerns = Set(anonymousProfile.mainConcerns)
         let userConcernsSet = Set(userConcerns)
         return Array(twinConcerns.intersection(userConcernsSet))
     }
-    
+
     /// Mock数据
     static let mock = SkinTwin(
         userId: UUID(),
@@ -53,13 +53,13 @@ struct SkinTwin: Identifiable, Codable {
 }
 
 /// 有效产品记录
-struct EffectiveProduct: Identifiable, Codable {
+struct EffectiveProduct: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
-    let product: Product                // 产品信息
-    let usageDuration: Int              // 使用天数
-    let improvementPercent: Double      // 改善百分比 0-1
-    let verifiedAt: Date                // 验证时间
-    
+    let product: Product  // 产品信息
+    let usageDuration: Int  // 使用天数
+    let improvementPercent: Double  // 改善百分比 0-1
+    let verifiedAt: Date  // 验证时间
+
     init(
         id: UUID = UUID(),
         product: Product,
@@ -73,7 +73,7 @@ struct EffectiveProduct: Identifiable, Codable {
         self.improvementPercent = improvementPercent
         self.verifiedAt = verifiedAt
     }
-    
+
     /// 有效性等级
     var effectiveness: Effectiveness {
         switch improvementPercent {
@@ -83,13 +83,13 @@ struct EffectiveProduct: Identifiable, Codable {
         default: return .ineffective
         }
     }
-    
+
     enum Effectiveness: String {
         case veryEffective = "非常有效"
         case effective = "有效"
         case neutral = "一般"
         case ineffective = "无效"
-        
+
         var icon: String {
             switch self {
             case .veryEffective: return "checkmark.circle.fill"
@@ -99,7 +99,7 @@ struct EffectiveProduct: Identifiable, Codable {
             }
         }
     }
-    
+
     /// Mock数据
     static let mock = EffectiveProduct(
         product: .mock,
