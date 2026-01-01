@@ -34,7 +34,7 @@ struct RoutineView: View {
             // Duration
             HStack {
                 Image(systemName: "calendar")
-                    .foregroundStyle(LinearGradient.skinLabRoseGradient)
+                    .foregroundStyle(Color.freshPrimary)
                 Text("\(routine.weeksDuration) 周计划")
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
@@ -48,8 +48,8 @@ struct RoutineView: View {
                             .font(.skinLabCaption)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(LinearGradient.skinLabPrimaryGradient.opacity(0.15))
-                            .foregroundColor(.skinLabPrimary)
+                            .background(Color.freshPrimary.opacity(0.15))
+                            .foregroundColor(.freshPrimary)
                             .cornerRadius(12)
                     }
                 }
@@ -63,9 +63,7 @@ struct RoutineView: View {
             }
         }
         .padding()
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(20)
-        .skinLabSoftShadow()
+        .freshGlassCard()
     }
     
     private var phaseSelector: some View {
@@ -86,8 +84,8 @@ struct RoutineView: View {
                     .padding(.vertical, 12)
                     .background(
                         selectedPhase == phase ? 
-                            AnyView(LinearGradient.skinLabRoseGradient) :
-                            AnyView(Color.skinLabCardBackground)
+                            AnyView(Color.freshPrimary) :
+                            AnyView(Color.freshWhite.opacity(0.4))
                     )
                     .cornerRadius(16)
                 }
@@ -149,7 +147,7 @@ struct RoutineStepCard: View {
                     // Step Number
                     ZStack {
                         Circle()
-                            .fill(LinearGradient.skinLabPrimaryGradient)
+                            .fill(Color.freshPrimary)
                             .frame(width: 32, height: 32)
                         Text("\(stepNumber)")
                             .font(.skinLabCaption)
@@ -173,8 +171,8 @@ struct RoutineStepCard: View {
                         .font(.skinLabCaption)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Color.skinLabSecondary.opacity(0.2))
-                        .foregroundColor(.skinLabSecondary)
+                        .background(Color.freshSecondary.opacity(0.2))
+                        .foregroundColor(.freshSecondary)
                         .cornerRadius(8)
                     
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
@@ -214,7 +212,7 @@ struct RoutineStepCard: View {
                             Label("替代方案", systemImage: "arrow.triangle.2.circlepath")
                                 .font(.skinLabCaption)
                                 .fontWeight(.semibold)
-                                .foregroundColor(.skinLabSecondary)
+                                .foregroundColor(.freshSecondary)
                             ForEach(step.alternatives, id: \.self) { alternative in
                                 HStack(alignment: .top, spacing: 6) {
                                     Text("•")
@@ -229,9 +227,7 @@ struct RoutineStepCard: View {
             }
         }
         .padding()
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(16)
-        .skinLabSoftShadow()
+        .freshGlassCard()
     }
 }
 
@@ -246,7 +242,7 @@ struct DetailRow: View {
             Label(title, systemImage: icon)
                 .font(.skinLabCaption)
                 .fontWeight(.semibold)
-                .foregroundColor(.skinLabPrimary)
+                .foregroundColor(.freshPrimary)
             Text(content)
                 .font(.skinLabSubheadline)
                 .foregroundColor(.skinLabText)

@@ -15,6 +15,8 @@ class CameraService: NSObject, ObservableObject {
     private let captureSession = AVCaptureSession()
     private var photoOutput = AVCapturePhotoOutput()
     private var videoOutput = AVCaptureVideoDataOutput()
+    private var videoInput: AVCaptureDeviceInput?
+    private var currentPosition: AVCaptureDevice.Position = .front
     private var photoContinuation: CheckedContinuation<UIImage, Error>?
     
     private let videoQueue = DispatchQueue(label: "camera.video.queue")
@@ -85,31 +87,26 @@ class CameraService: NSObject, ObservableObject {
             captureSession.beginConfiguration()
             captureSession.sessionPreset = .photo
             
-            // Add video input (front camera)
-            guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else {
-                throw CameraError.unavailable
-            }
-            
-            let input = try AVCaptureDeviceInput(device: device)
-            if captureSession.canAddInput(input) {
-                captureSession.addInput(input)
-            }
+            // Add video input
+            try configureInput(position: currentPosition)
             
             // Add photo output
-            if captureSession.canAddOutput(photoOutput) {
+            if !captureSession.outputs.contains(where: { $0 === photoOutput }),
+               captureSession.canAddOutput(photoOutput) {
                 captureSession.addOutput(photoOutput)
             }
             
             // Add video output for preview and face detection
             videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
-            if captureSession.canAddOutput(videoOutput) {
+            if !captureSession.outputs.contains(where: { $0 === videoOutput }),
+               captureSession.canAddOutput(videoOutput) {
                 captureSession.addOutput(videoOutput)
             }
             
             // Set video orientation
             if let connection = videoOutput.connection(with: .video) {
                 connection.videoRotationAngle = 90
-                connection.isVideoMirrored = true
+                connection.isVideoMirrored = currentPosition == .front
             }
             
             captureSession.commitConfiguration()
@@ -122,6 +119,43 @@ class CameraService: NSObject, ObservableObject {
             isReady = true
         } catch {
             self.error = .setupFailed(error)
+        }
+    }
+
+    // MARK: - Camera Toggle
+    func toggleCamera() {
+        guard isReady else { return }
+        let newPosition: AVCaptureDevice.Position = currentPosition == .front ? .back : .front
+        do {
+            captureSession.beginConfiguration()
+            try configureInput(position: newPosition)
+            if let connection = videoOutput.connection(with: .video) {
+                connection.videoRotationAngle = 90
+                connection.isVideoMirrored = newPosition == .front
+            }
+            captureSession.commitConfiguration()
+        } catch {
+            captureSession.commitConfiguration()
+            self.error = .setupFailed(error)
+        }
+    }
+
+    private func configureInput(position: AVCaptureDevice.Position) throws {
+        if let currentInput = videoInput {
+            captureSession.removeInput(currentInput)
+        }
+
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else {
+            throw CameraError.unavailable
+        }
+
+        let input = try AVCaptureDeviceInput(device: device)
+        if captureSession.canAddInput(input) {
+            captureSession.addInput(input)
+            videoInput = input
+            currentPosition = position
+        } else {
+            throw CameraError.unavailable
         }
     }
     

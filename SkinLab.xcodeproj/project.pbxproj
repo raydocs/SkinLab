@@ -11,6 +11,7 @@
 		03F04B25FD40ABAD5F758971 /* TimeSeriesAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */; };
 		0705628C35CB4156025336E1 /* SkinTwinMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21C4E7B2AB0841A770CFE82 /* SkinTwinMatchView.swift */; };
 		0E96A1FF72D4E87C65B4E732 /* ConsentSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38A9A9C2ED915AF0773BF6 /* ConsentSettingsView.swift */; };
+		17C7235C8EDC87A1D5360FB0 /* TrackingComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2935A2C595AFD0A1F5A52CBF /* TrackingComparisonView.swift */; };
 		21AB05CA3A80F6B897BDC7A6 /* SkinMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EABE5E915AEE3FFBF17101A /* SkinMatcherTests.swift */; };
 		22D2ACED485758B9081FCD35 /* RoutineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A635EA3C39E9DD8654262A3 /* RoutineService.swift */; };
 		24E220D39F5E82E08B2026B5 /* AnonymousProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4652ECD0C04F2E7CF24E1C5 /* AnonymousProfile.swift */; };
@@ -30,6 +31,7 @@
 		514558FB94F144189A43DA11 /* ShareableTrackingSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C3686CF0FD603001A1188E /* ShareableTrackingSnapshot.swift */; };
 		5837BE7B1D37603512A4AB22 /* ProductEffectAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5440E2EE340E9375719CE6 /* ProductEffectAnalyzer.swift */; };
 		5B50D87F5A179ABAA8BDC039 /* AnomalyDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1269CF193108CA983B327A /* AnomalyDetectorTests.swift */; };
+		5EC8C891A95D691A017484FE /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EB3AAADA3B1652CB93A470 /* NotificationSettingsView.swift */; };
 		6169EE2C112735758342F48A /* MatchCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0524C937D6E7E6A8530533F1 /* MatchCache.swift */; };
 		696A0C9229E697F858F973E3 /* PrivacyCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CB7D333F287D00A4913F54 /* PrivacyCenterView.swift */; };
 		7BCBF3A344692ADF2781885F /* IngredientAIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98D02551ADBF9AEBDF16E24B /* IngredientAIModels.swift */; };
@@ -70,8 +72,10 @@
 		A1000082 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1000082 /* Assets.xcassets */; };
 		A1000090 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000090 /* CommunityView.swift */; };
 		A1000091 /* RomanticDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000091 /* RomanticDecorations.swift */; };
+		A1000092 /* FreshThemeModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000092 /* FreshThemeModifiers.swift */; };
 		A246142DCE242C8FB297A6E4 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25C4829B04FC75BA0C6D73F /* FeedbackView.swift */; };
 		A57E243816AA8E5F23C5E443 /* ForecastEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBAB226955E3CA24C059B2F /* ForecastEngine.swift */; };
+		A6EA712F1330C8B6CF300B92 /* ProductPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AD55FD6D5510D7F3CCFB71 /* ProductPickerView.swift */; };
 		A7AD6E91750734BAF68982F2 /* SkinTwin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A58DF68D6DDCEAF216E43D7 /* SkinTwin.swift */; };
 		A9BC1BEBDE572094393A95A9 /* AnalyticsVisualizationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26570A1CAB05DFDBA766336 /* AnalyticsVisualizationViews.swift */; };
 		B62D7EE47904AF48CF80DA3D /* MatchResultRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A5B3AE2E986F636B26C6316 /* MatchResultRecord.swift */; };
@@ -123,6 +127,7 @@
 		1A58DF68D6DDCEAF216E43D7 /* SkinTwin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwin.swift; sourceTree = "<group>"; };
 		1EA7BE94D8E3D4DEC72F5114 /* TrackingReportExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrackingReportExtensions.swift; path = ../../../SkinLab/Features/Tracking/Models/TrackingReportExtensions.swift; sourceTree = "<group>"; };
 		1EABE5E915AEE3FFBF17101A /* SkinMatcherTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinMatcherTests.swift; sourceTree = "<group>"; };
+		2935A2C595AFD0A1F5A52CBF /* TrackingComparisonView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingComparisonView.swift; sourceTree = "<group>"; };
 		29C3686CF0FD603001A1188E /* ShareableTrackingSnapshot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareableTrackingSnapshot.swift; sourceTree = "<group>"; };
 		2A1269CF193108CA983B327A /* AnomalyDetectorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnomalyDetectorTests.swift; sourceTree = "<group>"; };
 		313078DD5B48E3E27AABCCE3 /* UserIngredientPreference.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserIngredientPreference.swift; path = ../../../SkinLab/Features/Profile/Models/UserIngredientPreference.swift; sourceTree = "<group>"; };
@@ -177,11 +182,13 @@
 		B1000083 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B1000090 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
 		B1000091 /* RomanticDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomanticDecorations.swift; sourceTree = "<group>"; };
+		B1000092 /* FreshThemeModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshThemeModifiers.swift; sourceTree = "<group>"; };
 		B49424533B2007108AD154BB /* TwinMatchCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TwinMatchCard.swift; sourceTree = "<group>"; };
 		B73C2A64FBC2E667D6933AC8 /* TrackingModelsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingModelsTests.swift; sourceTree = "<group>"; };
 		C1000001 /* SkinLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkinLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimeSeriesAnalyzerTests.swift; sourceTree = "<group>"; };
 		C25C4829B04FC75BA0C6D73F /* FeedbackView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
+		C4EB3AAADA3B1652CB93A470 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
 		C536C3257C98962220CA8905 /* EnhancedIngredientResultView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EnhancedIngredientResultView.swift; path = ../../../SkinLab/Features/Products/Views/EnhancedIngredientResultView.swift; sourceTree = "<group>"; };
 		C603ED35C01BD0577344538A /* SkinLab */ = {isa = PBXFileReference; includeInIndex = 1; path = SkinLab; sourceTree = "<group>"; };
 		C71175FB49EB76BABEE91712 /* IngredientAIAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientAIAnalyzer.swift; sourceTree = "<group>"; };
@@ -197,6 +204,7 @@
 		F21C4E7B2AB0841A770CFE82 /* SkinTwinMatchView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinMatchView.swift; sourceTree = "<group>"; };
 		F4652ECD0C04F2E7CF24E1C5 /* AnonymousProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnonymousProfile.swift; sourceTree = "<group>"; };
 		F60448A1275B893A2DF30354 /* UserProfileTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserProfileTests.swift; sourceTree = "<group>"; };
+		F6AD55FD6D5510D7F3CCFB71 /* ProductPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductPickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -602,6 +610,7 @@
 				B1000051 /* TrackingView.swift */,
 				B1000052 /* TrackingDetailView.swift */,
 				D26570A1CAB05DFDBA766336 /* AnalyticsVisualizationViews.swift */,
+				2935A2C595AFD0A1F5A52CBF /* TrackingComparisonView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -656,6 +665,7 @@
 			children = (
 				B1000071 /* ProfileView.swift */,
 				55CB7D333F287D00A4913F54 /* PrivacyCenterView.swift */,
+				C4EB3AAADA3B1652CB93A470 /* NotificationSettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -698,6 +708,7 @@
 			children = (
 				B1000030 /* Colors.swift */,
 				B1000031 /* Typography.swift */,
+				B1000092 /* FreshThemeModifiers.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -706,6 +717,7 @@
 			isa = PBXGroup;
 			children = (
 				B1000091 /* RomanticDecorations.swift */,
+				F6AD55FD6D5510D7F3CCFB71 /* ProductPickerView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -896,6 +908,7 @@
 				A1000022 /* IngredientOCR.swift in Sources */,
 				A1000030 /* Colors.swift in Sources */,
 				A1000031 /* Typography.swift in Sources */,
+				A1000092 /* FreshThemeModifiers.swift in Sources */,
 				A1000091 /* RomanticDecorations.swift in Sources */,
 				A1000040 /* SkinAnalysis.swift in Sources */,
 				A1000041 /* AnalysisViewModel.swift in Sources */,
@@ -953,6 +966,9 @@
 				8C220A652E3BF84B034F0F0F /* IngredientAIAnalyzer.swift in Sources */,
 				2CE956CE8AC0B49CBC530845 /* IngredientAIInsightView.swift in Sources */,
 				696A0C9229E697F858F973E3 /* PrivacyCenterView.swift in Sources */,
+				5EC8C891A95D691A017484FE /* NotificationSettingsView.swift in Sources */,
+				17C7235C8EDC87A1D5360FB0 /* TrackingComparisonView.swift in Sources */,
+				A6EA712F1330C8B6CF300B92 /* ProductPickerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

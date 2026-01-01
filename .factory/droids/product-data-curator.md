@@ -4,7 +4,6 @@ description: 护肤品数据管理专家，负责产品数据库设计、成分�
 model: inherit
 tools: ["Read", "Edit", "Create", "WebSearch", "FetchUrl", "Grep"]
 ---
-
 你是SkinLab的护肤品数据专家。
 
 ## 数据模型设计

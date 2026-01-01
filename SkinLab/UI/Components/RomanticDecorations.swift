@@ -4,7 +4,7 @@ import SwiftUI
 
 struct FlowerPetalView: View {
     var size: CGFloat = 60
-    var color: Color = .romanticPinkLight
+    var color: Color = .freshPrimaryLight
     @State private var rotation: Double = 0
     @State private var scale: CGFloat = 1
 
@@ -28,7 +28,7 @@ struct FlowerPetalView: View {
 
 struct HeartFloatingView: View {
     var size: CGFloat = 40
-    var color: Color = .romanticPink
+    var color: Color = .freshPrimary
     @State private var offset: CGFloat = 0
     @State private var opacity: Double = 0.6
 
@@ -96,17 +96,17 @@ struct RomanticCornerDecoration: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(LinearGradient.romanticBlushGradient.opacity(0.2))
+                .fill(Color.freshPrimaryLight.opacity(0.2))
                 .frame(width: 200, height: 200)
                 .blur(radius: 60)
                 .offset(x: corner.contains(.topLeft) ? -50 : (corner.contains(.topRight) ? 50 : 0),
                        y: corner.contains(.topLeft) ? -50 : (corner.contains(.bottomLeft) ? 50 : 0))
 
-            FlowerPetalView(size: 50, color: .romanticPink)
+            FlowerPetalView(size: 50, color: .freshPrimary)
                 .offset(x: corner.contains(.topLeft) ? -40 : (corner.contains(.topRight) ? 40 : 0),
                        y: corner.contains(.topLeft) ? -40 : (corner.contains(.bottomLeft) ? 40 : 0))
 
-            HeartFloatingView(size: 30, color: .romanticPurple)
+            HeartFloatingView(size: 30, color: .freshSecondary)
                 .offset(x: corner.contains(.topLeft) ? -60 : (corner.contains(.topRight) ? 60 : 0),
                        y: corner.contains(.topLeft) ? -20 : (corner.contains(.bottomLeft) ? 20 : 0))
         }
@@ -115,20 +115,14 @@ struct RomanticCornerDecoration: View {
 
 struct SparkleRomanticView: View {
     let size: CGFloat
-    var color: Color = .romanticGold
+    var color: Color = .freshAccent
     @State private var opacity: Double = 0.4
     @State private var scale: CGFloat = 0.7
 
     var body: some View {
         Image(systemName: "sparkle")
             .font(.system(size: size))
-            .foregroundStyle(
-                LinearGradient(
-                    colors: [color, color.opacity(0.6)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+            .foregroundColor(color)
             .opacity(opacity)
             .scaleEffect(scale)
             .onAppear {
@@ -150,7 +144,7 @@ struct RomanticBorder: ViewModifier {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(
                         LinearGradient(
-                            colors: [.romanticPink.opacity(0.4), .romanticPurple.opacity(0.4), .romanticGold.opacity(0.3)],
+                            colors: [.freshPrimary.opacity(0.4), .freshSecondary.opacity(0.4), .freshAccent.opacity(0.3)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -173,7 +167,7 @@ struct RomanticGradientCard: ViewModifier {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(
                         LinearGradient(
-                            colors: [.romanticWhite.opacity(0.9), .romanticCream.opacity(0.7)],
+                            colors: [.freshWhite.opacity(0.9), .freshBackground.opacity(0.7)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
@@ -183,14 +177,14 @@ struct RomanticGradientCard: ViewModifier {
                 RoundedRectangle(cornerRadius: 20)
                     .stroke(
                         LinearGradient(
-                            colors: [.romanticPink.opacity(0.3), .romanticPurple.opacity(0.2)],
+                            colors: [.freshPrimary.opacity(0.3), .freshSecondary.opacity(0.2)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
                         lineWidth: 1
                     )
             )
-            .shadow(color: .romanticPink.opacity(0.1), radius: 16, x: 0, y: 8)
+            .shadow(color: .freshPrimary.opacity(0.1), radius: 16, x: 0, y: 8)
     }
 }
 

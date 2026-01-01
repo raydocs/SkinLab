@@ -12,7 +12,7 @@ struct TrackingDetailView: View {
     @State private var generatedReport: EnhancedTrackingReport?
     @State private var showReport = false
     @State private var reportError: String?
-    @Query private var allAnalyses: [SkinAnalysisRecord]
+    @State private var showProductPicker = false
     
     var body: some View {
         ScrollView {
@@ -51,6 +51,14 @@ struct TrackingDetailView: View {
                 }
             }
         }
+        .sheet(isPresented: $showProductPicker) {
+            ProductPickerView(
+                selectedProducts: Binding(
+                    get: { session.targetProducts },
+                    set: { session.targetProducts = $0 }
+                )
+            )
+        }
         .alert("报告生成失败", isPresented: .constant(reportError != nil)) {
             Button("确定") {
                 reportError = nil
@@ -76,19 +84,19 @@ struct TrackingDetailView: View {
             // Progress Ring
             ZStack {
                 Circle()
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 12)
-                    .frame(width: 120, height: 120)
-                
-                Circle()
                     .trim(from: 0, to: session.progress)
-                    .stroke(Color.skinLabPrimary, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                    .stroke(Color.freshPrimary, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                     .frame(width: 120, height: 120)
                     .rotationEffect(.degrees(-90))
+                    .background(
+                        Circle()
+                            .stroke(Color.freshPrimary.opacity(0.1), lineWidth: 8)
+                    )
                 
                 VStack(spacing: 4) {
                     Text("\(session.duration)")
-                        .font(.skinLabScoreLarge)
-                        .foregroundColor(.skinLabPrimary)
+                        .font(.system(size: 44, weight: .light, design: .rounded))
+                        .foregroundColor(.freshPrimary)
                     Text("/ 28天")
                         .font(.skinLabCaption)
                         .foregroundColor(.skinLabSubtext)
@@ -125,7 +133,7 @@ struct TrackingDetailView: View {
                 }
             }
         }
-        .skinLabCard()
+        .freshGlassCard()
     }
     
     // MARK: - Timeline Section
@@ -146,7 +154,7 @@ struct TrackingDetailView: View {
                     
                     if day < 28 {
                         Rectangle()
-                            .fill(isCompleted(day: day) ? Color.skinLabPrimary : Color.gray.opacity(0.3))
+                            .fill(isCompleted(day: day) ? Color.freshPrimary : Color.gray.opacity(0.2))
                             .frame(height: 2)
                             .frame(maxWidth: .infinity)
                     }
@@ -158,27 +166,34 @@ struct TrackingDetailView: View {
                 CheckInRow(checkIn: checkIn)
             }
         }
-        .skinLabCard()
+        .freshGlassCard()
     }
     
     private func timelineNode(for day: Int) -> some View {
         let completed = isCompleted(day: day)
         let current = session.duration == day
         
-        return Circle()
-            .fill(completed ? Color.skinLabPrimary : (current ? Color.skinLabAccent : Color.gray.opacity(0.3)))
-            .frame(width: 32, height: 32)
-            .overlay {
-                if completed {
-                    Image(systemName: "checkmark")
-                        .font(.caption)
-                        .foregroundColor(.white)
-                } else if current {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 12, height: 12)
-                }
-            }
+        if completed {
+            return AnyView(
+                Circle()
+                    .fill(Color.freshPrimary)
+                    .frame(width: 24, height: 24)
+                    .overlay(Image(systemName: "checkmark").font(.caption2).foregroundColor(.white))
+            )
+        } else if current {
+            return AnyView(
+                Circle()
+                    .stroke(Color.freshPrimary, lineWidth: 2)
+                    .frame(width: 24, height: 24)
+                    .overlay(Circle().fill(Color.freshPrimary).frame(width: 12, height: 12))
+            )
+        } else {
+            return AnyView(
+                Circle()
+                    .fill(Color.gray.opacity(0.1))
+                    .frame(width: 20, height: 20)
+            )
+        }
     }
     
     private func isCompleted(day: Int) -> Bool {
@@ -195,10 +210,10 @@ struct TrackingDetailView: View {
                 Spacer()
                 
                 Button("添加") {
-                    // TODO: Add product
+                    showProductPicker = true
                 }
                 .font(.skinLabSubheadline)
-                .foregroundColor(.skinLabPrimary)
+                .foregroundColor(.freshPrimary)
             }
             
             if session.targetProducts.isEmpty {
@@ -222,7 +237,7 @@ struct TrackingDetailView: View {
                 }
             }
         }
-        .skinLabCard()
+        .freshGlassCard()
     }
     
     // MARK: - Actions Section
@@ -232,24 +247,18 @@ struct TrackingDetailView: View {
                 Button {
                     showCamera = true
                 } label: {
-                    HStack {
-                        Image(systemName: "camera.fill")
-                        Text("记录 Day \(nextDay)")
-                    }
+                    Text("记录第 \(nextDay) 天")
                 }
-                .buttonStyle(SkinLabPrimaryButtonStyle())
+                .buttonStyle(FreshGlassButton(color: .freshPrimary))
             }
             
             if session.duration >= 28 && session.status == .active {
                 Button {
                     completeSession()
                 } label: {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                        Text("完成追踪")
-                    }
+                    Text("完成追踪")
                 }
-                .buttonStyle(SkinLabPrimaryButtonStyle())
+                .buttonStyle(FreshGlassButton(color: .freshPrimary))
             }
             
             Button {
@@ -257,17 +266,9 @@ struct TrackingDetailView: View {
                     await generateReport()
                 }
             } label: {
-                HStack {
-                    if isGeneratingReport {
-                        ProgressView()
-                            .tint(.skinLabPrimary)
-                    } else {
-                        Image(systemName: "doc.text")
-                    }
-                    Text(isGeneratingReport ? "生成中..." : "生成报告")
-                }
+                Text(isGeneratingReport ? "生成中..." : "生成报告")
             }
-            .buttonStyle(SkinLabSecondaryButtonStyle())
+            .buttonStyle(FreshSecondaryButton())
             .disabled(isGeneratingReport || session.checkIns.count < 2)
         }
     }
@@ -278,15 +279,33 @@ struct TrackingDetailView: View {
         reportError = nil
         
         do {
-            // Convert SkinAnalysisRecord to SkinAnalysis and create dictionary
+            // 收集当前 session 所有 checkIn 的 analysisId
+            let analysisIds = session.checkIns.compactMap { $0.analysisId }
+            
+            guard analysisIds.count >= 2 else {
+                await MainActor.run {
+                    reportError = "需要至少2次打卡记录才能生成报告"
+                    isGeneratingReport = false
+                }
+                return
+            }
+            
+            // 只查询与此 session 相关的分析记录
+            let predicate = #Predicate<SkinAnalysisRecord> { record in
+                analysisIds.contains(record.id)
+            }
+            let descriptor = FetchDescriptor<SkinAnalysisRecord>(predicate: predicate)
+            let relevantRecords = try modelContext.fetch(descriptor)
+            
+            // 转换为 SkinAnalysis 字典
             var analysisDict: [UUID: SkinAnalysis] = [:]
-            for record in allAnalyses {
+            for record in relevantRecords {
                 if let analysis = record.toAnalysis() {
                     analysisDict[record.id] = analysis
                 }
             }
             
-            // Generate report
+            // 生成报告
             let generator = TrackingReportGenerator()
             if let report = await generator.generateReport(
                 session: session,
@@ -300,7 +319,7 @@ struct TrackingDetailView: View {
                 }
             } else {
                 await MainActor.run {
-                    reportError = "需要至少2次打卡记录才能生成报告"
+                    reportError = "生成报告失败"
                     isGeneratingReport = false
                 }
             }
@@ -381,6 +400,7 @@ struct CheckInView: View {
     @State private var feeling: CheckIn.Feeling = .same
     @State private var notes: String = ""
     @State private var isAnalyzing = false
+    @State private var errorMessage: String?
     
     var body: some View {
         NavigationStack {
@@ -458,6 +478,13 @@ struct CheckInView: View {
                 }
             }
         }
+        .alert("保存失败", isPresented: .constant(errorMessage != nil)) {
+            Button("确定") { errorMessage = nil }
+        } message: {
+            if let errorMessage = errorMessage {
+                Text(errorMessage)
+            }
+        }
     }
     
     private func saveCheckIn() {
@@ -502,9 +529,7 @@ struct CheckInView: View {
             } catch {
                 await MainActor.run {
                     isAnalyzing = false
-                    // TODO: Show error alert to user
-                    print("分析失败: \(error.localizedDescription)")
-                    dismiss()
+                    errorMessage = "分析失败: \(error.localizedDescription)"
                 }
             }
         }

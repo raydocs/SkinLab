@@ -9,6 +9,7 @@ struct TrackingReportView: View {
     @State private var shareImage: UIImage?
 
     @State private var showComparison = false
+    @State private var showComparisonViewer = false
     @State private var showProductEffectiveness = false
     @State private var showDimensionChanges = false
     @State private var showRecommendations = false
@@ -92,6 +93,16 @@ struct TrackingReportView: View {
                 ShareSheet(items: [image])
             }
         }
+        .sheet(isPresented: $showComparisonViewer) {
+            NavigationStack {
+                TrackingComparisonView(
+                    beforePath: report.beforePhotoPath,
+                    afterPath: report.afterPhotoPath,
+                    beforeAnalysisId: report.beforeAnalysisId,
+                    afterAnalysisId: report.afterAnalysisId
+                )
+            }
+        }
     }
     
     // MARK: - Disclosure Style
@@ -170,31 +181,43 @@ struct TrackingReportView: View {
     
     // MARK: - Comparison Section
     private var comparisonSection: some View {
-        // TODO: Implement TrackingComparisonView for detailed comparison
-        HStack(spacing: 12) {
-            if let beforePath = report.beforePhotoPath,
-               let beforeImage = loadImage(from: beforePath) {
-                Image(uiImage: beforeImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 80, height: 80)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+        VStack(spacing: 16) {
+            HStack(spacing: 12) {
+                if let beforePath = report.beforePhotoPath,
+                   let beforeImage = loadImage(from: beforePath) {
+                    Image(uiImage: beforeImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+
+                Image(systemName: "arrow.right")
+                    .font(.title2)
+                    .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
+
+                if let afterPath = report.afterPhotoPath,
+                   let afterImage = loadImage(from: afterPath) {
+                    Image(uiImage: afterImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+
+                Spacer()
             }
 
-            Image(systemName: "arrow.right")
-                .font(.title2)
-                .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
-
-            if let afterPath = report.afterPhotoPath,
-               let afterImage = loadImage(from: afterPath) {
-                Image(uiImage: afterImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 80, height: 80)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            Button {
+                showComparisonViewer = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "rectangle.portrait.on.rectangle.portrait")
+                    Text("查看详细对比")
+                }
+                .font(.skinLabSubheadline)
+                .foregroundColor(.skinLabPrimary)
             }
-
-            Spacer()
         }
         .padding(.vertical, 4)
     }

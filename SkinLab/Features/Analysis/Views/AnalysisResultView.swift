@@ -3,12 +3,14 @@ import SwiftData
 
 struct AnalysisResultView: View {
     let analysis: SkinAnalysis
+    let onRetake: () -> Void
     @State private var selectedTab = 0
     @State private var animateScore = false
     @State private var isGeneratingRoutine = false
     @State private var generatedRoutine: SkincareRoutine?
     @State private var showRoutine = false
     @State private var routineError: String?
+    @State private var showRoutineError = false
     @State private var showNewTracking = false
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
@@ -29,24 +31,15 @@ struct AnalysisResultView: View {
             .map { $0.ingredientName }
     }
     
+    init(analysis: SkinAnalysis, onRetake: @escaping () -> Void = {}) {
+        self.analysis = analysis
+        self.onRetake = onRetake
+    }
+
     var body: some View {
         ZStack {
             // 背景渐变
-            Color.skinLabBackground.ignoresSafeArea()
-            
-            Circle()
-                .fill(LinearGradient.skinLabRoseGradient)
-                .frame(width: 250, height: 250)
-                .blur(radius: 100)
-                .offset(x: -80, y: -300)
-                .opacity(0.4)
-            
-            Circle()
-                .fill(LinearGradient.skinLabLavenderGradient)
-                .frame(width: 200, height: 200)
-                .blur(radius: 80)
-                .offset(x: 120, y: 200)
-                .opacity(0.3)
+            FreshBackgroundMesh()
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
@@ -67,7 +60,7 @@ struct AnalysisResultView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 HStack(spacing: 6) {
-                    Image(systemName: "sparkles")
+                    Image(systemName: "wand.and.stars")
                         .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
                     Text("分析结果")
                         .font(.skinLabHeadline)
@@ -84,6 +77,13 @@ struct AnalysisResultView: View {
             if let routine = generatedRoutine {
                 NavigationStack {
                     RoutineView(routine: routine)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("完成") {
+                                    showRoutine = false
+                                }
+                            }
+                        }
                 }
             }
         }
@@ -105,14 +105,10 @@ struct AnalysisResultView: View {
                 } label: {
                     Text(["问题", "区域", "建议"][index])
                         .font(.skinLabHeadline)
-                        .foregroundColor(selectedTab == index ? .white : .skinLabSubtext)
+                        .foregroundColor(selectedTab == index ? .freshPrimary : .skinLabSubtext)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(
-                            selectedTab == index
-                                ? LinearGradient.skinLabPrimaryGradient
-                                : LinearGradient(colors: [.clear], startPoint: .leading, endPoint: .trailing)
-                        )
+                        .background(selectedTab == index ? Color.freshPrimary.opacity(0.1) : Color.clear)
                         .cornerRadius(12)
                 }
             }
@@ -142,23 +138,16 @@ struct AnalysisResultView: View {
     private var scoreHeader: some View {
         VStack(spacing: 16) {
             ZStack {
-                // 装饰闪光
-                SparkleView(size: 14)
-                    .offset(x: 70, y: -60)
-                
-                SparkleView(size: 10)
-                    .offset(x: -75, y: 50)
-                
                 ScoreRing(score: animateScore ? analysis.overallScore : 0, size: 150)
             }
             
             // 分数评语
             Text(scoreComment)
                 .font(.skinLabSubheadline)
-                .foregroundColor(.skinLabPrimary)
+                .foregroundColor(.freshPrimaryDark)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(Color.skinLabPrimary.opacity(0.1))
+                .background(Color.freshPrimary.opacity(0.1))
                 .cornerRadius(20)
             
             HStack(spacing: 32) {
@@ -172,9 +161,7 @@ struct AnalysisResultView: View {
         }
         .padding(.vertical, 20)
         .padding(.horizontal)
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(24)
-        .skinLabSoftShadow(radius: 15, y: 8)
+        .freshGlassCard()
     }
     
     private var scoreComment: String {
@@ -217,6 +204,7 @@ struct AnalysisResultView: View {
         } catch {
             await MainActor.run {
                 routineError = error.localizedDescription
+                showRoutineError = true
                 isGeneratingRoutine = false
             }
         }
@@ -263,12 +251,12 @@ struct AnalysisResultView: View {
         HStack(spacing: 10) {
             ZStack {
                 Circle()
-                    .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.2))
-                    .frame(width: 36, height: 36)
+                    .fill(Color.freshPrimary.opacity(0.1))
+                    .frame(width: 40, height: 40)
                 
                 Image(systemName: analysis.skinType.icon)
                     .font(.system(size: 16))
-                    .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
+                    .foregroundStyle(Color.freshPrimary)
             }
             
             VStack(alignment: .leading, spacing: 2) {
@@ -287,9 +275,7 @@ struct AnalysisResultView: View {
                 .foregroundColor(.skinLabSubtext)
         }
         .padding()
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(16)
-        .skinLabSoftShadow()
+        .freshGlassCard()
     }
 
     // MARK: - Confidence Card
@@ -358,7 +344,7 @@ struct AnalysisResultView: View {
                         // Suggest retake if confidence is low
                         if analysis.confidenceScore < 70 {
                             Button {
-                                // TODO: Navigate to camera view
+                                onRetake()
                             } label: {
                                 HStack {
                                     Image(systemName: "camera.fill")
@@ -412,12 +398,12 @@ struct AnalysisResultView: View {
                 HStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(LinearGradient.skinLabLavenderGradient.opacity(0.2))
+                            .fill(Color.freshSecondary.opacity(0.1))
                             .frame(width: 44, height: 44)
                         
                         Image(systemName: "chart.line.uptrend.xyaxis")
                             .font(.system(size: 20))
-                            .foregroundStyle(LinearGradient.skinLabLavenderGradient)
+                            .foregroundStyle(Color.freshSecondary)
                     }
                     
                     VStack(alignment: .leading, spacing: 3) {
@@ -476,18 +462,12 @@ struct AnalysisResultView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 13)
-                    .background(LinearGradient.skinLabLavenderGradient)
+                    .background(Color.freshSecondary)
                     .cornerRadius(14)
                 }
             }
             .padding()
-            .background(Color.skinLabCardBackground)
-            .cornerRadius(16)
-            .skinLabSoftShadow()
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(LinearGradient.skinLabLavenderGradient.opacity(0.3), lineWidth: 1.5)
-            )
+            .freshGlassCard()
         }
     }
 
@@ -516,7 +496,7 @@ struct AnalysisResultView: View {
                     }
                 }
             }
-            .buttonStyle(SkinLabPrimaryButtonStyle())
+            .buttonStyle(FreshGlassButton(color: .freshPrimary))
             .disabled(isGeneratingRoutine)
             
             NavigationLink {
@@ -531,7 +511,7 @@ struct AnalysisResultView: View {
                         .foregroundColor(.white.opacity(0.7))
                 }
             }
-            .buttonStyle(SkinLabPrimaryButtonStyle())
+            .buttonStyle(FreshGlassButton(color: .freshSecondary))
 
             NavigationLink {
                 ProductsView()
@@ -545,24 +525,11 @@ struct AnalysisResultView: View {
                         .foregroundColor(Color.skinLabPrimary.opacity(0.7))
                 }
             }
-            .buttonStyle(SkinLabSecondaryButtonStyle())
+            .buttonStyle(FreshSecondaryButton())
         }
-        .sheet(isPresented: $showRoutine) {
-            if let routine = generatedRoutine {
-                NavigationStack {
-                    RoutineView(routine: routine)
-                        .toolbar {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("完成") {
-                                    showRoutine = false
-                                }
-                            }
-                        }
-                }
-            }
-        }
-        .alert("生成失败", isPresented: .constant(routineError != nil)) {
+        .alert("生成失败", isPresented: $showRoutineError) {
             Button("确定") {
+                showRoutineError = false
                 routineError = nil
             }
         } message: {
@@ -584,9 +551,7 @@ struct AnalysisResultView: View {
             IssueRow(name: "纹理", score: analysis.issues.texture, icon: "square.grid.3x3")
         }
         .padding()
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(20)
-        .skinLabSoftShadow()
+        .freshGlassCard()
     }
     
     // MARK: - Regions Section
@@ -599,9 +564,7 @@ struct AnalysisResultView: View {
             RegionRow(name: "下巴", score: analysis.regions.chin)
         }
         .padding()
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(20)
-        .skinLabSoftShadow()
+        .freshGlassCard()
     }
     
     // MARK: - Recommendations Section
@@ -611,7 +574,7 @@ struct AnalysisResultView: View {
                 HStack(alignment: .top, spacing: 14) {
                     ZStack {
                         Circle()
-                            .fill(LinearGradient.skinLabPrimaryGradient)
+                            .fill(Color.freshPrimary)
                             .frame(width: 32, height: 32)
                         
                         Text("\(index + 1)")
@@ -632,9 +595,7 @@ struct AnalysisResultView: View {
             }
         }
         .padding()
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(20)
-        .skinLabSoftShadow()
+        .freshGlassCard()
     }
 }
 
@@ -649,17 +610,15 @@ struct ScoreRing: View {
     
     var body: some View {
         ZStack {
-            // 外层装饰环
             Circle()
-                .stroke(color.opacity(0.1), lineWidth: 20)
+                .stroke(color.opacity(0.1), lineWidth: 10)
                 .frame(width: size, height: size)
             
-            // 进度环
             Circle()
                 .trim(from: 0, to: CGFloat(score) / 100)
                 .stroke(
-                    LinearGradient(colors: [color, color.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing),
-                    style: StrokeStyle(lineWidth: 14, lineCap: .round)
+                    color,
+                    style: StrokeStyle(lineWidth: 10, lineCap: .round)
                 )
                 .frame(width: size, height: size)
                 .rotationEffect(.degrees(-90))
@@ -667,8 +626,8 @@ struct ScoreRing: View {
             
             VStack(spacing: 2) {
                 Text("\(score)")
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
-                    .foregroundStyle(LinearGradient(colors: [color, color.opacity(0.8)], startPoint: .top, endPoint: .bottom))
+                    .font(.system(size: 48, weight: .light, design: .rounded))
+                    .foregroundStyle(color)
                 
                 Text("综合评分")
                     .font(.skinLabCaption)
@@ -689,7 +648,7 @@ struct StatItem: View {
             if !icon.isEmpty {
                 Image(systemName: icon)
                     .font(.system(size: 14))
-                    .foregroundColor(.skinLabSecondary)
+                    .foregroundColor(.freshSecondary)
             }
             
             Text(value)

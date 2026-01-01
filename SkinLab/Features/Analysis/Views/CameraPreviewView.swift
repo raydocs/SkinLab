@@ -188,7 +188,7 @@ struct CameraPreviewView: View {
             
             // Flip Camera (placeholder)
             Button {
-                // TODO: Implement camera flip
+                camera.toggleCamera()
             } label: {
                 Image(systemName: "camera.rotate")
                     .font(.title2)

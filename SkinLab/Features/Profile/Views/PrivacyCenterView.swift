@@ -22,11 +22,16 @@ struct PrivacyCenterView: View {
     @State private var showConsentSheet = false
     @State private var showDataExportSheet = false
     @State private var showDeleteAlert = false
+    private let initialAction: PrivacyCenterInitialAction?
 
     private var profile: UserProfile? { profiles.first }
 
     private var currentConsent: ConsentLevel {
         ConsentLevel(rawValue: consentLevel) ?? .anonymous
+    }
+
+    init(initialAction: PrivacyCenterInitialAction? = nil) {
+        self.initialAction = initialAction
     }
 
     var body: some View {
@@ -74,10 +79,42 @@ struct PrivacyCenterView: View {
             .alert("删除所有数据", isPresented: $showDeleteAlert) {
                 Button("取消", role: .cancel) { }
                 Button("删除", role: .destructive) {
-                    // TODO: Implement data deletion
+                    deleteAllData()
                 }
             } message: {
                 Text("此操作将删除所有分析记录、追踪数据和个人资料。此操作不可恢复。")
+            }
+            .onAppear {
+                if let action = initialAction {
+                    switch action {
+                    case .exportData:
+                        showDataExportSheet = true
+                    case .deleteAllData:
+                        showDeleteAlert = true
+                    }
+                }
+            }
+        }
+    }
+
+    private func deleteAllData() {
+        deleteAll(UserProfile.self)
+        deleteAll(SkinAnalysisRecord.self)
+        deleteAll(TrackingSession.self)
+        deleteAll(ProductRecord.self)
+        deleteAll(SkincareRoutineRecord.self)
+        deleteAll(IngredientExposureRecord.self)
+        deleteAll(UserIngredientPreference.self)
+        deleteAll(MatchResultRecord.self)
+        deleteAll(UserFeedbackRecord.self)
+        try? modelContext.save()
+    }
+
+    private func deleteAll<T: PersistentModel>(_ type: T.Type) {
+        let descriptor = FetchDescriptor<T>()
+        if let items = try? modelContext.fetch(descriptor) {
+            for item in items {
+                modelContext.delete(item)
             }
         }
     }
@@ -454,6 +491,11 @@ struct DataFlowRow: View {
     }
 }
 
+enum PrivacyCenterInitialAction {
+    case exportData
+    case deleteAllData
+}
+
 // MARK: - Consent Level Sheet
 struct ConsentLevelSheet: View {
     @Environment(\.dismiss) private var dismiss
@@ -530,8 +572,17 @@ struct ConsentLevelSheet: View {
 // MARK: - Data Export View
 struct DataExportView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query private var profiles: [UserProfile]
+    @Query private var analyses: [SkinAnalysisRecord]
+    @Query private var sessions: [TrackingSession]
+    @Query private var products: [ProductRecord]
+
     @State private var isExporting = false
     @State private var exportProgress: Double = 0.0
+    @State private var exportURL: URL?
+    @State private var showShareSheet = false
+    @State private var exportError: String?
 
     var body: some View {
         NavigationStack {
@@ -596,20 +647,193 @@ struct DataExportView: View {
             .navigationTitle("数据导出")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .sheet(isPresented: $showShareSheet) {
+            if let url = exportURL {
+                ShareSheet(items: [url])
+            }
+        }
+        .alert("导出失败", isPresented: .constant(exportError != nil)) {
+            Button("确定") { exportError = nil }
+        } message: {
+            if let exportError = exportError {
+                Text(exportError)
+            }
+        }
     }
 
     private func startExport() {
+        guard !isExporting else { return }
         isExporting = true
-        // TODO: Implement actual data export
-        // Simulate export progress
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            exportProgress += 0.1
-            if exportProgress >= 1.0 {
-                timer.invalidate()
+        exportProgress = 0.1
+
+        Task { @MainActor in
+            do {
+                let payload = ExportPayload(
+                    exportedAt: Date(),
+                    profiles: profiles.map(UserProfileExport.init),
+                    analyses: analyses.compactMap(SkinAnalysisRecordExport.init),
+                    sessions: sessions.map(TrackingSessionExport.init),
+                    products: products.map(ProductRecordExport.init)
+                )
+
+                exportProgress = 0.6
+                let data = try JSONEncoder().encode(payload)
+                exportProgress = 0.8
+
+                let fileURL = FileManager.default.temporaryDirectory
+                    .appendingPathComponent("SkinLab_Data_Export_\\(Int(Date().timeIntervalSince1970)).json")
+                try data.write(to: fileURL, options: .atomic)
+                exportURL = fileURL
+                exportProgress = 1.0
+                isExporting = false
+                showShareSheet = true
+            } catch {
+                exportError = error.localizedDescription
                 isExporting = false
                 exportProgress = 0.0
-                dismiss()
             }
+        }
+    }
+
+    private struct ExportPayload: Codable {
+        let exportedAt: Date
+        let profiles: [UserProfileExport]
+        let analyses: [SkinAnalysisRecordExport]
+        let sessions: [TrackingSessionExport]
+        let products: [ProductRecordExport]
+    }
+
+    private struct UserProfileExport: Codable {
+        let id: UUID
+        let skinTypeRaw: String?
+        let ageRangeRaw: String
+        let concernsRaw: [String]
+        let allergies: [String]
+        let gender: String?
+        let region: String?
+        let climateRaw: String?
+        let uvExposureRaw: String?
+        let pregnancyStatusRaw: String
+        let activePrescriptions: [String]
+        let preferredTextureRaw: String?
+        let fragranceToleranceRaw: String
+        let budgetLevelRaw: String
+        let routinePreferencesData: Data?
+        let fingerprintData: Data?
+        let fingerprintUpdatedAt: Date?
+        let consentLevelRaw: String
+        let consentUpdatedAt: Date?
+        let consentVersion: String?
+        let anonymousProfileData: Data?
+        let lastMatchedAt: Date?
+        let createdAt: Date
+        let updatedAt: Date
+
+        init(from profile: UserProfile) {
+            id = profile.id
+            skinTypeRaw = profile.skinTypeRaw
+            ageRangeRaw = profile.ageRangeRaw
+            concernsRaw = profile.concernsRaw
+            allergies = profile.allergies
+            gender = profile.gender
+            region = profile.region
+            climateRaw = profile.climateRaw
+            uvExposureRaw = profile.uvExposureRaw
+            pregnancyStatusRaw = profile.pregnancyStatusRaw
+            activePrescriptions = profile.activePrescriptions
+            preferredTextureRaw = profile.preferredTextureRaw
+            fragranceToleranceRaw = profile.fragranceToleranceRaw
+            budgetLevelRaw = profile.budgetLevelRaw
+            routinePreferencesData = profile.routinePreferencesData
+            fingerprintData = profile.fingerprintData
+            fingerprintUpdatedAt = profile.fingerprintUpdatedAt
+            consentLevelRaw = profile.consentLevelRaw
+            consentUpdatedAt = profile.consentUpdatedAt
+            consentVersion = profile.consentVersion
+            anonymousProfileData = profile.anonymousProfileData
+            lastMatchedAt = profile.lastMatchedAt
+            createdAt = profile.createdAt
+            updatedAt = profile.updatedAt
+        }
+    }
+
+    private struct SkinAnalysisRecordExport: Codable {
+        let id: UUID
+        let skinType: String
+        let skinAge: Int
+        let overallScore: Int
+        let issues: IssueScores?
+        let regions: RegionScores?
+        let recommendations: [String]
+        let analyzedAt: Date
+        let photoPath: String?
+        let confidenceScore: Int
+        let imageQuality: ImageQuality?
+
+        init?(from record: SkinAnalysisRecord) {
+            id = record.id
+            skinType = record.skinType
+            skinAge = record.skinAge
+            overallScore = record.overallScore
+            issues = record.issuesData.flatMap { try? JSONDecoder().decode(IssueScores.self, from: $0) }
+            regions = record.regionsData.flatMap { try? JSONDecoder().decode(RegionScores.self, from: $0) }
+            recommendations = record.recommendations
+            analyzedAt = record.analyzedAt
+            photoPath = record.photoPath
+            confidenceScore = record.confidenceScore
+            imageQuality = record.qualityData.flatMap { try? JSONDecoder().decode(ImageQuality.self, from: $0) }
+        }
+    }
+
+    private struct TrackingSessionExport: Codable {
+        let id: UUID
+        let startDate: Date
+        let endDate: Date?
+        let statusRaw: String
+        let targetProducts: [String]
+        let checkIns: [CheckIn]
+        let notes: String?
+
+        init(from session: TrackingSession) {
+            id = session.id
+            startDate = session.startDate
+            endDate = session.endDate
+            statusRaw = session.statusRaw
+            targetProducts = session.targetProducts
+            checkIns = session.checkIns
+            notes = session.notes
+        }
+    }
+
+    private struct ProductRecordExport: Codable {
+        let id: UUID
+        let name: String
+        let brand: String
+        let categoryRaw: String
+        let ingredients: [Ingredient]?
+        let skinTypesRaw: [String]
+        let concernsRaw: [String]
+        let priceRangeRaw: String
+        let imageUrl: String?
+        let effectiveRate: Double?
+        let sampleSize: Int?
+        let averageRating: Double?
+        let updatedAt: Date
+
+        init(from record: ProductRecord) {
+            id = record.id
+            name = record.name
+            brand = record.brand
+            categoryRaw = record.categoryRaw
+            ingredients = record.ingredientsData.flatMap { try? JSONDecoder().decode([Ingredient].self, from: $0) }
+            skinTypesRaw = record.skinTypesRaw
+            concernsRaw = record.concernsRaw
+            priceRangeRaw = record.priceRangeRaw
+            imageUrl = record.imageUrl
+            effectiveRate = record.effectiveRate
+            sampleSize = record.sampleSize
+            averageRating = record.averageRating
+            updatedAt = record.updatedAt
         }
     }
 }

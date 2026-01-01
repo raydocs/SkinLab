@@ -69,9 +69,16 @@ struct SkinLabPrimaryButtonStyle: ButtonStyle {
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 56)
-            .background(LinearGradient.romanticBlushGradient.opacity(configuration.isPressed ? 0.85 : 1.0))
+            .background(
+                LinearGradient(
+                    colors: [Color.freshPrimary, Color.freshPrimary.opacity(0.8)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .opacity(configuration.isPressed ? 0.85 : 1.0)
+            )
             .cornerRadius(22)
-            .shadow(color: Color.romanticPink.opacity(0.4), radius: configuration.isPressed ? 6 : 14, x: 0, y: configuration.isPressed ? 3 : 7)
+            .shadow(color: Color.freshPrimary.opacity(0.25), radius: configuration.isPressed ? 6 : 14, x: 0, y: configuration.isPressed ? 3 : 7)
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.65), value: configuration.isPressed)
     }
@@ -81,33 +88,16 @@ struct SkinLabSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.skinLabHeadline)
-            .foregroundStyle(
-                LinearGradient(
-                    colors: [.romanticPink, .romanticPurple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
+            .foregroundColor(.freshPrimary)
             .frame(maxWidth: .infinity)
             .frame(height: 56)
             .background(
-                LinearGradient(
-                    colors: [.romanticPink.opacity(0.12), .romanticPurple.opacity(0.08)],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ).opacity(configuration.isPressed ? 0.9 : 1.0)
+                Color.white.opacity(0.6)
             )
             .cornerRadius(22)
             .overlay(
                 RoundedRectangle(cornerRadius: 22)
-                    .stroke(
-                        LinearGradient(
-                            colors: [.romanticPink.opacity(0.3), .romanticPurple.opacity(0.2)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ),
-                        lineWidth: 1.5
-                    )
+                    .stroke(Color.black.opacity(0.05), lineWidth: 1)
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.65), value: configuration.isPressed)
@@ -124,7 +114,7 @@ struct SkinLabGradientButtonStyle: ButtonStyle {
             .frame(height: 56)
             .background(gradient.opacity(configuration.isPressed ? 0.85 : 1.0))
             .cornerRadius(22)
-            .shadow(color: Color.romanticPink.opacity(0.45), radius: configuration.isPressed ? 6 : 14, x: 0, y: configuration.isPressed ? 3 : 7)
+            .shadow(color: Color.freshPrimary.opacity(0.25), radius: configuration.isPressed ? 6 : 14, x: 0, y: configuration.isPressed ? 3 : 7)
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.65), value: configuration.isPressed)
     }
@@ -132,27 +122,17 @@ struct SkinLabGradientButtonStyle: ButtonStyle {
 
 struct SkinLabIconButtonStyle: ButtonStyle {
     var size: CGFloat = 52
-    var backgroundColor: Color = Color.romanticPink.opacity(0.12)
+    var backgroundColor: Color = Color.freshPrimary.opacity(0.1)
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 20, weight: .medium))
-            .foregroundStyle(
-                LinearGradient(
-                    colors: [.romanticPink, .romanticPurple],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+            .foregroundColor(.freshPrimary)
             .frame(width: size, height: size)
             .background(
-                LinearGradient(
-                    colors: [backgroundColor, backgroundColor.opacity(0.7)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                backgroundColor
             )
             .clipShape(Circle())
-            .shadow(color: Color.romanticPink.opacity(0.2), radius: 10, y: 5)
+            .shadow(color: Color.freshPrimary.opacity(0.1), radius: 10, y: 5)
             .scaleEffect(configuration.isPressed ? 0.92 : 1.0)
             .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
     }
@@ -165,22 +145,22 @@ extension View {
     }
 
     func skinLabGlassCard() -> some View {
-        modifier(SkinLabGlassCardStyle())
+        modifier(FreshGlassCard())
     }
 
     func skinLabPremiumCard() -> some View {
-        modifier(SkinLabPremiumCardStyle())
+        modifier(FreshGlassCard())
     }
 
     func skinLabSoftShadow(radius: CGFloat = 12, y: CGFloat = 6) -> some View {
-        shadow(color: Color.romanticPink.opacity(0.08), radius: radius, x: 0, y: y)
+        shadow(color: Color.black.opacity(0.04), radius: radius, x: 0, y: y)
     }
 
     func skinLabGradientBorder(lineWidth: CGFloat = 2, cornerRadius: CGFloat = 20) -> some View {
         overlay(
             RoundedRectangle(cornerRadius: cornerRadius)
                 .stroke(
-                    LinearGradient.romanticBlushGradient,
+                    Color.freshPrimary.opacity(0.3),
                     lineWidth: lineWidth
                 )
         )
@@ -272,30 +252,23 @@ struct PremiumScoreRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(color.opacity(0.12), lineWidth: lineWidth)
+                .stroke(color.opacity(0.1), lineWidth: lineWidth)
                 .frame(width: size, height: size)
 
             Circle()
                 .trim(from: 0, to: CGFloat(score) / 100)
                 .stroke(
-                    AngularGradient(colors: [color, color.opacity(0.6), color], center: .center, startAngle: .degrees(0), endAngle: .degrees(360)),
+                    color,
                     style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                 )
                 .frame(width: size, height: size)
                 .rotationEffect(.degrees(-90))
                 .animation(.easeInOut(duration: 1.4), value: score)
-                .shadow(color: color.opacity(0.3), radius: 8, x: 0, y: 0)
 
             VStack(spacing: 4) {
                 Text("\(score)")
-                    .font(.system(size: size * 0.4, weight: .black, design: .rounded))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [color, color.opacity(0.8)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                    .font(.system(size: size * 0.45, weight: .light, design: .rounded))
+                    .foregroundStyle(color)
                 Text("综合评分")
                     .font(.system(size: size * 0.1, weight: .medium, design: .rounded))
                     .foregroundColor(.skinLabSubtext)

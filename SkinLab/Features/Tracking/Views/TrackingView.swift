@@ -377,6 +377,7 @@ struct NewTrackingSessionView: View {
     
     @State private var selectedProducts: [String] = []
     @State private var notes: String = ""
+    @State private var showProductPicker = false
     
     var body: some View {
         NavigationStack {
@@ -461,8 +462,22 @@ struct NewTrackingSessionView: View {
                                 .font(.skinLabCaption)
                                 .foregroundColor(.skinLabSubtext)
                             
+                            if !selectedProducts.isEmpty {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    ForEach(selectedProducts, id: \.self) { product in
+                                        HStack(spacing: 8) {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(.skinLabPrimary)
+                                            Text(product)
+                                                .font(.skinLabSubheadline)
+                                                .foregroundColor(.skinLabText)
+                                        }
+                                    }
+                                }
+                            }
+
                             Button {
-                                // TODO: Add product selector
+                                showProductPicker = true
                             } label: {
                                 HStack(spacing: 8) {
                                     ZStack {
@@ -535,6 +550,9 @@ struct NewTrackingSessionView: View {
                     Button("取消") { dismiss() }
                         .foregroundColor(.skinLabPrimary)
                 }
+            }
+            .sheet(isPresented: $showProductPicker) {
+                ProductPickerView(selectedProducts: $selectedProducts)
             }
         }
     }

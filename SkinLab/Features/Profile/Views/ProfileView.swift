@@ -6,6 +6,8 @@ struct ProfileView: View {
     @Query private var profiles: [UserProfile]
     @State private var showEditProfile = false
     @State private var showPrivacyCenter = false
+    @State private var privacyInitialAction: PrivacyCenterInitialAction?
+    @State private var showNotificationSettings = false
 
     private var profile: UserProfile? { profiles.first }
     
@@ -58,8 +60,14 @@ struct ProfileView: View {
             .sheet(isPresented: $showEditProfile) {
                 EditProfileView()
             }
+            .sheet(isPresented: $showNotificationSettings) {
+                NotificationSettingsView()
+            }
             .sheet(isPresented: $showPrivacyCenter) {
-                PrivacyCenterView()
+                PrivacyCenterView(initialAction: privacyInitialAction)
+                    .onDisappear {
+                        privacyInitialAction = nil
+                    }
             }
         }
     }
@@ -272,7 +280,7 @@ struct ProfileView: View {
             
             VStack(spacing: 0) {
                 Button {
-                    // TODO: Implement notification settings
+                    showNotificationSettings = true
                 } label: {
                     SettingsRow(icon: "bell.fill", title: "通知设置", iconColor: .skinLabPrimary)
                 }
@@ -281,6 +289,7 @@ struct ProfileView: View {
 
                 Button {
                     showPrivacyCenter = true
+                    privacyInitialAction = nil
                 } label: {
                     SettingsRow(icon: "lock.shield.fill", title: "隐私设置", iconColor: .skinLabSecondary)
                 }
@@ -288,7 +297,8 @@ struct ProfileView: View {
                 Divider().padding(.leading, 52)
 
                 Button {
-                    // TODO: Implement data export
+                    privacyInitialAction = .exportData
+                    showPrivacyCenter = true
                 } label: {
                     SettingsRow(icon: "square.and.arrow.up.fill", title: "导出数据", iconColor: .skinLabAccent)
                 }
@@ -296,7 +306,8 @@ struct ProfileView: View {
                 Divider().padding(.leading, 52)
 
                 Button {
-                    // TODO: Implement data deletion
+                    privacyInitialAction = .deleteAllData
+                    showPrivacyCenter = true
                 } label: {
                     SettingsRow(icon: "trash.fill", title: "删除所有数据", iconColor: .skinLabError, isDestructive: true)
                 }

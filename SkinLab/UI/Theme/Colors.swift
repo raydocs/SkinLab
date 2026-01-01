@@ -2,46 +2,64 @@ import SwiftUI
 
 // MARK: - 浪漫粉紫金色系 Color System
 extension Color {
-    // 主色调 - 浪漫粉紫
-    static let romanticPink = Color(red: 1.0, green: 0.68, blue: 0.78)
-    static let romanticPinkLight = Color(red: 1.0, green: 0.82, blue: 0.87)
-    static let romanticPinkDark = Color(red: 1.0, green: 0.52, blue: 0.68)
+    // MARK: - 清新高级感 Color System (Fresh & Airy)
+    
+    // 清新主色 - 薄荷绿/青色系
+    static let freshPrimary = Color(red: 0.24, green: 0.76, blue: 0.68) // 清新薄荷绿
+    static let freshPrimaryLight = Color(red: 0.85, green: 0.96, blue: 0.94) // 极淡薄荷背景
+    static let freshPrimaryDark = Color(red: 0.15, green: 0.55, blue: 0.48) // 深薄荷绿
 
-    static let romanticPurple = Color(red: 0.78, green: 0.65, blue: 0.95)
-    static let romanticPurpleLight = Color(red: 0.88, green: 0.82, blue: 0.98)
-    static let romanticPurpleDark = Color(red: 0.65, green: 0.50, blue: 0.88)
+    // 清新辅色 - 天空蓝/淡紫系
+    static let freshSecondary = Color(red: 0.45, green: 0.68, blue: 0.92) // 清透天空蓝
+    static let freshSecondaryLight = Color(red: 0.90, green: 0.95, blue: 0.99) // 极淡蓝背景
+    static let freshAccent = Color(red: 0.98, green: 0.85, blue: 0.55) // 淡雅暖黄
 
-    // 辅助色 - 优雅金与白
-    static let romanticGold = Color(red: 1.0, green: 0.85, blue: 0.65)
-    static let romanticGoldLight = Color(red: 1.0, green: 0.92, blue: 0.80)
-    static let romanticCream = Color(red: 1.0, green: 0.98, blue: 0.96)
-    static let romanticWhite = Color(red: 1.0, green: 0.99, blue: 0.98)
+    // 玻璃质感背景色
+    static let freshWhite = Color(red: 0.99, green: 0.99, blue: 1.0) // 纯净白
+    static let freshBackground = Color(red: 0.98, green: 0.99, blue: 0.99) // 极淡灰白背景
+    
+    // 暗黑模式适配
+    static let freshBackgroundDark = Color(red: 0.08, green: 0.10, blue: 0.12)
+    static let freshCardDark = Color(red: 0.12, green: 0.15, blue: 0.18)
 
-    // 暗黑模式色彩
-    static let romanticCreamDark = Color(red: 0.12, green: 0.12, blue: 0.14)
-    static let romanticWhiteDark = Color(red: 0.18, green: 0.18, blue: 0.20)
-    static let romanticTextDark = Color(red: 0.92, green: 0.92, blue: 0.94)
-    static let romanticSubtextDark = Color(red: 0.65, green: 0.65, blue: 0.68)
+    // MARK: - Legacy Compatibility (Mapped to New Theme)
+    
+    static let romanticPink = freshPrimary
+    static let romanticPinkLight = freshPrimaryLight
+    static let romanticPinkDark = freshPrimaryDark
 
-    // 渐变色起点
-    static let romanticGradientStart = Color(red: 1.0, green: 0.85, blue: 0.90)
-    static let romanticGradientEnd = Color(red: 0.92, green: 0.82, blue: 0.95)
+    static let romanticPurple = freshSecondary
+    static let romanticPurpleLight = freshSecondaryLight
+    static let romanticPurpleDark = Color(red: 0.30, green: 0.50, blue: 0.75)
 
-    // 品牌色 (兼容原有API)
-    static let skinLabPrimary = Color.romanticPink
-    static let skinLabSecondary = Color.romanticPurple
-    static let skinLabAccent = Color.romanticGold
-    static let skinLabMint = Color(red: 0.72, green: 0.88, blue: 0.82)
-    static let skinLabGradientStart = Color.romanticPinkLight
-    static let skinLabGradientEnd = Color.romanticPurpleLight
-    static let skinLabLavenderStart = Color.romanticPurpleLight
-    static let skinLabLavenderEnd = Color.romanticPinkLight
+    static let romanticGold = freshAccent
+    static let romanticGoldLight = Color(red: 1.0, green: 0.95, blue: 0.85)
+    static let romanticCream = freshBackground
+    static let romanticWhite = freshWhite
 
-    // 基础颜色 (亮色模式默认值)
-    static let skinLabBackground = Color.romanticCream
-    static let skinLabCardBackground = Color.romanticWhite
-    static let skinLabText = Color(red: 0.25, green: 0.25, blue: 0.28)
-    static let skinLabSubtext = Color(red: 0.55, green: 0.55, blue: 0.58)
+    static let romanticCreamDark = freshBackgroundDark
+    static let romanticWhiteDark = freshCardDark
+    static let romanticTextDark = Color(red: 0.94, green: 0.96, blue: 0.98)
+    static let romanticSubtextDark = Color(red: 0.60, green: 0.65, blue: 0.70)
+
+    static let romanticGradientStart = freshPrimaryLight
+    static let romanticGradientEnd = freshSecondaryLight
+
+    // Brand Colors
+    static let skinLabPrimary = Color.freshPrimary
+    static let skinLabSecondary = Color.freshSecondary
+    static let skinLabAccent = Color.freshAccent
+    static let skinLabMint = Color.freshPrimary
+    static let skinLabGradientStart = Color.freshPrimaryLight
+    static let skinLabGradientEnd = Color.freshSecondaryLight
+    static let skinLabLavenderStart = Color.freshSecondaryLight
+    static let skinLabLavenderEnd = Color.freshPrimaryLight
+
+    // Base Colors
+    static let skinLabBackground = Color.freshBackground
+    static let skinLabCardBackground = Color.freshWhite
+    static let skinLabText = Color(red: 0.15, green: 0.20, blue: 0.25) // 深灰蓝
+    static let skinLabSubtext = Color(red: 0.50, green: 0.55, blue: 0.60) // 中灰蓝
 
     // MARK: - 暗黑模式自适应颜色
 
@@ -87,34 +105,34 @@ extension Color {
 }
 
 extension LinearGradient {
-    // 浪漫渐变系统
+    // 清新渐变系统
     static let skinLabRoseGradient = LinearGradient(
-        colors: [Color.romanticPinkLight, Color.romanticPinkDark],
+        colors: [Color.freshPrimaryLight, Color.freshPrimary],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
     static let skinLabLavenderGradient = LinearGradient(
-        colors: [Color.romanticPurpleLight, Color.romanticPurpleDark],
+        colors: [Color.freshSecondaryLight, Color.freshSecondary],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
     static let skinLabPrimaryGradient = LinearGradient(
-        colors: [Color.romanticPink, Color.romanticPurple],
+        colors: [Color.freshPrimary, Color.freshSecondary],
         startPoint: .leading,
         endPoint: .trailing
     )
     static let skinLabGoldGradient = LinearGradient(
-        colors: [Color.romanticGoldLight, Color.romanticGold],
+        colors: [Color.freshAccent.opacity(0.6), Color.freshAccent],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
     static let romanticBlushGradient = LinearGradient(
-        colors: [Color.romanticPinkLight, Color.romanticPink, Color.romanticPurple],
+        colors: [Color.freshPrimaryLight.opacity(0.5), Color.freshSecondaryLight.opacity(0.5)],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
     static let romanticSunsetGradient = LinearGradient(
-        colors: [Color.romanticGold, Color.romanticPink, Color.romanticPurpleLight],
+        colors: [Color.freshAccent, Color.freshPrimaryLight, Color.freshSecondaryLight],
         startPoint: .topTrailing,
         endPoint: .bottomLeading
     )

@@ -4,7 +4,6 @@ description: SwiftUI界面设计专家，负责组件设计、动画效果、视
 model: inherit
 tools: ["Read", "Edit", "Create", "Glob"]
 ---
-
 你是SkinLab的UI设计工程师。
 
 ## 设计语言

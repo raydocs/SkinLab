@@ -13,15 +13,7 @@ struct AnalysisView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // 渐变背景
-                Color.skinLabBackground.ignoresSafeArea()
-                
-                Circle()
-                    .fill(LinearGradient.skinLabLavenderGradient)
-                    .frame(width: 300, height: 300)
-                    .blur(radius: 100)
-                    .offset(x: 100, y: -300)
-                    .opacity(0.5)
+                FreshBackgroundMesh()
                 
                 switch viewModel.state {
                 case .camera:
@@ -29,7 +21,9 @@ struct AnalysisView: View {
                 case .analyzing:
                     analyzingView
                 case .result(let analysis):
-                    AnalysisResultView(analysis: analysis)
+                    AnalysisResultView(analysis: analysis) {
+                        viewModel.retry()
+                    }
                 case .error(let message):
                     errorView(message)
                 }
@@ -76,16 +70,10 @@ struct AnalysisView: View {
             
             // 面部轮廓引导
             ZStack {
-                // 外层渐变光晕
-                Ellipse()
-                    .fill(LinearGradient.skinLabRoseGradient.opacity(0.15))
-                    .frame(width: 300, height: 380)
-                    .blur(radius: 20)
-                
-                // 轮廓边框
+                // Fresh Guide Oval
                 Ellipse()
                     .stroke(
-                        LinearGradient.skinLabRoseGradient,
+                        Color.freshPrimary.opacity(0.5),
                         style: StrokeStyle(lineWidth: 3, dash: [8, 6])
                     )
                     .frame(width: 260, height: 340)
@@ -93,14 +81,13 @@ struct AnalysisView: View {
                 VStack(spacing: 16) {
                     ZStack {
                         Circle()
-                            .fill(LinearGradient.skinLabRoseGradient)
+                            .fill(Color.freshPrimary.opacity(0.1))
                             .frame(width: 80, height: 80)
                         
                         Image(systemName: "face.smiling")
                             .font(.system(size: 36))
-                            .foregroundColor(.white)
+                            .foregroundColor(.freshPrimary)
                     }
-                    .shadow(color: .skinLabPrimary.opacity(0.3), radius: 15, x: 0, y: 8)
                     
                     Text("AI皮肤分析")
                         .font(.skinLabTitle3)
@@ -110,25 +97,16 @@ struct AnalysisView: View {
                         .font(.skinLabSubheadline)
                         .foregroundColor(.skinLabSubtext)
                 }
-                
-                // 装饰闪光
-                SparkleView(size: 14)
-                    .offset(x: 110, y: -140)
-                
-                SparkleView(size: 10)
-                    .offset(x: -120, y: 100)
             }
             
             // Tips 卡片
             VStack(alignment: .leading, spacing: 10) {
-                TipRow(icon: "sun.max.fill", text: "确保光线充足均匀", color: .skinLabAccent)
-                TipRow(icon: "face.smiling", text: "保持自然表情，素颜最佳", color: .skinLabPrimary)
-                TipRow(icon: "arrow.up.and.down.circle.fill", text: "调整至面部填满框内", color: .skinLabSecondary)
+                TipRow(icon: "sun.max.fill", text: "确保光线充足均匀", color: .freshAccent)
+                TipRow(icon: "face.smiling", text: "保持自然表情，素颜最佳", color: .freshPrimary)
+                TipRow(icon: "arrow.up.and.down.circle.fill", text: "调整至面部填满框内", color: .freshSecondary)
             }
             .padding()
-            .background(Color.skinLabCardBackground)
-            .cornerRadius(20)
-            .skinLabSoftShadow()
+            .freshGlassCard()
             
             Spacer()
             
@@ -137,30 +115,16 @@ struct AnalysisView: View {
                 Button {
                     showCamera = true
                 } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "camera.fill")
-                        Text("拍照分析")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14))
-                            .opacity(0.7)
-                    }
+                    Text("Take Photo")
                 }
-                .buttonStyle(SkinLabPrimaryButtonStyle())
+                .buttonStyle(FreshGlassButton(color: .freshPrimary))
                 
                 Button {
                     showPhotoPicker = true
                 } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "photo.on.rectangle.angled")
-                        Text("从相册选择")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14))
-                            .opacity(0.7)
-                    }
+                    Text("Select from Library")
                 }
-                .buttonStyle(SkinLabSecondaryButtonStyle())
+                .buttonStyle(FreshSecondaryButton())
             }
             .padding(.horizontal)
             .padding(.bottom, 32)
@@ -177,13 +141,13 @@ struct AnalysisView: View {
             ZStack {
                 // 外层脉冲圆
                 Circle()
-                    .stroke(LinearGradient.skinLabRoseGradient.opacity(0.3), lineWidth: 2)
+                    .stroke(Color.freshPrimary.opacity(0.2), lineWidth: 1)
                     .frame(width: 160, height: 160)
                     .scaleEffect(1.2)
-                    .opacity(0.5)
+                    .opacity(0.6)
                 
                 Circle()
-                    .stroke(LinearGradient.skinLabRoseGradient.opacity(0.5), lineWidth: 3)
+                    .stroke(Color.freshPrimary.opacity(0.3), lineWidth: 2)
                     .frame(width: 120, height: 120)
                 
                 // 图片预览
@@ -195,22 +159,22 @@ struct AnalysisView: View {
                         .clipShape(Circle())
                         .overlay(
                             Circle()
-                                .stroke(LinearGradient.skinLabRoseGradient, lineWidth: 3)
+                                .stroke(Color.freshPrimary, lineWidth: 2)
                         )
                 } else {
                     Circle()
-                        .fill(LinearGradient.skinLabRoseGradient)
+                        .fill(Color.freshPrimary.opacity(0.1))
                         .frame(width: 100, height: 100)
                     
                     Image(systemName: "face.smiling")
                         .font(.system(size: 40))
-                        .foregroundColor(.white)
+                        .foregroundColor(.freshPrimary)
                 }
                 
                 // 旋转加载指示器
                 Circle()
                     .trim(from: 0, to: 0.3)
-                    .stroke(LinearGradient.skinLabPrimaryGradient, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .stroke(Color.freshPrimary, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                     .frame(width: 140, height: 140)
                     .rotationEffect(.degrees(rotationAngle))
                     .onAppear {
@@ -249,12 +213,12 @@ struct AnalysisView: View {
             
             ZStack {
                 Circle()
-                    .fill(Color.skinLabWarning.opacity(0.1))
+                    .fill(Color.skinLabError.opacity(0.1))
                     .frame(width: 120, height: 120)
                 
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: 48))
-                    .foregroundStyle(LinearGradient(colors: [.skinLabWarning, .skinLabWarning.opacity(0.7)], startPoint: .top, endPoint: .bottom))
+                    .foregroundColor(.skinLabError)
             }
             
             VStack(spacing: 8) {
@@ -272,12 +236,9 @@ struct AnalysisView: View {
             Button {
                 viewModel.retry()
             } label: {
-                HStack {
-                    Image(systemName: "arrow.clockwise")
-                    Text("重新尝试")
-                }
+                Text("Retry")
             }
-            .buttonStyle(SkinLabPrimaryButtonStyle())
+            .buttonStyle(FreshGlassButton(color: .freshPrimary))
             .padding(.horizontal, 48)
             
             Spacer()
@@ -295,7 +256,7 @@ struct TipRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundColor(color)
                 .frame(width: 24)
             
@@ -315,8 +276,8 @@ struct AnalysisStep: View {
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 20))
-                .foregroundColor(isActive ? .skinLabPrimary : .skinLabSubtext.opacity(0.5))
+                .font(.system(size: 22))
+                .foregroundColor(isActive ? .freshPrimary : .skinLabSubtext.opacity(0.5))
             
             Text(text)
                 .font(.skinLabCaption)

@@ -358,8 +358,21 @@ final class SkinTwinViewModel {
 
     /// 为特定用户加载有效产品
     private func loadEffectiveProductsForUser(_ userId: UUID) -> [EffectiveProduct] {
-        // TODO: 实际实现需要从 TrackingSession 查询
-        // 这里返回空数组，实际匹配时会填充
+        guard let modelContext, let currentUserId = currentUserProfile?.id else {
+            return []
+        }
+
+        let descriptor = FetchDescriptor<MatchResultRecord>(
+            predicate: #Predicate { record in
+                record.userId == currentUserId &&
+                record.twinUserId == userId
+            },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+
+        if let records = try? modelContext.fetch(descriptor) {
+            return records.first?.effectiveProducts ?? []
+        }
         return []
     }
 
