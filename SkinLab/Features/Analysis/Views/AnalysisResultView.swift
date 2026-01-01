@@ -4,14 +4,12 @@ import SwiftData
 struct AnalysisResultView: View {
     let analysis: SkinAnalysis
     let onRetake: () -> Void
+
+    @State private var viewModel: AnalysisResultViewModel?
     @State private var selectedTab = 0
     @State private var animateScore = false
-    @State private var isGeneratingRoutine = false
-    @State private var generatedRoutine: SkincareRoutine?
-    @State private var showRoutine = false
-    @State private var routineError: String?
-    @State private var showRoutineError = false
     @State private var showNewTracking = false
+
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
     @Query private var trackingSessions: [TrackingSession]
@@ -30,7 +28,7 @@ struct AnalysisResultView: View {
             .filter { $0.preferenceType == .disliked || $0.preferenceType == .avoided }
             .map { $0.ingredientName }
     }
-    
+
     init(analysis: SkinAnalysis, onRetake: @escaping () -> Void = {}) {
         self.analysis = analysis
         self.onRetake = onRetake
@@ -69,18 +67,26 @@ struct AnalysisResultView: View {
             }
         }
         .onAppear {
+            // Initialize ViewModel with modelContext
+            if viewModel == nil {
+                viewModel = AnalysisResultViewModel(modelContext: modelContext)
+            }
+
             withAnimation(.easeOut(duration: 1.0).delay(0.3)) {
                 animateScore = true
             }
         }
-        .sheet(isPresented: $showRoutine) {
-            if let routine = generatedRoutine {
+        .sheet(isPresented: Binding(
+            get: { viewModel?.showRoutine ?? false },
+            set: { viewModel?.showRoutine = $0 }
+        )) {
+            if let routine = viewModel?.generatedRoutine {
                 NavigationStack {
                     RoutineView(routine: routine)
                         .toolbar {
                             ToolbarItem(placement: .confirmationAction) {
                                 Button("完成") {
-                                    showRoutine = false
+                                    viewModel?.showRoutine = false
                                 }
                             }
                         }
@@ -171,79 +177,6 @@ struct AnalysisResultView: View {
         case 40..<60: return "需要更多关注和护理"
         default: return "建议认真对待护肤问题"
         }
-    }
-    
-    // MARK: - Routine Generation
-    private func generateRoutine() async {
-        isGeneratingRoutine = true
-        routineError = nil
-
-        do {
-            // Get recent tracking report if available
-            let trackingReport: EnhancedTrackingReport? = await getRecentTrackingReport()
-
-            let service = RoutineService()
-            let routine = try await service.generateRoutine(
-                analysis: analysis,
-                profile: userProfile,
-                trackingReport: trackingReport,
-                negativeIngredients: negativeIngredients
-            )
-
-            // Save to SwiftData
-            let record = SkincareRoutineRecord(from: routine)
-            modelContext.insert(record)
-            try modelContext.save()
-
-            // Show routine
-            await MainActor.run {
-                generatedRoutine = routine
-                showRoutine = true
-                isGeneratingRoutine = false
-            }
-        } catch {
-            await MainActor.run {
-                routineError = error.localizedDescription
-                showRoutineError = true
-                isGeneratingRoutine = false
-            }
-        }
-    }
-
-    private func getRecentTrackingReport() async -> EnhancedTrackingReport? {
-        // Find most recent completed tracking session
-        guard let recentSession = trackingSessions
-            .filter({ $0.status == .completed && $0.checkIns.count >= 2 })
-            .sorted(by: { $0.startDate > $1.startDate })
-            .first else {
-            return nil
-        }
-
-        // Collect analyses for the check-ins
-        var analyses: [UUID: SkinAnalysis] = [:]
-        for checkIn in recentSession.checkIns {
-            if let analysisId = checkIn.analysisId {
-                // Fetch analysis from SwiftData
-                let descriptor = FetchDescriptor<SkinAnalysisRecord>(
-                    predicate: #Predicate<SkinAnalysisRecord> { $0.id == analysisId }
-                )
-                if let record = try? modelContext.fetch(descriptor).first,
-                   let skinAnalysis = record.toAnalysis() {
-                    analyses[analysisId] = skinAnalysis
-                }
-            }
-        }
-
-        guard !analyses.isEmpty else { return nil }
-
-        // Generate report using TrackingReportGenerator
-        let generator = TrackingReportGenerator(geminiService: GeminiService.shared)
-        return await generator.generateReport(
-            session: recentSession,
-            checkIns: recentSession.checkIns,
-            analyses: analyses,
-            productDatabase: [:]  // Could be enhanced with actual product database
-        )
     }
 
     // MARK: - Skin Type Badge
@@ -476,20 +409,26 @@ struct AnalysisResultView: View {
         VStack(spacing: 12) {
             // Generate Routine Button
             Button {
+                guard let viewModel = viewModel else { return }
                 Task {
-                    await generateRoutine()
+                    await viewModel.generateRoutine(
+                        analysis: analysis,
+                        userProfile: userProfile,
+                        trackingSessions: trackingSessions,
+                        negativeIngredients: negativeIngredients
+                    )
                 }
             } label: {
                 HStack(spacing: 12) {
-                    if isGeneratingRoutine {
+                    if viewModel?.isGeneratingRoutine == true {
                         ProgressView()
                             .tint(.white)
                     } else {
                         Image(systemName: "list.bullet.rectangle.fill")
                     }
-                    Text(isGeneratingRoutine ? "生成中..." : "生成护肤方案")
+                    Text(viewModel?.isGeneratingRoutine == true ? "生成中..." : "生成护肤方案")
                     Spacer()
-                    if !isGeneratingRoutine {
+                    if viewModel?.isGeneratingRoutine != true {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white.opacity(0.7))
@@ -497,7 +436,7 @@ struct AnalysisResultView: View {
                 }
             }
             .buttonStyle(FreshGlassButton(color: .freshPrimary))
-            .disabled(isGeneratingRoutine)
+            .disabled(viewModel?.isGeneratingRoutine == true)
             
             NavigationLink {
                 TrackingView()
@@ -527,13 +466,16 @@ struct AnalysisResultView: View {
             }
             .buttonStyle(FreshSecondaryButton())
         }
-        .alert("生成失败", isPresented: $showRoutineError) {
+        .alert("生成失败", isPresented: Binding(
+            get: { viewModel?.showRoutineError ?? false },
+            set: { viewModel?.showRoutineError = $0 }
+        )) {
             Button("确定") {
-                showRoutineError = false
-                routineError = nil
+                viewModel?.showRoutineError = false
+                viewModel?.routineError = nil
             }
         } message: {
-            if let error = routineError {
+            if let error = viewModel?.routineError {
                 Text(error)
             }
         }

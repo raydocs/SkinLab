@@ -4,14 +4,11 @@ import SwiftData
 struct TrackingDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Bindable var session: TrackingSession
-    
+
+    @State private var viewModel: TrackingDetailViewModel?
     @State private var showCamera = false
     @State private var showCheckIn = false
     @State private var capturedImage: UIImage?
-    @State private var isGeneratingReport = false
-    @State private var generatedReport: EnhancedTrackingReport?
-    @State private var showReport = false
-    @State private var reportError: String?
     @State private var showProductPicker = false
     
     var body: some View {
@@ -34,17 +31,26 @@ struct TrackingDetailView: View {
         .background(Color.skinLabBackground)
         .navigationTitle("追踪详情")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            // Initialize ViewModel with modelContext
+            if viewModel == nil {
+                viewModel = TrackingDetailViewModel(modelContext: modelContext)
+            }
+        }
         .sheet(isPresented: $showCheckIn) {
             CheckInView(session: session, image: capturedImage)
         }
-        .sheet(isPresented: $showReport) {
-            if let report = generatedReport {
+        .sheet(isPresented: Binding(
+            get: { viewModel?.showReport ?? false },
+            set: { viewModel?.showReport = $0 }
+        )) {
+            if let report = viewModel?.generatedReport {
                 NavigationStack {
                     TrackingReportView(report: report)
                         .toolbar {
                             ToolbarItem(placement: .confirmationAction) {
                                 Button("完成") {
-                                    showReport = false
+                                    viewModel?.showReport = false
                                 }
                             }
                         }
@@ -59,12 +65,15 @@ struct TrackingDetailView: View {
                 )
             )
         }
-        .alert("报告生成失败", isPresented: .constant(reportError != nil)) {
+        .alert("报告生成失败", isPresented: Binding(
+            get: { viewModel?.reportError != nil },
+            set: { if !$0 { viewModel?.reportError = nil } }
+        )) {
             Button("确定") {
-                reportError = nil
+                viewModel?.reportError = nil
             }
         } message: {
-            if let error = reportError {
+            if let error = viewModel?.reportError {
                 Text(error)
             }
         }
@@ -251,89 +260,27 @@ struct TrackingDetailView: View {
                 }
                 .buttonStyle(FreshGlassButton(color: .freshPrimary))
             }
-            
+
             if session.duration >= 28 && session.status == .active {
                 Button {
-                    completeSession()
+                    viewModel?.completeSession(session)
                 } label: {
                     Text("完成追踪")
                 }
                 .buttonStyle(FreshGlassButton(color: .freshPrimary))
             }
-            
+
             Button {
+                guard let viewModel = viewModel else { return }
                 Task {
-                    await generateReport()
+                    await viewModel.generateReport(for: session)
                 }
             } label: {
-                Text(isGeneratingReport ? "生成中..." : "生成报告")
+                Text(viewModel?.isGeneratingReport == true ? "生成中..." : "生成报告")
             }
             .buttonStyle(FreshSecondaryButton())
-            .disabled(isGeneratingReport || session.checkIns.count < 2)
+            .disabled(viewModel?.isGeneratingReport == true || session.checkIns.count < 2)
         }
-    }
-    
-    // MARK: - Report Generation
-    private func generateReport() async {
-        isGeneratingReport = true
-        reportError = nil
-        
-        do {
-            // 收集当前 session 所有 checkIn 的 analysisId
-            let analysisIds = session.checkIns.compactMap { $0.analysisId }
-            
-            guard analysisIds.count >= 2 else {
-                await MainActor.run {
-                    reportError = "需要至少2次打卡记录才能生成报告"
-                    isGeneratingReport = false
-                }
-                return
-            }
-            
-            // 只查询与此 session 相关的分析记录
-            let predicate = #Predicate<SkinAnalysisRecord> { record in
-                analysisIds.contains(record.id)
-            }
-            let descriptor = FetchDescriptor<SkinAnalysisRecord>(predicate: predicate)
-            let relevantRecords = try modelContext.fetch(descriptor)
-            
-            // 转换为 SkinAnalysis 字典
-            var analysisDict: [UUID: SkinAnalysis] = [:]
-            for record in relevantRecords {
-                if let analysis = record.toAnalysis() {
-                    analysisDict[record.id] = analysis
-                }
-            }
-            
-            // 生成报告
-            let generator = TrackingReportGenerator()
-            if let report = await generator.generateReport(
-                session: session,
-                checkIns: session.checkIns,
-                analyses: analysisDict
-            ) {
-                await MainActor.run {
-                    generatedReport = report
-                    showReport = true
-                    isGeneratingReport = false
-                }
-            } else {
-                await MainActor.run {
-                    reportError = "生成报告失败"
-                    isGeneratingReport = false
-                }
-            }
-        } catch {
-            await MainActor.run {
-                reportError = error.localizedDescription
-                isGeneratingReport = false
-            }
-        }
-    }
-    
-    private func completeSession() {
-        session.status = .completed
-        session.endDate = Date()
     }
 }
 

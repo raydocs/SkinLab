@@ -12,6 +12,7 @@
 		0705628C35CB4156025336E1 /* SkinTwinMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21C4E7B2AB0841A770CFE82 /* SkinTwinMatchView.swift */; };
 		0E96A1FF72D4E87C65B4E732 /* ConsentSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38A9A9C2ED915AF0773BF6 /* ConsentSettingsView.swift */; };
 		17C7235C8EDC87A1D5360FB0 /* TrackingComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2935A2C595AFD0A1F5A52CBF /* TrackingComparisonView.swift */; };
+		1898CFA12679F18A3D2D2B4A /* TrackingDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C9F2586D340041D58FDD8 /* TrackingDetailViewModel.swift */; };
 		21AB05CA3A80F6B897BDC7A6 /* SkinMatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EABE5E915AEE3FFBF17101A /* SkinMatcherTests.swift */; };
 		22D2ACED485758B9081FCD35 /* RoutineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A635EA3C39E9DD8654262A3 /* RoutineService.swift */; };
 		24E220D39F5E82E08B2026B5 /* AnonymousProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4652ECD0C04F2E7CF24E1C5 /* AnonymousProfile.swift */; };
@@ -77,6 +78,7 @@
 		A57E243816AA8E5F23C5E443 /* ForecastEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBAB226955E3CA24C059B2F /* ForecastEngine.swift */; };
 		A6EA712F1330C8B6CF300B92 /* ProductPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AD55FD6D5510D7F3CCFB71 /* ProductPickerView.swift */; };
 		A7AD6E91750734BAF68982F2 /* SkinTwin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A58DF68D6DDCEAF216E43D7 /* SkinTwin.swift */; };
+		A8F5C2909F3916C6AB15F71A /* AnalysisResultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */; };
 		A9BC1BEBDE572094393A95A9 /* AnalyticsVisualizationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26570A1CAB05DFDBA766336 /* AnalyticsVisualizationViews.swift */; };
 		B62D7EE47904AF48CF80DA3D /* MatchResultRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A5B3AE2E986F636B26C6316 /* MatchResultRecord.swift */; };
 		BA7EDB49C5F2AD2BDF0BF3AE /* PerformanceBenchmarkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021E5391817F5F58DE2BE780 /* PerformanceBenchmarkTests.swift */; };
@@ -130,7 +132,9 @@
 		2935A2C595AFD0A1F5A52CBF /* TrackingComparisonView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingComparisonView.swift; sourceTree = "<group>"; };
 		29C3686CF0FD603001A1188E /* ShareableTrackingSnapshot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareableTrackingSnapshot.swift; sourceTree = "<group>"; };
 		2A1269CF193108CA983B327A /* AnomalyDetectorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnomalyDetectorTests.swift; sourceTree = "<group>"; };
+		2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalysisResultViewModel.swift; sourceTree = "<group>"; };
 		313078DD5B48E3E27AABCCE3 /* UserIngredientPreference.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserIngredientPreference.swift; path = ../../../SkinLab/Features/Profile/Models/UserIngredientPreference.swift; sourceTree = "<group>"; };
+		3E5C9F2586D340041D58FDD8 /* TrackingDetailViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingDetailViewModel.swift; sourceTree = "<group>"; };
 		3F3EB7BFD9E873145B7A021B /* ProductRecommendationEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductRecommendationEngine.swift; sourceTree = "<group>"; };
 		3FC24F5570D8E1F73373DA94 /* IngredientRiskAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IngredientRiskAnalyzer.swift; path = ../../SkinLab/Core/Utils/IngredientRiskAnalyzer.swift; sourceTree = "<group>"; };
 		553386FE85CB219F08ACDA07 /* SkincareRoutine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SkincareRoutine.swift; path = ../../../SkinLab/Features/Analysis/Models/SkincareRoutine.swift; sourceTree = "<group>"; };
@@ -358,6 +362,15 @@
 			path = Products;
 			sourceTree = "<group>";
 		};
+		6832C2AB38C09303639830A4 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C9F2586D340041D58FDD8 /* TrackingDetailViewModel.swift */,
+			);
+			name = ViewModels;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		7708436C8FA671CD557E22B3 /* Analysis */ = {
 			isa = PBXGroup;
 			children = (
@@ -570,6 +583,7 @@
 			isa = PBXGroup;
 			children = (
 				B1000041 /* AnalysisViewModel.swift */,
+				2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -591,6 +605,7 @@
 				E10000321 /* Models */,
 				E10000322 /* Views */,
 				35B50A3E97A5D1416D7198B0 /* Services */,
+				6832C2AB38C09303639830A4 /* ViewModels */,
 			);
 			path = Tracking;
 			sourceTree = "<group>";
@@ -969,6 +984,8 @@
 				5EC8C891A95D691A017484FE /* NotificationSettingsView.swift in Sources */,
 				17C7235C8EDC87A1D5360FB0 /* TrackingComparisonView.swift in Sources */,
 				A6EA712F1330C8B6CF300B92 /* ProductPickerView.swift in Sources */,
+				A8F5C2909F3916C6AB15F71A /* AnalysisResultViewModel.swift in Sources */,
+				1898CFA12679F18A3D2D2B4A /* TrackingDetailViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
