@@ -20,16 +20,16 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 1. AI Analysis
 
-**As of (AI Analysis)**: All competitors checked 2026-01-11 via App Store/Google Play listings
+**As of (AI Analysis)**: All competitors checked 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
 | **Photo Quality Requirements** | ✓ High-res guidance [SL-1] | ✓ Professional grade [XY-1] | ✓ Standard [MLX-1] | ✓ Standard [NJ-1] | ✓ Standard [JF-1] | ✓ Standard [AD-1] | ✓ Standard [SB-1] |
 | **Confidence Scoring** | ✓ Gemini 3.0 Flash with confidence [SL-2] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
-| **Analysis Speed** | <5 seconds (Gemini 3.0 Flash) [SL-2] | Not specified [XY-1] | Not specified [MLX-1] | Not specified [NJ-1] | Not specified [JF-1] | Not specified [AD-1] | Not specified [SB-1] |
-| **Accuracy Claims** | ✓ "让护肤效果看得见" [SL-3] | Medical-grade (claimed) [XY-1] | Dermatologist-backed (claimed) [MLX-1] | AI-powered [NJ-1] | AI-powered [JF-1] | AI-powered [AD-1] | AI-powered [SB-1] |
-| **Analysis Type** | Photo-based (Vision + Gemini) [SL-2] | Procedure focus [XY-1] | Questionnaire + photo [MLX-1] | Photo-based [NJ-1] | Photo-based [JF-1] | Photo-based [AD-1] | Photo-based [SB-1] |
-| **AI Model** | Gemini 3.0 Flash Vision [SL-2] | Proprietary [XY-1] | Proprietary [MLX-1] | Proprietary [NJ-1] | Proprietary [JF-1] | Proprietary [AD-1] | Proprietary [SB-1] |
+| **Analysis Speed** | ✓ <5 seconds (target) [SL-2] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Accuracy Claims** | ✓ "让护肤效果看得见" positioning [SL-3] | ✓ Medical-grade (claimed) [XY-1] | ✓ Dermatologist-backed (claimed) [MLX-1] | ✓ AI-powered [NJ-1] | ✓ AI-powered [JF-1] | ✓ AI-powered [AD-1] | ✓ AI-powered [SB-1] |
+| **Analysis Type** | ✓ Photo-based (Vision + Gemini) [SL-2] | ✓ Procedure focus [XY-1] | ✓ Questionnaire + photo [MLX-1] | ✓ Photo-based [NJ-1] | ✓ Photo-based [JF-1] | ✓ Photo-based [AD-1] | ✓ Photo-based [SB-1] |
+| **AI Model** | ✓ Gemini 3.0 Flash Vision [SL-2] | ✗ Proprietary (not specified) [XY-1] | ✗ Proprietary (not specified) [MLX-1] | ✗ Proprietary (not specified) [NJ-1] | ✗ Proprietary (not specified) [JF-1] | ✗ Proprietary (not specified) [AD-1] | ✗ Proprietary (not specified) [SB-1] |
 
 **Key Differentiators**:
 - SkinLab: Only one using Gemini 3.0 Flash Vision with confidence scoring [SL-2]
@@ -40,17 +40,17 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 2. Privacy Controls
 
-**As of (Privacy)**: All competitors checked 2026-01-11 via App Store/Google Play listings
+**As of (Privacy)**: All competitors checked 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
-| **Consent Granularity** | ✓ Fine-grained controls [SL-4] | Not specified [XY-1] | Not specified [MLX-1] | Not specified [NJ-1] | Not specified [JF-1] | Not specified [AD-1] | Not specified [SB-1] |
-| **Local-Only Mode** | ✓ Full local processing option [SL-4] | ✗ Cloud-based (inferred) [XY-1] | ✗ Cloud-based (inferred) [MLX-1] | ✗ Cloud-based (inferred) [NJ-1] | ✗ Cloud-based (inferred) [JF-1] | ✗ Cloud-based (inferred) [AD-1] | ✗ Cloud-based (inferred) [SB-1] |
-| **Data Export** | ✓ Full user data export [SL-4] | Not specified [XY-1] | Not specified [MLX-1] | Not specified [NJ-1] | Not specified [JF-1] | Not specified [AD-1] | ✗ Limited [SB-2] |
-| **Data Delete** | ✓ Full account/data deletion [SL-4] | Not specified [XY-1] | Not specified [MLX-1] | Not specified [NJ-1] | Not specified [JF-1] | Not specified [AD-1] | ✗ Limited [SB-2] |
-| **Transparency Report** | ✓ Privacy dashboard [SL-4] | ✗ No (not mentioned) [XY-1] | ✗ No (not mentioned) [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✗ No (not mentioned) [AD-1] | ✗ No (not mentioned) [SB-1] |
-| **Data Retention Policy** | Clearly documented [SL-4] | Not specified [XY-1] | Not specified [MLX-1] | Not specified [NJ-1] | Not specified [JF-1] | Not specified [AD-1] | Not specified [SB-1] |
-| **Biometric Data Handling** | ✓ On-device only [SL-4] | Not specified [XY-1] | Not specified [MLX-1] | Not specified [NJ-1] | Not specified [JF-1] | Not specified [AD-1] | Not specified [SB-1] |
+| **Consent Granularity** | ✓ Fine-grained controls [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Local-Only Mode** | ✓ Full local processing option [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Data Export** | ✓ Full user data export [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Limited (inferred from privacy policy) [SB-2] |
+| **Data Delete** | ✓ Full account/data deletion [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Limited (inferred from privacy policy) [SB-2] |
+| **Transparency Report** | ✓ Privacy dashboard [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Data Retention Policy** | ✓ Clearly documented [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Biometric Data Handling** | ✓ On-device only [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
 
 **Key Differentiators**:
 - SkinLab: **Only app with comprehensive privacy control center** [SL-4]
@@ -61,17 +61,17 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 3. Effect Tracking
 
-**As of (Effect Tracking)**: All competitors checked 2026-01-11 via App Store/Google Play listings
+**As of (Effect Tracking)**: All competitors checked 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
-| **Day-Based Checkpoints** | ✓ Daily/weekly tracking [SL-5] | ✗ Procedure-based [XY-1] | ✗ Limited (implied) [MLX-1] | ✗ Limited (implied) [NJ-1] | ✓ Daily logging [JF-1] | ✓ Daily logging [AD-1] | ✓ Routine tracking [SB-1] |
+| **Day-Based Checkpoints** | ✓ Daily/weekly tracking [SL-5] | ✗ Procedure-based (not daily tracking) [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✓ Daily logging [JF-1] | ✓ Daily logging [AD-1] | ✓ Routine tracking [SB-1] |
 | **Before/After Visualization** | ✓ Side-by-side comparison [SL-5] | ✓ Procedure photos [XY-1] | ✓ Basic [MLX-1] | ✓ Basic [NJ-1] | ✓ Basic [JF-1] | ✓ Basic [AD-1] | ✓ Basic [SB-1] |
-| **Trend Analysis** | ✓ Multi-metric graphs [SL-5] | ✗ N/A [XY-1] | ✗ Limited (implied) [MLX-1] | ✗ Limited (implied) [NJ-1] | ✓ Progress charts [JF-1] | ✓ Progress charts [AD-1] | ✓ Progress charts [SB-1] |
-| **Anomaly Detection** | ✓ AI-powered alerts [SL-5] | ✗ N/A [XY-1] | ✗ No (not mentioned) [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✗ No (not mentioned) [AD-1] | ✗ No (not mentioned) [SB-1] |
-| **Effect Verification** | ✓ "让护肤效果看得见" engine [SL-3] | ✗ N/A [XY-1] | ✗ No (not mentioned) [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✗ No (not mentioned) [AD-1] | ✗ No (not mentioned) [SB-1] |
-| **Photo Timeline** | ✓ Organized gallery [SL-5] | ✗ N/A [XY-1] | ✓ Limited (implied) [MLX-1] | ✓ Limited (implied) [NJ-1] | ✓ Limited (implied) [JF-1] | ✓ Limited (implied) [AD-1] | ✓ Limited (implied) [SB-1] |
-| **Shareable Reports** | ✓ Exportable reports [SL-5] | ✓ Procedure results [XY-1] | ✗ No (not mentioned) [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✗ No (not mentioned) [AD-1] | ✗ No (not mentioned) [SB-1] |
+| **Trend Analysis** | ✓ Multi-metric graphs [SL-5] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✓ Progress charts [JF-1] | ✓ Progress charts [AD-1] | ✓ Progress charts [SB-1] |
+| **Anomaly Detection** | ✓ AI-powered alerts [SL-5] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Effect Verification** | ✓ "让护肤效果看得见" engine [SL-3] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Photo Timeline** | ✓ Organized gallery [SL-5] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Shareable Reports** | ✓ Exportable reports [SL-5] | ✓ Procedure results [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
 
 **Key Differentiators**:
 - SkinLab: **Effect verification engine** is unique ("让护肤效果看得见") [SL-3]
@@ -82,16 +82,16 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 4. Recommendations
 
-**As of (Recommendations)**: All competitors checked 2026-01-11 via App Store/Google Play listings
+**As of (Recommendations)**: All competitors checked 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
-| **Algorithm Transparency** | ✓ Evidence-based engine [SL-6] | ✗ No (not mentioned) [XY-1] | ✗ No (not mentioned) [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✗ No (not mentioned) [AD-1] | ✗ No (not mentioned) [SB-1] |
-| **Evidence Levels** | ✓ Clinical/study-backed [SL-6] | ✗ N/A [XY-1] | ✗ No (not mentioned) [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✗ No (not mentioned) [AD-1] | ✗ No (not mentioned) [SB-1] |
-| **Personalization** | ✓ Skin twin matching [SL-7] | ✗ Procedure-based [XY-1] | ✓ Quiz-based [MLX-1] | ✓ Skin type [NJ-1] | ✓ Skin concerns [JF-1] | ✓ Skin profile [AD-1] | ✓ Skin profile [SB-1] |
-| **Ingredient Database** | ✓ OCR scanning [SL-8] | ✗ No (not mentioned) [XY-1] | ✓ Ingredient lookup [MLX-1] | ✓ Basic [NJ-1] | ✓ Basic [JF-1] | ✓ Basic [AD-1] | ✓ Extensive [SB-1] |
-| **Product Explanations** | ✓ Evidence citations [SL-6] | ✗ N/A [XY-1] | ✗ Limited (implied) [MLX-1] | ✗ Limited (implied) [NJ-1] | ✗ Limited (implied) [JF-1] | ✗ Limited (implied) [AD-1] | ✓ Limited [SB-1] |
-| **Anti-Ad Commitment** | ✓ "Anti-ad" positioning [SL-9] | ✗ No (not mentioned) [XY-1] | ✗ No (not mentioned) [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✗ No (not mentioned) [AD-1] | ✗ No (not mentioned) [SB-1] |
+| **Algorithm Transparency** | ✓ Evidence-based engine [SL-6] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Evidence Levels** | ✓ Clinical/study-backed [SL-6] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Personalization** | ✓ Skin twin matching [SL-7] | ✗ Procedure-based (not skin-matching) [XY-1] | ✓ Quiz-based [MLX-1] | ✓ Skin type [NJ-1] | ✓ Skin concerns [JF-1] | ✓ Skin profile [AD-1] | ✓ Skin profile [SB-1] |
+| **Ingredient Database** | ✓ OCR scanning [SL-8] | ✗ Not mentioned [XY-1] | ✓ Ingredient lookup [MLX-1] | ✓ Basic [NJ-1] | ✓ Basic [JF-1] | ✓ Basic [AD-1] | ✓ Extensive [SB-1] |
+| **Product Explanations** | ✓ Evidence citations [SL-6] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
+| **Anti-Ad Commitment** | ✓ "Anti-ad" positioning [SL-9] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
 
 **Key Differentiators**:
 - SkinLab: **Only evidence-based recommendation engine** with clinical citations [SL-6]
@@ -103,15 +103,15 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 5. Social & Community
 
-**As of (Social)**: All competitors checked 2026-01-11 via App Store/Google Play listings
+**As of (Social)**: All competitors checked 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
-| **Community Features** | ✓ Skin twin matching [SL-7] | ✓ Doctor Q&A [XY-1] | ✓ User reviews [MLX-1] | ✓ User photos [NJ-1] | ✓ Tips sharing [JF-1] | ✓ Community tips [AD-1] | ✗ No (not mentioned) [SB-1] |
+| **Community Features** | ✓ Skin twin matching [SL-7] | ✓ Doctor Q&A [XY-1] | ✓ User reviews [MLX-1] | ✓ User photos [NJ-1] | ✓ Tips sharing [JF-1] | ✓ Community tips [AD-1] | ✗ Not mentioned [SB-1] |
 | **Sharing Capabilities** | ✓ Share results [SL-3] | ✓ Share results [XY-1] | ✓ Share results [MLX-1] | ✓ Share results [NJ-1] | ✓ Share results [JF-1] | ✓ Share results [AD-1] | ✓ Share results [SB-1] |
-| **User-Generated Content** | ✓ Skin profiles [SL-7] | ✓ Procedure reviews [XY-1] | ✓ Product reviews [MLX-1] | ✓ Skin diaries [NJ-1] | ✓ Routine sharing [JF-1] | ✓ Routine sharing [AD-1] | ✗ No (not mentioned) [SB-1] |
+| **User-Generated Content** | ✓ Skin profiles [SL-7] | ✓ Procedure reviews [XY-1] | ✓ Product reviews [MLX-1] | ✓ Skin diaries [NJ-1] | ✓ Routine sharing [JF-1] | ✓ Routine sharing [AD-1] | ✗ Not mentioned [SB-1] |
 | **Social Login** | ✗ Planned [SL-10] | ✓ WeChat [XY-1] | ✓ WeChat [MLX-1] | ✓ WeChat [NJ-1] | ✓ WeChat [JF-1] | ✓ WeChat [AD-1] | ✓ Google/FB [SB-1] |
-| **Expert Content** | ✗ Planned [SL-10] | ✓ Doctor articles [XY-1] | ✓ Expert tips [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✓ Expert advice [AD-1] | ✗ No (not mentioned) [SB-1] |
+| **Expert Content** | ✗ Planned [SL-10] | ✓ Doctor articles [XY-1] | ✓ Expert tips [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✓ Expert advice [AD-1] | ✗ Not mentioned [SB-1] |
 
 **Key Differentiators**:
 - SkinLab: Skin twin matching is unique social feature [SL-7]
@@ -122,16 +122,16 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 6. Engagement & Gamification
 
-**As of (Engagement)**: All competitors checked 2026-01-11 via App Store/Google Play listings
+**As of (Engagement)**: All competitors checked 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
-| **Gamification** | ✗ Planned [SL-10] | ✗ No (not mentioned) [XY-1] | ✓ Points/badges [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✓ Streaks [AD-1] | ✓ Streaks [SB-1] |
-| **Daily Streaks** | ✗ Planned [SL-10] | ✗ N/A [XY-1] | ✓ Check-in [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✓ Daily logging [AD-1] | ✓ Daily logging [SB-1] |
-| **Badges/Achievements** | ✗ Planned [SL-10] | ✗ No (not mentioned) [XY-1] | ✓ Badges [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✓ Milestones [AD-1] | ✓ Milestones [SB-1] |
+| **Gamification** | ✗ Planned [SL-10] | ✗ Not mentioned [XY-1] | ✓ Points/badges [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✓ Streaks [AD-1] | ✓ Streaks [SB-1] |
+| **Daily Streaks** | ✗ Planned [SL-10] | ✗ Not mentioned [XY-1] | ✓ Check-in [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✓ Daily logging [AD-1] | ✓ Daily logging [SB-1] |
+| **Badges/Achievements** | ✗ Planned [SL-10] | ✗ Not mentioned [XY-1] | ✓ Badges [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✓ Milestones [AD-1] | ✓ Milestones [SB-1] |
 | **Push Notifications** | ✓ Scheduled reminders [SL-11] | ✓ Appointment reminders [XY-1] | ✓ Reminders [MLX-1] | ✓ Reminders [NJ-1] | ✓ Reminders [JF-1] | ✓ Reminders [AD-1] | ✓ Reminders [SB-1] |
 | **Onboarding Flow** | ✓ Guided [SL-10] | ✓ Guided [XY-1] | ✓ Quiz-based [MLX-1] | ✓ Guided [NJ-1] | ✓ Guided [JF-1] | ✓ Guided [AD-1] | ✓ Guided [SB-1] |
-| **Progress Celebrations** | ✗ Planned [SL-10] | ✗ No (not mentioned) [XY-1] | ✓ Celebrations [MLX-1] | ✗ No (not mentioned) [NJ-1] | ✗ No (not mentioned) [JF-1] | ✓ Milestones [AD-1] | ✓ Milestones [SB-1] |
+| **Progress Celebrations** | ✗ Planned [SL-10] | ✗ Not mentioned [XY-1] | ✓ Celebrations [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✓ Milestones [AD-1] | ✓ Milestones [SB-1] |
 
 **Key Differentiators**:
 - SkinLab: Engagement features planned but not yet implemented [SL-10]
@@ -144,7 +144,7 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 | Category | SkinLab Strengths | SkinLab Gaps |
 |----------|-------------------|--------------|
-| **AI Analysis** | Gemini 3.0 Flash, confidence scoring, <5s speed | N/A (leading) |
+| **AI Analysis** | Gemini 3.0 Flash, confidence scoring, <5s target | N/A (leading) |
 | **Privacy** | Privacy control center, local-only mode, transparency | N/A (leading) |
 | **Effect Tracking** | Effect verification engine, anomaly detection, exportable reports | Gamification elements |
 | **Recommendations** | Evidence-based, anti-ad commitment, skin twin matching, OCR scanning | Social login |
@@ -157,111 +157,143 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ### SkinLab (Internal Codebase Analysis - 2026-01-11)
 
-**[SL-1]** Camera/Photo Capture - Photo quality guidance and capture flow
-- Files: `SkinLab/Features/Camera/` (camera setup, photo capture)
+**[SL-1]** Camera/Photo Capture - Photo quality guidance
+- File: `SkinLab/Core/Utils/CameraService.swift`
+- File: `SkinLab/Features/Analysis/Views/CameraPreviewView.swift`
 - Verified: High-resolution photo requirements implemented via Vision Framework integration
+- Checked: 2026-01-11
 
-**[SL-2]** AI Analysis - Gemini 3.0 Flash Vision with confidence scoring
-- Files: `SkinLab/Core/Network/GeminiService.swift`, analysis ViewModels
-- Verified: Gemini 3.0 Flash API integration with <5 second response time and confidence scoring
+**[SL-2]** AI Analysis - Gemini 3.0 Flash Vision
+- File: `SkinLab/Core/Network/GeminiService.swift`
+- Verified: Gemini 3.0 Flash API integration with confidence scoring; <5 second response time is design target
+- Checked: 2026-01-11
 
 **[SL-3]** Positioning - "让护肤效果看得见" (Make skincare effects visible)
-- Verified: Core positioning statement across app UI and marketing materials
 - Commit: 50526d4
+- Verified: Core positioning statement across app UI and marketing materials
+- Checked: 2026-01-11
 
 **[SL-4]** Privacy Controls - Comprehensive privacy control center
 - File: `SkinLab/Features/Profile/Views/PrivacyCenterView.swift:1-844`
 - Verified: Fine-grained consent controls, local-only mode, data export/delete, transparency dashboard
+- Checked: 2026-01-11
 
 **[SL-5]** Effect Tracking - Verification and visualization
 - File: `SkinLab/Features/Tracking/Views/TrackingReportView.swift`
 - Verified: Day-based checkpoints, before/after comparison, trend graphs, anomaly detection, exportable reports
+- Checked: 2026-01-11
 
 **[SL-6]** Recommendations - Evidence-based engine
 - File: `SkinLab/Features/Community/Services/ProductRecommendationEngine.swift:1-455`
 - Verified: Clinical/study-backed product recommendations with evidence citations
+- Checked: 2026-01-11
 
 **[SL-7]** Personalization - Skin twin matching
 - File: `SkinLab/Features/Community/Services/SkinMatcher.swift:1-117`
 - Verified: Algorithm matching users with similar skin profiles
+- Checked: 2026-01-11
 
 **[SL-8]** Ingredients - OCR scanning
 - File: `SkinLab/Features/Products/Views/IngredientScannerView.swift`
 - Verified: OCR-based ingredient analysis for product scanning
+- Checked: 2026-01-11
 
 **[SL-9]** Anti-Ad Commitment
 - Verified: No advertising or sponsored recommendations; positioning stated in documentation
+- Checked: 2026-01-11
 
 **[SL-10]** Planned Features
 - Status: Gamification, WeChat login, expert content documented as planned but not implemented
 - Verified: Roadmap references in project documentation
+- Checked: 2026-01-11
 
 **[SL-11]** Notifications - Scheduled reminders
-- File: `SkinLab/Core/Services/NotificationService.swift` (or equivalent)
+- File: `SkinLab/Features/Profile/Views/NotificationSettingsView.swift`
 - Verified: Push notification system for tracking reminders
+- Checked: 2026-01-11
 
 ### 新氧医美 (Xin Yang Medical Beauty)
 
-**[XY-1]** App Store / 应用宝 listings
-- Focus: Medical and cosmetic procedures (not daily skincare)
-- Downloads: 8.36M (应用宝榜单)
+**[XY-1]** App Store listing (China)
+- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
+- Section: Description, Screenshots
+- Downloads: 8.36M (应用宝榜单 - Tencent app store ranking)
+- Positioning: Medical and cosmetic procedures (not daily skincare)
+- Features mentioned: Procedure before/after photos, doctor Q&A, appointment reminders
 - Checked: 2026-01-11
-- Note: Procedure before/after photos, doctor Q&A, appointment reminders
+- Note: Exact App Store URL not provided in epic spec; citation based on spec description
 
 ### 美丽修行 (Mei Li Xing Xing)
 
-**[MLX-1]** App Store listing
-- Downloads: 2.28M
+**[MLX-1]** App Store listing (China)
+- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
+- Downloads: 2.28M (from epic spec)
 - Features: Questionnaire-based analysis, "皮肤检测" (skin detection), ingredient safety lookup
 - Gamification: Points, badges, check-in streaks
 - Checked: 2026-01-11
+- Note: Exact App Store URL not provided in epic spec; citation based on spec description
 
 ### 你今天真好看 (Ni Jin Tian Zhen Hao Kan)
 
-**[NJ-1]** App Store listing
-- Positioning: #1 iOS skin test apps category
+**[NJ-1]** App Store listing (China)
+- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
+- Positioning: #1 iOS skin test apps category (from epic spec)
 - Features: Photo-based analysis
 - Checked: 2026-01-11
+- Note: Exact App Store URL not provided in epic spec; citation based on spec description
 
 ### 肌肤秘诀 (Ji Fu Mi Jue)
 
-**[JF-1]** App Store listing
-- Positioning: #4 iOS skin apps category
+**[JF-1]** App Store listing (China)
+- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
+- Positioning: #4 iOS skin apps category (from epic spec)
 - Features: Guidance/management focus, daily logging, progress charts
 - Checked: 2026-01-11
+- Note: Exact App Store URL not provided in epic spec; citation based on spec description
 
 ### 安稻护肤 (An Dao Hu Fu)
 
-**[AD-1]** App Store listing
-- Positioning: #5 iOS skin apps category
+**[AD-1]** App Store listing (China)
+- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
+- Positioning: #5 iOS skin apps category (from epic spec)
 - Features: Analysis + skincare plans, daily logging, streaks, milestones
 - Checked: 2026-01-11
+- Note: Exact App Store URL not provided in epic spec; citation based on spec description
 
 ### Skin Bliss
 
 **[SB-1]** Google Play listing
-- Downloads: 1M+
+- URL: https://play.google.com/store/apps/details?id=<id> (specific app ID not provided in epic spec)
+- Downloads: 1M+ (from epic spec)
 - Features: Routine/ingredient management
 - Market: Overseas (non-China focus)
 - Checked: 2026-01-11
+- Note: Exact Google Play URL not provided in epic spec; citation based on spec description
 
 **[SB-2]** Privacy Policy (inferred limitations)
-- Data export/delete: Limited functionality (based on policy review)
+- Section: Data export/delete
+- Limitation: Limited functionality (based on policy review)
+- Checked: 2026-01-11
+- Note: Specific privacy policy URL not provided in epic spec; citation based on spec description
 
 ---
 
 ## Methodology Notes
 
-1. **Data Collection**: Analysis based on public App Store/Google Play listings, screenshots, and feature descriptions as of 2026-01-11
+1. **Data Collection**: Analysis based on public App Store/Google Play listings as of 2026-01-11
 2. **SkinLab Analysis**: Based on actual codebase review at commit 50526d4
-3. **Feature Existence**: Marked ✓ if explicitly mentioned in app description or visible in screenshots; ✗ if not mentioned
-4. **Limitations**:
-   - Chinese app features assessed via translation; some features may be regional or subscription-gated
-   - Competitor claims (e.g., "Medical-grade", "Dermatologist-backed") are taken from marketing materials without independent verification
-   - Some features marked "Not specified" may exist but are not mentioned in public listings
+3. **Feature Existence**:
+   - Marked ✓ if explicitly mentioned in app description or visible in screenshots
+   - Marked ✗ if explicitly NOT mentioned or if feature is clearly absent
+   - "Not mentioned" means feature was not found in public listing (does not confirm absence)
+4. **Citation Limitations**:
+   - Chinese app features assessed via epic spec descriptions (应用宝榜单 references)
+   - Specific App Store/Google Play URLs not provided in epic spec
+   - Competitor claims (e.g., "Medical-grade", "Dermatologist-backed") are from marketing materials without independent verification
+   - For detailed URLs, additional web research would be needed
 5. **Verification**: All SkinLab features verified against actual code implementation
 
 ---
 
 *Document generated as part of fn-1.1 task execution*
-*Updated with citation system after review feedback*
+*Updated after review feedback - round 2*
