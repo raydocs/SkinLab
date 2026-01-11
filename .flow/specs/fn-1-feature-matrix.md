@@ -20,7 +20,7 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 1. AI Analysis
 
-**As of (AI Analysis)**: All competitors checked 2026-01-11
+**As of (AI Analysis)**: Epic spec reviewed 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
@@ -40,7 +40,7 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 2. Privacy Controls
 
-**As of (Privacy)**: All competitors checked 2026-01-11
+**As of (Privacy)**: Epic spec reviewed 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
@@ -61,7 +61,7 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 3. Effect Tracking
 
-**As of (Effect Tracking)**: All competitors checked 2026-01-11
+**As of (Effect Tracking)**: Epic spec reviewed 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
@@ -82,7 +82,7 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 4. Recommendations
 
-**As of (Recommendations)**: All competitors checked 2026-01-11
+**As of (Recommendations)**: Epic spec reviewed 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
@@ -103,7 +103,7 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 5. Social & Community
 
-**As of (Social)**: All competitors checked 2026-01-11
+**As of (Social)**: Epic spec reviewed 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
@@ -122,7 +122,7 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ## 6. Engagement & Gamification
 
-**As of (Engagement)**: All competitors checked 2026-01-11
+**As of (Engagement)**: Epic spec reviewed 2026-01-11
 
 | Feature | SkinLab | 新氧医美 | 美丽修行 | 你今天真好看 | 肌肤秘诀 | 安稻护肤 | Skin Bliss |
 |---------|---------|----------|----------|--------------|----------|----------|------------|
@@ -199,13 +199,13 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 - Checked: 2026-01-11
 
 **[SL-9]** Anti-Ad Commitment
-- Verified: No advertising or sponsored recommendations; positioning stated in documentation
-- Checked: 2026-01-11
+- Stated: Anti-ad positioning in project documentation
+- Reviewed: 2026-01-11
 
 **[SL-10]** Planned Features
 - Status: Gamification, WeChat login, expert content documented as planned but not implemented
-- Verified: Roadmap references in project documentation
-- Checked: 2026-01-11
+- Source: Project roadmap documentation
+- Reviewed: 2026-01-11
 
 **[SL-11]** Notifications - Scheduled reminders
 - File: `SkinLab/Features/Profile/Views/NotificationSettingsView.swift`
@@ -214,83 +214,72 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 
 ### 新氧医美 (Xin Yang Medical Beauty)
 
-**[XY-1]** App Store listing (China)
-- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
-- Section: Description, Screenshots
-- Downloads: 8.36M (应用宝榜单 - Tencent app store ranking)
-- Positioning: Medical and cosmetic procedures (not daily skincare)
-- Features mentioned: Procedure before/after photos, doctor Q&A, appointment reminders
-- Checked: 2026-01-11
-- Note: Exact App Store URL not provided in epic spec; citation based on spec description
+**[XY-1]** Source: `.flow/specs/fn-1.md`
+- Section: References → Competitor Data Sources
+- Claims used in matrix: downloads (8.36M, 应用宝榜单), positioning (medical/cosmetic procedures), listed features
+- Reviewed: 2026-01-11
+- Note: Live App Store/应用宝 pages were not independently verified in this task (no app IDs/URLs provided)
 
 ### 美丽修行 (Mei Li Xing Xing)
 
-**[MLX-1]** App Store listing (China)
-- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
-- Downloads: 2.28M (from epic spec)
-- Features: Questionnaire-based analysis, "皮肤检测" (skin detection), ingredient safety lookup
-- Gamification: Points, badges, check-in streaks
-- Checked: 2026-01-11
-- Note: Exact App Store URL not provided in epic spec; citation based on spec description
+**[MLX-1]** Source: `.flow/specs/fn-1.md`
+- Section: References → Competitor Data Sources
+- Claims used in matrix: downloads (2.28M), features (questionnaire-based, 皮肤检测, ingredient lookup), gamification (points, badges, check-ins)
+- Reviewed: 2026-01-11
+- Note: Live App Store page was not independently verified in this task (no app ID/URL provided)
 
 ### 你今天真好看 (Ni Jin Tian Zhen Hao Kan)
 
-**[NJ-1]** App Store listing (China)
-- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
-- Positioning: #1 iOS skin test apps category (from epic spec)
-- Features: Photo-based analysis
-- Checked: 2026-01-11
-- Note: Exact App Store URL not provided in epic spec; citation based on spec description
+**[NJ-1]** Source: `.flow/specs/fn-1.md`
+- Section: References → Competitor Data Sources
+- Claims used in matrix: positioning (#1 iOS skin test apps), features (photo-based analysis)
+- Reviewed: 2026-01-11
+- Note: Live App Store page was not independently verified in this task (no app ID/URL provided)
 
 ### 肌肤秘诀 (Ji Fu Mi Jue)
 
-**[JF-1]** App Store listing (China)
-- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
-- Positioning: #4 iOS skin apps category (from epic spec)
-- Features: Guidance/management focus, daily logging, progress charts
-- Checked: 2026-01-11
-- Note: Exact App Store URL not provided in epic spec; citation based on spec description
+**[JF-1]** Source: `.flow/specs/fn-1.md`
+- Section: References → Competitor Data Sources
+- Claims used in matrix: positioning (#4 iOS skin apps), features (guidance/management, daily logging, progress charts)
+- Reviewed: 2026-01-11
+- Note: Live App Store page was not independently verified in this task (no app ID/URL provided)
 
 ### 安稻护肤 (An Dao Hu Fu)
 
-**[AD-1]** App Store listing (China)
-- URL: https://apps.apple.com/cn/app/id<id> (specific app ID not provided in epic spec)
-- Positioning: #5 iOS skin apps category (from epic spec)
-- Features: Analysis + skincare plans, daily logging, streaks, milestones
-- Checked: 2026-01-11
-- Note: Exact App Store URL not provided in epic spec; citation based on spec description
+**[AD-1]** Source: `.flow/specs/fn-1.md`
+- Section: References → Competitor Data Sources
+- Claims used in matrix: positioning (#5 iOS skin apps), features (analysis + plans, daily logging, streaks, milestones)
+- Reviewed: 2026-01-11
+- Note: Live App Store page was not independently verified in this task (no app ID/URL provided)
 
 ### Skin Bliss
 
-**[SB-1]** Google Play listing
-- URL: https://play.google.com/store/apps/details?id=<id> (specific app ID not provided in epic spec)
-- Downloads: 1M+ (from epic spec)
-- Features: Routine/ingredient management
-- Market: Overseas (non-China focus)
-- Checked: 2026-01-11
-- Note: Exact Google Play URL not provided in epic spec; citation based on spec description
+**[SB-1]** Source: `.flow/specs/fn-1.md`
+- Section: References → Competitor Data Sources
+- Claims used in matrix: downloads (1M+), features (routine/ingredient management), market (overseas)
+- Reviewed: 2026-01-11
+- Note: Live Google Play page was not independently verified in this task (no app ID/URL provided)
 
-**[SB-2]** Privacy Policy limitations
-- Section: Data export/delete
-- Limitation: Limited functionality (from epic spec description)
-- Checked: 2026-01-11
-- Note: Specific privacy policy URL not provided in epic spec; citation based on spec description
+**[SB-2]** Source: `.flow/specs/fn-1.md`
+- Claims used in matrix: privacy limitations (limited data export/delete functionality)
+- Reviewed: 2026-01-11
+- Note: Specific privacy policy was not independently reviewed in this task
 
 ---
 
 ## Methodology Notes
 
-1. **Data Collection**: Analysis based on public App Store/Google Play listings as of 2026-01-11
+1. **Data Collection**: Competitor feature claims sourced from `.flow/specs/fn-1.md` and reviewed on 2026-01-11. Live App Store/Google Play listings were not independently verified in this task.
 2. **SkinLab Analysis**: Based on actual codebase review at commit 50526d4
 3. **Feature Existence**:
-   - Marked ✓ if explicitly mentioned in app description or visible in screenshots
+   - Marked ✓ if explicitly mentioned in epic spec or code analysis
    - Marked ✗ if explicitly NOT mentioned or if feature is clearly absent
-   - "Not mentioned" means feature was not found in public listing (does not confirm absence)
+   - "Not mentioned" means feature was not found in epic spec (does not confirm absence)
 4. **Citation Limitations**:
-   - Chinese app features assessed via epic spec descriptions (应用宝榜单 references)
-   - Specific App Store/Google Play URLs not provided in epic spec
-   - Competitor claims (e.g., "Medical-grade", "Dermatologist-backed") are from marketing materials without independent verification
-   - For detailed URLs, additional web research would be needed
+   - Competitor data comes from epic spec references (应用宝榜单, download counts, feature descriptions)
+   - Specific App Store/Google Play URLs/app IDs not provided in epic spec
+   - Competitor claims (e.g., "Medical-grade", "Dermatologist-backed") are from epic spec without independent verification
+   - For verifiable competitor data with live URLs, additional web research would be needed
 5. **Verification**: All SkinLab features verified against actual code implementation
 
 ---

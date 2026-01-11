@@ -31,6 +31,56 @@ Create a comprehensive feature comparison matrix for 6 competitors (新氧医美
 - Compared SkinLab against 6 competitors across 6 feature categories
 - Identified SkinLab's key strengths (privacy, evidence-based recommendations, effect verification)
 - Identified gaps (gamification, WeChat login, expert content)
+- All cells now have ✓/✗ + description + citation ID
+- Competitor citations explicitly reference epic spec as data source (honest about limitations)
+
+## Why
+- Deliverable required for fn-1 epic (Competitor Analysis & Improvement Roadmap)
+- Foundation for gap analysis (fn-1.2) and recommendations (fn-1.3)
+- Provides data-driven competitive intelligence for product strategy
+
+## Verification
+- All 6 competitors represented (新氧医美, 美丽修行, 你今天真好看, 肌肤秘诀, 安稻护肤, Skin Bliss)
+- All 6 feature categories covered (AI Analysis, Privacy, Effect Tracking, Recommendations, Social, Engagement)
+- SkinLab included as baseline comparison
+- Each cell contains: feature status (✓/✗), description, source citation
+- Document saved to `.flow/specs/fn-1-feature-matrix.md`
+- "As of" date (2026-01-11) included for each section
+- RepoPrompt review returned SHIP verdict after 4 rounds of fixes
+
+## Follow-ups
+- fn-1.2: Conduct gap analysis and prioritization using this matrix
+- fn-1.3: Write recommendations document based on gap analysis
+## What Changed
+- Created comprehensive feature comparison matrix (`.flow/specs/fn-1-feature-matrix.md`)
+- Compared SkinLab against 6 competitors across 6 feature categories
+- Identified SkinLab's key strengths (privacy, evidence-based recommendations, effect verification)
+- Identified gaps (gamification, WeChat login, expert content)
+- All cells now have ✓/✗ + description + citation ID
+- Competitor citations explicitly reference epic spec as data source (honest about limitations)
+
+## Why
+- Deliverable required for fn-1 epic (Competitor Analysis & Improvement Roadmap)
+- Foundation for gap analysis (fn-1.2) and recommendations (fn-1.3)
+- Provides data-driven competitive intelligence for product strategy
+
+## Verification
+- All 6 competitors represented (新氧医美, 美丽修行, 你今天真好看, 肌肤秘诀, 安稻护肤, Skin Bliss)
+- All 6 feature categories covered (AI Analysis, Privacy, Effect Tracking, Recommendations, Social, Engagement)
+- SkinLab included as baseline comparison
+- Each cell contains: feature status (✓/✗), description, source citation
+- Document saved to `.flow/specs/fn-1-feature-matrix.md`
+- "As of" date (2026-01-11) included for each section
+- RepoPrompt review returned SHIP verdict after 4 rounds of fixes
+
+## Follow-ups
+- fn-1.2: Conduct gap analysis and prioritization using this matrix
+- fn-1.3: Write recommendations document based on gap analysis
+## What Changed
+- Created comprehensive feature comparison matrix (`.flow/specs/fn-1-feature-matrix.md`)
+- Compared SkinLab against 6 competitors across 6 feature categories
+- Identified SkinLab's key strengths (privacy, evidence-based recommendations, effect verification)
+- Identified gaps (gamification, WeChat login, expert content)
 
 ## Why
 - Deliverable required for fn-1 epic (Competitor Analysis & Improvement Roadmap)
@@ -49,6 +99,6 @@ Create a comprehensive feature comparison matrix for 6 competitors (新氧医美
 - fn-1.2: Conduct gap analysis and prioritization using this matrix
 - fn-1.3: Write recommendations document based on gap analysis
 ## Evidence
-- Commits: 249400c1e64dfb5b3253f0a10f4961fcab09fb6e (round 2 fixes after review feedback)
+- Commits: 04b1855fa6fe41958362adf95dac8b1aedb6979b
 - Tests:
 - PRs:
