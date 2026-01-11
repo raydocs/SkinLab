@@ -1,0 +1,6 @@
+{
+  "base_branch": "main",
+  "epics": {
+    "fn-1": "fn-1-epic"
+  }
+}
