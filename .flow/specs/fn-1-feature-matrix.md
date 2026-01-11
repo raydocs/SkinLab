@@ -46,8 +46,8 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 |---------|---------|----------|----------|--------------|----------|----------|------------|
 | **Consent Granularity** | ✓ Fine-grained controls [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
 | **Local-Only Mode** | ✓ Full local processing option [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
-| **Data Export** | ✓ Full user data export [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Limited (inferred from privacy policy) [SB-2] |
-| **Data Delete** | ✓ Full account/data deletion [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Limited (inferred from privacy policy) [SB-2] |
+| **Data Export** | ✓ Full user data export [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Limited (from spec description) [SB-2] |
+| **Data Delete** | ✓ Full account/data deletion [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Limited (from spec description) [SB-2] |
 | **Transparency Report** | ✓ Privacy dashboard [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
 | **Data Retention Policy** | ✓ Clearly documented [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
 | **Biometric Data Handling** | ✓ On-device only [SL-4] | ✗ Not mentioned [XY-1] | ✗ Not mentioned [MLX-1] | ✗ Not mentioned [NJ-1] | ✗ Not mentioned [JF-1] | ✗ Not mentioned [AD-1] | ✗ Not mentioned [SB-1] |
@@ -174,7 +174,7 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 - Checked: 2026-01-11
 
 **[SL-4]** Privacy Controls - Comprehensive privacy control center
-- File: `SkinLab/Features/Profile/Views/PrivacyCenterView.swift:1-844`
+- File: `SkinLab/Features/Profile/Views/PrivacyCenterView.swift`
 - Verified: Fine-grained consent controls, local-only mode, data export/delete, transparency dashboard
 - Checked: 2026-01-11
 
@@ -184,12 +184,12 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 - Checked: 2026-01-11
 
 **[SL-6]** Recommendations - Evidence-based engine
-- File: `SkinLab/Features/Community/Services/ProductRecommendationEngine.swift:1-455`
+- File: `SkinLab/Features/Community/Services/ProductRecommendationEngine.swift`
 - Verified: Clinical/study-backed product recommendations with evidence citations
 - Checked: 2026-01-11
 
 **[SL-7]** Personalization - Skin twin matching
-- File: `SkinLab/Features/Community/Services/SkinMatcher.swift:1-117`
+- File: `SkinLab/Features/Community/Services/SkinMatcher.swift`
 - Verified: Algorithm matching users with similar skin profiles
 - Checked: 2026-01-11
 
@@ -270,9 +270,9 @@ This matrix compares SkinLab against 6 major competitors across 6 feature catego
 - Checked: 2026-01-11
 - Note: Exact Google Play URL not provided in epic spec; citation based on spec description
 
-**[SB-2]** Privacy Policy (inferred limitations)
+**[SB-2]** Privacy Policy limitations
 - Section: Data export/delete
-- Limitation: Limited functionality (based on policy review)
+- Limitation: Limited functionality (from epic spec description)
 - Checked: 2026-01-11
 - Note: Specific privacy policy URL not provided in epic spec; citation based on spec description
 
