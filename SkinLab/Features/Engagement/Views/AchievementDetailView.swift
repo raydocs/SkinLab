@@ -281,8 +281,10 @@ struct AchievementDetailView: View {
         let text = "我在 SkinLab 解锁了「\(badge.title)」成就！\(badge.description)"
         items.append(text)
 
-        // TODO: Add share image generation
-        // items.append(shareImage)
+        // Generate share image
+        if let shareImage = AchievementShareService().generateShareImage(for: badge) {
+            items.append(shareImage)
+        }
 
         return items
     }
