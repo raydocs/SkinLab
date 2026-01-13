@@ -246,6 +246,8 @@ struct AchievementDetailView: View {
             return "匹配\(badge.requirementValue)位护肤双胞胎"
         case .productAnalysisCompleted:
             return "分析\(badge.requirementValue)个护肤产品"
+        case .shares:
+            return "分享\(badge.requirementValue)次成就"
         }
     }
 
@@ -259,6 +261,8 @@ struct AchievementDetailView: View {
             return "person.2.fill"
         case .productAnalysisCompleted:
             return "chart.bar.doc.horizontal"
+        case .shares:
+            return "square.and.arrow.up"
         }
     }
 
@@ -272,6 +276,8 @@ struct AchievementDetailView: View {
             return "匹配 \(badge.requirementValue) 位护肤双胞胎"
         case .productAnalysisCompleted:
             return "分析 \(badge.requirementValue) 个护肤产品"
+        case .shares:
+            return "分享 \(badge.requirementValue) 次成就"
         }
     }
 

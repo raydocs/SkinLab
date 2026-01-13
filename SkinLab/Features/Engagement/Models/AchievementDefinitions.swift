@@ -25,6 +25,7 @@ enum AchievementRequirementType: String, Codable {
     case totalCheckIns = "totalCheckIns"
     case skinTwinMatches = "skinTwinMatches"
     case productAnalysisCompleted = "productAnalysisCompleted"
+    case shares = "shares"
 }
 
 /// All achievement badge definitions
@@ -112,7 +113,7 @@ enum AchievementDefinitions {
             title: "乐于分享",
             description: "分享成就到社交媒体",
             category: .social,
-            requirementType: .totalCheckIns,
+            requirementType: .shares,
             requirementValue: 1,
             iconName: "square.and.arrow.up"
         ),
@@ -128,9 +129,9 @@ enum AchievementDefinitions {
             iconName: "chart.bar.doc.horizontal"
         ),
         AchievementDefinition(
-            id: "learn_10_ingredients",
-            title: "成分专家",
-            description: "学习10种护肤成分",
+            id: "analyze_10_products",
+            title: "产品专家",
+            description: "分析10个护肤产品",
             category: .knowledge,
             requirementType: .productAnalysisCompleted,
             requirementValue: 10,

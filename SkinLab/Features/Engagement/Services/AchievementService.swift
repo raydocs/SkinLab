@@ -84,6 +84,8 @@ final class AchievementService {
             currentValue = getSkinTwinMatchCount()
         case .productAnalysisCompleted:
             currentValue = getProductAnalysisCount()
+        case .shares:
+            currentValue = getShareCount()
         }
 
         return min(1.0, Double(currentValue) / Double(achievement.requirementValue))
@@ -116,6 +118,10 @@ final class AchievementService {
               progressRecord.isUnlocked else {
             return false
         }
+
+        // Track the share
+        let metrics = getOrCreateMetrics()
+        metrics.totalShares += 1
 
         // Generate share image (to be implemented in UI layer)
         // For now, return true to indicate share capability
@@ -207,5 +213,11 @@ final class AchievementService {
         }
 
         return productIDs.count
+    }
+
+    /// Get count of achievement shares
+    private func getShareCount() -> Int {
+        let metrics = getOrCreateMetrics()
+        return metrics.totalShares
     }
 }

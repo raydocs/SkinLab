@@ -29,17 +29,10 @@ final class EngagementMigrationService {
     func migrate(maxDays: Int = 90) async {
         guard !hasCompletedMigration else { return }
 
-        do {
-            // Run backfill
-            await streakService.backfillStreaks(maxDays: maxDays)
+        // Run backfill (error handling is internal to backfillStreaks)
+        await streakService.backfillStreaks(maxDays: maxDays)
 
-            // Mark migration as complete
-            UserDefaults.standard.set(true, forKey: migrationCompletedKey)
-
-        } catch {
-            // Migration failed, log analytics event and continue
-            // Streak will start from 0
-            UserDefaults.standard.set(true, forKey: migrationCompletedKey)
-        }
+        // Mark migration as complete
+        UserDefaults.standard.set(true, forKey: migrationCompletedKey)
     }
 }

@@ -72,8 +72,8 @@ final class StreakNotificationService {
         UNUserNotificationCenter.current().setNotificationCategories([category])
         content.categoryIdentifier = "STREAK_AT_RISK"
 
-        // Schedule for 8 PM today
-        if let trigger = getTriggerForTodayAt(hour: 20, minute: 0) {
+        // Schedule for 8 PM tomorrow (remind user to check in tomorrow)
+        if let trigger = getTriggerForTomorrowAt(hour: 20, minute: 0) {
             let request = UNNotificationRequest(
                 identifier: identifier,
                 content: content,
@@ -115,9 +115,12 @@ final class StreakNotificationService {
         }
     }
 
-    /// Get trigger for today at specific time
-    private func getTriggerForTodayAt(hour: Int, minute: Int) -> UNCalendarNotificationTrigger? {
-        var dateComponents = DateComponents()
+    /// Get trigger for tomorrow at specific time
+    private func getTriggerForTomorrowAt(hour: Int, minute: Int) -> UNCalendarNotificationTrigger? {
+        let calendar = Calendar.current
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+
+        var dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: tomorrow)
         dateComponents.hour = hour
         dateComponents.minute = minute
 

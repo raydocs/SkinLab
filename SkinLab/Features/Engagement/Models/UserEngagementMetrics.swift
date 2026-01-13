@@ -22,8 +22,14 @@ final class UserEngagementMetrics {
     /// Total number of check-ins completed
     var totalCheckIns: Int = 0
 
+    /// Total number of achievement shares
+    var totalShares: Int = 0
+
     /// IDs of unlocked achievements (SwiftData-compatible string array)
     @Attribute(.externalStorage) var unlockedAchievementIDs: [String] = []
+
+    /// Last day (start of day) that a freeze was used for
+    var lastFreezeUsedForDay: Date?
 
     init() {
         // Initialize with first freeze available

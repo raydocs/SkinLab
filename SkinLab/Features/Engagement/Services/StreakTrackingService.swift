@@ -31,9 +31,9 @@ final class StreakTrackingService {
     private let freezeRefillDays = 30
 
     // MARK: - Initialization
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext, calendar: Calendar = .current) {
         self.modelContext = modelContext
-        self.calendar = Calendar.current
+        self.calendar = calendar
     }
 
     // MARK: - Public Methods
@@ -45,9 +45,13 @@ final class StreakTrackingService {
         let metrics = getOrCreateMetrics()
         let previousStreak = metrics.streakCount
 
+        // Normalize to calendar days
+        let checkInDay = dayKey(for: checkInDate)
+        let lastCheckInDay = metrics.lastCheckInDate.map { dayKey(for: $0) }
+
         // Check if this is a same-day check-in
-        if let lastDate = metrics.lastCheckInDate,
-           isSameDay(lastDate, date2: checkInDate) {
+        if let lastDay = lastCheckInDay,
+           calendar.isDate(checkInDay, inSameDayAs: lastDay) {
             // Same day check-in, don't increment streak
             return StreakResult(
                 currentStreak: metrics.streakCount,
@@ -58,15 +62,37 @@ final class StreakTrackingService {
             )
         }
 
-        // Calculate new streak
-        let isNewDay = metrics.lastCheckInDate == nil || !isSameDay(checkInDate, date2: metrics.lastCheckInDate!)
-        let isConsecutiveDay = isConsecutiveDay(lastDate: metrics.lastCheckInDate, newDate: checkInDate)
+        // Calculate days since last check-in
+        let daysSince = deltaDays(from: lastCheckInDay, to: checkInDay)
 
-        if isNewDay && isConsecutiveDay {
-            // Consecutive day, increment streak
-            metrics.streakCount += 1
-        } else if isNewDay && !isConsecutiveDay {
-            // Missed a day, reset streak
+        // Check if a freeze was used for the missed day (retroactive)
+        let missedDay = lastCheckInDay.map { calendar.date(byAdding: .day, value: 1, to: $0)! }
+        let freezeWasUsed = missedDay != nil && metrics.lastFreezeUsedForDay != nil &&
+                              calendar.isDate(metrics.lastFreezeUsedForDay!, inSameDayAs: missedDay!)
+
+        // Determine if streak is maintained (with freeze or consecutive)
+        let streakMaintained: Bool
+        if daysSince == 1 {
+            // Consecutive day - increment streak
+            streakMaintained = true
+        } else if daysSince == 2 && freezeWasUsed {
+            // Missed one day but freeze was used
+            streakMaintained = true
+        } else if daysSince >= 2 {
+            // Missed multiple days or no freeze - reset streak
+            streakMaintained = false
+        } else {
+            // Same day or first check-in
+            streakMaintained = true
+        }
+
+        // Update streak count
+        if streakMaintained {
+            if daysSince > 0 {
+                metrics.streakCount += 1
+            }
+        } else {
+            // Reset to 1 (starting fresh streak)
             metrics.streakCount = 1
         }
 
@@ -79,6 +105,11 @@ final class StreakTrackingService {
         metrics.lastCheckInDate = checkInDate
         metrics.totalCheckIns += 1
 
+        // Clear freeze usage flag if it was consumed
+        if freezeWasUsed && daysSince == 2 {
+            metrics.lastFreezeUsedForDay = nil
+        }
+
         // Save changes
         modelContext.insert(metrics)
 
@@ -86,8 +117,8 @@ final class StreakTrackingService {
             currentStreak: metrics.streakCount,
             longestStreak: metrics.longestStreak,
             streakIncreased: metrics.streakCount > previousStreak,
-            streakReset: metrics.streakCount == 1 && previousStreak > 1,
-            freezeUsed: false
+            streakReset: metrics.streakCount == 1 && previousStreak > 1 && !streakMaintained,
+            freezeUsed: freezeWasUsed
         )
     }
 
@@ -117,15 +148,28 @@ final class StreakTrackingService {
     }
 
     /// Use a streak freeze to maintain streak during a missed day
+    /// - Parameter now: Current date (defaults to now)
     /// - Returns: True if freeze was successfully used
-    func useStreakFreeze() -> Bool {
+    func useStreakFreeze(now: Date = Date()) -> Bool {
         let metrics = getOrCreateMetrics()
 
         guard metrics.streakFreezesAvailable > 0 else {
             return false
         }
 
+        // Mark the day after last check-in as protected
+        // If no previous check-in, protect tomorrow
+        let nowDay = dayKey(for: now)
+        let dayToProtect: Date
+        if let lastCheckIn = metrics.lastCheckInDate {
+            let lastCheckInDay = dayKey(for: lastCheckIn)
+            dayToProtect = calendar.date(byAdding: .day, value: 1, to: lastCheckInDay) ?? nowDay
+        } else {
+            dayToProtect = calendar.date(byAdding: .day, value: 1, to: nowDay) ?? nowDay
+        }
+
         metrics.streakFreezesAvailable -= 1
+        metrics.lastFreezeUsedForDay = dayToProtect
         modelContext.insert(metrics)
 
         return true
@@ -155,69 +199,102 @@ final class StreakTrackingService {
     /// Backfill streaks from historical tracking session data
     /// - Parameter maxDays: Maximum days to look back (default 90)
     func backfillStreaks(maxDays: Int = 90) async {
+        let cutoffDate = calendar.date(byAdding: .day, value: -maxDays, to: Date()) ?? Date()
+
+        let descriptor = FetchDescriptor<TrackingSession>(
+            predicate: #Predicate<TrackingSession> { session in
+                session.startDate >= cutoffDate && session.statusRaw == "completed"
+            },
+            sortBy: [SortDescriptor(\.startDate, order: .forward)]
+        )
+
+        let sessions: [TrackingSession]
         do {
-            // Fetch historical tracking sessions
-            let cutoffDate = calendar.date(byAdding: .day, value: -maxDays, to: Date()) ?? Date()
-
-            let descriptor = FetchDescriptor<TrackingSession>(
-                predicate: #Predicate<TrackingSession> { session in
-                    session.startDate >= cutoffDate && session.statusRaw == "completed"
-                },
-                sortBy: [SortDescriptor(\.startDate, order: .forward)]
-            )
-
-            let sessions = try modelContext.fetch(descriptor)
-
-            // Group sessions by calendar day
-            var checkInDays = Set<String>()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            dateFormatter.calendar = calendar
-
-            for session in sessions {
-                // Use the earliest check-in date (startDate) as the check-in day
-                let dateString = dateFormatter.string(from: session.startDate)
-                checkInDays.insert(dateString)
-            }
-
-            // Calculate streaks from consecutive days
-            let sortedDates = checkInDays.compactMap { dateFormatter.date(from: $0) }
-                                         .sorted()
-
-            var currentStreak = 0
-            var longestStreak = 0
-            var previousDate: Date?
-
-            for date in sortedDates {
-                if let prev = previousDate {
-                    if isConsecutiveDay(lastDate: prev, newDate: date) {
-                        currentStreak += 1
-                    } else {
-                        currentStreak = 1
-                    }
-                } else {
-                    currentStreak = 1
-                }
-
-                longestStreak = max(longestStreak, currentStreak)
-                previousDate = date
-            }
-
-            // Update metrics
-            let metrics = getOrCreateMetrics()
-            metrics.streakCount = currentStreak
-            metrics.longestStreak = longestStreak
-            metrics.totalCheckIns = sessions.count
-            if let lastSession = sessions.last {
-                metrics.lastCheckInDate = lastSession.startDate
-            }
-            modelContext.insert(metrics)
-
+            sessions = try modelContext.fetch(descriptor)
         } catch {
-            // Fallback: start from 0, log analytics event
+            // Fallback: start from 0
             let metrics = getOrCreateMetrics()
             metrics.streakCount = 0
-            modelContext.insert(metrics)
+            metrics.longestStreak = 0
+            metrics.totalCheckIns = 0
+            return
+        }
+
+        guard !sessions.isEmpty else {
+            // No sessions, start from 0
+            let metrics = getOrCreateMetrics()
+            metrics.streakCount = 0
+            metrics.longestStreak = 0
+            metrics.totalCheckIns = 0
+            return
+        }
+
+        // Group sessions by calendar day (unique check-in days)
+        var checkInDays = Set<String>()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.calendar = calendar
+
+        for session in sessions {
+            let dateString = dateFormatter.string(from: session.startDate)
+            checkInDays.insert(dateString)
+        }
+
+        // Sort all check-in days
+        let sortedDates = checkInDays.compactMap { dateFormatter.date(from: $0) }
+                                     .sorted()
+
+        // Calculate streaks from consecutive days
+        var currentStreak = 0
+        var longestStreak = 0
+        var tempStreak = 0
+        var previousDate: Date?
+        let today = dayKey(for: Date())
+
+        // First pass: find longest streak
+        for date in sortedDates {
+            if let prev = previousDate {
+                if deltaDays(from: prev, to: date) == 1 {
+                    tempStreak += 1
+                } else {
+                    tempStreak = 1
+                }
+            } else {
+                tempStreak = 1
+            }
+            longestStreak = max(longestStreak, tempStreak)
+            previousDate = date
+        }
+
+        // Second pass: find current streak (streak leading up to today or closest past day)
+        // Work backwards from the most recent check-in day
+        currentStreak = 1
+        if let lastDate = sortedDates.last {
+            let daysFromLast = deltaDays(from: lastDate, to: today)
+            if daysFromLast > 1 {
+                // Last check-in was too long ago, current streak is 0
+                currentStreak = 0
+            } else {
+                // Count consecutive days backwards from last check-in
+                for i in stride(from: sortedDates.count - 1, through: 1, by: -1) {
+                    let laterDate = sortedDates[i]
+                    let earlierDate = sortedDates[i - 1]
+                    if deltaDays(from: earlierDate, to: laterDate) == 1 {
+                        currentStreak += 1
+                    } else {
+                        break
+                    }
+                }
+            }
+        }
+
+        // Update metrics
+        let metrics = getOrCreateMetrics()
+        metrics.streakCount = max(0, currentStreak)
+        metrics.longestStreak = max(currentStreak, longestStreak)
+        metrics.totalCheckIns = checkInDays.count  // Unique check-in days
+        if let lastSession = sessions.last {
+            metrics.lastCheckInDate = lastSession.startDate
         }
     }
 
@@ -237,19 +314,32 @@ final class StreakTrackingService {
         return metrics
     }
 
+    /// Normalize a date to its calendar day (start of day)
+    /// This ensures DST and time-of-day don't affect streak calculations
+    private func dayKey(for date: Date) -> Date {
+        calendar.startOfDay(for: date)
+    }
+
+    /// Calculate the number of calendar days between two dates
+    private func deltaDays(from start: Date?, to end: Date) -> Int {
+        guard let start = start else {
+            return 1 // First check-in
+        }
+
+        let startOfDay = calendar.startOfDay(for: start)
+        let endOfDay = calendar.startOfDay(for: end)
+        let components = calendar.dateComponents([.day], from: startOfDay, to: endOfDay)
+        return components.day ?? 1
+    }
+
     /// Check if two dates are on the same calendar day
     private func isSameDay(_ date1: Date, date2: Date) -> Bool {
-        return calendar.isDate(date1, inSameDayAs: date2)
+        calendar.isDate(date1, inSameDayAs: date2)
     }
 
     /// Check if two dates represent consecutive days
     private func isConsecutiveDay(lastDate: Date?, newDate: Date) -> Bool {
-        guard let last = lastDate else {
-            return true // First check-in
-        }
-
-        let components = calendar.dateComponents([.day], from: last, to: newDate)
-        return components.day == 1
+        deltaDays(from: lastDate, to: newDate) == 1
     }
 
     /// Calculate number of days between two dates
