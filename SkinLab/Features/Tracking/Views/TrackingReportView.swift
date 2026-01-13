@@ -15,6 +15,11 @@ struct TrackingReportView: View {
     @State private var showProductEffectiveness = false
     @State private var showDimensionChanges = false
     @State private var showRecommendations = false
+    @State private var showLifestyleInsights = false
+    @State private var showDataQuality = false
+
+    // Timeline mode: all data vs reliable only
+    @State private var timelineMode: TimelineDisplayPolicy.TimelineMode = .all
     
     enum MetricType: String, CaseIterable {
         case overallScore = "综合评分"
@@ -81,15 +86,43 @@ struct TrackingReportView: View {
                 ) {
                     recommendationsSection
                 }
-                
-                // Share Button
-                shareButton
+
+                // Lifestyle Insights (collapsed by default)
+                if !report.lifestyleInsights.isEmpty {
+                    disclosureCard(
+                        title: "生活方式关联",
+                        systemImage: "chart.xyaxis.line",
+                        isExpanded: $showLifestyleInsights
+                    ) {
+                        LifestyleInsightsCard(
+                            insights: report.lifestyleInsights,
+                            dataCoverage: report.lifestyleDataCoverage
+                        )
+                    }
+                }
+
+                // Data Quality (collapsed by default)
+                if !report.reliabilityMap.isEmpty {
+                    disclosureCard(
+                        title: "数据质量",
+                        systemImage: "checkmark.shield",
+                        isExpanded: $showDataQuality
+                    ) {
+                        dataQualitySection
+                    }
+                }
+
+                // Share & Export Button
+                shareAndExportSection
             }
             .padding()
         }
         .background(Color.skinLabBackground)
         .navigationTitle("追踪报告")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            timelineMode = report.timelinePolicy.defaultMode
+        }
         .sheet(isPresented: $showShareSheet) {
             if let image = shareImage {
                 ShareSheet(items: [image])
@@ -258,9 +291,9 @@ struct TrackingReportView: View {
                 Text("变化趋势")
                     .font(.skinLabTitle3)
                     .foregroundColor(.skinLabText)
-                
+
                 Spacer()
-                
+
                 // Metric Selector
                 Picker("", selection: $selectedMetric) {
                     ForEach(MetricType.allCases, id: \.self) { metric in
@@ -270,10 +303,17 @@ struct TrackingReportView: View {
                 .pickerStyle(.segmented)
                 .frame(width: 200)
             }
-            
+
+            // Timeline mode toggle (if reliable data available)
+            if report.timelinePolicy.hasReliableAlternative {
+                TimelineModeToggle(mode: $timelineMode, policy: report.timelinePolicy)
+                    .padding(.top, 4)
+            }
+
             // Chart
-            if !report.timeline.isEmpty {
-                Chart(report.timeline) { point in
+            let currentTimeline = timelineMode == .reliable ? report.timelineReliable : report.timeline
+            if !currentTimeline.isEmpty {
+                Chart(currentTimeline) { point in
                     LineMark(
                         x: .value("天数", point.day),
                         y: .value(selectedMetric.yAxisLabel, getMetricValue(for: point))
@@ -423,23 +463,255 @@ struct TrackingReportView: View {
         }
         .padding(.top, 4)
     }
-    
-    // MARK: - Share Button
-    private var shareButton: some View {
-        Button {
-            generateShareCard()
-        } label: {
-            HStack {
-                Image(systemName: "square.and.arrow.up")
-                Text("分享报告")
-                    .font(.skinLabHeadline)
+
+    // MARK: - Data Quality
+    private var dataQualitySection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Overall statistics
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Image(systemName: "checkmark.shield")
+                        .foregroundColor(.skinLabAccent)
+                    Text("数据可靠性")
+                        .font(.skinLabSubheadline)
+                        .foregroundColor(.skinLabText)
+
+                    Spacer()
+
+                    // Coverage percentage
+                    let reliableCount = report.reliabilityMap.values.filter { $0.score >= 0.5 }.count
+                    let totalCount = report.reliabilityMap.count
+                    let percentage = totalCount > 0 ? Int(Double(reliableCount) / Double(totalCount) * 100) : 0
+
+                    Text("\(reliableCount)/\(totalCount) 可靠 (\(percentage)%)")
+                        .font(.skinLabCaption)
+                        .foregroundColor(.skinLabSubtext)
+                }
+
+                // Timeline mode toggle (always visible here)
+                TimelineModeToggle(mode: $timelineMode, policy: report.timelinePolicy)
             }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(LinearGradient.skinLabRoseGradient)
-            .cornerRadius(16)
+
+            // Reliability breakdown by check-in
+            VStack(alignment: .leading, spacing: 12) {
+                Text("各次打卡可靠性")
+                    .font(.skinLabCaption)
+                    .foregroundColor(.skinLabSubtext)
+
+                // Get check-in IDs sorted by day
+                let sortedCheckInIds = report.timelineReliable.isEmpty
+                    ? report.timeline.map { $0.checkInId }
+                    : report.timeline.map { $0.checkInId }
+
+                ForEach(sortedCheckInIds, id: \.self) { checkInId in
+                    if let reliability = report.reliabilityMap[checkInId] {
+                        reliabilityRow(for: checkInId, reliability: reliability)
+                    }
+                }
+            }
+
+            // Low reliability reasons (if any)
+            let lowReliabilityItems = report.reliabilityMap.filter { $0.value.level == .low }
+            if !lowReliabilityItems.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("低可靠性原因")
+                        .font(.skinLabCaption)
+                        .foregroundColor(.skinLabSubtext)
+
+                    ForEach(Array(lowReliabilityItems.keys.prefix(3)), id: \.self) { checkInId in
+                        if let reliability = lowReliabilityItems[checkInId] {
+                            ReliabilityReasonsView(reliability: reliability)
+                        }
+                    }
+                }
+            }
         }
+        .padding(.top, 4)
+    }
+
+    private func reliabilityRow(for checkInId: UUID, reliability: ReliabilityMetadata) -> some View {
+        HStack {
+            // Find day number
+            if let point = report.timeline.first(where: { $0.checkInId == checkInId }) {
+                Text("Day \(point.day)")
+                    .font(.skinLabCaption)
+                    .foregroundColor(.skinLabSubtext)
+                    .frame(width: 60, alignment: .leading)
+            } else {
+                Spacer()
+                    .frame(width: 60)
+            }
+
+            ReliabilityBadgeView(reliability: reliability, size: .small)
+
+            Spacer()
+
+            if reliability.level == .low && !reliability.reasons.isEmpty {
+                Image(systemName: "info.circle")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    // MARK: - Share & Export
+    private var shareAndExportSection: some View {
+        VStack(spacing: 12) {
+            // Image share button
+            Button {
+                generateShareCard()
+            } label: {
+                HStack {
+                    Image(systemName: "square.and.arrow.up")
+                    Text("分享报告图片")
+                        .font(.skinLabHeadline)
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(LinearGradient.skinLabRoseGradient)
+                .cornerRadius(16)
+            }
+
+            // Export buttons
+            HStack(spacing: 12) {
+                // CSV export
+                Button {
+                    exportCSV()
+                } label: {
+                    HStack {
+                        Image(systemName: "doc.text")
+                        Text("导出 CSV")
+                            .font(.skinLabSubheadline)
+                    }
+                    .foregroundColor(.skinLabPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.skinLabPrimary.opacity(0.1))
+                    .cornerRadius(12)
+                }
+
+                // JSON export
+                Button {
+                    exportJSON()
+                } label: {
+                    HStack {
+                        Image(systemName: "doc.text.fill")
+                        Text("导出 JSON")
+                            .font(.skinLabSubheadline)
+                    }
+                    .foregroundColor(.skinLabPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.skinLabPrimary.opacity(0.1))
+                    .cornerRadius(12)
+                }
+            }
+        }
+    }
+
+    // MARK: - Export Methods
+    private func exportCSV() {
+        // Generate CSV content
+        var csvLines: [String] = []
+
+        // Header
+        csvLines.append("Day,Overall Score,Skin Age,Reliability,Lighting,Angle,Distance,Sleep Hours,Stress Level,Water Intake,Exercise Minutes,Sun Exposure")
+
+        // Data rows
+        for point in report.timeline {
+            let reliability = report.reliabilityMap[point.checkInId]
+            let reliabilityScore = reliability?.score ?? 0
+
+            // Find check-in for lifestyle data
+            var sleepHours = ""
+            var stressLevel = ""
+            var waterIntake = ""
+            var exerciseMinutes = ""
+            var sunExposure = ""
+
+            // Access check-in through session if available
+            // Note: You may need to pass session or checkIns to get this data
+            // For now, placeholder values
+            csvLines.append("\(point.day),\(point.overallScore),\(point.skinAge),\(Int(reliabilityScore * 100)),,\(sleepHours),\(stressLevel),\(waterIntake),\(exerciseMinutes),\(sunExposure)")
+        }
+
+        let csvContent = csvLines.joined(separator: "\n")
+
+        // Save to temp file and share
+        if let url = saveToTempFile(content: csvContent, fileExtension: "csv") {
+            shareFile(url)
+        }
+    }
+
+    private func exportJSON() {
+        // Create exportable JSON structure
+        let exportData: [String: Any] = [
+            "report": [
+                "duration": report.duration,
+                "scoreChange": report.scoreChange,
+                "skinAgeChange": report.skinAgeChange,
+                "completionRate": report.completionRate,
+                "improvementLabel": report.improvementLabel
+            ],
+            "timeline": report.timeline.map { point in
+                [
+                    "day": point.day,
+                    "overallScore": point.overallScore,
+                    "skinAge": point.skinAge,
+                    "checkInId": point.checkInId.uuidString
+                ]
+            },
+            "reliability": report.reliabilityMap.mapValues { metadata in
+                [
+                    "score": metadata.score,
+                    "level": metadata.level.rawValue,
+                    "reasons": metadata.reasons.map { $0.rawValue }
+                ]
+            },
+            "lifestyleInsights": report.lifestyleInsights.map { insight in
+                [
+                    "factor": insight.factor.rawValue,
+                    "targetMetric": insight.targetMetric,
+                    "correlation": insight.correlation,
+                    "sampleCount": insight.sampleCount,
+                    "confidence": insight.confidence.value,
+                    "interpretation": insight.interpretation
+                ]
+            }
+        ]
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: exportData, options: .prettyPrinted)
+            if let jsonString = String(data: jsonData, encoding: .utf8),
+               let url = saveToTempFile(content: jsonString, fileExtension: "json") {
+                shareFile(url)
+            }
+        } catch {
+            print("Failed to generate JSON: \(error)")
+        }
+    }
+
+    private func saveToTempFile(content: String, fileExtension: String) -> URL? {
+        let fileName = "SkinLab_Report_\(Date().timeIntervalSince1970).\(fileExtension)"
+        if let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
+            let fileURL = url.appendingPathComponent(fileName)
+            do {
+                try content.write(to: fileURL, atomically: true, encoding: .utf8)
+                return fileURL
+            } catch {
+                print("Failed to save file: \(error)")
+            }
+        }
+        return nil
+    }
+
+    private func shareFile(_ url: URL) {
+        // Show share sheet with file
+        // You'll need to add @State var showFileShareSheet and fileToShare
+        // For now, placeholder
+        print("Sharing file: \(url)")
     }
     
     // MARK: - Helper Methods

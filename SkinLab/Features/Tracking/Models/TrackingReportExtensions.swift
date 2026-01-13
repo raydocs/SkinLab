@@ -9,8 +9,9 @@ struct ScorePoint: Codable, Identifiable {
     let skinAge: Int
     let issueScores: IssueScores?
     let regionScores: RegionScores?
+    let checkInId: UUID
 
-    init(id: UUID = UUID(), day: Int, date: Date, overallScore: Int, skinAge: Int, issueScores: IssueScores? = nil, regionScores: RegionScores? = nil) {
+    init(id: UUID = UUID(), day: Int, date: Date, overallScore: Int, skinAge: Int, issueScores: IssueScores? = nil, regionScores: RegionScores? = nil, checkInId: UUID = UUID()) {
         self.id = id
         self.day = day
         self.date = date
@@ -18,6 +19,7 @@ struct ScorePoint: Codable, Identifiable {
         self.skinAge = skinAge
         self.issueScores = issueScores
         self.regionScores = regionScores
+        self.checkInId = checkInId
     }
 }
 
@@ -196,7 +198,8 @@ final class TrackingReportGenerator {
                 overallScore: analysis.overallScore,
                 skinAge: analysis.skinAge,
                 issueScores: analysis.issues,
-                regionScores: analysis.regions
+                regionScores: analysis.regions,
+                checkInId: checkIn.id
             )
         }
 
