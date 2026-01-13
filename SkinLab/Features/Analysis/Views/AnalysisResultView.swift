@@ -2,18 +2,23 @@ import SwiftUI
 import SwiftData
 
 struct AnalysisResultView: View {
-    let analysis: SkinAnalysis
+    let result: AnalysisRunResult
     let onRetake: () -> Void
 
     @State private var viewModel: AnalysisResultViewModel?
     @State private var selectedTab = 0
     @State private var animateScore = false
-    @State private var showNewTracking = false
+    @State private var navigateToTracking: Bool = false
+    @State private var createdSession: TrackingSession?
 
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
     @Query private var trackingSessions: [TrackingSession]
     @Query private var ingredientPreferences: [UserIngredientPreference]
+
+    private var analysis: SkinAnalysis {
+        result.analysis
+    }
 
     private var userProfile: UserProfile? {
         profiles.first
@@ -29,9 +34,32 @@ struct AnalysisResultView: View {
             .map { $0.ingredientName }
     }
 
-    init(analysis: SkinAnalysis, onRetake: @escaping () -> Void = {}) {
-        self.analysis = analysis
+    init(result: AnalysisRunResult, onRetake: @escaping () -> Void = {}) {
+        self.result = result
         self.onRetake = onRetake
+    }
+
+    // MARK: - Actions
+    private func startTrackingFromAnalysis() {
+        guard let viewModel = viewModel else {
+            // Initialize viewModel if needed
+            return
+        }
+
+        Task { @MainActor in
+            do {
+                let session = try await viewModel.startTrackingBaseline(
+                    analysisRecordId: result.analysisId,
+                    photoPath: result.photoPath,
+                    standardization: result.standardization
+                )
+                createdSession = session
+                navigateToTracking = true
+            } catch {
+                // Show error - for now just print
+                print("Failed to start tracking: \(error)")
+            }
+        }
     }
 
     var body: some View {
@@ -93,9 +121,9 @@ struct AnalysisResultView: View {
                 }
             }
         }
-        .sheet(isPresented: $showNewTracking) {
-            NavigationStack {
-                TrackingView()
+        .navigationDestination(isPresented: $navigateToTracking) {
+            if let session = createdSession {
+                TrackingDetailView(session: session)
             }
         }
     }
@@ -385,7 +413,7 @@ struct AnalysisResultView: View {
                 }
                 
                 Button {
-                    showNewTracking = true
+                    startTrackingFromAnalysis()
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: "play.fill")
@@ -692,6 +720,11 @@ struct ProgressBarView: View {
 
 #Preview {
     NavigationStack {
-        AnalysisResultView(analysis: .mock)
+        AnalysisResultView(result: AnalysisRunResult(
+            analysis: .mock,
+            analysisId: UUID(),
+            photoPath: nil,
+            standardization: nil
+        ))
     }
 }

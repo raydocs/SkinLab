@@ -3,6 +3,7 @@ import AVFoundation
 
 struct AnalysisView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = AnalysisViewModel()
 
     @State private var showCamera = false
@@ -21,8 +22,8 @@ struct AnalysisView: View {
                     cameraView
                 case .analyzing:
                     analyzingView
-                case .result(let analysis):
-                    AnalysisResultView(analysis: analysis) {
+                case .result(let result):
+                    AnalysisResultView(result: result) {
                         viewModel.retry()
                     }
                 case .error(let message):
@@ -47,6 +48,9 @@ struct AnalysisView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            viewModel.setModelContext(modelContext)
         }
         .fullScreenCover(isPresented: $showCamera) {
             CameraPreviewView(
@@ -75,6 +79,8 @@ struct AnalysisView: View {
         .onChange(of: capturedImage) { _, newImage in
             if let image = newImage {
                 capturedImage = nil
+                // Store captured data for persistence
+                viewModel.setCapturedData(image, standardization: capturedStandardization)
                 Task {
                     await viewModel.analyzeImage(image)
                 }

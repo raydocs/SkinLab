@@ -357,10 +357,15 @@ struct HomeView: View {
                 .font(.skinLabTitle3)
                 .foregroundColor(.skinLabText)
 
-            ForEach(recentAnalyses.prefix(2)) { record in
+            ForEach(Array(recentAnalyses.prefix(2)), id: \.id) { record in
                 if let analysis = record.toAnalysis() {
                     NavigationLink {
-                        AnalysisResultView(analysis: analysis)
+                        AnalysisResultView(result: AnalysisRunResult(
+                            analysis: analysis,
+                            analysisId: record.id,
+                            photoPath: record.photoPath,
+                            standardization: nil
+                        ))
                     } label: {
                         RecentAnalysisCard(analysis: analysis)
                     }
