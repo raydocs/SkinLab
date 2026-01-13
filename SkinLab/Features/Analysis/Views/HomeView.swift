@@ -4,12 +4,15 @@ import SwiftData
 struct HomeView: View {
     @Query(sort: [SortDescriptor(\SkinAnalysisRecord.analyzedAt, order: .reverse)])
     private var recentAnalyses: [SkinAnalysisRecord]
-    
+
     @Query(filter: #Predicate<TrackingSession> { $0.statusRaw == "active" })
     private var activeSessions: [TrackingSession]
 
+    @Query private var engagementMetrics: [UserEngagementMetrics]
+
     @State private var showAnalysis = false
     @State private var showNewTracking = false
+    @State private var showFreezeAlert = false
 
     var body: some View {
         NavigationStack {
@@ -18,6 +21,7 @@ struct HomeView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 32) {
                         heroSection
+                        streakBadgeSection
                         quickActionsSection
                         trackingPromptCard
                         if !recentAnalyses.isEmpty { recentSection }
@@ -107,6 +111,24 @@ struct HomeView: View {
             .padding(.top, 24)
         }
         .buttonStyle(.plain)
+    }
+
+    private var streakBadgeSection: some View {
+        StreakBadgeView(
+            currentStreak: engagementMetrics.first?.streakCount ?? 0,
+            longestStreak: engagementMetrics.first?.longestStreak ?? 0,
+            freezesAvailable: engagementMetrics.first?.streakFreezesAvailable ?? 0
+        ) {
+            showFreezeAlert = true
+        }
+        .alert("使用冻结卡", isPresented: $showFreezeAlert) {
+            Button("取消", role: .cancel) {}
+            Button("使用") {
+                // TODO: Implement freeze usage
+            }
+        } message: {
+            Text("使用冻结卡可以保护你的连续打卡，即使错过一天打卡也不会中断。确定要使用吗？")
+        }
     }
 
     private var quickActionsSection: some View {

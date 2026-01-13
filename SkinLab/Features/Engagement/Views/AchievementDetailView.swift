@@ -51,7 +51,7 @@ struct AchievementDetailView: View {
                 }
             }
             .sheet(isPresented: $isSharing) {
-                ShareSheet(activityItems: shareItems)
+                AchievementShareSheet(activityItems: shareItems)
             }
         }
         .accessibilityIdentifier("achievement_detail")
@@ -290,7 +290,7 @@ struct AchievementDetailView: View {
 
 // MARK: - Share Sheet
 
-struct ShareSheet: UIViewControllerRepresentable {
+struct AchievementShareSheet: UIViewControllerRepresentable {
     let activityItems: [Any]
 
     func makeUIViewController(context: Context) -> UIActivityViewController {

@@ -130,7 +130,7 @@ struct AchievementBadgeView: View {
         )
     }
 
-    private var gradientColors: Gradient<Color> {
+    private var gradientColors: Gradient {
         Gradient(colors: categoryColors)
     }
 

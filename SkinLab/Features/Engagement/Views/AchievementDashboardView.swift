@@ -55,21 +55,21 @@ struct AchievementDashboardView: View {
         VStack(spacing: 12) {
             // Stats
             HStack(spacing: 24) {
-                StatItem(
+    AchievementStatItem(
                     icon: "trophy.fill",
                     title: "已解锁",
                     value: "\(unlockedCount)",
                     color: .yellow
                 )
 
-                StatItem(
+    AchievementStatItem(
                     icon: "lock.fill",
                     title: "未解锁",
                     value: "\(lockedCount)",
                     color: .gray
                 )
 
-                StatItem(
+    AchievementStatItem(
                     icon: "chart.line.uptrend.xyaxis",
                     title: "完成率",
                     value: "\(completionPercentage)%",
@@ -195,7 +195,7 @@ struct CategoryFilterButton: View {
 
 // MARK: - Stat Item
 
-struct StatItem: View {
+struct AchievementStatItem: View {
     let icon: String
     let title: String
     let value: String

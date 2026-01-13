@@ -1,9 +1,11 @@
 import SwiftUI
 import Charts
+import SwiftData
 
 struct TrackingReportView: View {
     let report: EnhancedTrackingReport
     @Environment(\.dismiss) private var dismiss
+    @Query private var engagementMetrics: [UserEngagementMetrics]
     @State private var selectedMetric: MetricType = .overallScore
     @State private var showShareSheet = false
     @State private var shareImage: UIImage?
@@ -163,7 +165,12 @@ struct TrackingReportView: View {
                     icon: "checkmark.circle"
                 )
             }
-            
+
+            // Streak indicator
+            if let metrics = engagementMetrics.first, metrics.streakCount > 0 {
+                streakIndicator(metrics)
+            }
+
             // Improvement Label
             Text(report.improvementLabel)
                 .font(.skinLabTitle3)
@@ -178,7 +185,29 @@ struct TrackingReportView: View {
         .cornerRadius(20)
         .skinLabSoftShadow()
     }
-    
+
+    // MARK: - Streak Indicator
+
+    @ViewBuilder
+    private func streakIndicator(_ metrics: UserEngagementMetrics) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "flame.fill")
+                .foregroundColor(.orange)
+            Text("连续打卡 \(metrics.streakCount) 天")
+                .font(.skinLabHeadline)
+                .foregroundColor(.skinLabText)
+            if metrics.longestStreak > metrics.streakCount {
+                Text("· 最长 \(metrics.longestStreak) 天")
+                    .font(.skinLabCaption)
+                    .foregroundColor(.skinLabSubtext)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.orange.opacity(0.1))
+        .cornerRadius(12)
+    }
+
     // MARK: - Comparison Section
     private var comparisonSection: some View {
         VStack(spacing: 16) {

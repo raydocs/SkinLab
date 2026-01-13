@@ -47,7 +47,7 @@ final class StreakTrackingService {
 
         // Check if this is a same-day check-in
         if let lastDate = metrics.lastCheckInDate,
-           isSameDay(lastDate, date: checkInDate) {
+           isSameDay(lastDate, date2: checkInDate) {
             // Same day check-in, don't increment streak
             return StreakResult(
                 currentStreak: metrics.streakCount,
@@ -59,7 +59,7 @@ final class StreakTrackingService {
         }
 
         // Calculate new streak
-        let isNewDay = !isSameDay(lastDate: checkInDate, previousDate: metrics.lastCheckInDate)
+        let isNewDay = metrics.lastCheckInDate == nil || !isSameDay(checkInDate, date2: metrics.lastCheckInDate!)
         let isConsecutiveDay = isConsecutiveDay(lastDate: metrics.lastCheckInDate, newDate: checkInDate)
 
         if isNewDay && isConsecutiveDay {
@@ -161,7 +161,7 @@ final class StreakTrackingService {
 
             let descriptor = FetchDescriptor<TrackingSession>(
                 predicate: #Predicate<TrackingSession> { session in
-                    session.startDate >= cutoffDate && session.statusRaw == TrackingStatus.completed.rawValue
+                    session.startDate >= cutoffDate && session.statusRaw == "completed"
                 },
                 sortBy: [SortDescriptor(\.startDate, order: .forward)]
             )
