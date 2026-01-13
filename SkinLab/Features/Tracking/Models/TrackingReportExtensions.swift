@@ -91,6 +91,25 @@ struct EnhancedTrackingReport: Codable {
     let dataQualityScore: Double?
     let dataQualityDescription: String?
 
+    // MARK: - Photo Standardization & Reliability Fields
+
+    /// 可靠性元数据映射（按 checkIn ID）
+    let reliabilityMap: [UUID: ReliabilityMetadata]
+
+    /// 可靠时间线（仅包含可靠数据点）
+    let timelineReliable: [ScorePoint]
+
+    /// 时间线显示策略
+    let timelinePolicy: TimelineDisplayPolicy
+
+    // MARK: - Lifestyle Correlation Fields
+
+    /// 生活方式关联洞察
+    let lifestyleInsights: [LifestyleCorrelationInsight]
+
+    /// 生活方式数据完整度（有生活方式数据的打卡比例）
+    let lifestyleDataCoverage: Double
+
     // Computed properties for UI
     var hasSignificantImprovement: Bool {
         overallImprovement > 10
@@ -245,6 +264,45 @@ final class TrackingReportGenerator {
             analyzer: tsAnalyzer
         )
 
+        // MARK: - Photo Standardization & Reliability Analysis
+
+        // 8. Score all check-ins for reliability
+        let reliabilityScorer = ReliabilityScorer()
+        let reliabilityMap = reliabilityScorer.scoreAll(
+            checkIns: sortedCheckIns,
+            analyses: analyses,
+            session: session
+        )
+
+        // 9. Build reliable timeline (filter by reliability score >= 0.5)
+        let timelineReliable = timeline.filter { point in
+            guard let checkIn = sortedCheckIns.first(where: { $0.day == point.day }),
+                  let reliability = reliabilityMap[checkIn.id] else {
+                return false
+            }
+            return reliability.score >= 0.5
+        }
+
+        // 10. Timeline display policy
+        let timelinePolicy = TimelineDisplayPolicy(
+            allCount: timeline.count,
+            reliableCount: timelineReliable.count
+        )
+
+        // MARK: - Lifestyle Correlation Analysis
+
+        // 11. Calculate lifestyle data coverage
+        let checkInsWithLifestyle = sortedCheckIns.filter { $0.lifestyle != nil }
+        let lifestyleCoverage = Double(checkInsWithLifestyle.count) / Double(max(sortedCheckIns.count, 1))
+
+        // 12. Run lifestyle correlation analysis
+        let lifestyleAnalyzer = LifestyleCorrelationAnalyzer()
+        let lifestyleInsights = lifestyleAnalyzer.analyze(
+            checkIns: sortedCheckIns,
+            timeline: timeline,
+            reliability: reliabilityMap
+        )
+
         // Generate AI summary (enhanced with new analytics)
         let aiSummary = await generateEnhancedAISummary(
             trendData: trendData,
@@ -285,7 +343,12 @@ final class TrackingReportGenerator {
             dataConfidence: dataConfidence,
             productInsights: productInsights,
             dataQualityScore: dataQuality.score,
-            dataQualityDescription: dataQuality.description
+            dataQualityDescription: dataQuality.description,
+            reliabilityMap: reliabilityMap,
+            timelineReliable: timelineReliable,
+            timelinePolicy: timelinePolicy,
+            lifestyleInsights: lifestyleInsights,
+            lifestyleDataCoverage: lifestyleCoverage
         )
     }
 
