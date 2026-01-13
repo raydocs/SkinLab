@@ -9,10 +9,12 @@ struct HomeView: View {
     private var activeSessions: [TrackingSession]
 
     @Query private var engagementMetrics: [UserEngagementMetrics]
+    @Query private var achievementProgress: [AchievementProgress]
 
     @State private var showAnalysis = false
     @State private var showNewTracking = false
     @State private var showFreezeAlert = false
+    @State private var showAchievements = false
 
     var body: some View {
         NavigationStack {
@@ -22,6 +24,7 @@ struct HomeView: View {
                     VStack(spacing: 32) {
                         heroSection
                         streakBadgeSection
+                        progressPreviewSection
                         quickActionsSection
                         trackingPromptCard
                         if !recentAnalyses.isEmpty { recentSection }
@@ -52,6 +55,9 @@ struct HomeView: View {
                 NavigationStack {
                     TrackingView()
                 }
+            }
+            .navigationDestination(isPresented: $showAchievements) {
+                AchievementDashboardView()
             }
         }
     }
@@ -129,6 +135,65 @@ struct HomeView: View {
         } message: {
             Text("使用冻结卡可以保护你的连续打卡，即使错过一天打卡也不会中断。确定要使用吗？")
         }
+    }
+
+    private var progressPreviewSection: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Text("你的进度")
+                    .font(.skinLabHeadline)
+                    .foregroundColor(.skinLabText)
+                Spacer()
+                Button("查看全部") {
+                    showAchievements = true
+                }
+                .font(.skinLabCaption)
+                .foregroundColor(.skinLabPrimary)
+            }
+
+            // Show top 3 in-progress badges
+            if !inProgressBadges.isEmpty {
+                HStack(spacing: 12) {
+                    ForEach(inProgressBadges.prefix(3), id: \.id) { badge in
+                        if let progress = getProgress(for: badge) {
+                            AchievementBadgeView(
+                                badge: badge,
+                                progress: progress,
+                                size: .small
+                            ) {
+                                showAchievements = true
+                            }
+                        }
+                    }
+                    Spacer()
+                }
+            }
+        }
+        .padding()
+        .background(Color.skinLabCardBackground)
+        .cornerRadius(20)
+        .skinLabSoftShadow()
+    }
+
+    // MARK: - Helper Methods
+
+    private var inProgressBadges: [AchievementDefinition] {
+        let allBadges = AchievementDefinitions.allBadges
+        return allBadges.filter { badge in
+            if let progress = getProgress(for: badge) {
+                return !progress.isUnlocked && progress.progress > 0
+            }
+            return false
+        }
+        .sorted { badge1, badge2 in
+            let progress1 = getProgress(for: badge1)?.progress ?? 0
+            let progress2 = getProgress(for: badge2)?.progress ?? 0
+            return progress1 > progress2
+        }
+    }
+
+    private func getProgress(for badge: AchievementDefinition) -> AchievementProgress? {
+        achievementProgress.first { $0.achievementID == badge.id }
     }
 
     private var quickActionsSection: some View {

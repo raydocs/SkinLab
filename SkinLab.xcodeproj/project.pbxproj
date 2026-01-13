@@ -153,6 +153,7 @@
 		2A1269CF193108CA983B327A /* AnomalyDetectorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnomalyDetectorTests.swift; sourceTree = "<group>"; };
 		2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalysisResultViewModel.swift; sourceTree = "<group>"; };
 		313078DD5B48E3E27AABCCE3 /* UserIngredientPreference.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserIngredientPreference.swift; path = ../../../SkinLab/Features/Profile/Models/UserIngredientPreference.swift; sourceTree = "<group>"; };
+		34775FC70ED096A46BFA9333 /* Celebration */ = {isa = PBXFileReference; includeInIndex = 1; path = Celebration; sourceTree = "<group>"; };
 		3E5C9F2586D340041D58FDD8 /* TrackingDetailViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingDetailViewModel.swift; sourceTree = "<group>"; };
 		3F3EB7BFD9E873145B7A021B /* ProductRecommendationEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductRecommendationEngine.swift; sourceTree = "<group>"; };
 		3FC24F5570D8E1F73373DA94 /* IngredientRiskAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IngredientRiskAnalyzer.swift; path = ../../SkinLab/Core/Utils/IngredientRiskAnalyzer.swift; sourceTree = "<group>"; };
@@ -675,6 +676,7 @@
 				F949F7C8DF25BB0CDD1F27BC /* Engagement */,
 				945EA22B33CDFAA818644F11 /* Celebration */,
 				47937D71839712BEE26FC311 /* Sharing */,
+				34775FC70ED096A46BFA9333 /* Celebration */,
 			);
 			path = Features;
 			sourceTree = "<group>";
