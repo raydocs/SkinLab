@@ -20,6 +20,11 @@ struct CheckIn: Codable, Identifiable, Sendable {
     let notes: String?
     let feeling: Feeling?
     
+    // MARK: - New Fields for Photo Standardization & Lifestyle
+    let photoStandardization: PhotoStandardizationMetadata?
+    let lifestyle: LifestyleFactors?
+    let reliability: ReliabilityMetadata?
+    
     enum Feeling: String, Codable, Sendable {
         case better, same, worse
 
@@ -57,7 +62,10 @@ struct CheckIn: Codable, Identifiable, Sendable {
         analysisId: UUID? = nil,
         usedProducts: [String] = [],
         notes: String? = nil,
-        feeling: Feeling? = nil
+        feeling: Feeling? = nil,
+        photoStandardization: PhotoStandardizationMetadata? = nil,
+        lifestyle: LifestyleFactors? = nil,
+        reliability: ReliabilityMetadata? = nil
     ) {
         self.id = id
         self.sessionId = sessionId
@@ -68,6 +76,9 @@ struct CheckIn: Codable, Identifiable, Sendable {
         self.usedProducts = usedProducts
         self.notes = notes
         self.feeling = feeling
+        self.photoStandardization = photoStandardization
+        self.lifestyle = lifestyle
+        self.reliability = reliability
     }
 }
 

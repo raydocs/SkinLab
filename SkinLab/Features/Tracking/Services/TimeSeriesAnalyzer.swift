@@ -214,4 +214,63 @@ struct TimeSeriesAnalyzer {
         
         return (mean(intervals), standardDeviation(intervals))
     }
+    
+    // MARK: - Correlation Methods
+    
+    /// Calculate Pearson correlation coefficient (linear correlation)
+    func pearsonCorrelation(_ x: [Double], _ y: [Double]) -> Double {
+        guard x.count == y.count, x.count >= 2 else { return 0 }
+        
+        let n = Double(x.count)
+        let meanX = mean(x)
+        let meanY = mean(y)
+        
+        var numerator: Double = 0
+        var sumSqX: Double = 0
+        var sumSqY: Double = 0
+        
+        for i in 0..<x.count {
+            let dx = x[i] - meanX
+            let dy = y[i] - meanY
+            numerator += dx * dy
+            sumSqX += dx * dx
+            sumSqY += dy * dy
+        }
+        
+        let denominator = sqrt(sumSqX * sumSqY)
+        return denominator > 0 ? numerator / denominator : 0
+    }
+    
+    /// Calculate Spearman rank correlation (robust to outliers)
+    func spearmanCorrelation(_ x: [Double], _ y: [Double]) -> Double {
+        guard x.count == y.count, x.count >= 2 else { return 0 }
+        
+        let rankX = rank(x)
+        let rankY = rank(y)
+        
+        return pearsonCorrelation(rankX, rankY)
+    }
+    
+    /// Convert values to ranks (with tie handling)
+    private func rank(_ values: [Double]) -> [Double] {
+        let sorted = values.enumerated().sorted { $0.element < $1.element }
+        var ranks = [Double](repeating: 0, count: values.count)
+
+        var i = 0
+        while i < sorted.count {
+            var j = i
+            while j < sorted.count && sorted[j].element == sorted[i].element {
+                j += 1
+            }
+
+            let avgRank = (Double(i + 1) + Double(j)) / 2.0
+            for k in i..<j {
+                ranks[sorted[k].offset] = avgRank
+            }
+
+            i = j
+        }
+
+        return ranks
+    }
 }

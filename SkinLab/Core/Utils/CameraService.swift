@@ -23,7 +23,9 @@ class CameraService: NSObject, ObservableObject {
     private let faceDetector = FaceDetector()
     private var lastFaceDetectionTime: CFAbsoluteTime = 0
     private let faceDetectionInterval: CFAbsoluteTime = 0.2  // 5fps throttle
-    
+
+    /// Read-only access to current camera position
+    var activeCameraPosition: AVCaptureDevice.Position { currentPosition }
     // Reuse CIContext for better performance
     private static let sharedCIContext: CIContext = {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
