@@ -349,6 +349,42 @@ struct CheckInRow: View {
     }
 }
 
+// MARK: - Lifestyle Draft
+/// Draft struct for lifestyle data collection with all optional fields
+struct LifestyleDraft {
+    var sleepHours: Double?
+    var stressLevel: Int?
+    var waterIntakeLevel: Int?
+    var alcoholConsumed: Bool?
+    var exerciseMinutes: Int?
+    var sunExposureLevel: Int?
+    var dietNotes: String?
+
+    var hasAnyData: Bool {
+        sleepHours != nil ||
+        stressLevel != nil ||
+        waterIntakeLevel != nil ||
+        alcoholConsumed != nil ||
+        exerciseMinutes != nil ||
+        sunExposureLevel != nil ||
+        (dietNotes != nil && !dietNotes!.isEmpty)
+    }
+
+    var summary: String {
+        var parts: [String] = []
+        if let sleep = sleepHours {
+            parts.append("睡眠\(Int(sleep))h")
+        }
+        if let stress = stressLevel {
+            parts.append("压力\(stress)")
+        }
+        if let sun = sunExposureLevel {
+            parts.append("日晒\(sun)")
+        }
+        return parts.isEmpty ? "未记录" : parts.joined(separator: " · ")
+    }
+}
+
 // MARK: - Check-In View
 struct CheckInView: View {
     @Environment(\.dismiss) private var dismiss
@@ -373,15 +409,9 @@ struct CheckInView: View {
     @State private var isAnalyzing = false
     @State private var errorMessage: String?
 
-    // Lifestyle factors state
-    @State private var sleepHours: Double = 7.0
-    @State private var stressLevel: Int = 3
-    @State private var waterIntakeLevel: Int = 3
-    @State private var alcoholConsumed: Bool = false
-    @State private var exerciseMinutes: Double = 0
-    @State private var sunExposureLevel: Int = 2
-    @State private var dietNotes: String = ""
-    @State private var isLifestyleExpanded = false
+    // Lifestyle factors state - now truly optional
+    @State private var includeLifestyle = false
+    @State private var lifestyleDraft = LifestyleDraft()
 
     // User override for photo quality
     @State private var userFlaggedPhotoIssue = false
@@ -430,17 +460,26 @@ struct CheckInView: View {
                     }
                     .skinLabCard()
 
-                    // Lifestyle Factors (DisclosureGroup)
-                    DisclosureGroup(isExpanded: $isLifestyleExpanded) {
-                        lifestyleInputsContent
+                    // Lifestyle Factors (DisclosureGroup - now truly optional)
+                    DisclosureGroup(isExpanded: $includeLifestyle) {
+                        if includeLifestyle {
+                            lifestyleInputsContent
+                        }
                     } label: {
                         HStack {
                             Text("生活因素（可选）")
                                 .font(.skinLabHeadline)
+                                .foregroundColor(.skinLabText)
                             Spacer()
-                            Text(lifestyleSummary)
-                                .font(.skinLabSubheadline)
-                                .foregroundColor(.skinLabSubtext)
+                            if !includeLifestyle || !lifestyleDraft.hasAnyData {
+                                Text("未记录")
+                                    .font(.skinLabSubheadline)
+                                    .foregroundColor(.skinLabSubtext)
+                            } else {
+                                Text(lifestyleDraft.summary)
+                                    .font(.skinLabSubheadline)
+                                    .foregroundColor(.skinLabSubtext)
+                            }
                         }
                         .padding()
                         .background(Color.gray.opacity(0.05))
@@ -610,11 +649,17 @@ struct CheckInView: View {
         VStack(spacing: 16) {
             // Sleep hours
             VStack(alignment: .leading, spacing: 8) {
-                Text("睡眠时间: \(Int(sleepHours))小时")
+                Text("睡眠时间: \(lifestyleDraft.sleepHours.map { "\($0)" } ?? "未填写")小时")
                     .font(.skinLabSubheadline)
 
-                Slider(value: $sleepHours, in: 0...12, step: 0.5)
-                Stepper("", value: $sleepHours, in: 0...12, step: 0.5)
+                Slider(value: Binding(
+                    get: { lifestyleDraft.sleepHours ?? 0 },
+                    set: { lifestyleDraft.sleepHours = $0 == 0 ? nil : $0 }
+                ), in: 0...12, step: 0.5)
+                Stepper("", value: Binding(
+                    get: { lifestyleDraft.sleepHours ?? 0 },
+                    set: { lifestyleDraft.sleepHours = $0 == 0 ? nil : $0 }
+                ), in: 0...12, step: 0.5)
                     .labelsHidden()
             }
 
@@ -623,7 +668,10 @@ struct CheckInView: View {
                 Text("压力水平")
                     .font(.skinLabSubheadline)
 
-                Picker("", selection: $stressLevel) {
+                Picker("", selection: Binding(
+                    get: { lifestyleDraft.stressLevel ?? 3 },
+                    set: { lifestyleDraft.stressLevel = $0 }
+                )) {
                     Text("很低").tag(1)
                     Text("低").tag(2)
                     Text("一般").tag(3)
@@ -638,7 +686,10 @@ struct CheckInView: View {
                 Text("饮水量")
                     .font(.skinLabSubheadline)
 
-                Picker("", selection: $waterIntakeLevel) {
+                Picker("", selection: Binding(
+                    get: { lifestyleDraft.waterIntakeLevel ?? 3 },
+                    set: { lifestyleDraft.waterIntakeLevel = $0 }
+                )) {
                     Text("少").tag(1)
                     Text("较少").tag(2)
                     Text("一般").tag(3)
@@ -651,11 +702,14 @@ struct CheckInView: View {
             // Exercise
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("运动时间: \(Int(exerciseMinutes))分钟")
+                    Text("运动时间: \(lifestyleDraft.exerciseMinutes.map { "\($0)" } ?? "未填写")分钟")
                         .font(.skinLabSubheadline)
                     Spacer()
                 }
-                Stepper("", value: $exerciseMinutes, in: 0...180, step: 15)
+                Stepper("", value: Binding(
+                    get: { lifestyleDraft.exerciseMinutes ?? 0 },
+                    set: { lifestyleDraft.exerciseMinutes = $0 == 0 ? nil : $0 }
+                ), in: 0...180, step: 15)
                     .labelsHidden()
             }
 
@@ -664,7 +718,10 @@ struct CheckInView: View {
                 Text("日晒程度")
                     .font(.skinLabSubheadline)
 
-                Picker("", selection: $sunExposureLevel) {
+                Picker("", selection: Binding(
+                    get: { lifestyleDraft.sunExposureLevel ?? 2 },
+                    set: { lifestyleDraft.sunExposureLevel = $0 }
+                )) {
                     Text("无").tag(1)
                     Text("少").tag(2)
                     Text("一般").tag(3)
@@ -675,18 +732,13 @@ struct CheckInView: View {
             }
 
             // Alcohol
-            Toggle("饮酒", isOn: $alcoholConsumed)
-                .font(.skinLabSubheadline)
+            Toggle("饮酒", isOn: Binding(
+                get: { lifestyleDraft.alcoholConsumed ?? false },
+                set: { lifestyleDraft.alcoholConsumed = $0 ? true : nil }
+            ))
+            .font(.skinLabSubheadline)
         }
         .padding()
-    }
-
-    private var lifestyleSummary: String {
-        var parts: [String] = []
-        parts.append("睡眠\(Int(sleepHours))h")
-        parts.append("压力\(stressLevel)")
-        parts.append("日晒\(sunExposureLevel)")
-        return parts.joined(separator: " · ")
     }
 
     @MainActor
@@ -712,17 +764,17 @@ struct CheckInView: View {
                 modelContext.insert(analysisRecord)
                 try modelContext.save()
 
-                // 4. Build lifestyle factors
+                // 4. Build lifestyle factors - only if user opted in AND provided data
                 var lifestyle: LifestyleFactors?
-                if sleepHours > 0 || exerciseMinutes > 0 || !dietNotes.isEmpty {
+                if includeLifestyle && lifestyleDraft.hasAnyData {
                     lifestyle = LifestyleFactors(
-                        sleepHours: sleepHours > 0 ? sleepHours : nil,
-                        stressLevel: stressLevel,
-                        waterIntakeLevel: waterIntakeLevel,
-                        alcoholConsumed: alcoholConsumed ? alcoholConsumed : nil,
-                        exerciseMinutes: exerciseMinutes > 0 ? Int(exerciseMinutes) : nil,
-                        sunExposureLevel: sunExposureLevel,
-                        dietNotes: dietNotes.isEmpty ? nil : dietNotes
+                        sleepHours: lifestyleDraft.sleepHours,
+                        stressLevel: lifestyleDraft.stressLevel,
+                        waterIntakeLevel: lifestyleDraft.waterIntakeLevel,
+                        alcoholConsumed: lifestyleDraft.alcoholConsumed,
+                        exerciseMinutes: lifestyleDraft.exerciseMinutes,
+                        sunExposureLevel: lifestyleDraft.sunExposureLevel,
+                        dietNotes: lifestyleDraft.dietNotes
                     )
                 }
 

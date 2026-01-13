@@ -131,9 +131,33 @@ This now reflects true opt-in rate instead of artificial 100%.
 - [ ] UI shows "未记录" when lifestyle not included
 
 ## Done summary
-TBD
+- What changed
+  - Created LifestyleDraft struct with all optional fields
+  - Added includeLifestyle toggle (defaults to false)
+  - Lifestyle inputs now hidden by default
+  - Updated all lifestyle input fields to use optionals
+    - Slider/Stepper bindings use nil for 0 values
+    - Picker bindings use default values but allow nil
+  - CheckIn.lifestyle is now nil when user doesn't opt in
+  - CheckIn.lifestyle only saved when user opted in AND has data
+  - Coverage percentage now reflects true opt-in rate
 
+- Why
+  - sleepHours defaulted to 7.0, making lifestyle always save
+  - Coverage percentage was artificially inflated (near 100%)
+  - "可选" label was false advertising when defaults always applied
+  - Correlations may have been using default values instead of real user data
+
+- Verification
+  - Build succeeded with no compiler errors
+  - Lifestyle inputs hidden by default (expand to show)
+  - LifestyleDraft.hasAnyData checks for any non-nil values
+  - saveCheckIn() only creates LifestyleFactors if opted in AND has data
+
+- Follow-ups
+  - Manual testing to verify coverage percentage drops to true opt-in rate
+  - Consider adding visual feedback when lifestyle data is recorded
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 641811e2e9f62b69a08c61900393697625f02445
+- Tests: xcodebuild -scheme SkinLab -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 - PRs:
