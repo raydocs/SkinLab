@@ -1,0 +1,14 @@
+{
+  "assignee": "139067258+raydocs@users.noreply.github.com",
+  "claim_note": "",
+  "claimed_at": "2026-01-11T22:21:19.525367Z",
+  "created_at": "2026-01-11T22:12:46.080169Z",
+  "depends_on": [],
+  "epic": "fn-1",
+  "id": "fn-1.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-1.1.md",
+  "status": "done",
+  "title": "Compile competitor feature matrix",
+  "updated_at": "2026-01-11T23:19:35.878686Z"
+}

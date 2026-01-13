@@ -1,0 +1,16 @@
+{
+  "assignee": "139067258+raydocs@users.noreply.github.com",
+  "claim_note": "",
+  "claimed_at": "2026-01-13T00:50:14.968263Z",
+  "created_at": "2026-01-12T09:20:53.171753Z",
+  "depends_on": [
+    "fn-2.1"
+  ],
+  "epic": "fn-2",
+  "id": "fn-2.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-2.2.md",
+  "status": "done",
+  "title": "Achievement System",
+  "updated_at": "2026-01-13T00:52:58.777169Z"
+}

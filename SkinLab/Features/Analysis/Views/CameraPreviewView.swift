@@ -5,12 +5,13 @@ import AVFoundation
 struct CameraPreviewView: View {
     @StateObject private var camera = CameraService()
     @Binding var capturedImage: UIImage?
+    @Binding var capturedStandardization: PhotoStandardizationMetadata?
     @Environment(\.dismiss) private var dismiss
-    
+
     @State private var showPhotoPicker = false
     @State private var isCapturing = false
     @State private var showError = false
-    
+
     var body: some View {
         ZStack {
             // Camera Preview
@@ -50,7 +51,23 @@ struct CameraPreviewView: View {
             camera.stop()
         }
         .sheet(isPresented: $showPhotoPicker) {
-            PhotoPicker(selectedImage: $capturedImage)
+            PhotoPicker(selectedImage: $capturedImage, onImageSelected: {
+                // Create metadata for library photo
+                capturedStandardization = PhotoStandardizationMetadata(
+                    capturedAt: Date(),
+                    cameraPosition: .unknown,
+                    captureSource: .library,
+                    lighting: .optimal,
+                    faceDetected: false,
+                    yawDegrees: 0,
+                    pitchDegrees: 0,
+                    rollDegrees: 0,
+                    distance: .optimal,
+                    isReady: false,
+                    suggestions: ["从相册选择，无实时拍照条件数据"],
+                    userOverride: nil
+                )
+            })
         }
         .onChange(of: capturedImage) { _, newValue in
             if newValue != nil {
@@ -203,11 +220,30 @@ struct CameraPreviewView: View {
     private func capturePhoto() {
         guard !isCapturing else { return }
         isCapturing = true
-        
+
         Task {
             do {
                 let image = try await camera.capturePhoto()
                 capturedImage = image
+
+                // Capture standardization metadata
+                let condition = camera.photoCondition
+                let position = PhotoStandardizationMetadata.CameraPosition(from: camera.activeCameraPosition)
+
+                capturedStandardization = PhotoStandardizationMetadata(
+                    capturedAt: Date(),
+                    cameraPosition: position,
+                    captureSource: .camera,
+                    lighting: PhotoStandardizationMetadata.LightingRating(from: condition.lighting),
+                    faceDetected: condition.faceDetected,
+                    yawDegrees: condition.faceAngle.yaw,
+                    pitchDegrees: condition.faceAngle.pitch,
+                    rollDegrees: condition.faceAngle.roll,
+                    distance: PhotoStandardizationMetadata.DistanceRating(from: condition.faceDistance),
+                    isReady: condition.isReady,
+                    suggestions: condition.suggestions,
+                    userOverride: nil
+                )
             } catch {
                 print("Capture error: \(error)")
             }
@@ -231,5 +267,8 @@ struct CornerMarker: View {
 }
 
 #Preview {
-    CameraPreviewView(capturedImage: .constant(nil))
+    CameraPreviewView(
+        capturedImage: .constant(nil),
+        capturedStandardization: .constant(nil)
+    )
 }

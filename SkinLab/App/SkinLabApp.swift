@@ -12,10 +12,14 @@ struct SkinLabApp: App {
             SkincareRoutineRecord.self,
             IngredientExposureRecord.self,
             UserIngredientPreference.self,
-            
+
             // Community 模块
             MatchResultRecord.self,
-            UserFeedbackRecord.self
+            UserFeedbackRecord.self,
+
+            // Engagement 模块
+            UserEngagementMetrics.self,
+            AchievementProgress.self
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,

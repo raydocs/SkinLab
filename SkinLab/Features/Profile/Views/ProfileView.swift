@@ -4,10 +4,12 @@ import SwiftData
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
+    @Query private var achievementProgress: [AchievementProgress]
     @State private var showEditProfile = false
     @State private var showPrivacyCenter = false
     @State private var privacyInitialAction: PrivacyCenterInitialAction?
     @State private var showNotificationSettings = false
+    @State private var showAchievements = false
 
     private var profile: UserProfile? { profiles.first }
     
@@ -68,6 +70,9 @@ struct ProfileView: View {
                     .onDisappear {
                         privacyInitialAction = nil
                     }
+            }
+            .navigationDestination(isPresented: $showAchievements) {
+                AchievementDashboardView()
             }
         }
     }
@@ -277,8 +282,15 @@ struct ProfileView: View {
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
             }
-            
+
             VStack(spacing: 0) {
+                // Achievements row
+                NavigationLink(value: "achievements") {
+                    SettingsRow(icon: "trophy.fill", title: "成就 (\(unlockedCount)/\(totalAchievements))", iconColor: .orange)
+                }
+
+                Divider().padding(.leading, 52)
+
                 Button {
                     showNotificationSettings = true
                 } label: {
@@ -316,6 +328,16 @@ struct ProfileView: View {
             .cornerRadius(16)
             .skinLabSoftShadow()
         }
+    }
+
+    // MARK: - Computed Properties
+
+    private var unlockedCount: Int {
+        achievementProgress.filter { $0.isUnlocked }.count
+    }
+
+    private var totalAchievements: Int {
+        AchievementDefinitions.allBadges.count
     }
 }
 

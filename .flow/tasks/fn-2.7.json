@@ -1,0 +1,18 @@
+{
+  "assignee": "139067258+raydocs@users.noreply.github.com",
+  "claim_note": "",
+  "claimed_at": "2026-01-13T01:08:02.795427Z",
+  "created_at": "2026-01-12T09:21:16.959515Z",
+  "depends_on": [
+    "fn-2.4",
+    "fn-2.5",
+    "fn-2.6"
+  ],
+  "epic": "fn-2",
+  "id": "fn-2.7",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-2.7.md",
+  "status": "done",
+  "title": "Testing & Polish",
+  "updated_at": "2026-01-13T01:08:38.827423Z"
+}

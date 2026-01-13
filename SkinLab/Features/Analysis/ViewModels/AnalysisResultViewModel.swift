@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 /// ViewModel for AnalysisResultView
-/// Handles routine generation and tracking report retrieval
+/// Handles routine generation and tracking baseline creation
 @MainActor
 class AnalysisResultViewModel: ObservableObject {
     // MARK: - Published State
@@ -11,6 +11,8 @@ class AnalysisResultViewModel: ObservableObject {
     @Published var showRoutine = false
     @Published var routineError: String?
     @Published var showRoutineError = false
+    @Published var trackingError: String?
+    @Published var showTrackingError = false
 
     // MARK: - Dependencies
     private let routineService: RoutineService
@@ -23,6 +25,65 @@ class AnalysisResultViewModel: ObservableObject {
     ) {
         self.routineService = routineService
         self.modelContext = modelContext
+    }
+
+    // MARK: - Public Methods
+
+    /// Start tracking with Day 0 baseline from analysis
+    func startTrackingBaseline(
+        analysisRecordId: UUID,
+        photoPath: String?,
+        standardization: PhotoStandardizationMetadata?,
+        defaultTargetProducts: [String] = [],
+        notes: String? = nil
+    ) async throws -> TrackingSession {
+        // Check for existing active session
+        let activeSessions = FetchDescriptor<TrackingSession>(
+            predicate: #Predicate<TrackingSession> { $0.statusRaw == "active" }
+        )
+        let existingActive = try modelContext.fetch(activeSessions).first
+
+        if let existing = existingActive {
+            throw TrackingError.activeSessionExists(sessionId: existing.id)
+        }
+
+        // Create new tracking session
+        let session = TrackingSession(targetProducts: defaultTargetProducts)
+        if let notes = notes, !notes.isEmpty {
+            session.notes = notes
+        }
+        modelContext.insert(session)
+
+        // Create Day 0 check-in
+        let day0CheckIn = CheckIn(
+            sessionId: session.id,
+            day: 0,
+            captureDate: Date(),
+            photoPath: photoPath,
+            analysisId: analysisRecordId,
+            usedProducts: [],
+            notes: notes,
+            feeling: nil,
+            photoStandardization: standardization,
+            lifestyle: nil,  // Day 0 has no lifestyle data
+            reliability: nil  // Will be computed later if needed
+        )
+
+        session.addCheckIn(day0CheckIn)
+        try modelContext.save()
+
+        return session
+    }
+
+    enum TrackingError: LocalizedError {
+        case activeSessionExists(sessionId: UUID)
+
+        var errorDescription: String? {
+            switch self {
+            case .activeSessionExists:
+                return "您已有进行中的追踪计划，请先完成或取消当前计划"
+            }
+        }
     }
 
     // MARK: - Public Methods

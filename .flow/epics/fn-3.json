@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-3",
+  "created_at": "2026-01-13T11:35:00.353120Z",
+  "depends_on_epics": [],
+  "id": "fn-3",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-01-13T21:07:42.824343Z",
+  "spec_path": ".flow/specs/fn-3.md",
+  "status": "open",
+  "title": "Fix photo standardization and lifestyle correlation integration",
+  "updated_at": "2026-01-13T21:07:42.825087Z"
+}

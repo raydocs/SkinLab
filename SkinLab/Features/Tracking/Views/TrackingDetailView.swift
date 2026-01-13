@@ -9,8 +9,9 @@ struct TrackingDetailView: View {
     @State private var showCamera = false
     @State private var showCheckIn = false
     @State private var capturedImage: UIImage?
+    @State private var capturedStandardization: PhotoStandardizationMetadata?
     @State private var showProductPicker = false
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -38,7 +39,11 @@ struct TrackingDetailView: View {
             }
         }
         .sheet(isPresented: $showCheckIn) {
-            CheckInView(session: session, image: capturedImage)
+            CheckInView(
+                session: session,
+                image: capturedImage,
+                standardization: capturedStandardization
+            )
         }
         .sheet(isPresented: Binding(
             get: { viewModel?.showReport ?? false },
@@ -78,7 +83,10 @@ struct TrackingDetailView: View {
             }
         }
         .fullScreenCover(isPresented: $showCamera) {
-            CameraPreviewView(capturedImage: $capturedImage)
+            CameraPreviewView(
+                capturedImage: $capturedImage,
+                capturedStandardization: $capturedStandardization
+            )
         }
         .onChange(of: capturedImage) { _, newImage in
             if newImage != nil {
@@ -252,13 +260,23 @@ struct TrackingDetailView: View {
     // MARK: - Actions Section
     private var actionsSection: some View {
         VStack(spacing: 12) {
-            if let nextDay = session.nextCheckInDay, nextDay <= session.duration {
+            // Due checkpoint: actionable
+            if let dueDay = session.nextCheckInDay {
                 Button {
                     showCamera = true
                 } label: {
-                    Text("记录第 \(nextDay) 天")
+                    Text("记录第 \(dueDay) 天")
                 }
                 .buttonStyle(FreshGlassButton(color: .freshPrimary))
+            }
+            // No due checkpoint but next planned exists: show non-actionable
+            else if let nextPlanned = session.nextPlannedCheckInDay {
+                Text("下次打卡 Day \(nextPlanned)")
+                    .font(.skinLabSubheadline)
+                    .foregroundColor(.skinLabSubtext)
+                    .padding()
+                    .background(Color.gray.opacity(0.05))
+                    .cornerRadius(8)
             }
 
             if session.duration >= 28 && session.status == .active {
@@ -287,7 +305,7 @@ struct TrackingDetailView: View {
 // MARK: - Check-In Row
 struct CheckInRow: View {
     let checkIn: CheckIn
-    
+
     var body: some View {
         HStack(spacing: 12) {
             VStack {
@@ -299,12 +317,12 @@ struct CheckInRow: View {
                     .foregroundColor(.skinLabPrimary)
             }
             .frame(width: 50)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(checkIn.captureDate.formatted(date: .abbreviated, time: .shortened))
                     .font(.skinLabSubheadline)
                     .foregroundColor(.skinLabText)
-                
+
                 if let feeling = checkIn.feeling {
                     HStack(spacing: 4) {
                         Image(systemName: feeling.icon)
@@ -315,9 +333,14 @@ struct CheckInRow: View {
                     .foregroundColor(feelingColor(feeling))
                 }
             }
-            
+
             Spacer()
-            
+
+            // Reliability badge (persistent location in timeline list)
+            if let reliability = checkIn.reliability {
+                ReliabilityBadgeView(reliability: reliability, size: .small)
+            }
+
             Image(systemName: "chevron.right")
                 .font(.caption)
                 .foregroundColor(.skinLabSubtext)
@@ -336,19 +359,67 @@ struct CheckInRow: View {
     }
 }
 
+// MARK: - Lifestyle Draft
+/// Draft struct for lifestyle data collection with all optional fields
+struct LifestyleDraft {
+    var sleepHours: Double?
+    var stressLevel: Int?
+    var waterIntakeLevel: Int?
+    var alcoholConsumed: Bool?
+    var exerciseMinutes: Int?
+    var sunExposureLevel: Int?
+    var dietNotes: String?
+
+    var hasAnyData: Bool {
+        sleepHours != nil ||
+        stressLevel != nil ||
+        waterIntakeLevel != nil ||
+        alcoholConsumed != nil ||
+        exerciseMinutes != nil ||
+        sunExposureLevel != nil ||
+        (dietNotes != nil && !dietNotes!.isEmpty)
+    }
+
+    var summary: String {
+        var parts: [String] = []
+        if let sleep = sleepHours {
+            parts.append("睡眠\(Int(sleep))h")
+        }
+        if let stress = stressLevel {
+            parts.append("压力\(stress)")
+        }
+        if let sun = sunExposureLevel {
+            parts.append("日晒\(sun)")
+        }
+        return parts.isEmpty ? "未记录" : parts.joined(separator: " · ")
+    }
+}
+
 // MARK: - Check-In View
 struct CheckInView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    
+
     let session: TrackingSession
     let image: UIImage?
-    
+    let standardization: PhotoStandardizationMetadata?
+
     @State private var feeling: CheckIn.Feeling = .same
     @State private var notes: String = ""
     @State private var isAnalyzing = false
     @State private var errorMessage: String?
-    
+
+    // Capture scheduled day ONCE when view opens (from session.nextCheckInDay)
+    // This represents the checkpoint we're recording (0/7/14/21/28)
+    @State private var scheduledDay: Int?
+
+    // Lifestyle factors state - now truly optional
+    @State private var includeLifestyle = false
+    @State private var lifestyleDraft = LifestyleDraft()
+
+    // User override for photo quality
+    @State private var userFlaggedPhotoIssue = false
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -361,23 +432,34 @@ struct CheckInView: View {
                             .frame(maxHeight: 300)
                             .cornerRadius(12)
                     }
-                    
+
+                    // Photo Standardization Card
+                    if let standardization = standardization {
+                        photoStandardizationCard(standardization)
+                    }
+
                     // Day Info
                     VStack {
-                        Text("Day \(session.duration)")
-                            .font(.skinLabTitle2)
-                            .foregroundColor(.skinLabPrimary)
-                        
+                        if let day = scheduledDay {
+                            Text("Day \(day)")
+                                .font(.skinLabTitle2)
+                                .foregroundColor(.skinLabPrimary)
+                        } else {
+                            Text("无可用打卡节点")
+                                .font(.skinLabTitle2)
+                                .foregroundColor(.red)
+                        }
+
                         Text(Date().formatted(date: .complete, time: .omitted))
                             .font(.skinLabSubheadline)
                             .foregroundColor(.skinLabSubtext)
                     }
-                    
+
                     // Feeling Selector
                     VStack(alignment: .leading, spacing: 12) {
                         Text("今天感觉皮肤怎么样？")
                             .font(.skinLabHeadline)
-                        
+
                         HStack(spacing: 16) {
                             ForEach([CheckIn.Feeling.better, .same, .worse], id: \.self) { f in
                                 FeelingButton(feeling: f, isSelected: feeling == f) {
@@ -387,20 +469,53 @@ struct CheckInView: View {
                         }
                     }
                     .skinLabCard()
-                    
+
+                    // Lifestyle Factors (DisclosureGroup - now truly optional)
+                    DisclosureGroup(isExpanded: $includeLifestyle) {
+                        if includeLifestyle {
+                            lifestyleInputsContent
+                        }
+                    } label: {
+                        HStack {
+                            Text("生活因素（可选）")
+                                .font(.skinLabHeadline)
+                                .foregroundColor(.skinLabText)
+                            Spacer()
+                            if !includeLifestyle || !lifestyleDraft.hasAnyData {
+                                Text("未记录")
+                                    .font(.skinLabSubheadline)
+                                    .foregroundColor(.skinLabSubtext)
+                            } else {
+                                Text(lifestyleDraft.summary)
+                                    .font(.skinLabSubheadline)
+                                    .foregroundColor(.skinLabSubtext)
+                            }
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.05))
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+
                     // Notes
                     VStack(alignment: .leading, spacing: 8) {
                         Text("备注（可选）")
                             .font(.skinLabHeadline)
-                        
+
                         TextEditor(text: $notes)
-                            .frame(minHeight: 100)
+                            .frame(minHeight: 80)
                             .padding(8)
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
                     }
                     .skinLabCard()
-                    
+
+                    // Disclaimer
+                    Text("生活因素用于发现可能关联，不代表因果关系")
+                        .font(.skinLabCaption)
+                        .foregroundColor(.skinLabSubtext)
+                        .multilineTextAlignment(.center)
+
                     // Save Button
                     Button {
                         saveCheckIn()
@@ -425,6 +540,10 @@ struct CheckInView: View {
                 }
             }
         }
+        .onAppear {
+            // Capture scheduled day ONCE when view opens
+            scheduledDay = session.nextCheckInDay
+        }
         .alert("保存失败", isPresented: .constant(errorMessage != nil)) {
             Button("确定") { errorMessage = nil }
         } message: {
@@ -433,16 +552,225 @@ struct CheckInView: View {
             }
         }
     }
-    
+
+    // MARK: - Photo Standardization Card
+    @ViewBuilder
+    private func photoStandardizationCard(_ meta: PhotoStandardizationMetadata) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("拍照标准化")
+                    .font(.skinLabHeadline)
+
+                Spacer()
+
+                // Status badge
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(meta.isReady ? Color.green : Color.orange)
+                        .frame(width: 8, height: 8)
+
+                    Text(meta.isReady ? "良好" : "一般")
+                        .font(.skinLabCaption)
+                        .foregroundColor(meta.isReady ? .green : .orange)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(meta.isReady ? Color.green.opacity(0.1) : Color.orange.opacity(0.1))
+                .cornerRadius(8)
+            }
+
+            // Conditions chips
+            HStack(spacing: 8) {
+                conditionChip("光线", meta.lighting)
+                conditionChip("角度", angle: abs(meta.yawDegrees) + abs(meta.pitchDegrees))
+                conditionChip("距离", meta.distance)
+            }
+
+            // Suggestions
+            if !meta.suggestions.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(meta.suggestions, id: \.self) { suggestion in
+                        HStack(spacing: 6) {
+                            Image(systemName: "info.circle")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                            Text(suggestion)
+                                .font(.skinLabSubheadline)
+                                .foregroundColor(.skinLabText)
+                        }
+                    }
+                }
+            }
+
+            // User override toggle
+            Toggle("本次照片不太标准", isOn: $userFlaggedPhotoIssue)
+                .font(.skinLabSubheadline)
+                .toggleStyle(SwitchToggleStyle(tint: .orange))
+        }
+        .padding()
+        .background(Color.gray.opacity(0.05))
+        .cornerRadius(12)
+    }
+
+    private func conditionChip(_ label: String, _ rating: PhotoStandardizationMetadata.LightingRating) -> some View {
+        let (color, text) = chipInfo(for: rating)
+        return chipContent(label: label, text: text, color: color)
+    }
+
+    private func conditionChip(_ label: String, angle: Double) -> some View {
+        let (color, text): (Color, String) = angle < 15 ? (.green, "标准") : angle < 20 ? (.orange, "一般") : (.red, "偏差")
+        return chipContent(label: label, text: text, color: color)
+    }
+
+    private func conditionChip(_ label: String, _ distance: PhotoStandardizationMetadata.DistanceRating) -> some View {
+        let (color, text) = chipInfo(for: distance)
+        return chipContent(label: label, text: text, color: color)
+    }
+
+    private func chipContent(label: String, text: String, color: Color) -> some View {
+        HStack(spacing: 4) {
+            Text(label)
+                .font(.skinLabCaption)
+                .foregroundColor(.skinLabSubtext)
+            Text(text)
+                .font(.skinLabCaption)
+                .foregroundColor(color)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(color.opacity(0.1))
+        .cornerRadius(6)
+    }
+
+    private func chipInfo(for rating: PhotoStandardizationMetadata.LightingRating) -> (Color, String) {
+        switch rating {
+        case .optimal: return (.green, "良好")
+        case .slightlyDark, .slightlyBright: return (.orange, "一般")
+        case .tooDark, .tooBright: return (.red, "差")
+        }
+    }
+
+    private func chipInfo(for rating: PhotoStandardizationMetadata.DistanceRating) -> (Color, String) {
+        switch rating {
+        case .optimal: return (.green, "良好")
+        case .slightlyFar, .slightlyClose: return (.orange, "一般")
+        case .tooFar, .tooClose: return (.red, "差")
+        }
+    }
+
+    // MARK: - Lifestyle Inputs Content
+    private var lifestyleInputsContent: some View {
+        VStack(spacing: 16) {
+            // Sleep hours
+            VStack(alignment: .leading, spacing: 8) {
+                Text("睡眠时间: \(lifestyleDraft.sleepHours.map { "\($0)" } ?? "未填写")小时")
+                    .font(.skinLabSubheadline)
+
+                Slider(value: Binding(
+                    get: { lifestyleDraft.sleepHours ?? 0 },
+                    set: { lifestyleDraft.sleepHours = $0 == 0 ? nil : $0 }
+                ), in: 0...12, step: 0.5)
+                Stepper("", value: Binding(
+                    get: { lifestyleDraft.sleepHours ?? 0 },
+                    set: { lifestyleDraft.sleepHours = $0 == 0 ? nil : $0 }
+                ), in: 0...12, step: 0.5)
+                    .labelsHidden()
+            }
+
+            // Stress level
+            VStack(alignment: .leading, spacing: 8) {
+                Text("压力水平")
+                    .font(.skinLabSubheadline)
+
+                Picker("", selection: Binding(
+                    get: { lifestyleDraft.stressLevel ?? 3 },
+                    set: { lifestyleDraft.stressLevel = $0 }
+                )) {
+                    Text("很低").tag(1)
+                    Text("低").tag(2)
+                    Text("一般").tag(3)
+                    Text("高").tag(4)
+                    Text("很高").tag(5)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+
+            // Water intake
+            VStack(alignment: .leading, spacing: 8) {
+                Text("饮水量")
+                    .font(.skinLabSubheadline)
+
+                Picker("", selection: Binding(
+                    get: { lifestyleDraft.waterIntakeLevel ?? 3 },
+                    set: { lifestyleDraft.waterIntakeLevel = $0 }
+                )) {
+                    Text("少").tag(1)
+                    Text("较少").tag(2)
+                    Text("一般").tag(3)
+                    Text("充足").tag(4)
+                    Text("很多").tag(5)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+
+            // Exercise
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("运动时间: \(lifestyleDraft.exerciseMinutes.map { "\($0)" } ?? "未填写")分钟")
+                        .font(.skinLabSubheadline)
+                    Spacer()
+                }
+                Stepper("", value: Binding(
+                    get: { lifestyleDraft.exerciseMinutes ?? 0 },
+                    set: { lifestyleDraft.exerciseMinutes = $0 == 0 ? nil : $0 }
+                ), in: 0...180, step: 15)
+                    .labelsHidden()
+            }
+
+            // Sun exposure
+            VStack(alignment: .leading, spacing: 8) {
+                Text("日晒程度")
+                    .font(.skinLabSubheadline)
+
+                Picker("", selection: Binding(
+                    get: { lifestyleDraft.sunExposureLevel ?? 2 },
+                    set: { lifestyleDraft.sunExposureLevel = $0 }
+                )) {
+                    Text("无").tag(1)
+                    Text("少").tag(2)
+                    Text("一般").tag(3)
+                    Text("多").tag(4)
+                    Text("很多").tag(5)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+
+            // Alcohol
+            Toggle("饮酒", isOn: Binding(
+                get: { lifestyleDraft.alcoholConsumed ?? false },
+                set: { lifestyleDraft.alcoholConsumed = $0 ? true : nil }
+            ))
+            .font(.skinLabSubheadline)
+        }
+        .padding()
+    }
+
+    @MainActor
     private func saveCheckIn() {
         guard let image = image else {
             dismiss()
             return
         }
 
+        // CRITICAL: Guard scheduledDay was captured successfully
+        guard let scheduledDay = scheduledDay else {
+            errorMessage = "当前没有可记录的打卡节点"
+            return
+        }
+
         isAnalyzing = true
 
-        Task {
+        Task { @MainActor in
             do {
                 // 1. Save photo locally
                 let photoPath = savePhoto()
@@ -456,47 +784,109 @@ struct CheckInView: View {
                 modelContext.insert(analysisRecord)
                 try modelContext.save()
 
-                // 4. Create check-in with analysis ID
-                let checkIn = CheckIn(
+                // 4. Build lifestyle factors - only if user opted in AND provided data
+                var lifestyle: LifestyleFactors?
+                if includeLifestyle && lifestyleDraft.hasAnyData {
+                    lifestyle = LifestyleFactors(
+                        sleepHours: lifestyleDraft.sleepHours,
+                        stressLevel: lifestyleDraft.stressLevel,
+                        waterIntakeLevel: lifestyleDraft.waterIntakeLevel,
+                        alcoholConsumed: lifestyleDraft.alcoholConsumed,
+                        exerciseMinutes: lifestyleDraft.exerciseMinutes,
+                        sunExposureLevel: lifestyleDraft.sunExposureLevel,
+                        dietNotes: lifestyleDraft.dietNotes
+                    )
+                }
+
+                // 5. Build photo standardization with user override
+                var updatedStandardization = standardization
+                if userFlaggedPhotoIssue {
+                    if var meta = standardization {
+                        updatedStandardization = PhotoStandardizationMetadata(
+                            capturedAt: meta.capturedAt,
+                            cameraPosition: meta.cameraPosition,
+                            captureSource: meta.captureSource,
+                            lighting: meta.lighting,
+                            faceDetected: meta.faceDetected,
+                            yawDegrees: meta.yawDegrees,
+                            pitchDegrees: meta.pitchDegrees,
+                            rollDegrees: meta.rollDegrees,
+                            distance: meta.distance,
+                            isReady: meta.isReady,
+                            suggestions: meta.suggestions,
+                            userOverride: .userFlaggedIssue
+                        )
+                    }
+                }
+
+                // 6. Compute reliability at capture time
+                let scorer = ReliabilityScorer()
+                let preliminaryCheckIn = CheckIn(
                     sessionId: session.id,
-                    day: session.duration,
+                    day: scheduledDay,
+                    captureDate: Date(),
                     photoPath: photoPath,
-                    analysisId: analysis.id,  // ✅ 关联分析结果
+                    analysisId: analysis.id,
+                    usedProducts: [],
                     notes: notes.isEmpty ? nil : notes,
-                    feeling: feeling
+                    feeling: feeling,
+                    photoStandardization: updatedStandardization,
+                    lifestyle: lifestyle,
+                    reliability: nil  // Temporary, for scoring
                 )
 
-                // 5. Add to session
-                session.addCheckIn(checkIn)
+                let reliability = scorer.score(
+                    checkIn: preliminaryCheckIn,
+                    analysis: analysis,
+                    session: session,
+                    expectedDay: scheduledDay,  // Pass scheduled day as the checkpoint
+                    cameraPositionConsistency: true
+                )
 
-                await MainActor.run {
-                    isAnalyzing = false
-                    dismiss()
-                }
+                // 7. Create final check-in with reliability
+                let checkIn = CheckIn(
+                    sessionId: session.id,
+                    day: scheduledDay,  // Use scheduled day, not session.duration
+                    captureDate: Date(),
+                    photoPath: photoPath,
+                    analysisId: analysis.id,
+                    usedProducts: [],
+                    notes: notes.isEmpty ? nil : notes,
+                    feeling: feeling,
+                    photoStandardization: updatedStandardization,
+                    lifestyle: lifestyle,
+                    reliability: reliability  // Computed at capture time
+                )
+
+                // 8. Add to session and save (CRITICAL: persist SwiftData changes)
+                session.addCheckIn(checkIn)
+                try modelContext.save()  // Ensure check-in is persisted
+
+                isAnalyzing = false
+                dismiss()
             } catch {
-                await MainActor.run {
-                    isAnalyzing = false
-                    errorMessage = "分析失败: \(error.localizedDescription)"
-                }
+                isAnalyzing = false
+                errorMessage = "分析失败: \(error.localizedDescription)"
             }
         }
     }
-    
+
     private func savePhoto() -> String? {
         guard let image = image,
-              let data = image.jpegData(compressionQuality: 0.8) else {
+              let data = image.jpegData(compressionQuality: 0.8),
+              let scheduledDay = scheduledDay else {
             return nil
         }
-        
-        let filename = "\(session.id.uuidString)_day\(session.duration).jpg"
+
+        let filename = "\(session.id.uuidString)_day\(scheduledDay).jpg"
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("tracking_photos", isDirectory: true)
-        
+
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-        
+
         let fileURL = url.appendingPathComponent(filename)
         try? data.write(to: fileURL)
-        
+
         return filename
     }
 }

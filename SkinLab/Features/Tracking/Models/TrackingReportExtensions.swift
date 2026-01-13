@@ -9,8 +9,9 @@ struct ScorePoint: Codable, Identifiable {
     let skinAge: Int
     let issueScores: IssueScores?
     let regionScores: RegionScores?
+    let checkInId: UUID
 
-    init(id: UUID = UUID(), day: Int, date: Date, overallScore: Int, skinAge: Int, issueScores: IssueScores? = nil, regionScores: RegionScores? = nil) {
+    init(id: UUID = UUID(), day: Int, date: Date, overallScore: Int, skinAge: Int, issueScores: IssueScores? = nil, regionScores: RegionScores? = nil, checkInId: UUID = UUID()) {
         self.id = id
         self.day = day
         self.date = date
@@ -18,6 +19,7 @@ struct ScorePoint: Codable, Identifiable {
         self.skinAge = skinAge
         self.issueScores = issueScores
         self.regionScores = regionScores
+        self.checkInId = checkInId
     }
 }
 
@@ -90,6 +92,25 @@ struct EnhancedTrackingReport: Codable {
     /// 数据质量评估
     let dataQualityScore: Double?
     let dataQualityDescription: String?
+
+    // MARK: - Photo Standardization & Reliability Fields
+
+    /// 可靠性元数据映射（按 checkIn ID）
+    let reliabilityMap: [UUID: ReliabilityMetadata]
+
+    /// 可靠时间线（仅包含可靠数据点）
+    let timelineReliable: [ScorePoint]
+
+    /// 时间线显示策略
+    let timelinePolicy: TimelineDisplayPolicy
+
+    // MARK: - Lifestyle Correlation Fields
+
+    /// 生活方式关联洞察
+    let lifestyleInsights: [LifestyleCorrelationInsight]
+
+    /// 生活方式数据完整度（有生活方式数据的打卡比例）
+    let lifestyleDataCoverage: Double
 
     // Computed properties for UI
     var hasSignificantImprovement: Bool {
@@ -177,7 +198,8 @@ final class TrackingReportGenerator {
                 overallScore: analysis.overallScore,
                 skinAge: analysis.skinAge,
                 issueScores: analysis.issues,
-                regionScores: analysis.regions
+                regionScores: analysis.regions,
+                checkInId: checkIn.id
             )
         }
 
@@ -245,6 +267,57 @@ final class TrackingReportGenerator {
             analyzer: tsAnalyzer
         )
 
+        // MARK: - Photo Standardization & Reliability Analysis
+
+        // 8. Build reliability map - prefer stored reliability, compute as fallback
+        let reliabilityScorer = ReliabilityScorer()
+        var reliabilityMap: [UUID: ReliabilityMetadata] = [:]
+
+        for checkIn in sortedCheckIns {
+            if let stored = checkIn.reliability {
+                // Use stored reliability (computed at capture time)
+                reliabilityMap[checkIn.id] = stored
+            } else if let analysis = checkIn.analysisId.flatMap({ analyses[$0] }) {
+                // Fallback: compute reliability for older check-ins
+                let expectedDay = session.expectedDay(for: checkIn.day)
+                reliabilityMap[checkIn.id] = reliabilityScorer.score(
+                    checkIn: checkIn,
+                    analysis: analysis,
+                    session: session,
+                    expectedDay: expectedDay
+                )
+            }
+        }
+
+        // 9. Build reliable timeline (filter by reliability score >= 0.5)
+        // CRITICAL: Use checkInId for joins, never day (spec rule #1)
+        let timelineReliable = timeline.filter { point in
+            guard let reliability = reliabilityMap[point.checkInId] else {
+                return false
+            }
+            return reliability.score >= 0.5
+        }
+
+        // 10. Timeline display policy
+        let timelinePolicy = TimelineDisplayPolicy(
+            allCount: timeline.count,
+            reliableCount: timelineReliable.count
+        )
+
+        // MARK: - Lifestyle Correlation Analysis
+
+        // 11. Calculate lifestyle data coverage
+        let checkInsWithLifestyle = sortedCheckIns.filter { $0.lifestyle != nil }
+        let lifestyleCoverage = Double(checkInsWithLifestyle.count) / Double(max(sortedCheckIns.count, 1))
+
+        // 12. Run lifestyle correlation analysis
+        let lifestyleAnalyzer = LifestyleCorrelationAnalyzer()
+        let lifestyleInsights = lifestyleAnalyzer.analyze(
+            checkIns: sortedCheckIns,
+            timeline: timeline,
+            reliability: reliabilityMap
+        )
+
         // Generate AI summary (enhanced with new analytics)
         let aiSummary = await generateEnhancedAISummary(
             trendData: trendData,
@@ -285,7 +358,12 @@ final class TrackingReportGenerator {
             dataConfidence: dataConfidence,
             productInsights: productInsights,
             dataQualityScore: dataQuality.score,
-            dataQualityDescription: dataQuality.description
+            dataQualityDescription: dataQuality.description,
+            reliabilityMap: reliabilityMap,
+            timelineReliable: timelineReliable,
+            timelinePolicy: timelinePolicy,
+            lifestyleInsights: lifestyleInsights,
+            lifestyleDataCoverage: lifestyleCoverage
         )
     }
 

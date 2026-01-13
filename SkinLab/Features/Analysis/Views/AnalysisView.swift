@@ -3,11 +3,13 @@ import AVFoundation
 
 struct AnalysisView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = AnalysisViewModel()
 
     @State private var showCamera = false
     @State private var showPhotoPicker = false
     @State private var capturedImage: UIImage?
+    @State private var capturedStandardization: PhotoStandardizationMetadata?
     @State private var rotationAngle: Double = 0
     
     var body: some View {
@@ -20,8 +22,8 @@ struct AnalysisView: View {
                     cameraView
                 case .analyzing:
                     analyzingView
-                case .result(let analysis):
-                    AnalysisResultView(analysis: analysis) {
+                case .result(let result):
+                    AnalysisResultView(result: result) {
                         viewModel.retry()
                     }
                 case .error(let message):
@@ -47,15 +49,38 @@ struct AnalysisView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.setModelContext(modelContext)
+        }
         .fullScreenCover(isPresented: $showCamera) {
-            CameraPreviewView(capturedImage: $capturedImage)
+            CameraPreviewView(
+                capturedImage: $capturedImage,
+                capturedStandardization: $capturedStandardization
+            )
         }
         .sheet(isPresented: $showPhotoPicker) {
-            PhotoPicker(selectedImage: $capturedImage)
+            PhotoPicker(selectedImage: $capturedImage, onImageSelected: {
+                capturedStandardization = PhotoStandardizationMetadata(
+                    capturedAt: Date(),
+                    cameraPosition: .unknown,
+                    captureSource: .library,
+                    lighting: .optimal,
+                    faceDetected: false,
+                    yawDegrees: 0,
+                    pitchDegrees: 0,
+                    rollDegrees: 0,
+                    distance: .optimal,
+                    isReady: false,
+                    suggestions: ["从相册选择，无实时拍照条件数据"],
+                    userOverride: nil
+                )
+            })
         }
         .onChange(of: capturedImage) { _, newImage in
             if let image = newImage {
                 capturedImage = nil
+                // Store captured data for persistence
+                viewModel.setCapturedData(image, standardization: capturedStandardization)
                 Task {
                     await viewModel.analyzeImage(image)
                 }
