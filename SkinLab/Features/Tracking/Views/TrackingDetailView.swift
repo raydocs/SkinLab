@@ -260,13 +260,23 @@ struct TrackingDetailView: View {
     // MARK: - Actions Section
     private var actionsSection: some View {
         VStack(spacing: 12) {
-            if let nextDay = session.nextCheckInDay, nextDay <= session.duration {
+            // Due checkpoint: actionable
+            if let dueDay = session.nextCheckInDay {
                 Button {
                     showCamera = true
                 } label: {
-                    Text("记录第 \(nextDay) 天")
+                    Text("记录第 \(dueDay) 天")
                 }
                 .buttonStyle(FreshGlassButton(color: .freshPrimary))
+            }
+            // No due checkpoint but next planned exists: show non-actionable
+            else if let nextPlanned = session.nextPlannedCheckInDay {
+                Text("下次打卡 Day \(nextPlanned)")
+                    .font(.skinLabSubheadline)
+                    .foregroundColor(.skinLabSubtext)
+                    .padding()
+                    .background(Color.gray.opacity(0.05))
+                    .cornerRadius(8)
             }
 
             if session.duration >= 28 && session.status == .active {
@@ -394,20 +404,14 @@ struct CheckInView: View {
     let image: UIImage?
     let standardization: PhotoStandardizationMetadata?
 
-    // Capture scheduled day ONCE when view opens (from session.nextCheckInDay)
-    // This represents the checkpoint we're recording (0/7/14/21/28)
-    private var scheduledDay: Int {
-        guard let nextDay = session.nextCheckInDay else {
-            // Fallback - shouldn't happen in valid check-in flow
-            return session.duration
-        }
-        return nextDay
-    }
-
     @State private var feeling: CheckIn.Feeling = .same
     @State private var notes: String = ""
     @State private var isAnalyzing = false
     @State private var errorMessage: String?
+
+    // Capture scheduled day ONCE when view opens (from session.nextCheckInDay)
+    // This represents the checkpoint we're recording (0/7/14/21/28)
+    @State private var scheduledDay: Int?
 
     // Lifestyle factors state - now truly optional
     @State private var includeLifestyle = false
@@ -436,9 +440,15 @@ struct CheckInView: View {
 
                     // Day Info
                     VStack {
-                        Text("Day \(scheduledDay)")
-                            .font(.skinLabTitle2)
-                            .foregroundColor(.skinLabPrimary)
+                        if let day = scheduledDay {
+                            Text("Day \(day)")
+                                .font(.skinLabTitle2)
+                                .foregroundColor(.skinLabPrimary)
+                        } else {
+                            Text("无可用打卡节点")
+                                .font(.skinLabTitle2)
+                                .foregroundColor(.red)
+                        }
 
                         Text(Date().formatted(date: .complete, time: .omitted))
                             .font(.skinLabSubheadline)
@@ -529,6 +539,10 @@ struct CheckInView: View {
                     Button("取消") { dismiss() }
                 }
             }
+        }
+        .onAppear {
+            // Capture scheduled day ONCE when view opens
+            scheduledDay = session.nextCheckInDay
         }
         .alert("保存失败", isPresented: .constant(errorMessage != nil)) {
             Button("确定") { errorMessage = nil }
@@ -748,9 +762,15 @@ struct CheckInView: View {
             return
         }
 
+        // CRITICAL: Guard scheduledDay was captured successfully
+        guard let scheduledDay = scheduledDay else {
+            errorMessage = "当前没有可记录的打卡节点"
+            return
+        }
+
         isAnalyzing = true
 
-        Task {
+        Task { @MainActor in
             do {
                 // 1. Save photo locally
                 let photoPath = savePhoto()
@@ -838,25 +858,23 @@ struct CheckInView: View {
                     reliability: reliability  // Computed at capture time
                 )
 
-                // 8. Add to session
+                // 8. Add to session and save (CRITICAL: persist SwiftData changes)
                 session.addCheckIn(checkIn)
+                try modelContext.save()  // Ensure check-in is persisted
 
-                await MainActor.run {
-                    isAnalyzing = false
-                    dismiss()
-                }
+                isAnalyzing = false
+                dismiss()
             } catch {
-                await MainActor.run {
-                    isAnalyzing = false
-                    errorMessage = "分析失败: \(error.localizedDescription)"
-                }
+                isAnalyzing = false
+                errorMessage = "分析失败: \(error.localizedDescription)"
             }
         }
     }
 
     private func savePhoto() -> String? {
         guard let image = image,
-              let data = image.jpegData(compressionQuality: 0.8) else {
+              let data = image.jpegData(compressionQuality: 0.8),
+              let scheduledDay = scheduledDay else {
             return nil
         }
 

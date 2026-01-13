@@ -56,8 +56,9 @@ struct AnalysisResultView: View {
                 createdSession = session
                 navigateToTracking = true
             } catch {
-                // Show error - for now just print
-                print("Failed to start tracking: \(error)")
+                // Show error to user (viewModel is guaranteed non-nil after guard)
+                viewModel.trackingError = error.localizedDescription
+                viewModel.showTrackingError = true
             }
         }
     }
@@ -507,8 +508,21 @@ struct AnalysisResultView: View {
                 Text(error)
             }
         }
+        .alert("开始追踪失败", isPresented: Binding(
+            get: { viewModel?.showTrackingError ?? false },
+            set: { viewModel?.showTrackingError = $0 }
+        )) {
+            Button("确定") {
+                viewModel?.showTrackingError = false
+                viewModel?.trackingError = nil
+            }
+        } message: {
+            if let error = viewModel?.trackingError {
+                Text(error)
+            }
+        }
     }
-    
+
     // MARK: - Issues Section
     private var issuesSection: some View {
         VStack(spacing: 14) {

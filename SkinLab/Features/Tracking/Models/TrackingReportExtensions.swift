@@ -290,9 +290,9 @@ final class TrackingReportGenerator {
         }
 
         // 9. Build reliable timeline (filter by reliability score >= 0.5)
+        // CRITICAL: Use checkInId for joins, never day (spec rule #1)
         let timelineReliable = timeline.filter { point in
-            guard let checkIn = sortedCheckIns.first(where: { $0.day == point.day }),
-                  let reliability = reliabilityMap[checkIn.id] else {
+            guard let reliability = reliabilityMap[point.checkInId] else {
                 return false
             }
             return reliability.score >= 0.5
