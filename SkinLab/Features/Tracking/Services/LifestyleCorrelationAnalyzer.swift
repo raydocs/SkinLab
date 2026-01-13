@@ -21,12 +21,21 @@ struct LifestyleCorrelationAnalyzer {
 
         var insights: [LifestyleCorrelationInsight] = []
 
+        // Build score lookup by check-in ID for delta computation
+        let scoreByCheckInId: [UUID: ScorePoint] = Dictionary(
+            uniqueKeysWithValues: timeline.map { ($0.checkInId, $0) }
+        )
+
         // Build consecutive check-in pairs for lagged correlation
-        let pairs = buildConsecutivePairs(checkIns: checkIns, analyses: [:])
+        let pairs = buildConsecutivePairs(
+            checkIns: checkIns,
+            scoreByCheckInId: scoreByCheckInId,
+            reliability: reliability
+        )
 
         // Analyze each lifestyle factor
         let factors: [LifestyleCorrelationInsight.LifestyleFactorKey] = [
-            .sleepHours, .stressLevel, .waterIntakeLevel,
+            .sleepHours, .stressLevel, .waterIntakeLevel, .alcohol,
             .exerciseMinutes, .sunExposureLevel
         ]
 
@@ -52,7 +61,8 @@ struct LifestyleCorrelationAnalyzer {
     /// Build consecutive pairs (day D -> day D+1) for lagged correlation
     private func buildConsecutivePairs(
         checkIns: [CheckIn],
-        analyses: [UUID: SkinAnalysis]
+        scoreByCheckInId: [UUID: ScorePoint],
+        reliability: [UUID: ReliabilityMetadata]
     ) -> [(checkIn: CheckIn, nextCheckIn: CheckIn, delta: Double)] {
         let sorted = checkIns.sorted { $0.day < $1.day }
         var pairs: [(CheckIn, CheckIn, Double)] = []
@@ -61,10 +71,18 @@ struct LifestyleCorrelationAnalyzer {
             let current = sorted[i]
             let next = sorted[i + 1]
 
-            // Calculate score change (delta)
-            // For now, use overallScore from timeline if available
-            // In real implementation, this would come from SkinAnalysis
-            let delta = 0.0  // Placeholder
+            // Optional: Filter out low-reliability pairs
+            if let rel = reliability[current.id], rel.score < 0.5 {
+                continue
+            }
+
+            // Calculate score change (delta) from actual timeline scores
+            guard let currentScore = scoreByCheckInId[current.id],
+                  let nextScore = scoreByCheckInId[next.id] else {
+                continue
+            }
+
+            let delta = Double(nextScore.overallScore - currentScore.overallScore)
 
             pairs.append((current, next, delta))
         }
