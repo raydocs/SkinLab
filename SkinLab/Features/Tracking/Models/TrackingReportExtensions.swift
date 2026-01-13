@@ -269,13 +269,25 @@ final class TrackingReportGenerator {
 
         // MARK: - Photo Standardization & Reliability Analysis
 
-        // 8. Score all check-ins for reliability
+        // 8. Build reliability map - prefer stored reliability, compute as fallback
         let reliabilityScorer = ReliabilityScorer()
-        let reliabilityMap = reliabilityScorer.scoreAll(
-            checkIns: sortedCheckIns,
-            analyses: analyses,
-            session: session
-        )
+        var reliabilityMap: [UUID: ReliabilityMetadata] = [:]
+
+        for checkIn in sortedCheckIns {
+            if let stored = checkIn.reliability {
+                // Use stored reliability (computed at capture time)
+                reliabilityMap[checkIn.id] = stored
+            } else if let analysis = checkIn.analysisId.flatMap({ analyses[$0] }) {
+                // Fallback: compute reliability for older check-ins
+                let expectedDay = session.expectedDay(for: checkIn.day)
+                reliabilityMap[checkIn.id] = reliabilityScorer.score(
+                    checkIn: checkIn,
+                    analysis: analysis,
+                    session: session,
+                    expectedDay: expectedDay
+                )
+            }
+        }
 
         // 9. Build reliable timeline (filter by reliability score >= 0.5)
         let timelineReliable = timeline.filter { point in

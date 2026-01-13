@@ -295,7 +295,7 @@ struct TrackingDetailView: View {
 // MARK: - Check-In Row
 struct CheckInRow: View {
     let checkIn: CheckIn
-    
+
     var body: some View {
         HStack(spacing: 12) {
             VStack {
@@ -307,12 +307,12 @@ struct CheckInRow: View {
                     .foregroundColor(.skinLabPrimary)
             }
             .frame(width: 50)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(checkIn.captureDate.formatted(date: .abbreviated, time: .shortened))
                     .font(.skinLabSubheadline)
                     .foregroundColor(.skinLabText)
-                
+
                 if let feeling = checkIn.feeling {
                     HStack(spacing: 4) {
                         Image(systemName: feeling.icon)
@@ -323,9 +323,14 @@ struct CheckInRow: View {
                     .foregroundColor(feelingColor(feeling))
                 }
             }
-            
+
             Spacer()
-            
+
+            // Reliability badge (persistent location in timeline list)
+            if let reliability = checkIn.reliability {
+                ReliabilityBadgeView(reliability: reliability, size: .small)
+            }
+
             Image(systemName: "chevron.right")
                 .font(.caption)
                 .foregroundColor(.skinLabSubtext)
@@ -352,6 +357,16 @@ struct CheckInView: View {
     let session: TrackingSession
     let image: UIImage?
     let standardization: PhotoStandardizationMetadata?
+
+    // Capture scheduled day ONCE when view opens (from session.nextCheckInDay)
+    // This represents the checkpoint we're recording (0/7/14/21/28)
+    private var scheduledDay: Int {
+        guard let nextDay = session.nextCheckInDay else {
+            // Fallback - shouldn't happen in valid check-in flow
+            return session.duration
+        }
+        return nextDay
+    }
 
     @State private var feeling: CheckIn.Feeling = .same
     @State private var notes: String = ""
@@ -391,7 +406,7 @@ struct CheckInView: View {
 
                     // Day Info
                     VStack {
-                        Text("Day \(session.duration)")
+                        Text("Day \(scheduledDay)")
                             .font(.skinLabTitle2)
                             .foregroundColor(.skinLabPrimary)
 
@@ -674,6 +689,7 @@ struct CheckInView: View {
         return parts.joined(separator: " · ")
     }
 
+    @MainActor
     private func saveCheckIn() {
         guard let image = image else {
             dismiss()
@@ -731,20 +747,46 @@ struct CheckInView: View {
                     }
                 }
 
-                // 6. Create check-in with all new fields
-                let checkIn = CheckIn(
+                // 6. Compute reliability at capture time
+                let scorer = ReliabilityScorer()
+                let preliminaryCheckIn = CheckIn(
                     sessionId: session.id,
-                    day: session.duration,
+                    day: scheduledDay,
+                    captureDate: Date(),
                     photoPath: photoPath,
                     analysisId: analysis.id,
+                    usedProducts: [],
                     notes: notes.isEmpty ? nil : notes,
                     feeling: feeling,
                     photoStandardization: updatedStandardization,
                     lifestyle: lifestyle,
-                    reliability: nil  // Computed at report time
+                    reliability: nil  // Temporary, for scoring
                 )
 
-                // 7. Add to session
+                let reliability = scorer.score(
+                    checkIn: preliminaryCheckIn,
+                    analysis: analysis,
+                    session: session,
+                    expectedDay: scheduledDay,  // Pass scheduled day as the checkpoint
+                    cameraPositionConsistency: true
+                )
+
+                // 7. Create final check-in with reliability
+                let checkIn = CheckIn(
+                    sessionId: session.id,
+                    day: scheduledDay,  // Use scheduled day, not session.duration
+                    captureDate: Date(),
+                    photoPath: photoPath,
+                    analysisId: analysis.id,
+                    usedProducts: [],
+                    notes: notes.isEmpty ? nil : notes,
+                    feeling: feeling,
+                    photoStandardization: updatedStandardization,
+                    lifestyle: lifestyle,
+                    reliability: reliability  // Computed at capture time
+                )
+
+                // 8. Add to session
                 session.addCheckIn(checkIn)
 
                 await MainActor.run {
@@ -766,7 +808,7 @@ struct CheckInView: View {
             return nil
         }
 
-        let filename = "\(session.id.uuidString)_day\(session.duration).jpg"
+        let filename = "\(session.id.uuidString)_day\(scheduledDay).jpg"
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("tracking_photos", isDirectory: true)
 

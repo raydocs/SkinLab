@@ -19,8 +19,11 @@ struct ReliabilityScorer {
         // 1. Check photo standardization
         if let photoMeta = checkIn.photoStandardization {
             // Lighting check (weight: 0.25)
-            if photoMeta.lighting == .tooDark || photoMeta.lighting == .tooBright {
+            if photoMeta.lighting == .tooDark {
                 reasons.append(.lowLight)
+                score -= 0.25
+            } else if photoMeta.lighting == .tooBright {
+                reasons.append(.highLight)
                 score -= 0.25
             } else if photoMeta.lighting == .slightlyDark || photoMeta.lighting == .slightlyBright {
                 score -= 0.10
@@ -85,8 +88,12 @@ struct ReliabilityScorer {
             }
         }
 
-        // 3. Timing
-        let dayDiff = abs(checkIn.day - expectedDay)
+        // 3. Timing - compute from captureDate, not day integer
+        // Expected date for this checkpoint = session.startDate + expectedDay days
+        let expectedDate = Calendar.current.date(byAdding: .day, value: expectedDay, to: session.startDate) ?? checkIn.captureDate
+        let daysOffTarget = Calendar.current.dateComponents([.day], from: expectedDate, to: checkIn.captureDate).day ?? 0
+        let dayDiff = abs(daysOffTarget)
+
         if dayDiff > 3 {
             reasons.append(.longInterval)
             score -= 0.10

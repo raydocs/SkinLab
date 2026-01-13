@@ -121,9 +121,35 @@ let reliabilityMap = sortedCheckIns.reduce(into: [:]) { map, checkIn in
 - [ ] Build succeeds with no compiler errors
 
 ## Done summary
-TBD
+- What changed
+  - Fixed tooBright mapping: now correctly maps to .highLight not .lowLight
+  - Fixed timing penalty computation: now uses captureDate difference (not day integer)
+    - Expected date = session.startDate + scheduledDay days
+    - Days off target = abs(captureDate - expectedDate).day
+  - CheckInView captures scheduledDay from session.nextCheckInDay once
+    - Uses scheduledDay for CheckIn.day (not session.duration)
+    - Computes reliability at capture time after analysis
+    - Marks saveCheckIn() as @MainActor for SwiftData writes
+  - Report generator prefers stored reliability, computes as fallback
+  - Added reliability badge to CheckInRow/timeline list (persistent location)
 
+- Why
+  - tooBright was incorrectly mapped to .lowLight
+  - Timing penalty used day integer instead of captureDate difference
+  - CheckIn was using session.duration instead of scheduled checkpoint day
+  - Reliability was only computed at report time, not at capture time
+  - Reliability badge wasn't visible in persistent location (timeline list)
+
+- Verification
+  - Build succeeded with no compiler errors
+  - CheckIn.reliability is now non-nil (computed at capture time)
+  - Reliability badge visible in CheckInRow after save
+  - Scheduled day from nextCheckInDay used for CheckIn.day
+
+- Follow-ups
+  - Manual testing needed to verify late check-in (Day 7 on Day 12) shows reduced reliability
+  - Consider showing reliability preview in CheckInView before save
 ## Evidence
-- Commits:
-- Tests:
+- Commits: c55255417c1d5a8b20bbe2e7a834e9beac9ad278
+- Tests: xcodebuild -scheme SkinLab -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 - PRs:
