@@ -5,12 +5,25 @@ struct TrackingDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Bindable var session: TrackingSession
 
-    @State private var viewModel: TrackingDetailViewModel?
+    var body: some View {
+        TrackingDetailViewContent(session: session, modelContext: modelContext)
+    }
+}
+
+private struct TrackingDetailViewContent: View {
+    @Bindable var session: TrackingSession
+    @StateObject private var viewModel: TrackingDetailViewModel
+
     @State private var showCamera = false
     @State private var showCheckIn = false
     @State private var capturedImage: UIImage?
     @State private var capturedStandardization: PhotoStandardizationMetadata?
     @State private var showProductPicker = false
+
+    init(session: TrackingSession, modelContext: ModelContext) {
+        self.session = session
+        _viewModel = StateObject(wrappedValue: TrackingDetailViewModel(modelContext: modelContext))
+    }
 
     var body: some View {
         ScrollView {
@@ -32,12 +45,6 @@ struct TrackingDetailView: View {
         .background(Color.skinLabBackground)
         .navigationTitle("追踪详情")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            // Initialize ViewModel with modelContext
-            if viewModel == nil {
-                viewModel = TrackingDetailViewModel(modelContext: modelContext)
-            }
-        }
         .sheet(isPresented: $showCheckIn) {
             CheckInView(
                 session: session,
@@ -45,17 +52,14 @@ struct TrackingDetailView: View {
                 standardization: capturedStandardization
             )
         }
-        .sheet(isPresented: Binding(
-            get: { viewModel?.showReport ?? false },
-            set: { viewModel?.showReport = $0 }
-        )) {
-            if let report = viewModel?.generatedReport {
+        .sheet(isPresented: $viewModel.showReport) {
+            if let report = viewModel.generatedReport {
                 NavigationStack {
                     TrackingReportView(report: report)
                         .toolbar {
                             ToolbarItem(placement: .confirmationAction) {
                                 Button("完成") {
-                                    viewModel?.showReport = false
+                                    viewModel.showReport = false
                                 }
                             }
                         }
@@ -71,16 +75,14 @@ struct TrackingDetailView: View {
             )
         }
         .alert("报告生成失败", isPresented: Binding(
-            get: { viewModel?.reportError != nil },
-            set: { if !$0 { viewModel?.reportError = nil } }
+            get: { viewModel.reportError != nil },
+            set: { if !$0 { viewModel.reportError = nil } }
         )) {
             Button("确定") {
-                viewModel?.reportError = nil
+                viewModel.reportError = nil
             }
         } message: {
-            if let error = viewModel?.reportError {
-                Text(error)
-            }
+            Text(viewModel.reportError ?? "")
         }
         .fullScreenCover(isPresented: $showCamera) {
             CameraPreviewView(
@@ -281,7 +283,7 @@ struct TrackingDetailView: View {
 
             if session.duration >= 28 && session.status == .active {
                 Button {
-                    viewModel?.completeSession(session)
+                    viewModel.completeSession(session)
                 } label: {
                     Text("完成追踪")
                 }
@@ -289,15 +291,14 @@ struct TrackingDetailView: View {
             }
 
             Button {
-                guard let viewModel = viewModel else { return }
                 Task {
                     await viewModel.generateReport(for: session)
                 }
             } label: {
-                Text(viewModel?.isGeneratingReport == true ? "生成中..." : "生成报告")
+                Text(viewModel.isGeneratingReport ? "生成中..." : "生成报告")
             }
             .buttonStyle(FreshSecondaryButton())
-            .disabled(viewModel?.isGeneratingReport == true || session.checkIns.count < 2)
+            .disabled(viewModel.isGeneratingReport || session.checkIns.count < 2)
         }
     }
 }
