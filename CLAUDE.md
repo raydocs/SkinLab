@@ -15,6 +15,29 @@ SkinLab is an AI-powered skin analysis and skincare recommendation iOS app.
 - **AI**: Gemini 3.0 Flash Vision API
 - **Image Processing**: Vision Framework
 
+## Completed Features
+
+### fn-2: Engagement Features (Daily Streaks & Achievement Badges)
+- **UserEngagementMetrics** (SwiftData model): Tracks streakCount, longestStreak, lastCheckInDate, streakFreezesAvailable, lastFreezeRefillDate, totalCheckIns, unlockedAchievementIDs
+- **AchievementProgress** (SwiftData model): Tracks progress for each achievement (achievementID, isUnlocked, unlockedAt, progress)
+- **AchievementDefinition** (code struct): Badge definitions with title, description, category, requirementType, requirementValue, iconName
+- **StreakTrackingService**: checkIn(), getStreakStatus(), useStreakFreeze(), backfillStreaks(), checkAndRefillFreezes()
+- **AchievementService**: checkAchievements(), getProgress(), unlockAchievement(), shareAchievement()
+- **Freeze mechanism**: 1 freeze per 30 days, tracked via lastFreezeRefillDate
+
+### fn-3: Photo Standardization & Lifestyle Fixes
+- **Lifestyle delta**: Uses `checkInId` for joins (not `day`) to compute real score deltas
+- **Day 0 baseline**: Created from analysis results via "立即开始追踪" button
+- **Reliability at capture**: Computed when saving check-in, stored on CheckIn model
+- **Lifestyle inputs**: Truly optional - only saved when user opts in AND sets at least one field
+
+## Key Implementation Rules
+
+1. **Always use checkInId for joins, never day** - Days are not unique; check-in UUIDs are stable identifiers
+2. **SwiftData writes on @MainActor only** - All `modelContext.insert/save` and `session.addCheckIn` must be on `@MainActor`
+3. **Check-in uses scheduled day** - Use `nextCheckInDay` not `session.duration` when creating check-ins
+4. **Timing penalty from captureDate** - Computed from actual date difference, not from `day` integer
+
 <!-- BEGIN FLOW-NEXT -->
 ## Flow-Next
 

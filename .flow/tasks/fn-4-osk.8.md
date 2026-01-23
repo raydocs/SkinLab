@@ -45,9 +45,8 @@
 - [ ] 不包含 License 部分
 
 ## Done summary
-TBD
-
+Created README.md with project overview, fn-2/fn-3 completed features, tech stack, setup instructions, and proper links to CLAUDE.md and .flow/usage.md.
 ## Evidence
-- Commits:
+- Commits: 1eac238, 557269a, b8701de
 - Tests:
 - PRs:
