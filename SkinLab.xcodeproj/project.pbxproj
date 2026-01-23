@@ -37,6 +37,7 @@
 		514558FB94F144189A43DA11 /* ShareableTrackingSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C3686CF0FD603001A1188E /* ShareableTrackingSnapshot.swift */; };
 		5837BE7B1D37603512A4AB22 /* ProductEffectAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5440E2EE340E9375719CE6 /* ProductEffectAnalyzer.swift */; };
 		5B50D87F5A179ABAA8BDC039 /* AnomalyDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1269CF193108CA983B327A /* AnomalyDetectorTests.swift */; };
+		9C10B35C9061237FC10EF679 /* LifestyleCorrelationAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225B3AAF53AD6B134589486C /* LifestyleCorrelationAnalyzerTests.swift */; };
 		5EC8C891A95D691A017484FE /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EB3AAADA3B1652CB93A470 /* NotificationSettingsView.swift */; };
 		5FD23E281FB17769B62A56C7 /* StreakTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF43021AFFA32ECD37BFE812 /* StreakTrackingService.swift */; };
 		6169EE2C112735758342F48A /* MatchCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0524C937D6E7E6A8530533F1 /* MatchCache.swift */; };
@@ -156,6 +157,7 @@
 		254148B75038D3EACEE6D968 /* StreakBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakBadgeView.swift; sourceTree = "<group>"; };
 		2935A2C595AFD0A1F5A52CBF /* TrackingComparisonView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingComparisonView.swift; sourceTree = "<group>"; };
 		29C3686CF0FD603001A1188E /* ShareableTrackingSnapshot.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareableTrackingSnapshot.swift; sourceTree = "<group>"; };
+		225B3AAF53AD6B134589486C /* LifestyleCorrelationAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifestyleCorrelationAnalyzerTests.swift; sourceTree = "<group>"; };
 		2A1269CF193108CA983B327A /* AnomalyDetectorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnomalyDetectorTests.swift; sourceTree = "<group>"; };
 		2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalysisResultViewModel.swift; sourceTree = "<group>"; };
 		313078DD5B48E3E27AABCCE3 /* UserIngredientPreference.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserIngredientPreference.swift; path = ../../../SkinLab/Features/Profile/Models/UserIngredientPreference.swift; sourceTree = "<group>"; };
@@ -410,6 +412,7 @@
 				C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */,
 				B73C2A64FBC2E667D6933AC8 /* TrackingModelsTests.swift */,
 				2A1269CF193108CA983B327A /* AnomalyDetectorTests.swift */,
+				225B3AAF53AD6B134589486C /* LifestyleCorrelationAnalyzerTests.swift */,
 			);
 			name = Tracking;
 			path = Tracking;
@@ -1166,6 +1169,7 @@
 				03F04B25FD40ABAD5F758971 /* TimeSeriesAnalyzerTests.swift in Sources */,
 				510D4BC8742383BA03AFE09F /* TrackingModelsTests.swift in Sources */,
 				5B50D87F5A179ABAA8BDC039 /* AnomalyDetectorTests.swift in Sources */,
+				9C10B35C9061237FC10EF679 /* LifestyleCorrelationAnalyzerTests.swift in Sources */,
 				21AB05CA3A80F6B897BDC7A6 /* SkinMatcherTests.swift in Sources */,
 				BA7EDB49C5F2AD2BDF0BF3AE /* PerformanceBenchmarkTests.swift in Sources */,
 				2BF1731243556DB802617922 /* ProductRecommendationEngineTests.swift in Sources */,

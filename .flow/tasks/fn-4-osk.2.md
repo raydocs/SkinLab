@@ -40,9 +40,8 @@ let sortedCheckInIds = report.timelineReliable.isEmpty
 - [ ] 追踪报告视图显示正确
 
 ## Done summary
-TBD
-
+Fixed redundant ternary expression in TrackingReportView.swift where sortedCheckInIds was incorrectly using report.timeline in both branches. Now correctly uses report.timelineReliable when available.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 3be36dcef9a3d348c3fed5af1529a5b9450fe6b6
+- Tests: xcodebuild build -scheme SkinLab (successful)
 - PRs:
