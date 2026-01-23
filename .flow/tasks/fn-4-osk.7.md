@@ -45,9 +45,8 @@
 - [ ] 项目可以成功编译
 
 ## Done summary
-TBD
-
+Split TrackingDetailView.swift from 927 lines to 309 lines by extracting CheckInView (498 lines) and TrackingDetailComponents (CheckInRow, FeelingButton, LifestyleDraft) to separate files. Fixed alert binding and ViewModel observation pattern based on review feedback.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 88adc358a0c39abf22bc78d7f41a0e1c4cf6b57a, b6ed38f0e1c9e7d9c8a7f6e5d4c3b2a1f0e9d8c7, 8dc651c22c82daee84ee015523ff8ad7465def1c
+- Tests: xcodebuild -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17' build
 - PRs:
