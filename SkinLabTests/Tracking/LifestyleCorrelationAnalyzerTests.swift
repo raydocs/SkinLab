@@ -90,7 +90,7 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
     // MARK: - Test Cases
 
     /// Test 1: Valid data with 3+ check-ins returns correct correlation
-    /// Monotonic relationship: sleep hours [6, 7, 8] -> deltas [0.1, 0.2, 0.3]
+    /// Monotonic relationship: sleep hours [6, 7, 8, 9] -> deltas [+1, +2, +3]
     /// Expected: positive correlation close to +1.0
     func testAnalyzeWithValidData() {
         // Given: 4 check-ins with monotonic sleep hours
@@ -486,6 +486,7 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
     }
 
     /// Test 10: Water intake and sun exposure factors
+    /// Uses monotonic fixture to ensure both insights MUST exist
     func testWaterAndSunExposureFactors() {
         // Given: Check-ins with water intake and sun exposure data
         let sessionId = UUID()
@@ -494,8 +495,8 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
         let checkIn2Id = UUID()
         let checkIn3Id = UUID()
 
-        // Water: 1 -> 2 -> 3 -> 4 (increasing)
-        // Sun: 4 -> 3 -> 2 -> 1 (decreasing)
+        // Water: 1 -> 2 -> 3 -> 4 (increasing, monotonic)
+        // Sun: 4 -> 3 -> 2 -> 1 (decreasing, monotonic)
         let checkIns = [
             makeCheckIn(id: checkIn0Id, sessionId: sessionId, day: 0, waterIntakeLevel: 1, sunExposureLevel: 4),
             makeCheckIn(id: checkIn1Id, sessionId: sessionId, day: 7, waterIntakeLevel: 2, sunExposureLevel: 3),
@@ -503,8 +504,12 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
             makeCheckIn(id: checkIn3Id, sessionId: sessionId, day: 21, waterIntakeLevel: 4, sunExposureLevel: 1)
         ]
 
-        // Scores improve: 50 -> 55 -> 62 -> 70
-        // This should show positive correlation with water, negative with sun
+        // Scores improve monotonically: 50 -> 55 -> 62 -> 70
+        // Deltas: +5, +7, +8 (all positive, monotonic increasing)
+        // Factor values for water (from current checkIn): [1, 2, 3]
+        // Factor values for sun (from current checkIn): [4, 3, 2]
+        // Water -> positive correlation (more water, better delta)
+        // Sun -> negative correlation (more sun, worse delta in this fixture)
         let timeline = [
             makeScorePoint(checkInId: checkIn0Id, day: 0, overallScore: 50),
             makeScorePoint(checkInId: checkIn1Id, day: 7, overallScore: 55),
@@ -526,18 +531,22 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
             reliability: reliability
         )
 
-        // Then: Check both factors are analyzed
+        // Then: Both insights MUST exist with deterministic correlations
         let waterInsight = insights.first { $0.factor == .waterIntakeLevel }
         let sunInsight = insights.first { $0.factor == .sunExposureLevel }
 
-        // Water should show positive correlation
-        if let insight = waterInsight {
-            XCTAssertGreaterThan(insight.correlation, 0, "Water correlation should be positive")
-        }
+        // Water insight must exist and show positive correlation
+        XCTAssertNotNil(waterInsight, "Fixture should produce water intake insight")
+        XCTAssertNotNil(sunInsight, "Fixture should produce sun exposure insight")
 
-        // Sun should show negative correlation (less sun -> better scores in this data)
-        if let insight = sunInsight {
-            XCTAssertLessThan(insight.correlation, 0, "Sun correlation should be negative")
-        }
+        // Force unwrap is safe due to above assertions
+        XCTAssertGreaterThan(waterInsight!.correlation, 0, "Water correlation should be positive")
+        XCTAssertGreaterThanOrEqual(abs(waterInsight!.correlation), 0.3, "Water correlation should be significant")
+        XCTAssertEqual(waterInsight!.sampleCount, 3, "Should have 3 pairs")
+
+        // Sun should show negative correlation (less sun -> better scores)
+        XCTAssertLessThan(sunInsight!.correlation, 0, "Sun correlation should be negative")
+        XCTAssertGreaterThanOrEqual(abs(sunInsight!.correlation), 0.3, "Sun correlation should be significant")
+        XCTAssertEqual(sunInsight!.sampleCount, 3, "Should have 3 pairs")
     }
 }
