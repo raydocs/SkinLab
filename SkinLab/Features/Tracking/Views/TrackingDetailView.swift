@@ -161,7 +161,7 @@ struct TrackingDetailView: View {
             
             // Check-in nodes
             HStack(spacing: 0) {
-                ForEach([0, 7, 14, 21, 28], id: \.self) { day in
+                ForEach(TrackingConstants.checkInDays, id: \.self) { day in
                     VStack(spacing: 8) {
                         timelineNode(for: day)
                         Text("Day \(day)")

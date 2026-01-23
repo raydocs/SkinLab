@@ -77,10 +77,8 @@ Evidence 中记录实际运行命令。
 - [ ] 所有测试通过
 
 ## Done summary
-TBD
-
+Added GeminiService unit tests with URLProtocol mocks. Created MockURLProtocol for intercepting network requests and GeminiServiceTests with 10 test cases covering valid response parsing, error handling, and request construction validation. All tests pass.
 ## Evidence
-- Commits:
-- Tests:
-- Test run command:
+- Commits: 4db3de7fce53bbf0b1d407b4c7e5bad2b3eb4f79
+- Tests: OPENROUTER_API_KEY=dummy xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:SkinLabTests/GeminiServiceTests
 - PRs:

@@ -155,7 +155,6 @@ struct ReliabilityScorer {
 
 extension TrackingSession {
     func expectedDay(for day: Int) -> Int {
-        let checkInDays = [0, 7, 14, 21, 28]
-        return checkInDays.min(by: { abs($0 - day) < abs($1 - day) }) ?? day
+        return TrackingConstants.checkInDays.min(by: { abs($0 - day) < abs($1 - day) }) ?? day
     }
 }

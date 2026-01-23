@@ -120,17 +120,15 @@ final class TrackingSession {
     /// Next due check-in day that can be recorded (scheduledDay <= duration)
     /// Returns the next uncompleted checkpoint that is due, allowing late check-ins
     var nextCheckInDay: Int? {
-        let checkInDays = [0, 7, 14, 21, 28]
         let completedDays = Set(checkIns.map(\.day))
         // due checkpoint: scheduledDay <= duration (enables late check-ins)
-        return checkInDays.first { !completedDays.contains($0) && $0 <= duration }
+        return TrackingConstants.checkInDays.first { !completedDays.contains($0) && $0 <= duration }
     }
 
     /// Next planned check-in day (for display only, may be > duration)
     var nextPlannedCheckInDay: Int? {
-        let checkInDays = [0, 7, 14, 21, 28]
         let completedDays = Set(checkIns.map(\.day))
-        return checkInDays.first { !completedDays.contains($0) }
+        return TrackingConstants.checkInDays.first { !completedDays.contains($0) }
     }
     
     init(

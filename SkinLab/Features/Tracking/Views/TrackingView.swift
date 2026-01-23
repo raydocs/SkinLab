@@ -229,7 +229,7 @@ struct TrackingView: View {
                     }
                     
                     HStack(spacing: 0) {
-                        ForEach([0, 7, 14, 21, 28], id: \.self) { day in
+                        ForEach(TrackingConstants.checkInDays, id: \.self) { day in
                             let status: BeautifulCheckInNode.CheckInStatus = {
                                 if session.checkIns.contains(where: { $0.day == day }) {
                                     return .completed
