@@ -233,52 +233,55 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
         )
 
         // Then: Only 1 valid pair (checkIn2 -> checkIn3), not enough for correlation
-        // The sleep insight should be absent or have only 1 sample
+        // With only 1 valid pair, correlation cannot be computed (need >= 2 pairs)
+        // so insights should be empty for sleep factor
         let sleepInsight = insights.first { $0.factor == .sleepHours }
-
-        // With only 1 valid pair, should return empty
-        if let insight = sleepInsight {
-            XCTAssertLessThan(insight.sampleCount, 2, "Should have <2 samples after filtering")
-        } else {
-            // Expected: no insight because not enough pairs
-            XCTAssertNil(sleepInsight, "Should have no sleep insight with only 1 valid pair")
-        }
+        XCTAssertNil(sleepInsight, "Should have no sleep insight with only 1 valid pair after filtering")
     }
 
-    /// Test 5: Alcohol factor is included in analysis
-    func testAlcoholFactorIncluded() {
-        // Given: 4 check-ins with alcohol data
+    /// Test 5: Alcohol factor produces a deterministic insight
+    /// Uses 5 check-ins to create 4 pairs with strong negative correlation
+    func testAlcoholFactorProducesInsight() {
+        // Given: 5 check-ins with alcohol data creating strong negative correlation
         let sessionId = UUID()
         let checkIn0Id = UUID()
         let checkIn1Id = UUID()
         let checkIn2Id = UUID()
         let checkIn3Id = UUID()
+        let checkIn4Id = UUID()
 
-        // Alcohol pattern: false, true, false, true
-        // Mapped to: 0, 1, 0, 1
+        // Alcohol pattern from current check-in perspective:
+        // Pairs: (0->1), (1->2), (2->3), (3->4)
+        // Factor values (alcohol of current): [0, 1, 0, 1]
+        // We design deltas to correlate negatively with alcohol
         let checkIns = [
-            makeCheckIn(id: checkIn0Id, sessionId: sessionId, day: 0, alcoholConsumed: false),
-            makeCheckIn(id: checkIn1Id, sessionId: sessionId, day: 7, alcoholConsumed: true),
-            makeCheckIn(id: checkIn2Id, sessionId: sessionId, day: 14, alcoholConsumed: false),
-            makeCheckIn(id: checkIn3Id, sessionId: sessionId, day: 21, alcoholConsumed: true)
+            makeCheckIn(id: checkIn0Id, sessionId: sessionId, day: 0, alcoholConsumed: false),  // factor=0
+            makeCheckIn(id: checkIn1Id, sessionId: sessionId, day: 7, alcoholConsumed: true),   // factor=1
+            makeCheckIn(id: checkIn2Id, sessionId: sessionId, day: 14, alcoholConsumed: false), // factor=0
+            makeCheckIn(id: checkIn3Id, sessionId: sessionId, day: 21, alcoholConsumed: true),  // factor=1
+            makeCheckIn(id: checkIn4Id, sessionId: sessionId, day: 28, alcoholConsumed: false)  // not used in pairs
         ]
 
-        // Scores drop after alcohol: 70 -> 65 -> 72 -> 66
-        // Delta pattern: -5, +7, -6
-        // Factor values (from current checkIn): [0, 1, 0]
-        // This creates a negative correlation (alcohol = 1 -> negative delta)
+        // Scores: 70 -> 75 -> 68 -> 73 -> 66
+        // Deltas: +5, -7, +5, -7
+        // Factor values: [0, 1, 0, 1]
+        // When alcohol=0 (false), delta is positive (+5)
+        // When alcohol=1 (true), delta is negative (-7)
+        // This creates a strong negative Spearman correlation (close to -1)
         let timeline = [
             makeScorePoint(checkInId: checkIn0Id, day: 0, overallScore: 70),
-            makeScorePoint(checkInId: checkIn1Id, day: 7, overallScore: 65),
-            makeScorePoint(checkInId: checkIn2Id, day: 14, overallScore: 72),
-            makeScorePoint(checkInId: checkIn3Id, day: 21, overallScore: 66)
+            makeScorePoint(checkInId: checkIn1Id, day: 7, overallScore: 75),
+            makeScorePoint(checkInId: checkIn2Id, day: 14, overallScore: 68),
+            makeScorePoint(checkInId: checkIn3Id, day: 21, overallScore: 73),
+            makeScorePoint(checkInId: checkIn4Id, day: 28, overallScore: 66)
         ]
 
         let reliability: [UUID: ReliabilityMetadata] = [
             checkIn0Id: makeReliability(score: 0.8),
             checkIn1Id: makeReliability(score: 0.7),
             checkIn2Id: makeReliability(score: 0.8),
-            checkIn3Id: makeReliability(score: 0.7)
+            checkIn3Id: makeReliability(score: 0.7),
+            checkIn4Id: makeReliability(score: 0.8)
         ]
 
         // When
@@ -288,31 +291,31 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
             reliability: reliability
         )
 
-        // Then: Alcohol factor should be analyzed
+        // Then: Alcohol insight MUST exist with significant negative correlation
         let alcoholInsight = insights.first { $0.factor == .alcohol }
+        XCTAssertNotNil(alcoholInsight, "Alcohol insight must exist with this deterministic fixture")
 
-        // Check that alcohol is being analyzed (even if correlation is weak)
-        // The key point is that alcohol factor is included in the analysis
-        // Note: With only 3 pairs and mixed pattern, correlation might be weak
-        // and not meet the 0.3 threshold, which is acceptable
         if let insight = alcoholInsight {
             XCTAssertEqual(insight.factor, .alcohol, "Factor should be alcohol")
+            XCTAssertLessThan(insight.correlation, 0, "Alcohol correlation should be negative")
             XCTAssertGreaterThanOrEqual(abs(insight.correlation), 0.3, "Correlation should be significant")
+            XCTAssertEqual(insight.sampleCount, 4, "Should have 4 pairs from 5 check-ins")
         }
-        // If no alcohol insight, verify it's because correlation was below threshold
-        // This is acceptable behavior - the test confirms alcohol is being analyzed
     }
 
     /// Test 6: Delta calculation uses checkInId join (not day)
-    func testDeltaCalculation() {
-        // Given: Check-ins with specific IDs and scores
+    /// This test proves the implementation uses checkInId for score lookup, NOT ScorePoint.day
+    /// by intentionally making ScorePoint.day values DIFFERENT from CheckIn.day
+    func testDeltaCalculationUsesCheckInIdNotDay() {
+        // Given: Check-ins with specific IDs
         let sessionId = UUID()
         let checkIn0Id = UUID()
         let checkIn1Id = UUID()
         let checkIn2Id = UUID()
         let checkIn3Id = UUID()
 
-        // Monotonic stress: 1 -> 2 -> 3 (from first 3 check-ins)
+        // Check-ins ordered by day: 0, 7, 14, 21
+        // Monotonic stress: 1 -> 2 -> 3 -> 4
         let checkIns = [
             makeCheckIn(id: checkIn0Id, sessionId: sessionId, day: 0, stressLevel: 1),
             makeCheckIn(id: checkIn1Id, sessionId: sessionId, day: 7, stressLevel: 2),
@@ -320,15 +323,15 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
             makeCheckIn(id: checkIn3Id, sessionId: sessionId, day: 21, stressLevel: 4)
         ]
 
-        // Scores that decrease with stress: 80 -> 75 -> 68 -> 60
-        // Deltas: -5, -7, -8 (monotonic decreasing)
-        // Factor values: [1, 2, 3]
-        // Higher stress -> more negative delta = negative correlation
+        // CRITICAL: ScorePoint.day values are INTENTIONALLY WRONG (999, 888, 777, 666)
+        // but checkInId is CORRECT. If implementation used day for join, it would fail.
+        // The correct scores by checkInId: 80 -> 75 -> 68 -> 60
+        // Deltas: -5, -7, -8 (negative correlation with stress)
         let timeline = [
-            makeScorePoint(checkInId: checkIn0Id, day: 0, overallScore: 80),
-            makeScorePoint(checkInId: checkIn1Id, day: 7, overallScore: 75),
-            makeScorePoint(checkInId: checkIn2Id, day: 14, overallScore: 68),
-            makeScorePoint(checkInId: checkIn3Id, day: 21, overallScore: 60)
+            makeScorePoint(checkInId: checkIn0Id, day: 999, overallScore: 80),  // day is wrong, checkInId is correct
+            makeScorePoint(checkInId: checkIn1Id, day: 888, overallScore: 75),
+            makeScorePoint(checkInId: checkIn2Id, day: 777, overallScore: 68),
+            makeScorePoint(checkInId: checkIn3Id, day: 666, overallScore: 60)
         ]
 
         let reliability: [UUID: ReliabilityMetadata] = [
@@ -346,8 +349,10 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
         )
 
         // Then: Stress level should show negative correlation
+        // If the implementation incorrectly used ScorePoint.day for joins, this would fail
+        // because the day values (999, 888, 777, 666) don't match CheckIn.day (0, 7, 14, 21)
         let stressInsight = insights.first { $0.factor == .stressLevel }
-        XCTAssertNotNil(stressInsight, "Should have stress level insight")
+        XCTAssertNotNil(stressInsight, "Should have stress insight - proves checkInId join works")
 
         if let insight = stressInsight {
             // Check correlation is negative (higher stress -> worse scores)
