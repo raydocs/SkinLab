@@ -15,29 +15,21 @@ SkinLab helps users understand their skin health through AI-powered analysis and
 - Skin twin matching for personalized recommendations
 - Anti-ad commitment - evidence-based suggestions only
 
-## Features
+## Features (Completed)
 
-### AI Skin Analysis
-- Photo-based skin condition analysis using Gemini 3.0 Flash Vision API
-- Standardized photo capture with real-time guidance
-- Multi-dimensional scoring (hydration, clarity, texture, etc.)
-- Reliability scoring based on photo quality and lighting conditions
-
-### 28-Day Effect Tracking
-- Structured tracking cycles with Day 0/7/14/21/28 check-ins
-- Before/after visualization with timeline view
-- Score trend analysis and progress reports
-- Lifestyle correlation insights (sleep, stress, water intake)
-
-### Engagement System (Partial)
-- Daily streak tracking with visual counter
-- Achievement badges for milestones
+### fn-2: Engagement (Daily Streaks & Achievement Badges)
+- Daily streak tracking for check-ins with longest streak display
+- Achievement badges and dashboard for milestones
+- Milestone celebration animations (respects reduced motion)
 - Streak freeze mechanic (1 per 30 days)
-- Celebration animations for achievements
+- Local notifications for streak reminders and at-risk warnings
 
-### Community Features
-- Skin twin matching based on similar skin profiles
-- Anonymous sharing of progress and insights
+### fn-3: Photo Standardization & Lifestyle Correlation
+- Day 0 baseline creation to start tracking sessions from analysis
+- Standardized photo capture guidance with real-time feedback
+- Photo quality and reliability scoring at capture time
+- Lifestyle inputs are optional and only saved when explicitly set
+- Lifestyle correlation insights based on real score deltas
 
 ## Tech Stack
 
@@ -58,24 +50,23 @@ SkinLab helps users understand their skin health through AI-powered analysis and
 - Xcode 15.0+
 - iOS 17.0+ deployment target
 - Swift 5.9+
-- Gemini API key (for AI analysis features)
+- OpenRouter API key (for AI analysis features via Gemini)
 
 ### Setup
 
-1. Clone the repository:
+1. Clone and open the project:
    ```bash
    git clone <repository-url>
    cd SkinLab
-   ```
-
-2. Open the project in Xcode:
-   ```bash
    open SkinLab.xcodeproj
    ```
 
-3. Configure your Gemini API key in the appropriate configuration file.
+2. Configure secrets:
+   - Copy `Secrets.xcconfig.template` to `Secrets.xcconfig`
+   - Set your `OPENROUTER_API_KEY` in the new file
+   - Do NOT commit `Secrets.xcconfig` to version control
 
-4. Build and run on simulator or device:
+3. Build and run on simulator or device:
    ```bash
    xcodebuild -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 15'
    ```
@@ -89,7 +80,7 @@ xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone
 ## Project Structure
 
 ```
-SkinLab/
+SkinLab/                    # App source code
 ├── App/                    # App entry point and configuration
 ├── Core/
 │   ├── Network/            # API services (GeminiService)
@@ -108,8 +99,10 @@ SkinLab/
 ├── UI/
 │   ├── Components/         # Reusable UI components
 │   └── Theme/              # Design system and styling
-├── Resources/              # Assets and data files
-└── Tests/                  # Unit and integration tests
+└── Resources/              # Assets and data files
+
+SkinLabTests/               # XCTest target for unit tests
+.flow/                      # Flow-Next specs and tasks (see .flow/usage.md)
 ```
 
 ## Planning Artifacts
