@@ -150,12 +150,13 @@ struct CheckInView: View {
             // Capture scheduled day ONCE when view opens
             scheduledDay = session.nextCheckInDay
         }
-        .alert("保存失败", isPresented: .constant(errorMessage != nil)) {
+        .alert("保存失败", isPresented: Binding(
+            get: { errorMessage != nil },
+            set: { if !$0 { errorMessage = nil } }
+        )) {
             Button("确定") { errorMessage = nil }
         } message: {
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-            }
+            Text(errorMessage ?? "")
         }
     }
 
