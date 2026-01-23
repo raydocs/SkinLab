@@ -50,7 +50,7 @@ SkinLab helps users understand their skin health through AI-powered analysis and
 - Xcode 15.0+
 - iOS 17.0+ deployment target
 - Swift 5.9+
-- OpenRouter API key (for AI analysis features via Gemini)
+- Gemini API key (see `Secrets.xcconfig.template`)
 
 ### Setup
 
@@ -63,7 +63,7 @@ SkinLab helps users understand their skin health through AI-powered analysis and
 
 2. Configure secrets:
    - Copy `Secrets.xcconfig.template` to `Secrets.xcconfig`
-   - Set your `OPENROUTER_API_KEY` in the new file
+   - Set your API key in the new file (see template for key name)
    - Do NOT commit `Secrets.xcconfig` to version control
 
 3. Build and run on simulator or device:
@@ -84,7 +84,6 @@ SkinLab/                    # App source code
 ├── App/                    # App entry point and configuration
 ├── Core/
 │   ├── Network/            # API services (GeminiService)
-│   ├── Storage/            # SwiftData models and persistence
 │   └── Utils/              # Extensions and utilities
 ├── Features/
 │   ├── Analysis/           # AI skin analysis feature
@@ -102,7 +101,7 @@ SkinLab/                    # App source code
 └── Resources/              # Assets and data files
 
 SkinLabTests/               # XCTest target for unit tests
-.flow/                      # Flow-Next specs and tasks (see .flow/usage.md)
+.flow/                      # Flow-Next specs and tasks
 ```
 
 ## Planning Artifacts
@@ -110,7 +109,7 @@ SkinLabTests/               # XCTest target for unit tests
 The `.flow/` directory contains project planning and task tracking:
 - Epic specifications in `.flow/specs/`
 - Task breakdowns in `.flow/tasks/`
-- See `.flow/usage.md` for workflow details
+- See [.flow/usage.md](.flow/usage.md) for workflow details
 
 Key planning documents:
 - `fn-1`: Competitor analysis and improvement roadmap
