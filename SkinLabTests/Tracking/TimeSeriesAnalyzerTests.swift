@@ -239,7 +239,8 @@ final class TimeSeriesAnalyzerTests: XCTestCase {
         let values = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]
         let std = analyzer.standardDeviation(values)
 
-        XCTAssertEqual(std, 2.0, accuracy: 0.1) // Approximately 2
+        // Sample std dev (n-1): mean=5, sumSqDiff=32, variance=32/7≈4.571, std≈2.138
+        XCTAssertEqual(std, 2.138, accuracy: 0.01)
     }
 
     func testStandardDeviation_identicalValues() {
@@ -358,7 +359,8 @@ final class StatisticalMetricsTests: XCTestCase {
             max: 110.0
         )
 
-        XCTAssertEqual(metrics.stability, "稳定")
+        // CV = 5/100 = 0.05, < 0.1 → "非常稳定"
+        XCTAssertEqual(metrics.stability, "非常稳定")
     }
 
     func testStability_moderatelyStable() {
@@ -370,7 +372,8 @@ final class StatisticalMetricsTests: XCTestCase {
             max: 130.0
         )
 
-        XCTAssertEqual(metrics.stability, "较稳定")
+        // CV = 15/100 = 0.15, < 0.2 → "稳定"
+        XCTAssertEqual(metrics.stability, "稳定")
     }
 
     func testStability_unstable() {

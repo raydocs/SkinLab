@@ -219,7 +219,7 @@ struct SeasonalPattern: Codable, Sendable {
         let rednessLevel = avgRedness >= 6 ? "较高" : avgRedness >= 4 ? "中等" : "较低"
         let sensitivityLevel = avgSensitivity >= 6 ? "较高" : avgSensitivity >= 4 ? "中等" : "较低"
         
-        return "(season)季节泛红(rednessLevel),敏感度(sensitivityLevel)。"
+        return "\(season)季节泛红\(rednessLevel),敏感度\(sensitivityLevel)。"
     }
 }
 
