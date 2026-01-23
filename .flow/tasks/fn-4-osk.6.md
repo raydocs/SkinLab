@@ -48,9 +48,8 @@ grep -r "\[0, 7, 14, 21, 28\]" SkinLab/Features/Tracking --include="*.swift"
 - [ ] 项目可以成功编译
 
 ## Done summary
-TBD
-
+Extracted hardcoded check-in days constant [0, 7, 14, 21, 28] to centralized TrackingConstants.swift, eliminating duplication across 4 files (TrackingSession, ReliabilityScorer, TrackingDetailView, TrackingView).
 ## Evidence
-- Commits:
-- Tests:
+- Commits: df7b867f02332fc39450120703b0619bcf0c5c80
+- Tests: xcodebuild test -only-testing:SkinLabTests/ReliabilityScorerTests (18 passed), xcodebuild build (BUILD SUCCEEDED), grep -r verification (only TrackingConstants.swift has literal)
 - PRs:
