@@ -71,9 +71,8 @@
 - [ ] 测试 alcohol 因素
 
 ## Done summary
-TBD
-
+Added comprehensive unit tests for LifestyleCorrelationAnalyzer with 10 test cases covering normal paths, edge cases, and spec compliance. Tests validate correlation calculation, reliability filtering, checkInId-based joins, and all lifestyle factors (sleep, stress, water, alcohol, exercise, sun exposure).
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 24660e68e2e5d85a4e0e91f26b1d8d5ec9f80f3d, d6b488ed16a07dc1a8e93287bea0654c59a26d15, eed04e96cee2c94196c3af8665293d64c63dedc9
+- Tests: xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:SkinLabTests/LifestyleCorrelationAnalyzerTests
 - PRs:
