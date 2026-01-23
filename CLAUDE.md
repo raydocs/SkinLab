@@ -23,12 +23,15 @@ SkinLab is an AI-powered skin analysis and skincare recommendation iOS app.
 - **AchievementDefinition** (code struct): Badge definitions with title, description, category, requirementType, requirementValue, iconName
 - **StreakTrackingService**: checkIn(), getStreakStatus(), useStreakFreeze(), backfillStreaks(), checkAndRefillFreezes()
 - **AchievementService**: checkAchievements(), getProgress(), unlockAchievement(), shareAchievement()
+- **Celebrations**: Streak milestones + achievement unlock celebration UI; respects Reduce Motion
+- **Sharing**: Achievements shared via iOS Share Sheet (WeChat appears if installed); share images contain badge/streak/branding only
 - **Freeze mechanism**: 1 freeze per 30 days, tracked via lastFreezeRefillDate
 
 ### fn-3: Photo Standardization & Lifestyle Fixes
 - **Lifestyle delta**: Uses `checkInId` for joins (not `day`) to compute real score deltas
-- **Day 0 baseline**: Created from analysis results via "立即开始追踪" button
-- **Reliability at capture**: Computed when saving check-in, stored on CheckIn model
+- **Day 0 baseline**: Created from analysis results via "立即开始追踪" button (refuse if active session exists)
+- **Reliability at capture**: Computed when saving check-in, stored on CheckIn model (fix tooBright -> highLight)
+- **nextCheckInDay semantics**: Returns next due uncompleted checkpoint (supports late check-ins)
 - **Lifestyle inputs**: Truly optional - only saved when user opts in AND sets at least one field
 
 ## Key Implementation Rules
