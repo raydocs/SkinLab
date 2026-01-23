@@ -397,14 +397,14 @@ actor GeminiService: SkinAnalysisServiceProtocol {
         // Add historical context if available
         if let previous = previousAnalysis {
             let historyContext = """
-            
+
             ## 历史数据参考
-            上次分析结果（(daysAgo(from: previous.analyzedAt))天前）：
-            - 肤质：(previous.skinType.displayName)
-            - 皮肤年龄：(previous.skinAge)岁
-            - 综合评分：(previous.overallScore)/100
-            - 主要问题：痘痘(previous.issues.acne)/10，泛红(previous.issues.redness)/10，色斑(previous.issues.spots)/10
-            
+            上次分析结果（\(daysAgo(from: previous.analyzedAt))天前）：
+            - 肤质：\(previous.skinType.displayName)
+            - 皮肤年龄：\(previous.skinAge)岁
+            - 综合评分：\(previous.overallScore)/100
+            - 主要问题：痘痘\(previous.issues.acne)/10，泛红\(previous.issues.redness)/10，色斑\(previous.issues.spots)/10
+
             **重要提示**：如果当前照片的评分与历史相比变化超过2级（如痘痘从3变到6+，或泛红从7降到4-），请在recommendations中说明可能的原因。
             """
             
