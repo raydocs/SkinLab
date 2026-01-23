@@ -1,0 +1,196 @@
+{
+  "created_at": "2026-01-22T23:54:26.022892Z",
+  "epic": {
+    "data": {
+      "branch_name": "fn-4-osk",
+      "created_at": "2026-01-22T23:50:32.212138Z",
+      "depends_on_epics": [],
+      "id": "fn-4-osk",
+      "next_task": 1,
+      "plan_review_status": "unknown",
+      "plan_reviewed_at": null,
+      "spec_path": ".flow/specs/fn-4-osk.md",
+      "status": "open",
+      "title": "Code Quality, Test Coverage & Technical Debt",
+      "updated_at": "2026-01-22T23:51:19.196564Z"
+    },
+    "spec": "# Epic: Code Quality, Test Coverage & Technical Debt\n\n## Executive Summary\n\n\u57fa\u4e8e RepoPrompt context-scout \u6df1\u5ea6\u5206\u6790\uff0c\u53d1\u73b0 SkinLab \u9879\u76ee\u5b58\u5728\u4ee5\u4e0b\u5173\u952e\u95ee\u9898\u9700\u8981\u89e3\u51b3\uff1a\n- **Critical Bugs**: GeminiService \u5b57\u7b26\u4e32\u63d2\u503c\u9519\u8bef\u5bfc\u81f4 API \u8c03\u7528\u5931\u8d25\n- **Test Coverage**: \u76ee\u6807 60%\uff0c\u5f53\u524d\u6838\u5fc3\u670d\u52a1\u7f3a\u4e4f\u5355\u5143\u6d4b\u8bd5\n- **Code Quality**: \u5927\u6587\u4ef6\u9700\u8981\u62c6\u5206\uff0c\u786c\u7f16\u7801\u5e38\u91cf\u9700\u8981\u96c6\u4e2d\u7ba1\u7406\n- **Documentation**: \u7f3a\u5c11 README.md\uff0cCLAUDE.md \u672a\u66f4\u65b0 fn-2/fn-3 \u5b8c\u6210\u7684\u529f\u80fd\n\n## Overview\n\n### Problem Statement\n\n1. **GeminiService \u5b58\u5728 critical bug**: \u7b2c 185, 193, 214 \u884c\u4f7f\u7528 `(` \u800c\u975e `\\(` \u8fdb\u884c\u5b57\u7b26\u4e32\u63d2\u503c\uff0c\u5bfc\u81f4 API URL \u6784\u5efa\u9519\u8bef\n2. **\u6d4b\u8bd5\u8986\u76d6\u4e0d\u8db3**: LifestyleCorrelationAnalyzer\u3001ReliabilityScorer\u3001GeminiService \u7b49\u6838\u5fc3\u670d\u52a1\u6ca1\u6709\u5355\u5143\u6d4b\u8bd5\n3. **\u4ee3\u7801\u7ec4\u7ec7\u95ee\u9898**: TrackingDetailView.swift \u6709 927 \u884c\uff0ccheck-in \u5929\u6570\u5e38\u91cf\u5728 4 \u4e2a\u6587\u4ef6\u4e2d\u91cd\u590d\n4. **\u6587\u6863\u8fc7\u65f6**: AGENTS.md \u7684\u4f18\u5148\u7ea7\u8def\u7ebf\u56fe\u672a\u53cd\u6620 fn-1/fn-2/fn-3 \u5b8c\u6210\u7684\u5de5\u4f5c\n\n### Goals\n\n- \u4fee\u590d\u6240\u6709 critical bugs\uff0c\u786e\u4fdd API \u8c03\u7528\u6b63\u5e38\n- \u8fbe\u5230 60% \u6d4b\u8bd5\u8986\u76d6\u7387\u76ee\u6807\n- \u6539\u5584\u4ee3\u7801\u53ef\u7ef4\u62a4\u6027\u548c\u4e00\u81f4\u6027\n- \u66f4\u65b0\u6587\u6863\u53cd\u6620\u5f53\u524d\u9879\u76ee\u72b6\u6001\n\n## Scope\n\n### In Scope\n\n- Bug \u4fee\u590d (GeminiService, TrackingReportView)\n- \u6838\u5fc3\u670d\u52a1\u5355\u5143\u6d4b\u8bd5 (5 \u4e2a test files)\n- \u4ee3\u7801\u91cd\u6784 (\u5e38\u91cf\u63d0\u53d6, \u5927\u6587\u4ef6\u62c6\u5206)\n- \u6587\u6863\u66f4\u65b0 (README.md, CLAUDE.md)\n- UI \u8bed\u8a00\u4e00\u81f4\u6027 (\u7edf\u4e00\u4e3a\u4e2d\u6587)\n\n### Out of Scope\n\n- \u65b0\u529f\u80fd\u5f00\u53d1 (Freeze UI, Analytics integration)\n- @Observable \u8fc1\u79fb (\u72ec\u7acb epic)\n- TipKit/App Intents \u96c6\u6210 (\u72ec\u7acb epic)\n- Accessibility \u5168\u9762\u5ba1\u8ba1 (\u72ec\u7acb epic)\n\n## Phases\n\n### Phase 1: Critical Bug Fixes (P0)\n\u4fee\u590d\u5f71\u54cd\u6838\u5fc3\u529f\u80fd\u7684 bugs\n\n### Phase 2: Test Infrastructure (P1)\n\u5efa\u7acb\u6d4b\u8bd5\u57fa\u7840\u8bbe\u65bd\uff0c\u6dfb\u52a0\u6838\u5fc3\u670d\u52a1\u6d4b\u8bd5\n\n### Phase 3: Code Refactoring (P2)\n\u63d0\u53d6\u5e38\u91cf\uff0c\u62c6\u5206\u5927\u6587\u4ef6\n\n### Phase 4: Documentation (P3)\n\u66f4\u65b0\u9879\u76ee\u6587\u6863\n\n## Architecture Impact\n\n```mermaid\ngraph TB\n    subgraph \"Phase 1: Bug Fixes\"\n        A[GeminiService.swift] -->|fix interpolation| A1[Lines 185, 193, 214]\n        B[TrackingReportView.swift] -->|fix ternary| B1[Lines 502-504]\n    end\n    \n    subgraph \"Phase 2: Test Coverage\"\n        C[LifestyleCorrelationAnalyzer] --> C1[LifestyleCorrelationAnalyzerTests.swift]\n        D[ReliabilityScorer] --> D1[ReliabilityScorerTests.swift]\n        E[GeminiService] --> E1[GeminiServiceTests.swift]\n    end\n    \n    subgraph \"Phase 3: Refactoring\"\n        F[TrackingSession.swift] -->|extract| F1[TrackingConstants.swift]\n        G[TrackingDetailView.swift] -->|split| G1[PhotoStandardizationCard.swift]\n        G -->|split| G2[LifestyleInputsContent.swift]\n    end\n    \n    subgraph \"Phase 4: Documentation\"\n        H[README.md] -->|new| H1[Project Overview]\n        I[CLAUDE.md] -->|update| I1[Completed Features]\n    end\n```\n\n## Alternatives Considered\n\n### Bug Fixes\n- **Option A (Chosen)**: \u76f4\u63a5\u4fee\u590d\u5b57\u7b26\u4e32\u63d2\u503c\n- **Option B (Rejected)**: \u91cd\u5199\u6574\u4e2a GeminiService - \u8fc7\u5ea6\u5de5\u7a0b\u5316\n\n### Test Coverage\n- **Option A (Chosen)**: \u4f18\u5148\u6d4b\u8bd5\u6838\u5fc3\u4e1a\u52a1\u903b\u8f91\u670d\u52a1\n- **Option B (Rejected)**: \u4f18\u5148\u6d4b\u8bd5 ViewModels - \u4f9d\u8d56\u66f4\u591a\uff0cROI \u66f4\u4f4e\n\n### Code Refactoring\n- **Option A (Chosen)**: \u63d0\u53d6\u5e38\u91cf + \u62c6\u5206\u5927\u6587\u4ef6\n- **Option B (Rejected)**: \u5b8c\u5168\u91cd\u6784\u4e3a Clean Architecture layers - \u8303\u56f4\u8fc7\u5927\n\n## Non-Functional Targets\n\n| Metric | Current | Target |\n|--------|---------|--------|\n| Test Coverage | <30% estimated | 60% |\n| Max File Lines | 927 | 500 |\n| Duplicated Constants | 4 files | 1 file |\n| Critical Bugs | 2 | 0 |\n\n## Rollout Plan\n\n1. **Phase 1**: \u5728\u72ec\u7acb\u5206\u652f\u4e0a\u4fee\u590d bugs\uff0c\u8fd0\u884c\u73b0\u6709\u6d4b\u8bd5\n2. **Phase 2**: \u6dfb\u52a0\u6d4b\u8bd5\uff0c\u786e\u4fdd\u4e0d\u7834\u574f\u73b0\u6709\u529f\u80fd\n3. **Phase 3**: \u91cd\u6784\u540e\u8fd0\u884c\u5168\u90e8\u6d4b\u8bd5\u9a8c\u8bc1\n4. **Phase 4**: \u6587\u6863\u66f4\u65b0\u4e0e\u4ee3\u7801\u53d8\u66f4\u540c\u6b65\n\n## Rollback Strategy\n\n- \u6bcf\u4e2a Task \u5355\u72ec\u63d0\u4ea4\uff0c\u53ef\u4ee5\u72ec\u7acb revert\n- Phase 1 bug fixes \u5982\u679c\u5bfc\u81f4\u56de\u5f52\uff0c\u76f4\u63a5 revert \u76f8\u5173 commit\n- Phase 2-3 \u5982\u679c\u5f15\u5165\u95ee\u9898\uff0c\u53ef\u4ee5 cherry-pick \u56de\u6eda\n\n## Risks & Mitigations\n\n| Risk | Probability | Impact | Mitigation |\n|------|------------|--------|------------|\n| Bug fix \u5f15\u5165\u65b0\u95ee\u9898 | Low | High | \u8fd0\u884c\u5168\u90e8\u73b0\u6709\u6d4b\u8bd5 + \u624b\u52a8\u9a8c\u8bc1 API \u8c03\u7528 |\n| \u91cd\u6784\u7834\u574f UI | Medium | Medium | \u62c6\u5206\u540e\u8fd0\u884c UI \u6d4b\u8bd5 + \u89c6\u89c9\u68c0\u67e5 |\n| \u6d4b\u8bd5\u7528\u4f8b\u9057\u6f0f\u8fb9\u7f18\u60c5\u51b5 | Medium | Low | \u4f7f\u7528 gap analysis \u4e2d\u8bc6\u522b\u7684\u8fb9\u7f18\u60c5\u51b5 |\n| \u6587\u6863\u4e0e\u4ee3\u7801\u4e0d\u540c\u6b65 | Low | Low | \u5728\u540c\u4e00 PR \u4e2d\u66f4\u65b0\u6587\u6863\u548c\u4ee3\u7801 |\n\n## Success Metrics\n\n- [ ] GeminiService API \u8c03\u7528\u6210\u529f\u7387 100%\n- [ ] \u6d4b\u8bd5\u8986\u76d6\u7387\u8fbe\u5230 60%\n- [ ] \u6ca1\u6709\u6587\u4ef6\u8d85\u8fc7 500 \u884c\n- [ ] check-in \u5929\u6570\u5e38\u91cf\u96c6\u4e2d\u5728 1 \u4e2a\u6587\u4ef6\n- [ ] README.md \u5b58\u5728\u4e14\u5b8c\u6574\n\n## Quick Commands\n\n```bash\n# Run all tests\nxcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 15'\n\n# Check test coverage\nxcrun llvm-cov report .build/debug/SkinLabPackageTests.xctest/Contents/MacOS/SkinLabPackageTests\n\n# Verify no files > 500 lines\nfind SkinLab -name \"*.swift\" -exec wc -l {} + | awk '$1 > 500 {print}'\n```\n\n## Acceptance Criteria\n\n### Must Have\n- [ ] GeminiService \u7b2c 185, 193, 214 \u884c\u4f7f\u7528\u6b63\u786e\u7684 `\\(` \u63d2\u503c\n- [ ] TrackingReportView \u7b2c 502-504 \u884c\u903b\u8f91\u4fee\u590d\n- [ ] LifestyleCorrelationAnalyzerTests.swift \u5b58\u5728\u4e14\u901a\u8fc7\n- [ ] ReliabilityScorerTests.swift \u5b58\u5728\u4e14\u901a\u8fc7\n- [ ] GeminiServiceTests.swift \u5b58\u5728\u4e14\u901a\u8fc7\n- [ ] TrackingConstants.swift \u5305\u542b `checkInDays` \u5e38\u91cf\n- [ ] README.md \u5b58\u5728\u4e14\u5305\u542b\u9879\u76ee\u6982\u8ff0\n\n### Should Have\n- [ ] TrackingDetailView.swift < 500 \u884c\n- [ ] CLAUDE.md \u66f4\u65b0 fn-2/fn-3 \u5b8c\u6210\u529f\u80fd\n\n### Nice to Have\n- [ ] AnalysisViewModelTests.swift\n- [ ] UI \u6587\u672c\u7edf\u4e00\u4e3a\u4e2d\u6587\n\n## References\n\n### Key Files\n- `/SkinLab/Core/Network/GeminiService.swift` - Bug at lines 185, 193, 214\n- `/SkinLab/Features/Tracking/Views/TrackingReportView.swift` - Bug at lines 502-504\n- `/SkinLab/Features/Tracking/Views/TrackingDetailView.swift` - 927 lines, needs split\n- `/SkinLab/Features/Tracking/Models/TrackingSession.swift` - Has hardcoded checkInDays\n\n### Research Sources\n- context-scout analysis (2026-01-22)\n- practice-scout: iOS 17+ best practices\n- docs-gap-scout: Documentation gaps\n- flow-gap-analyst: Edge cases and questions\n"
+  },
+  "epic_id": "fn-4-osk",
+  "schema_version": 2,
+  "tasks": [
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:30.326958Z",
+        "depends_on": [],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.1",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.1.md",
+        "status": "todo",
+        "title": "Fix GeminiService string interpolation bugs",
+        "updated_at": "2026-01-22T23:52:01.904984Z"
+      },
+      "id": "fn-4-osk.1",
+      "runtime": null,
+      "spec": "# fn-4-osk.1 Fix GeminiService string interpolation bugs\n\n## Description\n\u4fee\u590d GeminiService.swift \u4e2d\u7684\u5b57\u7b26\u4e32\u63d2\u503c\u9519\u8bef\u3002\u5f53\u524d\u4ee3\u7801\u4f7f\u7528 `(` \u800c\u975e `\\(` \u8fdb\u884c Swift \u5b57\u7b26\u4e32\u63d2\u503c\uff0c\u5bfc\u81f4 API URL \u6784\u5efa\u5931\u8d25\u3002\n\n**Size:** S\n**Files:** \n- `SkinLab/Core/Network/GeminiService.swift`\n\n## Approach\n\n1. \u6253\u5f00 GeminiService.swift\n2. \u5b9a\u4f4d\u5230\u7b2c 185, 193, 214 \u884c\n3. \u5c06 `(` \u66ff\u6362\u4e3a `\\(`\n4. \u53c2\u8003\u7b2c 557-566 \u884c\u7684\u6b63\u786e\u5b9e\u73b0\n\n## Key Context\n\n\u5f53\u524d\u9519\u8bef\u4ee3\u7801 (line 185):\n```swift\nlet endpoint = \"(GeminiConfig.baseURL)/chat/completions\"\n```\n\n\u5e94\u8be5\u662f:\n```swift\nlet endpoint = \"\\(GeminiConfig.baseURL)/chat/completions\"\n```\n\n\u7c7b\u4f3c\u9519\u8bef\u5728 line 193 (Authorization header) \u548c line 214 (base64 image URL)\u3002\n\n## References\n\n- Correct pattern at `GeminiService.swift:557-566`\n## Acceptance\n- [ ] Line 185: `(GeminiConfig.baseURL)` \u2192 `\\(GeminiConfig.baseURL)`\n- [ ] Line 193: `(GeminiConfig.apiKey)` \u2192 `\\(GeminiConfig.apiKey)`\n- [ ] Line 214: `(base64Image)` \u2192 `\\(base64Image)`\n- [ ] \u9879\u76ee\u53ef\u4ee5\u6210\u529f\u7f16\u8bd1\n- [ ] \u624b\u52a8\u6d4b\u8bd5 AI \u76ae\u80a4\u5206\u6790\u529f\u80fd\u6b63\u5e38\u5de5\u4f5c\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    },
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:30.454472Z",
+        "depends_on": [],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.2",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.2.md",
+        "status": "todo",
+        "title": "Fix TrackingReportView redundant ternary logic",
+        "updated_at": "2026-01-22T23:52:02.227011Z"
+      },
+      "id": "fn-4-osk.2",
+      "runtime": null,
+      "spec": "# fn-4-osk.2 Fix TrackingReportView redundant ternary logic\n\n## Description\n\u4fee\u590d TrackingReportView.swift \u4e2d\u7684\u5197\u4f59\u4e09\u5143\u8868\u8fbe\u5f0f\u3002\u5f53\u524d\u4ee3\u7801\u4e24\u4e2a\u5206\u652f\u8fd4\u56de\u76f8\u540c\u7684\u503c\uff0c\u662f\u590d\u5236\u7c98\u8d34\u9519\u8bef\u3002\n\n**Size:** S\n**Files:** \n- `SkinLab/Features/Tracking/Views/TrackingReportView.swift`\n\n## Approach\n\n1. \u6253\u5f00 TrackingReportView.swift\n2. \u5b9a\u4f4d\u5230\u7b2c 502-504 \u884c\n3. \u5206\u6790\u4e0a\u4e0b\u6587\uff0c\u786e\u5b9a\u6b63\u786e\u903b\u8f91\u5e94\u8be5\u662f\uff1a\u5f53 `timelineReliable` \u4e0d\u4e3a\u7a7a\u65f6\u4f7f\u7528\u5b83\n4. \u4fee\u590d\u4e09\u5143\u8868\u8fbe\u5f0f\n\n## Key Context\n\n\u5f53\u524d\u9519\u8bef\u4ee3\u7801 (lines 502-504):\n```swift\nlet sortedCheckInIds = report.timelineReliable.isEmpty\n    ? report.timeline.map { $0.checkInId }\n    : report.timeline.map { $0.checkInId }  // \u4e24\u4e2a\u5206\u652f\u76f8\u540c\uff01\n```\n\n\u6839\u636e\u547d\u540d\u8bed\u4e49\uff0c\u5e94\u8be5\u662f:\n```swift\nlet sortedCheckInIds = report.timelineReliable.isEmpty\n    ? report.timeline.map { $0.checkInId }\n    : report.timelineReliable.map { $0.checkInId }\n```\n\n## References\n\n- `TrackingReportView.swift:502-504`\n- `EnhancedTrackingReport` model definition\n## Acceptance\n- [ ] Line 502-504 \u4e09\u5143\u8868\u8fbe\u5f0f\u4e24\u4e2a\u5206\u652f\u8fd4\u56de\u4e0d\u540c\u7684\u503c\n- [ ] \u5f53 `timelineReliable` \u4e0d\u4e3a\u7a7a\u65f6\uff0c\u4f7f\u7528 `timelineReliable`\n- [ ] \u9879\u76ee\u53ef\u4ee5\u6210\u529f\u7f16\u8bd1\n- [ ] \u8ffd\u8e2a\u62a5\u544a\u89c6\u56fe\u663e\u793a\u6b63\u786e\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    },
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:30.581477Z",
+        "depends_on": [],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.3",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.3.md",
+        "status": "todo",
+        "title": "Add LifestyleCorrelationAnalyzer unit tests",
+        "updated_at": "2026-01-22T23:52:02.540750Z"
+      },
+      "id": "fn-4-osk.3",
+      "runtime": null,
+      "spec": "# fn-4-osk.3 Add LifestyleCorrelationAnalyzer unit tests\n\n## Description\n\u4e3a LifestyleCorrelationAnalyzer \u6dfb\u52a0\u5355\u5143\u6d4b\u8bd5\uff0c\u9a8c\u8bc1\u751f\u6d3b\u65b9\u5f0f\u56e0\u7d20\u4e0e\u76ae\u80a4\u72b6\u51b5\u53d8\u5316\u7684\u76f8\u5173\u6027\u8ba1\u7b97\u903b\u8f91\u3002\n\n**Size:** M\n**Files:** \n- `SkinLabTests/Tracking/LifestyleCorrelationAnalyzerTests.swift` (new)\n\n## Approach\n\n1. \u521b\u5efa\u65b0\u7684\u6d4b\u8bd5\u6587\u4ef6\n2. \u6d4b\u8bd5\u6b63\u5e38\u76f8\u5173\u6027\u8ba1\u7b97\n3. \u6d4b\u8bd5\u8fb9\u7f18\u60c5\u51b5\uff1a\u7a7a\u6570\u636e\u3001\u5355\u4e2a\u6570\u636e\u70b9\u3001\u6240\u6709\u56e0\u7d20\u4e3a\u7a7a\n4. \u6d4b\u8bd5 delta \u8ba1\u7b97\u903b\u8f91\uff08fn-3.1 \u4fee\u590d\u540e\u7684\u65b0\u903b\u8f91\uff09\n\n## Key Context\n\n- `LifestyleCorrelationAnalyzer` \u5728 fn-3.1 \u4e2d\u88ab\u4fee\u590d\uff0c\u73b0\u5728\u6b63\u786e\u8ba1\u7b97 delta\n- \u4f7f\u7528 `checkInId` \u8fdb\u884c join\uff0c\u800c\u975e `day`\n- \u9700\u8981\u6d4b\u8bd5 `.alcohol` \u56e0\u7d20\uff08\u4e4b\u524d\u7f3a\u5931\uff09\n\n## Test Cases\n\n1. `testAnalyzeWithValidData` - \u6709\u6548\u6570\u636e\u8fd4\u56de\u6b63\u786e\u76f8\u5173\u6027\n2. `testAnalyzeWithEmptyTimeline` - \u7a7a timeline \u8fd4\u56de\u7a7a\u7ed3\u679c\n3. `testAnalyzeWithSingleCheckIn` - \u5355\u4e2a check-in \u65e0\u6cd5\u8ba1\u7b97\u76f8\u5173\u6027\n4. `testAlcoholFactorIncluded` - \u9a8c\u8bc1\u9152\u7cbe\u56e0\u7d20\u88ab\u5305\u542b\n5. `testDeltaCalculation` - \u9a8c\u8bc1 delta \u8ba1\u7b97\u4f7f\u7528 checkInId join\n\n## References\n\n- `SkinLab/Features/Tracking/Services/LifestyleCorrelationAnalyzer.swift`\n- `SkinLabTests/Tracking/` (existing test patterns)\n## Acceptance\n- [ ] \u521b\u5efa `LifestyleCorrelationAnalyzerTests.swift`\n- [ ] \u81f3\u5c11 5 \u4e2a\u6d4b\u8bd5\u7528\u4f8b\n- [ ] \u6240\u6709\u6d4b\u8bd5\u901a\u8fc7\n- [ ] \u8986\u76d6\u6b63\u5e38\u8def\u5f84\u548c\u8fb9\u7f18\u60c5\u51b5\n- [ ] \u6d4b\u8bd5 alcohol \u56e0\u7d20\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    },
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:30.712395Z",
+        "depends_on": [],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.4",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.4.md",
+        "status": "todo",
+        "title": "Add ReliabilityScorer unit tests",
+        "updated_at": "2026-01-22T23:52:29.920384Z"
+      },
+      "id": "fn-4-osk.4",
+      "runtime": null,
+      "spec": "# fn-4-osk.4 Add ReliabilityScorer unit tests\n\n## Description\n\u4e3a ReliabilityScorer \u6dfb\u52a0\u5355\u5143\u6d4b\u8bd5\uff0c\u9a8c\u8bc1\u7167\u7247\u8d28\u91cf\u53ef\u9760\u6027\u8bc4\u5206\u903b\u8f91\u3002\n\n**Size:** M\n**Files:** \n- `SkinLabTests/Tracking/ReliabilityScorerTests.swift` (new)\n\n## Approach\n\n1. \u521b\u5efa\u65b0\u7684\u6d4b\u8bd5\u6587\u4ef6\n2. \u6d4b\u8bd5\u8bc4\u5206\u8ba1\u7b97\u903b\u8f91\n3. \u6d4b\u8bd5 `tooBright` \u6620\u5c04 (fn-3.3 \u4fee\u590d\u540e\u5e94\u6620\u5c04\u5230 `.highLight`)\n4. \u6d4b\u8bd5\u8fb9\u7f18\u60c5\u51b5\n\n## Key Context\n\n- fn-3.3 \u4fee\u590d\u4e86 `tooBright` \u6620\u5c04\u9519\u8bef (was `.lowLight`, should be `.highLight`)\n- \u53ef\u9760\u6027\u5728 capture \u65f6\u8ba1\u7b97\uff0c\u4e0d\u4ec5\u5728 report \u751f\u6210\u65f6\n- \u4f7f\u7528 `checkInDays = [0, 7, 14, 21, 28]` (task 6 \u4f1a\u63d0\u53d6\u4e3a\u5e38\u91cf)\n\n## Test Cases\n\n1. `testScoreWithPerfectPhoto` - \u5b8c\u7f8e\u7167\u7247\u5f97\u9ad8\u5206\n2. `testScoreWithLowLight` - \u4f4e\u5149\u7167\u964d\u4f4e\u5206\u6570\n3. `testScoreWithHighLight` - \u9ad8\u5149\u7167 (tooBright) \u964d\u4f4e\u5206\u6570\n4. `testScoreWithMotionBlur` - \u8fd0\u52a8\u6a21\u7cca\u964d\u4f4e\u5206\u6570\n5. `testTimingPenalty` - \u5ef6\u8fdf check-in \u7684\u65f6\u95f4\u60e9\u7f5a\n\n## References\n\n- `SkinLab/Features/Tracking/Services/ReliabilityScorer.swift`\n- fn-3.3 spec for tooBright fix details\n## Acceptance\n- [ ] \u521b\u5efa `ReliabilityScorerTests.swift`\n- [ ] \u81f3\u5c11 5 \u4e2a\u6d4b\u8bd5\u7528\u4f8b\n- [ ] \u6d4b\u8bd5 `tooBright` \u6b63\u786e\u6620\u5c04\u5230 `.highLight`\n- [ ] \u6d4b\u8bd5\u65f6\u95f4\u60e9\u7f5a\u903b\u8f91\n- [ ] \u6240\u6709\u6d4b\u8bd5\u901a\u8fc7\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    },
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:30.839897Z",
+        "depends_on": [],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.5",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.5.md",
+        "status": "todo",
+        "title": "Add GeminiService unit tests with mocks",
+        "updated_at": "2026-01-22T23:52:30.245107Z"
+      },
+      "id": "fn-4-osk.5",
+      "runtime": null,
+      "spec": "# fn-4-osk.5 Add GeminiService unit tests with mocks\n\n## Description\n\u4e3a GeminiService \u6dfb\u52a0\u5355\u5143\u6d4b\u8bd5\uff0c\u4f7f\u7528 mock URLSession \u6d4b\u8bd5 API \u8c03\u7528\u903b\u8f91\u3002\n\n**Size:** M\n**Files:** \n- `SkinLabTests/Core/GeminiServiceTests.swift` (new)\n- `SkinLabTests/Mocks/MockURLSession.swift` (new if not exists)\n\n## Approach\n\n1. \u521b\u5efa MockURLSession \u6216 URLProtocol \u5b50\u7c7b\n2. \u6d4b\u8bd5\u6210\u529f API \u54cd\u5e94\u89e3\u6790\n3. \u6d4b\u8bd5\u9519\u8bef\u5904\u7406\n4. \u6d4b\u8bd5\u56fe\u7247\u7f16\u7801\u903b\u8f91\n\n## Key Context\n\n- GeminiService \u5df2\u6709 protocol \u652f\u6301 mock injection\n- \u9700\u8981\u6d4b\u8bd5 skin analysis \u548c ingredient analysis \u4e24\u4e2a\u4e3b\u8981\u529f\u80fd\n- \u4e0d\u9700\u8981\u771f\u5b9e API \u8c03\u7528 - \u4f7f\u7528 mock responses\n\n## Test Cases\n\n1. `testAnalyzeSkinWithValidResponse` - \u6709\u6548\u54cd\u5e94\u6b63\u786e\u89e3\u6790\n2. `testAnalyzeSkinWithNetworkError` - \u7f51\u7edc\u9519\u8bef\u6b63\u786e\u5904\u7406\n3. `testAnalyzeSkinWithInvalidJSON` - \u65e0\u6548 JSON \u9519\u8bef\u5904\u7406\n4. `testImageEncodingToBase64` - \u56fe\u7247\u6b63\u786e\u7f16\u7801\u4e3a base64\n5. `testAnalyzeIngredientsWithValidResponse` - \u6210\u5206\u5206\u6790\u6709\u6548\u54cd\u5e94\n\n## References\n\n- `SkinLab/Core/Network/GeminiService.swift`\n- `SkinAnalysisServiceProtocol` for mock injection pattern\n## Acceptance\n- [ ] \u521b\u5efa `GeminiServiceTests.swift`\n- [ ] \u4f7f\u7528 mock \u800c\u975e\u771f\u5b9e API \u8c03\u7528\n- [ ] \u6d4b\u8bd5\u6210\u529f\u8def\u5f84\u548c\u9519\u8bef\u5904\u7406\n- [ ] \u81f3\u5c11 5 \u4e2a\u6d4b\u8bd5\u7528\u4f8b\n- [ ] \u6240\u6709\u6d4b\u8bd5\u901a\u8fc7\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    },
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:30.969882Z",
+        "depends_on": [],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.6",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.6.md",
+        "status": "todo",
+        "title": "Extract TrackingConstants for check-in days",
+        "updated_at": "2026-01-22T23:52:30.574869Z"
+      },
+      "id": "fn-4-osk.6",
+      "runtime": null,
+      "spec": "# fn-4-osk.6 Extract TrackingConstants for check-in days\n\n## Description\n\u5c06\u786c\u7f16\u7801\u7684 check-in \u5929\u6570\u5e38\u91cf `[0, 7, 14, 21, 28]` \u63d0\u53d6\u5230\u96c6\u4e2d\u7684\u5e38\u91cf\u6587\u4ef6\u4e2d\uff0c\u6d88\u9664 4 \u4e2a\u6587\u4ef6\u4e2d\u7684\u91cd\u590d\u3002\n\n**Size:** S\n**Files:** \n- `SkinLab/Features/Tracking/Models/TrackingConstants.swift` (new)\n- `SkinLab/Features/Tracking/Views/TrackingDetailView.swift` (update import)\n- `SkinLab/Features/Tracking/Models/TrackingSession.swift` (update import)\n- `SkinLab/Features/Tracking/Services/ReliabilityScorer.swift` (update import)\n- `SkinLab/Features/Tracking/Views/TrackingView.swift` (update import)\n\n## Approach\n\n1. \u521b\u5efa `TrackingConstants.swift` \u5305\u542b `checkInDays` \u5e38\u91cf\n2. \u5728 4 \u4e2a\u6587\u4ef6\u4e2d\u66ff\u6362\u786c\u7f16\u7801\u503c\u4e3a\u5e38\u91cf\u5f15\u7528\n3. \u786e\u4fdd\u6240\u6709\u4f7f\u7528\u5904\u90fd\u66f4\u65b0\n\n## Key Context\n\n\u5f53\u524d\u91cd\u590d\u4f4d\u7f6e\uff1a\n- `TrackingDetailView.swift:164`\n- `TrackingSession.swift:123, 131`\n- `ReliabilityScorer.swift:158`\n- `TrackingView.swift:232`\n\n## References\n\n- Research identified 4 files with duplicated constant\n## Acceptance\n- [ ] \u521b\u5efa `TrackingConstants.swift`\n- [ ] \u5b9a\u4e49 `static let checkInDays = [0, 7, 14, 21, 28]`\n- [ ] \u66f4\u65b0 `TrackingDetailView.swift` \u4f7f\u7528\u5e38\u91cf\n- [ ] \u66f4\u65b0 `TrackingSession.swift` \u4f7f\u7528\u5e38\u91cf\n- [ ] \u66f4\u65b0 `ReliabilityScorer.swift` \u4f7f\u7528\u5e38\u91cf\n- [ ] \u66f4\u65b0 `TrackingView.swift` \u4f7f\u7528\u5e38\u91cf\n- [ ] \u9879\u76ee\u53ef\u4ee5\u6210\u529f\u7f16\u8bd1\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    },
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:31.097351Z",
+        "depends_on": [
+          "fn-4-osk.6"
+        ],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.7",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.7.md",
+        "status": "todo",
+        "title": "Split TrackingDetailView into smaller components",
+        "updated_at": "2026-01-22T23:53:13.472618Z"
+      },
+      "id": "fn-4-osk.7",
+      "runtime": null,
+      "spec": "# fn-4-osk.7 Split TrackingDetailView into smaller components\n\n## Description\n\u5c06 927 \u884c\u7684 TrackingDetailView.swift \u62c6\u5206\u4e3a\u66f4\u5c0f\u7684\u7ec4\u4ef6\u6587\u4ef6\uff0c\u63d0\u9ad8\u4ee3\u7801\u53ef\u7ef4\u62a4\u6027\u3002\n\n**Size:** M\n**Files:** \n- `SkinLab/Features/Tracking/Views/TrackingDetailView.swift` (update, target < 500 lines)\n- `SkinLab/Features/Tracking/Views/Components/PhotoStandardizationCard.swift` (new)\n- `SkinLab/Features/Tracking/Views/Components/LifestyleInputsContent.swift` (new)\n\n## Approach\n\n1. \u5206\u6790 TrackingDetailView.swift \u8bc6\u522b\u53ef\u63d0\u53d6\u7ec4\u4ef6\n2. \u63d0\u53d6 PhotoStandardizationCard (\u7167\u7247\u8d28\u91cf\u53cd\u9988 UI)\n3. \u63d0\u53d6 LifestyleInputsContent (\u751f\u6d3b\u65b9\u5f0f\u8f93\u5165\u8868\u5355)\n4. \u4fdd\u6301\u5185\u90e8\u89c6\u56fe\u5982 `CheckInView`, `CheckInRow`, `LifestyleDraft` \u539f\u4f4d\uff08\u6216\u79fb\u5230\u72ec\u7acb\u6587\u4ef6\uff09\n5. \u786e\u4fdd\u6240\u6709\u5f15\u7528\u66f4\u65b0\u6b63\u786e\n\n## Key Context\n\n\u5f53\u524d\u7ed3\u6784 (927 lines):\n- `TrackingDetailView` - \u4e3b\u89c6\u56fe\n- `CheckInRow` - check-in \u5217\u8868\u884c\n- `LifestyleDraft` - \u751f\u6d3b\u65b9\u5f0f\u8349\u7a3f\n- `CheckInView` - check-in \u8be6\u60c5 (lines 398-892)\n- `FeelingButton` - \u5fc3\u60c5\u6309\u94ae\n\n## References\n\n- `SkinLab/Features/Tracking/Views/TrackingDetailView.swift`\n- SwiftUI component extraction best practices\n## Acceptance\n- [ ] TrackingDetailView.swift < 500 \u884c\n- [ ] \u63d0\u53d6\u7684\u7ec4\u4ef6\u5728\u72ec\u7acb\u6587\u4ef6\u4e2d\n- [ ] \u6240\u6709\u7ec4\u4ef6\u53ef\u6b63\u786e import \u548c\u4f7f\u7528\n- [ ] UI \u529f\u80fd\u4e0d\u53d8\n- [ ] \u9879\u76ee\u53ef\u4ee5\u6210\u529f\u7f16\u8bd1\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    },
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:31.224428Z",
+        "depends_on": [],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.8",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.8.md",
+        "status": "todo",
+        "title": "Create README.md with project overview",
+        "updated_at": "2026-01-22T23:52:57.994917Z"
+      },
+      "id": "fn-4-osk.8",
+      "runtime": null,
+      "spec": "# fn-4-osk.8 Create README.md with project overview\n\n## Description\n\u521b\u5efa\u9879\u76ee README.md \u6587\u4ef6\uff0c\u63d0\u4f9b\u9879\u76ee\u6982\u8ff0\u3001\u6280\u672f\u6808\u3001\u529f\u80fd\u4ecb\u7ecd\u548c\u5f00\u53d1\u6307\u5357\u3002\n\n**Size:** S\n**Files:** \n- `README.md` (new)\n\n## Approach\n\n1. \u521b\u5efa README.md \u5728\u9879\u76ee\u6839\u76ee\u5f55\n2. \u5305\u542b\u9879\u76ee\u6982\u8ff0 (\u4ece CLAUDE.md)\n3. \u5305\u542b\u6280\u672f\u6808\u4fe1\u606f\n4. \u5305\u542b\u5df2\u5b8c\u6210\u529f\u80fd\u5217\u8868 (fn-1, fn-2, fn-3)\n5. \u5305\u542b\u5f00\u53d1\u8bbe\u7f6e\u8bf4\u660e\n6. \u94fe\u63a5\u5230 CLAUDE.md \u548c .flow/usage.md\n\n## Content Structure\n\n1. Project Title + Badge\n2. Overview / Description\n3. Features (completed)\n4. Tech Stack\n5. Getting Started\n6. Project Structure (\u7b80\u5316\u7248)\n7. Contributing (link to CLAUDE.md)\n8. License\n\n## References\n\n- CLAUDE.md for project overview\n- .flow/specs/fn-*.md for completed features\n## Acceptance\n- [ ] README.md \u5b58\u5728\u4e8e\u9879\u76ee\u6839\u76ee\u5f55\n- [ ] \u5305\u542b\u9879\u76ee\u6982\u8ff0\n- [ ] \u5305\u542b\u6280\u672f\u6808\u5217\u8868\n- [ ] \u5305\u542b\u5df2\u5b8c\u6210\u529f\u80fd\u4ecb\u7ecd\n- [ ] \u5305\u542b\u5f00\u53d1\u8bbe\u7f6e\u8bf4\u660e\n- [ ] \u94fe\u63a5\u5230\u76f8\u5173\u6587\u6863\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    },
+    {
+      "data": {
+        "assignee": null,
+        "claim_note": "",
+        "claimed_at": null,
+        "created_at": "2026-01-22T23:51:31.350951Z",
+        "depends_on": [],
+        "epic": "fn-4-osk",
+        "id": "fn-4-osk.9",
+        "priority": null,
+        "spec_path": ".flow/tasks/fn-4-osk.9.md",
+        "status": "todo",
+        "title": "Update CLAUDE.md with fn-2/fn-3 completed features",
+        "updated_at": "2026-01-22T23:52:58.351018Z"
+      },
+      "id": "fn-4-osk.9",
+      "runtime": null,
+      "spec": "# fn-4-osk.9 Update CLAUDE.md with fn-2/fn-3 completed features\n\n## Description\n\u66f4\u65b0 CLAUDE.md \u6587\u6863\uff0c\u8bb0\u5f55 fn-2 (Engagement Features) \u548c fn-3 (Photo Standardization & Lifestyle) \u5b8c\u6210\u7684\u529f\u80fd\u548c\u5173\u952e\u5b9e\u73b0\u7ec6\u8282\u3002\n\n**Size:** S\n**Files:** \n- `CLAUDE.md` (update)\n\n## Approach\n\n1. \u5728 CLAUDE.md \u4e2d\u6dfb\u52a0 \"## Completed Features\" \u90e8\u5206\n2. \u8bb0\u5f55 fn-2 engagement features (streaks, badges, celebrations)\n3. \u8bb0\u5f55 fn-3 fixes (lifestyle delta, Day 0 baseline, reliability)\n4. \u6dfb\u52a0\u5173\u952e\u5b9e\u73b0\u89c4\u5219 (\u5982 checkInId join rule)\n5. \u66f4\u65b0 Skills/Droids \u90e8\u5206\u53cd\u6620\u5b9e\u9645\u5b9e\u73b0\n\n## Content to Add\n\n### fn-2 (Engagement Features)\n- UserEngagementMetrics \u6a21\u578b\n- AchievementProgress \u548c AchievementDefinition\n- StreakTrackingService \u548c AchievementService\n- Freeze \u673a\u5236 (1 per 30 days)\n\n### fn-3 (Photo Standardization & Lifestyle)\n- Lifestyle delta \u73b0\u5728\u4f7f\u7528 checkInId join\n- Day 0 baseline \u4ece analysis \u521b\u5efa\n- Reliability \u5728 capture \u65f6\u8ba1\u7b97\n- Lifestyle inputs \u771f\u6b63\u53ef\u9009\n\n### Key Rules\n- \u59cb\u7ec8\u4f7f\u7528 checkInId \u8fdb\u884c join\uff0c\u800c\u975e day\n- SwiftData writes \u53ea\u5728 @MainActor\n\n## References\n\n- `.flow/specs/fn-2.md` (516 lines)\n- `.flow/specs/fn-3.md` (273 lines)\n## Acceptance\n- [ ] CLAUDE.md \u5305\u542b \"Completed Features\" \u90e8\u5206\n- [ ] fn-2 engagement features \u6709\u6587\u6863\n- [ ] fn-3 fixes \u6709\u6587\u6863\n- [ ] \u5173\u952e\u5b9e\u73b0\u89c4\u5219\u6709\u8bb0\u5f55\n- [ ] \u6587\u6863\u683c\u5f0f\u4e0e\u73b0\u6709\u98ce\u683c\u4e00\u81f4\n## Done summary\nTBD\n\n## Evidence\n- Commits:\n- Tests:\n- PRs:\n"
+    }
+  ]
+}

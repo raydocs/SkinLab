@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-22T23:51:31.097351Z",
+  "depends_on": [
+    "fn-4-osk.6"
+  ],
+  "epic": "fn-4-osk",
+  "id": "fn-4-osk.7",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-4-osk.7.md",
+  "status": "todo",
+  "title": "Split TrackingDetailView into smaller components",
+  "updated_at": "2026-01-23T00:05:17.915817Z"
+}

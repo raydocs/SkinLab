@@ -501,7 +501,7 @@ struct TrackingReportView: View {
                 // Get check-in IDs sorted by day
                 let sortedCheckInIds = report.timelineReliable.isEmpty
                     ? report.timeline.map { $0.checkInId }
-                    : report.timeline.map { $0.checkInId }
+                    : report.timelineReliable.map { $0.checkInId }
 
                 ForEach(sortedCheckInIds, id: \.self) { checkInId in
                     if let reliability = report.reliabilityMap[checkInId] {

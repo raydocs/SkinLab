@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-22T23:51:30.839897Z",
+  "depends_on": [],
+  "epic": "fn-4-osk",
+  "id": "fn-4-osk.5",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-4-osk.5.md",
+  "status": "todo",
+  "title": "Add GeminiService unit tests with mocks",
+  "updated_at": "2026-01-23T00:04:45.525159Z"
+}
