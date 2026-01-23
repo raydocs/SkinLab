@@ -53,9 +53,8 @@
 - [ ] 所有测试通过
 
 ## Done summary
-TBD
-
+Added 18 comprehensive unit tests for ReliabilityScorer covering all scoring dimensions: lighting (low/high), face angle, distance, face detection, library photos, user flags, timing penalty, analysis confidence, and camera position consistency. Tests verify the fn-3.3 fix for tooBright -> .highLight mapping.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 11026e87a1f7ac00df3695b49da96c0cee4bc539
+- Tests: xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.2' -only-testing:SkinLabTests/ReliabilityScorerTests
 - PRs:

@@ -111,8 +111,10 @@
 		E99B8C4FDC29B0B1C2723F09 /* AchievementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BDE798895646C9291EBA7D /* AchievementService.swift */; };
 		EF7DA47E8DC11464A5D48DDD /* AchievementProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD37543E7F0B5A97188891F /* AchievementProgress.swift */; };
 		EF7E0C9D4EFDD24537C9EE60 /* EnhancedIngredientResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C536C3257C98962220CA8905 /* EnhancedIngredientResultView.swift */; };
+		F1BDFF1FB6440651F8E89B71 /* GeminiServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7E956BED795ED4617FDB9C /* GeminiServiceTests.swift */; };
 		F405186565CE2C23CC08CCC3 /* UserProfileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60448A1275B893A2DF30354 /* UserProfileTests.swift */; };
 		F414407F74812AA401F2A4D2 /* StreakBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254148B75038D3EACEE6D968 /* StreakBadgeView.swift */; };
+		F45568C91977D609E538B5C8 /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247BDDE86F1FD75340C97CDB /* MockURLProtocol.swift */; };
 		F7E10C6A057FD61A2A63EF84 /* StreakNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 989B46186C9A275C7FEFB1C7 /* StreakNotificationService.swift */; };
 		F9FA462A4B7B7F90D4F8B232 /* MatchLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C672A53F7F9166589623AED /* MatchLevel.swift */; };
 /* End PBXBuildFile section */
@@ -156,6 +158,7 @@
 		1EA7BE94D8E3D4DEC72F5114 /* TrackingReportExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrackingReportExtensions.swift; path = ../../../SkinLab/Features/Tracking/Models/TrackingReportExtensions.swift; sourceTree = "<group>"; };
 		1EABE5E915AEE3FFBF17101A /* SkinMatcherTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinMatcherTests.swift; sourceTree = "<group>"; };
 		225B3AAF53AD6B134589486C /* LifestyleCorrelationAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifestyleCorrelationAnalyzerTests.swift; sourceTree = "<group>"; };
+		247BDDE86F1FD75340C97CDB /* MockURLProtocol.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		24F9DBC8B7733E05CB9DE395 /* UserEngagementMetrics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserEngagementMetrics.swift; sourceTree = "<group>"; };
 		254148B75038D3EACEE6D968 /* StreakBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakBadgeView.swift; sourceTree = "<group>"; };
 		2935A2C595AFD0A1F5A52CBF /* TrackingComparisonView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingComparisonView.swift; sourceTree = "<group>"; };
@@ -164,6 +167,7 @@
 		2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalysisResultViewModel.swift; sourceTree = "<group>"; };
 		313078DD5B48E3E27AABCCE3 /* UserIngredientPreference.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserIngredientPreference.swift; path = ../../../SkinLab/Features/Profile/Models/UserIngredientPreference.swift; sourceTree = "<group>"; };
 		34775FC70ED096A46BFA9333 /* Celebration */ = {isa = PBXFileReference; includeInIndex = 1; path = Celebration; sourceTree = "<group>"; };
+		3D7E956BED795ED4617FDB9C /* GeminiServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeminiServiceTests.swift; sourceTree = "<group>"; };
 		3E5C9F2586D340041D58FDD8 /* TrackingDetailViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingDetailViewModel.swift; sourceTree = "<group>"; };
 		3F3EB7BFD9E873145B7A021B /* ProductRecommendationEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductRecommendationEngine.swift; sourceTree = "<group>"; };
 		3FC24F5570D8E1F73373DA94 /* IngredientRiskAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IngredientRiskAnalyzer.swift; path = ../../SkinLab/Core/Utils/IngredientRiskAnalyzer.swift; sourceTree = "<group>"; };
@@ -327,6 +331,8 @@
 				E55AB975CC7DCFF92B181360 /* Profile */,
 				3705400F1F44F24B67BD9AA9 /* Tracking */,
 				2AA7BDDC8F882FAEEB13D841 /* Community */,
+				72C7D8E59D68F7103EC36C3A /* Core */,
+				8C8EEB66B81E12494D7199DB /* Mocks */,
 			);
 			name = SkinLabTests;
 			path = SkinLabTests;
@@ -465,6 +471,15 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
+		72C7D8E59D68F7103EC36C3A /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				3D7E956BED795ED4617FDB9C /* GeminiServiceTests.swift */,
+			);
+			name = Core;
+			path = Core;
+			sourceTree = "<group>";
+		};
 		7708436C8FA671CD557E22B3 /* Analysis */ = {
 			isa = PBXGroup;
 			children = (
@@ -489,6 +504,15 @@
 			);
 			name = Views;
 			path = Views;
+			sourceTree = "<group>";
+		};
+		8C8EEB66B81E12494D7199DB /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				247BDDE86F1FD75340C97CDB /* MockURLProtocol.swift */,
+			);
+			name = Mocks;
+			path = Mocks;
 			sourceTree = "<group>";
 		};
 		8D1D955D47C2D3ECC1F6C98C /* Models */ = {
@@ -1178,6 +1202,8 @@
 				2BF1731243556DB802617922 /* ProductRecommendationEngineTests.swift in Sources */,
 				44F72831C0C423B5F4F7EF87 /* SkinTwinViewModelTests.swift in Sources */,
 				20903C0BB33AEC2CD089E94B /* ReliabilityScorerTests.swift in Sources */,
+				F1BDFF1FB6440651F8E89B71 /* GeminiServiceTests.swift in Sources */,
+				F45568C91977D609E538B5C8 /* MockURLProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
