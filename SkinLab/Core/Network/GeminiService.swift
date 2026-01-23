@@ -182,7 +182,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
         base64Image: String,
         previousAnalysis: SkinAnalysis?
     ) throws -> URLRequest {
-        let endpoint = "(GeminiConfig.baseURL)/chat/completions"
+        let endpoint = "\(GeminiConfig.baseURL)/chat/completions"
         guard let url = URL(string: endpoint) else {
             throw GeminiError.apiError("Invalid URL")
         }
@@ -190,7 +190,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer (GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("https://skinlab.app", forHTTPHeaderField: "HTTP-Referer")
         request.setValue("SkinLab", forHTTPHeaderField: "X-Title")
         
@@ -211,7 +211,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
                         [
                             "type": "image_url",
                             "image_url": [
-                                "url": "data:image/jpeg;base64,(base64Image)"
+                                "url": "data:image/jpeg;base64,\(base64Image)"
                             ]
                         ]
                     ]
