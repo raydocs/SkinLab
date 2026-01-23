@@ -49,9 +49,8 @@
 - [ ] 文档格式与现有风格一致
 
 ## Done summary
-TBD
-
+Updated CLAUDE.md with comprehensive documentation of fn-2 (engagement features: streaks, badges, celebrations, sharing) and fn-3 (photo standardization and lifestyle fixes) completed features, plus key implementation rules for checkInId joins and @MainActor SwiftData writes.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: e6bee572d24ae7a0f5fb4da0d7e44bdba23e73a9, cd739bacf95800e3e880bacb6d3449fa15ad254a
+- Tests: N/A - documentation only
 - PRs:
