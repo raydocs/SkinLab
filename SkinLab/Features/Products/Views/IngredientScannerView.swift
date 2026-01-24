@@ -455,7 +455,7 @@ struct IngredientScannerFullView: View {
                 viewModel.reset()
             }
         )
-        .padding()
+        // Note: ErrorRecoveryView has internal padding, no additional padding needed
     }
     
     // MARK: - Helpers

@@ -19,9 +19,8 @@ enum ErrorCategory {
             switch geminiError {
             case .networkError(let underlying):
                 // Check if the underlying error is an offline condition
-                if let urlError = underlying as? URLError,
-                   urlError.code == .notConnectedToInternet || urlError.code == .networkConnectionLost {
-                    self = .offline
+                if let category = Self.categorizeURLErrorLike(underlying) {
+                    self = category
                 } else {
                     self = .network
                 }
@@ -41,16 +40,9 @@ enum ErrorCategory {
             return
         }
 
-        // Check for URLError types
-        if let urlError = error as? URLError {
-            switch urlError.code {
-            case .notConnectedToInternet, .networkConnectionLost:
-                self = .offline
-            case .timedOut, .cannotConnectToHost, .cannotFindHost:
-                self = .network
-            default:
-                self = .network
-            }
+        // Check for URLError types (including NSError with NSURLErrorDomain)
+        if let category = Self.categorizeURLErrorLike(error) {
+            self = category
             return
         }
 
@@ -59,9 +51,8 @@ enum ErrorCategory {
             switch appError {
             case .networkRequest(_, let underlying):
                 // Check if the underlying error is an offline condition
-                if let urlError = underlying as? URLError,
-                   urlError.code == .notConnectedToInternet || urlError.code == .networkConnectionLost {
-                    self = .offline
+                if let category = Self.categorizeURLErrorLike(underlying) {
+                    self = category
                 } else {
                     self = .network
                 }
@@ -73,6 +64,38 @@ enum ErrorCategory {
 
         // Default to unknown
         self = .unknown
+    }
+
+    /// Helper to categorize URLError or NSError with NSURLErrorDomain
+    /// Returns nil if the error is not a URL-related error
+    private static func categorizeURLErrorLike(_ error: Error) -> ErrorCategory? {
+        // Check for native URLError
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet, .networkConnectionLost:
+                return .offline
+            case .timedOut, .cannotConnectToHost, .cannotFindHost:
+                return .network
+            default:
+                return .network
+            }
+        }
+
+        // Check for NSError with NSURLErrorDomain (sometimes thrown by URLSession/SDKs)
+        let nsError = error as NSError
+        guard nsError.domain == NSURLErrorDomain else { return nil }
+
+        switch nsError.code {
+        case URLError.notConnectedToInternet.rawValue,
+             URLError.networkConnectionLost.rawValue:
+            return .offline
+        case URLError.timedOut.rawValue,
+             URLError.cannotConnectToHost.rawValue,
+             URLError.cannotFindHost.rawValue:
+            return .network
+        default:
+            return .network
+        }
     }
 
     /// User-friendly title for the error category
@@ -214,7 +237,6 @@ struct ErrorRecoveryView: View {
             // Offline banner when applicable
             if !networkMonitor.isConnected || category == .offline {
                 OfflineBannerView()
-                    .padding(.horizontal, -24) // Full width
             }
 
             // Icon section
@@ -505,6 +527,7 @@ struct OfflineBannerView: View {
                 .font(.system(size: 14))
                 .foregroundColor(.white.opacity(0.8))
                 .rotationEffect(.degrees(isAnimating ? 360 : 0))
+                .accessibilityHidden(true)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)

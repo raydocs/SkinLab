@@ -250,7 +250,7 @@ struct AnalysisView: View {
                 viewModel.retry()
             }
         )
-        .padding()
+        // Note: ErrorRecoveryView has internal padding, no additional padding needed
     }
 }
 

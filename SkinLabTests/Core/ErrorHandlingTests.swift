@@ -173,6 +173,22 @@ final class ErrorHandlingTests: XCTestCase {
         XCTAssertEqual(ErrorCategory(from: cannotConnectError), .network)
     }
 
+    func testErrorCategoryFromNSErrorOffline() {
+        // Test NSError with NSURLErrorDomain (sometimes thrown by URLSession/SDKs instead of URLError)
+        let offlineNSError = NSError(domain: NSURLErrorDomain, code: URLError.notConnectedToInternet.rawValue)
+        XCTAssertEqual(ErrorCategory(from: offlineNSError), .offline)
+
+        let connectionLostNSError = NSError(domain: NSURLErrorDomain, code: URLError.networkConnectionLost.rawValue)
+        XCTAssertEqual(ErrorCategory(from: connectionLostNSError), .offline)
+
+        let timeoutNSError = NSError(domain: NSURLErrorDomain, code: URLError.timedOut.rawValue)
+        XCTAssertEqual(ErrorCategory(from: timeoutNSError), .network)
+
+        // Non-URL domain should not be categorized as network
+        let otherDomainError = NSError(domain: "CustomDomain", code: -1009)
+        XCTAssertEqual(ErrorCategory(from: otherDomainError), .unknown)
+    }
+
     func testErrorCategoryFromAppError() {
         // Test network request error (generic)
         let networkError = AppError.networkRequest(operation: "test", underlying: NSError(domain: "test", code: 1))
