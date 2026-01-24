@@ -230,7 +230,8 @@ final class SkinTwinViewModel {
         } catch let error as MatchError {
             errorMessage = error.errorDescription
         } catch {
-            errorMessage = "匹配失败: \(error.localizedDescription)"
+            AppLogger.error("Skin twin match failed", error: error)
+            errorMessage = "匹配失败，请稍后重试"
         }
 
         isLoading = false
@@ -284,8 +285,10 @@ final class SkinTwinViewModel {
             try modelContext.save()
             showFeedbackForm = false
             feedbackMatchId = nil
+            AppLogger.data(operation: .save, entity: "UserFeedbackRecord", success: true)
         } catch {
-            errorMessage = "反馈提交失败: \(error.localizedDescription)"
+            AppLogger.data(operation: .save, entity: "UserFeedbackRecord", success: false, error: error)
+            errorMessage = "反馈提交失败，请稍后重试"
         }
     }
 

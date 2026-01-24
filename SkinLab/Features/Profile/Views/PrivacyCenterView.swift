@@ -690,7 +690,7 @@ struct DataExportView: View {
                 exportProgress = 0.8
 
                 let fileURL = FileManager.default.temporaryDirectory
-                    .appendingPathComponent("SkinLab_Data_Export_\\(Int(Date().timeIntervalSince1970)).json")
+                    .appendingPathComponent("SkinLab_Data_Export_\(Int(Date().timeIntervalSince1970)).json")
                 try data.write(to: fileURL, options: .atomic)
                 exportURL = fileURL
                 exportProgress = 1.0
@@ -784,13 +784,24 @@ struct DataExportView: View {
             skinType = record.skinType
             skinAge = record.skinAge
             overallScore = record.overallScore
-            issues = record.issuesData.flatMap { try? JSONDecoder().decode(IssueScores.self, from: $0) }
-            regions = record.regionsData.flatMap { try? JSONDecoder().decode(RegionScores.self, from: $0) }
+            issues = Self.decodeOrNil(IssueScores.self, from: record.issuesData, label: "SkinAnalysisRecord.issuesData")
+            regions = Self.decodeOrNil(RegionScores.self, from: record.regionsData, label: "SkinAnalysisRecord.regionsData")
             recommendations = record.recommendations
             analyzedAt = record.analyzedAt
             photoPath = record.photoPath
             confidenceScore = record.confidenceScore
-            imageQuality = record.qualityData.flatMap { try? JSONDecoder().decode(ImageQuality.self, from: $0) }
+            imageQuality = Self.decodeOrNil(ImageQuality.self, from: record.qualityData, label: "SkinAnalysisRecord.qualityData")
+        }
+
+        /// Decode with logging on failure, returning nil to avoid interrupting export
+        private static func decodeOrNil<T: Decodable>(_ type: T.Type, from data: Data?, label: String) -> T? {
+            guard let data else { return nil }
+            do {
+                return try JSONDecoder().decode(T.self, from: data)
+            } catch {
+                AppLogger.error("Export decode failed: \(label)", error: error)
+                return nil
+            }
         }
     }
 
@@ -834,7 +845,7 @@ struct DataExportView: View {
             name = record.name
             brand = record.brand
             categoryRaw = record.categoryRaw
-            ingredients = record.ingredientsData.flatMap { try? JSONDecoder().decode([Ingredient].self, from: $0) }
+            ingredients = Self.decodeOrNil([Ingredient].self, from: record.ingredientsData, label: "ProductRecord.ingredientsData")
             skinTypesRaw = record.skinTypesRaw
             concernsRaw = record.concernsRaw
             priceRangeRaw = record.priceRangeRaw
@@ -843,6 +854,17 @@ struct DataExportView: View {
             sampleSize = record.sampleSize
             averageRating = record.averageRating
             updatedAt = record.updatedAt
+        }
+
+        /// Decode with logging on failure, returning nil to avoid interrupting export
+        private static func decodeOrNil<T: Decodable>(_ type: T.Type, from data: Data?, label: String) -> T? {
+            guard let data else { return nil }
+            do {
+                return try JSONDecoder().decode(T.self, from: data)
+            } catch {
+                AppLogger.error("Export decode failed: \(label)", error: error)
+                return nil
+            }
         }
     }
 }
