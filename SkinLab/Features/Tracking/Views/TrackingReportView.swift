@@ -427,7 +427,7 @@ struct TrackingReportView: View {
                         AxisGridLine()
                         AxisValueLabel {
                             if let day = value.as(Int.self) {
-                                Text("Day \(day)")
+                                Text("第\(day)天")
                                     .font(.skinLabCaption)
                             }
                         }
@@ -650,7 +650,7 @@ struct TrackingReportView: View {
         HStack {
             // Find day number
             if let point = report.timeline.first(where: { $0.checkInId == checkInId }) {
-                Text("Day \(point.day)")
+                Text("第\(point.day)天")
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
                     .frame(width: 60, alignment: .leading)

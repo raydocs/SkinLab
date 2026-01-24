@@ -65,9 +65,8 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
-
+Implemented unified error recovery component with retry support. Created ErrorRecoveryView with error categorization, offline detection (including NSError/NSURLErrorDomain), rate-limit countdown, and loading states. Integrated into AnalysisView and IngredientScannerView. Added 13 unit tests covering all error categories.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 0ca8dbc, b37b9bc, abeb80f, 5d6e4d6
+- Tests: xcodebuild test -scheme SkinLab -only-testing:SkinLabTests/ErrorHandlingTests
 - PRs:

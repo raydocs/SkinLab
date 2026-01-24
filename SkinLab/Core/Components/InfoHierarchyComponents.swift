@@ -53,7 +53,8 @@ struct KeyMetricCard: View {
             // Icon with gradient background
             ZStack {
                 Circle()
-                    .fill(gradient.opacity(0.15))
+                    .fill(gradient)
+                    .opacity(0.15)
                     .frame(width: 56, height: 56)
 
                 Image(systemName: icon)
@@ -95,8 +96,14 @@ struct KeyMetricCard: View {
         .cornerRadius(20)
         .skinLabSoftShadow()
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(label): \(value)")
-        .accessibilityValue(trendLabel ?? "")
+        .accessibilityLabel(accessibilityDescription)
+    }
+
+    private var accessibilityDescription: String {
+        if let trendLabel = trendLabel {
+            return "\(label): \(value), \(trendLabel)"
+        }
+        return "\(label): \(value)"
     }
 }
 
@@ -199,8 +206,8 @@ struct ProgressiveDisclosureCard<Summary: View, Detail: View>: View {
             .buttonStyle(.plain)
             .accessibilityElement(children: .combine)
             .accessibilityLabel(title)
-            .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
-            .accessibilityHint(isExpanded ? "Tap to collapse" : "Tap to expand")
+            .accessibilityValue(isExpanded ? "已展开" : "已折叠")
+            .accessibilityHint(isExpanded ? "点击折叠" : "点击展开")
 
             // Detail content
             if isExpanded {
