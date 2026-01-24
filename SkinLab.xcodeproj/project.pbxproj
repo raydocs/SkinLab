@@ -10,6 +10,7 @@
 		0125E6E643B3B4B97CDA3D40 /* ProductRecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3EB7BFD9E873145B7A021B /* ProductRecommendationEngine.swift */; };
 		03F04B25FD40ABAD5F758971 /* TimeSeriesAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */; };
 		04DFAA9B69678765610ECB6C /* CachedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE409C5ACEBDB17926A688A7 /* CachedImageView.swift */; };
+		COLLSEC00001 /* CollapsibleSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = COLLSEC00002 /* CollapsibleSection.swift */; };
 		06C6BAE11880E838CE86B781 /* EngagementMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7144358F4B6B8D70DA122923 /* EngagementMigrationService.swift */; };
 		0705628C35CB4156025336E1 /* SkinTwinMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21C4E7B2AB0841A770CFE82 /* SkinTwinMatchView.swift */; };
 		089A8A6836C903055B64230B /* AchievementDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F0C462C1084ECA826196B4 /* AchievementDetailView.swift */; };
@@ -273,6 +274,7 @@
 		B81B66FC81B1E6D024AF70B4 /* LifestyleInsightRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifestyleInsightRow.swift; sourceTree = "<group>"; };
 		BB99D818DD2005FDC13FE6B7 /* ScenarioTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScenarioTests.swift; path = ScenarioTests.swift; sourceTree = "<group>"; };
 		BE409C5ACEBDB17926A688A7 /* CachedImageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CachedImageView.swift; sourceTree = "<group>"; };
+		COLLSEC00002 /* CollapsibleSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CollapsibleSection.swift; sourceTree = "<group>"; };
 		C0693584B4125C0D8E8E7B9E /* StreakCelebrationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakCelebrationView.swift; sourceTree = "<group>"; };
 		C1000001 /* SkinLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkinLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimeSeriesAnalyzerTests.swift; sourceTree = "<group>"; };
@@ -1036,6 +1038,7 @@
 				B1000091 /* RomanticDecorations.swift */,
 				F6AD55FD6D5510D7F3CCFB71 /* ProductPickerView.swift */,
 				BE409C5ACEBDB17926A688A7 /* CachedImageView.swift */,
+				COLLSEC00002 /* CollapsibleSection.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1363,6 +1366,7 @@
 				2181C7434A4F032E0A557E8C /* ImageUtils.swift in Sources */,
 				B0997141CAD76E221C33B61D /* ImageCache.swift in Sources */,
 				04DFAA9B69678765610ECB6C /* CachedImageView.swift in Sources */,
+				COLLSEC00001 /* CollapsibleSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -10,18 +10,27 @@ struct TrackingReportView: View {
     @State private var showShareSheet = false
     @State private var shareImage: UIImage?
 
-    @State private var showComparison = false
     @State private var showComparisonViewer = false
-    @State private var showProductEffectiveness = false
-    @State private var showDimensionChanges = false
-    @State private var showRecommendations = false
-    @State private var showLifestyleInsights = false
-    @State private var showDataQuality = false
-    @State private var showProductInsights = false
-    @State private var showForecast = false
 
     // Timeline mode: all data vs reliable only
     @State private var timelineMode: TimelineDisplayPolicy.TimelineMode = .all
+
+    // Collapsible section manager with persistence
+    @StateObject private var sectionManager = CollapsibleSectionManager()
+
+    // Section IDs for expand/collapse all functionality
+    private var availableSectionIds: [String] {
+        var ids: [String] = []
+        if !report.forecasts.isEmpty { ids.append("forecast") }
+        if report.beforePhotoPath != nil || report.afterPhotoPath != nil { ids.append("comparison") }
+        if !report.usedProducts.isEmpty { ids.append("productEffectiveness") }
+        if !report.productInsights.isEmpty { ids.append("productInsights") }
+        ids.append("dimensionChanges")
+        ids.append("recommendations")
+        if !report.lifestyleInsights.isEmpty { ids.append("lifestyleInsights") }
+        if !report.reliabilityMap.isEmpty { ids.append("dataQuality") }
+        return ids
+    }
     
     enum MetricType: String, CaseIterable {
         case overallScore = "综合评分"
@@ -38,23 +47,35 @@ struct TrackingReportView: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 24) {
-                // Header Stats
+                // Header Stats (always visible - key summary)
                 headerStatsSection
 
                 // Trend Chart (core - always visible)
                 trendChartSection
 
-                // AI Summary (core - always visible)
+                // AI Summary (core - always visible as key insight)
                 if let aiSummary = report.aiSummary {
                     aiSummarySection(aiSummary)
                 }
 
+                // Expand/Collapse All Control
+                HStack {
+                    Text("详细分析")
+                        .font(.skinLabHeadline)
+                        .foregroundColor(.skinLabText)
+                    Spacer()
+                    ExpandCollapseAllButton(manager: sectionManager, sectionIds: availableSectionIds)
+                }
+                .padding(.top, 8)
+
                 // Skin Forecast (collapsed by default, show if forecasts available)
                 if !report.forecasts.isEmpty {
-                    disclosureCard(
+                    CollapsibleSection(
+                        sectionId: "forecast",
                         title: "皮肤预测",
                         systemImage: "chart.line.uptrend.xyaxis",
-                        isExpanded: $showForecast
+                        badge: report.riskAlerts.isEmpty ? nil : "\(report.riskAlerts.count)个预警",
+                        manager: sectionManager
                     ) {
                         forecastSection
                     }
@@ -62,10 +83,11 @@ struct TrackingReportView: View {
 
                 // Before/After Comparison (collapsed by default)
                 if report.beforePhotoPath != nil || report.afterPhotoPath != nil {
-                    disclosureCard(
+                    CollapsibleSection(
+                        sectionId: "comparison",
                         title: "对比效果",
                         systemImage: "photo.on.rectangle.angled",
-                        isExpanded: $showComparison
+                        manager: sectionManager
                     ) {
                         comparisonSection
                     }
@@ -73,10 +95,12 @@ struct TrackingReportView: View {
 
                 // Product Effectiveness (collapsed by default)
                 if !report.usedProducts.isEmpty {
-                    disclosureCard(
+                    CollapsibleSection(
+                        sectionId: "productEffectiveness",
                         title: "产品效果评估",
                         systemImage: "chart.bar.fill",
-                        isExpanded: $showProductEffectiveness
+                        badge: "\(report.usedProducts.count)款产品",
+                        manager: sectionManager
                     ) {
                         productEffectivenessSection
                     }
@@ -84,39 +108,46 @@ struct TrackingReportView: View {
 
                 // Enhanced Product Insights with Attribution (collapsed by default)
                 if !report.productInsights.isEmpty {
-                    disclosureCard(
+                    CollapsibleSection(
+                        sectionId: "productInsights",
                         title: "产品归因分析",
                         systemImage: "sparkles.rectangle.stack.fill",
-                        isExpanded: $showProductInsights
+                        manager: sectionManager
                     ) {
                         productInsightsSection
                     }
                 }
 
                 // Dimension Changes (collapsed by default)
-                disclosureCard(
+                CollapsibleSection(
+                    sectionId: "dimensionChanges",
                     title: "详细变化",
                     systemImage: "list.bullet.rectangle",
-                    isExpanded: $showDimensionChanges
+                    badge: dimensionChangesSummary,
+                    manager: sectionManager
                 ) {
                     dimensionChangesSection
                 }
-                
+
                 // Recommendations (collapsed by default)
-                disclosureCard(
+                CollapsibleSection(
+                    sectionId: "recommendations",
                     title: "建议",
                     systemImage: "lightbulb",
-                    isExpanded: $showRecommendations
+                    badge: "\(report.recommendations.count)条",
+                    manager: sectionManager
                 ) {
                     recommendationsSection
                 }
 
                 // Lifestyle Insights (collapsed by default)
                 if !report.lifestyleInsights.isEmpty {
-                    disclosureCard(
+                    CollapsibleSection(
+                        sectionId: "lifestyleInsights",
                         title: "生活方式关联",
                         systemImage: "chart.xyaxis.line",
-                        isExpanded: $showLifestyleInsights
+                        badge: "\(report.lifestyleInsights.count)项关联",
+                        manager: sectionManager
                     ) {
                         LifestyleInsightsCard(
                             insights: report.lifestyleInsights,
@@ -127,10 +158,12 @@ struct TrackingReportView: View {
 
                 // Data Quality (collapsed by default)
                 if !report.reliabilityMap.isEmpty {
-                    disclosureCard(
+                    CollapsibleSection(
+                        sectionId: "dataQuality",
                         title: "数据质量",
                         systemImage: "checkmark.shield",
-                        isExpanded: $showDataQuality
+                        badge: dataQualitySummary,
+                        manager: sectionManager
                     ) {
                         dataQualitySection
                     }
@@ -164,30 +197,28 @@ struct TrackingReportView: View {
         }
     }
     
-    // MARK: - Disclosure Style
-    private func disclosureCard<Content: View>(
-        title: String,
-        systemImage: String,
-        isExpanded: Binding<Bool>,
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View {
-        DisclosureGroup(isExpanded: isExpanded) {
-            content()
-                .padding(.top, 8)
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: systemImage)
-                    .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
-                Text(title)
-                    .font(.skinLabTitle3)
-                    .foregroundColor(.skinLabText)
-                Spacer()
-            }
+    // MARK: - Section Summary Helpers
+
+    /// Summary badge for dimension changes section
+    private var dimensionChangesSummary: String? {
+        let improvements = report.topImprovements.count
+        let issues = report.issuesNeedingAttention.count
+        if improvements > 0 || issues > 0 {
+            var parts: [String] = []
+            if improvements > 0 { parts.append("\(improvements)项改善") }
+            if issues > 0 { parts.append("\(issues)项关注") }
+            return parts.joined(separator: " ")
         }
-        .padding()
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(20)
-        .skinLabSoftShadow()
+        return nil
+    }
+
+    /// Summary badge for data quality section
+    private var dataQualitySummary: String? {
+        let reliableCount = report.reliabilityMap.values.filter { $0.score >= 0.5 }.count
+        let totalCount = report.reliabilityMap.count
+        guard totalCount > 0 else { return nil }
+        let percentage = Int(Double(reliableCount) / Double(totalCount) * 100)
+        return "\(percentage)%可靠"
     }
 
     // MARK: - Header Stats
