@@ -10,8 +10,44 @@ import Foundation
 
 /// 产品效果分析器
 struct ProductEffectAnalyzer {
-    
+
     private let analyzer = TimeSeriesAnalyzer()
+
+    // MARK: - Product Overlap Detection
+
+    /// 检测产品使用重叠
+    /// 识别哪些产品经常一起使用
+    /// - Parameter checkIns: 打卡记录列表
+    /// - Returns: 产品组合 -> 使用次数的字典 (仅返回使用>=2次的前5个组合)
+    func detectProductOverlap(checkIns: [CheckIn]) -> [Set<String>: Int] {
+        var combinationCounts: [Set<String>: Int] = [:]
+
+        for checkIn in checkIns {
+            let products = checkIn.usedProducts
+            // Only consider check-ins with 2+ products
+            guard products.count >= 2 else { continue }
+
+            // Create a set from the products used together
+            let productSet = Set(products)
+            combinationCounts[productSet, default: 0] += 1
+        }
+
+        // Filter: only include combinations used at least 2 times
+        let frequentCombinations = combinationCounts.filter { $0.value >= 2 }
+
+        // Sort by count descending and take top 5
+        let sortedCombinations = frequentCombinations
+            .sorted { $0.value > $1.value }
+            .prefix(5)
+
+        // Convert back to dictionary
+        var result: [Set<String>: Int] = [:]
+        for (combination, count) in sortedCombinations {
+            result[combination] = count
+        }
+
+        return result
+    }
     
     // MARK: - Product Effect Evaluation
     
