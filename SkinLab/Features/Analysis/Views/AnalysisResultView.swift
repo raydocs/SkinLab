@@ -104,6 +104,17 @@ struct AnalysisResultView: View {
             withAnimation(.easeOut(duration: 1.0).delay(0.3)) {
                 animateScore = true
             }
+
+            // Track first analysis completed for activation funnel
+            FunnelTracker.shared.trackFirstAnalysisCompleted(
+                skinType: analysis.skinType.rawValue,
+                score: analysis.overallScore
+            )
+
+            // Track first report viewed for feature usage depth
+            FunnelTracker.shared.trackFirstReportViewed(
+                analysisId: result.analysisId.uuidString
+            )
         }
         .sheet(isPresented: Binding(
             get: { viewModel?.showRoutine ?? false },

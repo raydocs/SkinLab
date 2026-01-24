@@ -587,6 +587,8 @@ struct EditProfileView: View {
             }
             .onAppear {
                 loadExistingProfile()
+                // Track profile started for activation funnel
+                FunnelTracker.shared.trackProfileStarted()
             }
         }
     }
@@ -605,7 +607,9 @@ struct EditProfileView: View {
             .components(separatedBy: CharacterSet(charactersIn: ",，、"))
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
-        
+
+        let isNewProfile = existingProfile == nil
+
         if let existing = existingProfile {
             // Update existing
             existing.skinType = skinType
@@ -624,6 +628,23 @@ struct EditProfileView: View {
                 gender: gender?.rawValue
             )
             modelContext.insert(profile)
+        }
+
+        // Track profile completion for activation funnel
+        if isNewProfile {
+            FunnelTracker.shared.trackProfileCompleted(
+                skinType: skinType?.rawValue,
+                ageGroup: ageRange.rawValue,
+                concernsCount: selectedConcerns.count
+            )
+        } else {
+            // Update user properties on profile update
+            FunnelTracker.shared.updateUserProperties(
+                skinType: skinType?.rawValue,
+                ageGroup: ageRange.rawValue,
+                concernsCount: selectedConcerns.count,
+                daysActive: FunnelTracker.shared.getDaysActive()
+            )
         }
     }
 }

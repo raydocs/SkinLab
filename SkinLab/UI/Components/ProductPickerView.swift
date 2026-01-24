@@ -199,6 +199,11 @@ struct ProductPickerView: View {
                 brand: product.brand,
                 source: .manual
             )
+            // Track first product added for activation funnel
+            FunnelTracker.shared.trackFirstProductAdded(
+                productName: product.name,
+                source: "manual"
+            )
         }
     }
 }

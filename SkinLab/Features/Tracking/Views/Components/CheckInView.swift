@@ -542,6 +542,12 @@ struct CheckInView: View {
                     streakCount: streakStatus.currentStreak
                 )
 
+                // Track first check-in for activation funnel
+                FunnelTracker.shared.trackFirstCheckInCompleted(
+                    day: scheduledDay,
+                    sessionId: session.id.uuidString
+                )
+
                 isAnalyzing = false
                 dismiss()
             } catch {

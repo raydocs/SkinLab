@@ -85,6 +85,12 @@ struct SkinLabApp: App {
             "version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
             "build": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "unknown"
         ])
+
+        // Track first open for activation funnel
+        FunnelTracker.shared.trackFirstOpen()
+
+        // Track session start for DAU/WAU
+        FunnelTracker.shared.trackSessionStart()
     }
 
     init() {

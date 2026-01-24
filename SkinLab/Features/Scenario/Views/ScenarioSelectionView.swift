@@ -186,6 +186,9 @@ struct ScenarioSelectionView: View {
         // Track scenario selection
         AnalyticsEvents.scenarioSelected(scenario: scenario.rawValue)
 
+        // Track first scenario used for feature usage depth
+        FunnelTracker.shared.trackFirstScenarioUsed(scenario: scenario.rawValue)
+
         // Generate recommendation
         let defaultProfile = UserProfile(
             skinType: .combination,
