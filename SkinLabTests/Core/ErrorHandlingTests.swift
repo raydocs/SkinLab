@@ -106,11 +106,20 @@ final class ErrorHandlingTests: XCTestCase {
     // MARK: - ErrorCategory Tests
 
     func testErrorCategoryFromGeminiError() {
-        // Test network error
+        // Test network error (generic)
         let networkError = GeminiError.networkError(URLError(.timedOut))
         XCTAssertEqual(ErrorCategory(from: networkError), .network)
         XCTAssertEqual(ErrorCategory(from: networkError).title, "网络连接失败")
         XCTAssertTrue(ErrorCategory(from: networkError).isRetryable)
+
+        // Test network error wrapping offline URLError - should be categorized as offline
+        let offlineWrappedError = GeminiError.networkError(URLError(.notConnectedToInternet))
+        XCTAssertEqual(ErrorCategory(from: offlineWrappedError), .offline)
+        XCTAssertEqual(ErrorCategory(from: offlineWrappedError).title, "无网络连接")
+
+        // Test network error wrapping connection lost - should be categorized as offline
+        let connectionLostWrappedError = GeminiError.networkError(URLError(.networkConnectionLost))
+        XCTAssertEqual(ErrorCategory(from: connectionLostWrappedError), .offline)
 
         // Test rate limited
         let rateLimitedError = GeminiError.rateLimited
@@ -165,9 +174,17 @@ final class ErrorHandlingTests: XCTestCase {
     }
 
     func testErrorCategoryFromAppError() {
-        // Test network request error
+        // Test network request error (generic)
         let networkError = AppError.networkRequest(operation: "test", underlying: NSError(domain: "test", code: 1))
         XCTAssertEqual(ErrorCategory(from: networkError), .network)
+
+        // Test network request error wrapping offline URLError - should be categorized as offline
+        let offlineAppError = AppError.networkRequest(operation: "test", underlying: URLError(.notConnectedToInternet))
+        XCTAssertEqual(ErrorCategory(from: offlineAppError), .offline)
+
+        // Test network request error wrapping connection lost - should be categorized as offline
+        let connectionLostAppError = AppError.networkRequest(operation: "test", underlying: URLError(.networkConnectionLost))
+        XCTAssertEqual(ErrorCategory(from: connectionLostAppError), .offline)
 
         // Test other AppError types default to unknown
         let dataError = AppError.dataFetch(entity: "Test", underlying: NSError(domain: "test", code: 1))

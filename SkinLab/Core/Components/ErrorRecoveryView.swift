@@ -17,8 +17,14 @@ enum ErrorCategory {
         // Check for GeminiError types
         if let geminiError = error as? GeminiError {
             switch geminiError {
-            case .networkError:
-                self = .network
+            case .networkError(let underlying):
+                // Check if the underlying error is an offline condition
+                if let urlError = underlying as? URLError,
+                   urlError.code == .notConnectedToInternet || urlError.code == .networkConnectionLost {
+                    self = .offline
+                } else {
+                    self = .network
+                }
             case .rateLimited:
                 self = .rateLimited
             case .unauthorized:
@@ -51,8 +57,14 @@ enum ErrorCategory {
         // Check for AppError types
         if let appError = error as? AppError {
             switch appError {
-            case .networkRequest:
-                self = .network
+            case .networkRequest(_, let underlying):
+                // Check if the underlying error is an offline condition
+                if let urlError = underlying as? URLError,
+                   urlError.code == .notConnectedToInternet || urlError.code == .networkConnectionLost {
+                    self = .offline
+                } else {
+                    self = .network
+                }
             default:
                 self = .unknown
             }
@@ -176,6 +188,8 @@ struct ErrorRecoveryView: View {
     @State private var isRetrying = false
     @State private var retryCountdown: Int = 0
     @State private var countdownTimer: Timer?
+    @State private var retryTask: Task<Void, Never>?
+    @ObservedObject private var networkMonitor = NetworkMonitor.shared
 
     private let category: ErrorCategory
 
@@ -197,6 +211,12 @@ struct ErrorRecoveryView: View {
 
     var body: some View {
         VStack(spacing: 28) {
+            // Offline banner when applicable
+            if !networkMonitor.isConnected || category == .offline {
+                OfflineBannerView()
+                    .padding(.horizontal, -24) // Full width
+            }
+
             // Icon section
             iconSection
 
@@ -210,6 +230,7 @@ struct ErrorRecoveryView: View {
         .padding(.vertical, 32)
         .onDisappear {
             countdownTimer?.invalidate()
+            retryTask?.cancel()
         }
         .accessibilityElement(children: .contain)
     }
@@ -274,45 +295,47 @@ struct ErrorRecoveryView: View {
 
     private var actionSection: some View {
         VStack(spacing: 14) {
-            // Retry button
-            Button(action: handleRetry) {
-                HStack(spacing: 10) {
-                    if isRetrying {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .scaleEffect(0.8)
-                    } else {
-                        Image(systemName: "arrow.clockwise")
-                            .font(.system(size: 14, weight: .semibold))
-                    }
+            // Retry button (only show if retryable)
+            if category.isRetryable {
+                Button(action: handleRetry) {
+                    HStack(spacing: 10) {
+                        if isRetrying {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
 
-                    if retryCountdown > 0 {
-                        Text("重试 (\(retryCountdown)s)")
-                            .font(.skinLabHeadline)
-                    } else {
-                        Text("重试")
-                            .font(.skinLabHeadline)
+                        if retryCountdown > 0 {
+                            Text("重试 (\(retryCountdown)s)")
+                                .font(.skinLabHeadline)
+                        } else {
+                            Text("重试")
+                                .font(.skinLabHeadline)
+                        }
                     }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(
+                        LinearGradient.skinLabPrimaryGradient
+                            .opacity(isRetrying || retryCountdown > 0 ? 0.6 : 1.0)
+                    )
+                    .cornerRadius(28)
+                    .shadow(
+                        color: .skinLabPrimary.opacity(isRetrying ? 0.1 : 0.35),
+                        radius: isRetrying ? 6 : 12,
+                        y: isRetrying ? 3 : 6
+                    )
                 }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(
-                    LinearGradient.skinLabPrimaryGradient
-                        .opacity(isRetrying || retryCountdown > 0 ? 0.6 : 1.0)
-                )
-                .cornerRadius(28)
-                .shadow(
-                    color: .skinLabPrimary.opacity(isRetrying ? 0.1 : 0.35),
-                    radius: isRetrying ? 6 : 12,
-                    y: isRetrying ? 3 : 6
-                )
+                .disabled(isRetrying || retryCountdown > 0)
+                .accessibilityLabel(isRetrying ? "正在重试" : "重试")
+                .accessibilityHint(category.description)
             }
-            .disabled(isRetrying || retryCountdown > 0)
-            .accessibilityLabel(isRetrying ? "正在重试" : "重试")
-            .accessibilityHint(category.description)
 
-            // Dismiss button (if provided)
+            // Dismiss button (always show if provided, or as fallback for non-retryable errors)
             if let dismissAction = dismissAction {
                 Button(action: dismissAction) {
                     Text("返回")
@@ -327,6 +350,11 @@ struct ErrorRecoveryView: View {
                 }
                 .disabled(isRetrying)
                 .accessibilityLabel("返回")
+            } else if !category.isRetryable {
+                // For non-retryable errors without dismiss action, provide help text
+                Text("请检查设置或联系支持")
+                    .font(.skinLabCaption)
+                    .foregroundColor(.skinLabSubtext)
             }
         }
     }
@@ -334,15 +362,22 @@ struct ErrorRecoveryView: View {
     // MARK: - Actions
 
     private func handleRetry() {
-        // Start countdown if rate limited
-        if category == .rateLimited && retryCountdown == 0 {
+        guard category.isRetryable else { return }
+
+        // Start countdown if rate limited and not already counting
+        if category == .rateLimited && retryCountdown == 0 && !isRetrying {
             startCountdown(Int(category.suggestedRetryDelay))
             return
         }
 
-        isRetrying = true
+        performRetry()
+    }
 
-        Task {
+    private func performRetry() {
+        isRetrying = true
+        retryTask?.cancel()
+
+        retryTask = Task {
             await retryAction()
             await MainActor.run {
                 isRetrying = false
@@ -358,7 +393,7 @@ struct ErrorRecoveryView: View {
                 retryCountdown -= 1
             } else {
                 timer.invalidate()
-                handleRetry()
+                performRetry() // Directly perform retry, not handleRetry to avoid infinite loop
             }
         }
     }
@@ -493,13 +528,22 @@ struct OfflineBannerView: View {
 
 // MARK: - Network Monitor
 
+/// Connection type enum for cleaner API
+enum ConnectionType {
+    case wifi
+    case cellular
+    case wired
+    case other
+    case none
+}
+
 /// A simple network monitor for checking connectivity status
 @MainActor
 final class NetworkMonitor: ObservableObject {
     static let shared = NetworkMonitor()
 
     @Published private(set) var isConnected = true
-    @Published private(set) var connectionType: NWInterface.InterfaceType?
+    @Published private(set) var connectionType: ConnectionType = .none
 
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "NetworkMonitor")
@@ -508,7 +552,7 @@ final class NetworkMonitor: ObservableObject {
         monitor.pathUpdateHandler = { [weak self] path in
             Task { @MainActor in
                 self?.isConnected = path.status == .satisfied
-                self?.connectionType = path.availableInterfaces.first?.type
+                self?.connectionType = Self.determineConnectionType(from: path)
             }
         }
         monitor.start(queue: queue)
@@ -516,6 +560,21 @@ final class NetworkMonitor: ObservableObject {
 
     deinit {
         monitor.cancel()
+    }
+
+    /// Determine connection type using usesInterfaceType for accuracy
+    private static func determineConnectionType(from path: NWPath) -> ConnectionType {
+        guard path.status == .satisfied else { return .none }
+
+        if path.usesInterfaceType(.wifi) {
+            return .wifi
+        } else if path.usesInterfaceType(.cellular) {
+            return .cellular
+        } else if path.usesInterfaceType(.wiredEthernet) {
+            return .wired
+        } else {
+            return .other
+        }
     }
 }
 
