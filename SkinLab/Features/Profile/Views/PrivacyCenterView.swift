@@ -697,7 +697,8 @@ struct DataExportView: View {
                 isExporting = false
                 showShareSheet = true
             } catch {
-                exportError = error.localizedDescription
+                AppLogger.error("Data export failed", error: error)
+                exportError = "导出失败，请稍后重试"
                 isExporting = false
                 exportProgress = 0.0
             }
