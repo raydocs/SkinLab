@@ -1,6 +1,9 @@
 import SwiftUI
 import SwiftData
 import os.log
+#if canImport(FirebaseCore)
+import FirebaseCore
+#endif
 
 @main
 struct SkinLabApp: App {
@@ -64,7 +67,30 @@ struct SkinLabApp: App {
         return deletedAny
     }
 
+    /// Configures Firebase and Analytics services
+    private static func configureAnalytics() {
+        #if canImport(FirebaseCore)
+        // Configure Firebase first (required before using Firebase Analytics)
+        FirebaseApp.configure()
+        logger.info("Firebase configured successfully")
+        #else
+        logger.info("Firebase SDK not available - using debug analytics only")
+        #endif
+
+        // Configure the analytics service (will use Firebase if available, debug otherwise)
+        AnalyticsService.shared.configure()
+
+        // Log app launch event
+        AnalyticsEvents.logEvent(name: "app_launched", parameters: [
+            "version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
+            "build": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "unknown"
+        ])
+    }
+
     init() {
+        // Configure Firebase and Analytics
+        Self.configureAnalytics()
+
         let schema = Schema([
             UserProfile.self,
             SkinAnalysisRecord.self,
