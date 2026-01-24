@@ -134,7 +134,8 @@ extension LocationManager: CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
 
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             self.location = location
             self.locationContinuation?.resume(returning: location)
             self.locationContinuation = nil
@@ -142,7 +143,8 @@ extension LocationManager: CLLocationManagerDelegate {
     }
 
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             let locationError: LocationError
 
             if let clError = error as? CLError {
@@ -166,7 +168,8 @@ extension LocationManager: CLLocationManagerDelegate {
     }
 
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             let newStatus = manager.authorizationStatus
             self.authorizationStatus = newStatus
 

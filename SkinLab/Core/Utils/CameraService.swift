@@ -207,7 +207,8 @@ extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
         // Throttle face detection to improve performance
         let currentTime = CFAbsoluteTimeGetCurrent()
 
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             // Always update frame for smooth preview
             self.frame = cgImage
 
@@ -225,20 +226,21 @@ extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
 // MARK: - AVCapturePhotoCaptureDelegate
 extension CameraService: AVCapturePhotoCaptureDelegate {
     nonisolated func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             if let error = error {
                 photoContinuation?.resume(throwing: error)
                 photoContinuation = nil
                 return
             }
-            
+
             guard let data = photo.fileDataRepresentation(),
                   let image = UIImage(data: data) else {
                 photoContinuation?.resume(throwing: CameraError.unavailable)
                 photoContinuation = nil
                 return
             }
-            
+
             photoContinuation?.resume(returning: image)
             photoContinuation = nil
         }

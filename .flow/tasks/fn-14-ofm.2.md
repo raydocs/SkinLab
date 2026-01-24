@@ -76,9 +76,8 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
-
+Implemented unified error handling with AppLogger and AppError utilities. Replaced try? silent failures with proper error logging across UserHistoryStore, SkinTwinViewModel, AchievementService, and data export models. User-facing errors now show friendly Chinese messages while underlying errors are logged for debugging.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 5b0cfe2, a37ff05, 026e5738e82d45c6b5c970f6c1b6a100e6397726
+- Tests: ErrorHandlingTests
 - PRs:
