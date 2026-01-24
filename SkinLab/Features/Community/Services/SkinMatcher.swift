@@ -49,7 +49,12 @@ final class SkinMatcher: Sendable {
     // MARK: - Initialization
 
     init(config: BatchConfig = .default) {
-        self.config = config
+        // Validate and clamp config values to prevent runtime issues
+        self.config = BatchConfig(
+            maxBatchSize: max(1, config.maxBatchSize),
+            minSimilarity: min(1, max(0, config.minSimilarity)),
+            enableParallelProcessing: config.enableParallelProcessing
+        )
     }
 
     // MARK: - Candidate Extraction (MainActor)

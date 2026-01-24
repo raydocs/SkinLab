@@ -2,7 +2,7 @@
 import Foundation
 
 /// 匹配等级 - 根据相似度分级
-enum MatchLevel: String, Codable, CaseIterable {
+enum MatchLevel: String, Codable, CaseIterable, Sendable {
     case twin = "皮肤双胞胎 👯"          // 相似度 ≥ 0.9
     case verySimilar = "非常相似 ✨"    // 相似度 0.8-0.9
     case similar = "相似 💫"            // 相似度 0.7-0.8

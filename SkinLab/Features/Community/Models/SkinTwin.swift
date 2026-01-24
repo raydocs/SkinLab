@@ -2,7 +2,7 @@
 import Foundation
 
 /// 皮肤双胞胎匹配结果
-struct SkinTwin: Identifiable, Codable, Equatable, Hashable {
+struct SkinTwin: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
     let userId: UUID  // 双胞胎用户ID
     let similarity: Double  // 相似度 0-1
@@ -53,7 +53,7 @@ struct SkinTwin: Identifiable, Codable, Equatable, Hashable {
 }
 
 /// 有效产品记录
-struct EffectiveProduct: Identifiable, Codable, Equatable, Hashable {
+struct EffectiveProduct: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
     let product: Product  // 产品信息
     let usageDuration: Int  // 使用天数
@@ -84,7 +84,7 @@ struct EffectiveProduct: Identifiable, Codable, Equatable, Hashable {
         }
     }
 
-    enum Effectiveness: String {
+    enum Effectiveness: String, Sendable {
         case veryEffective = "非常有效"
         case effective = "有效"
         case neutral = "一般"

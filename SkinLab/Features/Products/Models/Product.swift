@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 // MARK: - Product Category
-enum ProductCategory: String, Codable, CaseIterable {
+enum ProductCategory: String, Codable, CaseIterable, Sendable {
     case cleanser
     case toner
     case serum
@@ -40,7 +40,7 @@ enum ProductCategory: String, Codable, CaseIterable {
 }
 
 // MARK: - Price Range
-enum PriceRange: String, Codable, CaseIterable {
+enum PriceRange: String, Codable, CaseIterable, Sendable {
     case budget  // < ¥100
     case midRange  // ¥100-300
     case premium  // ¥300-800
@@ -57,7 +57,7 @@ enum PriceRange: String, Codable, CaseIterable {
 }
 
 // MARK: - Ingredient
-struct Ingredient: Codable, Identifiable, Equatable, Hashable {
+struct Ingredient: Codable, Identifiable, Equatable, Hashable, Sendable {
     let id: UUID
     let name: String
     let aliases: [String]
@@ -91,7 +91,7 @@ struct Ingredient: Codable, Identifiable, Equatable, Hashable {
     }
 }
 
-enum IngredientFunction: String, Codable {
+enum IngredientFunction: String, Codable, Sendable {
     case moisturizing
     case antiAging
     case brightening
@@ -119,7 +119,7 @@ enum IngredientFunction: String, Codable {
     }
 }
 
-enum IrritationLevel: String, Codable {
+enum IrritationLevel: String, Codable, Sendable {
     case none, low, medium, high
 
     var displayName: String {
@@ -142,7 +142,7 @@ enum IrritationLevel: String, Codable {
 }
 
 // MARK: - Product
-struct Product: Codable, Identifiable, Equatable, Hashable {
+struct Product: Codable, Identifiable, Equatable, Hashable, Sendable {
     let id: UUID
     let name: String
     let brand: String
@@ -202,7 +202,7 @@ struct Product: Codable, Identifiable, Equatable, Hashable {
     )
 }
 
-struct PurchaseLink: Codable, Equatable, Hashable {
+struct PurchaseLink: Codable, Equatable, Hashable, Sendable {
     let platform: String
     let url: String
     let price: Double?
