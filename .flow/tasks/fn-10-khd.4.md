@@ -45,9 +45,8 @@ xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone
 ```
 
 ## Done summary
-TBD
-
+Implemented real-time photo quality feedback with sharpness detection using Laplacian variance and face centering detection. Added comprehensive unit tests covering all quality checking logic.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 55aea204266fb19c444c0f01527908a5bf0f9ec9
+- Tests: xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17'
 - PRs:
