@@ -223,6 +223,55 @@ struct SeasonalPattern: Codable, Sendable {
     }
 }
 
+// MARK: - Product Combination Insights
+
+/// 产品组合分析结果
+/// 用于评估多个产品同时使用时的协同效果
+struct ProductCombinationInsight: Codable, Sendable {
+    /// 参与组合的产品ID集合
+    let productIds: Set<String>
+
+    /// 组合效果评分 (-1 to 1)
+    /// 正值表示组合使用后皮肤状态改善
+    let combinedEffectScore: Double
+
+    /// 协同/拮抗评分 (-1 to 1)
+    /// 正值表示1+1>2的协同效果
+    /// 负值表示1+1<2的拮抗效果
+    let synergyScore: Double
+
+    /// 组合使用次数
+    let usageCount: Int
+
+    /// 置信度
+    let confidence: ConfidenceScore
+
+    /// 协同效果等级
+    var synergyLevel: SynergyLevel {
+        switch synergyScore {
+        case 0.3...1.0: return .highSynergy
+        case 0.1..<0.3: return .mildSynergy
+        case -0.1..<0.1: return .neutral
+        case -0.3..<(-0.1): return .mildAntagonism
+        default: return .highAntagonism
+        }
+    }
+
+    enum SynergyLevel: String, Codable, Sendable {
+        case highSynergy = "高度协同"
+        case mildSynergy = "轻度协同"
+        case neutral = "中性"
+        case mildAntagonism = "轻度拮抗"
+        case highAntagonism = "明显拮抗"
+    }
+
+    /// 详细说明
+    var detailedDescription: String {
+        let productList = productIds.prefix(3).joined(separator: " + ")
+        return "\(productList) 组合\(synergyLevel.rawValue)(置信度:\(confidence.level.rawValue))。"
+    }
+}
+
 // MARK: - Product Effect Insights
 
 /// 产品效果深度分析

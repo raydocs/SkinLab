@@ -190,6 +190,144 @@ struct ProductEffectAnalyzer {
 
         return result
     }
+
+    // MARK: - Combination Effect Analysis
+
+    /// 分析产品组合效果
+    /// 评估多个产品同时使用时的协同或拮抗效果
+    /// - Parameters:
+    ///   - products: 要分析的产品ID集合
+    ///   - checkIns: 打卡记录列表
+    ///   - analyses: 分析结果字典 (key: analysisId)
+    /// - Returns: 产品组合洞察,如果数据不足则返回nil
+    func analyzeCombinationEffect(
+        products: Set<String>,
+        checkIns: [CheckIn],
+        analyses: [UUID: SkinAnalysis]
+    ) -> ProductCombinationInsight? {
+        guard products.count >= 2 else { return nil }
+
+        // Find check-ins where ALL specified products were used together
+        var combinationScores: [(day: Int, score: Int)] = []
+        for checkIn in checkIns {
+            let usedSet = Set(checkIn.usedProducts)
+            // All products in the combination must be present
+            guard products.isSubset(of: usedSet),
+                  let analysis = checkIn.analysisId.flatMap({ analyses[$0] }) else {
+                continue
+            }
+            combinationScores.append((checkIn.day, analysis.overallScore))
+        }
+
+        // Require at least 2 usages for meaningful analysis
+        guard combinationScores.count >= 2 else { return nil }
+
+        // Calculate combined effect score (average score change during combination usage)
+        let sortedScores = combinationScores.sorted { $0.day < $1.day }
+        var improvements: [Double] = []
+        for i in 1..<sortedScores.count {
+            let change = Double(sortedScores[i].score - sortedScores[i - 1].score)
+            improvements.append(change)
+        }
+        let combinedEffectScore = improvements.isEmpty ? 0 : (analyzer.mean(improvements) / 100.0)
+
+        // Calculate individual product effects for synergy comparison
+        var individualEffects: [Double] = []
+        for productId in products {
+            let soloEffect = calculateIndividualEffect(
+                productId: productId,
+                checkIns: checkIns,
+                analyses: analyses
+            )
+            individualEffects.append(soloEffect)
+        }
+
+        // Synergy score: compare combined effect to sum of individual effects
+        // synergyScore > 0 means 1+1 > 2 (synergistic)
+        // synergyScore < 0 means 1+1 < 2 (antagonistic)
+        let expectedIndividualSum = individualEffects.reduce(0, +)
+        let synergyScore: Double
+        if abs(expectedIndividualSum) < 0.001 {
+            // Individual effects are negligible, synergy is just the combined effect
+            synergyScore = combinedEffectScore
+        } else {
+            // Compare actual combined effect to expected sum
+            synergyScore = combinedEffectScore - expectedIndividualSum
+        }
+
+        // Calculate confidence
+        let confidence = calculateCombinationConfidence(
+            usageCount: combinationScores.count,
+            scoreVariability: calculateVariability(sortedScores.map { $0.score })
+        )
+
+        return ProductCombinationInsight(
+            productIds: products,
+            combinedEffectScore: max(-1, min(1, combinedEffectScore)),
+            synergyScore: max(-1, min(1, synergyScore)),
+            usageCount: combinationScores.count,
+            confidence: confidence
+        )
+    }
+
+    /// 计算单个产品的效果 (用于协同分析)
+    private func calculateIndividualEffect(
+        productId: String,
+        checkIns: [CheckIn],
+        analyses: [UUID: SkinAnalysis]
+    ) -> Double {
+        // Find check-ins where ONLY this product was used (solo usage)
+        var soloScores: [(day: Int, score: Int)] = []
+        for checkIn in checkIns {
+            guard checkIn.usedProducts.count == 1,
+                  checkIn.usedProducts.contains(productId),
+                  let analysis = checkIn.analysisId.flatMap({ analyses[$0] }) else {
+                continue
+            }
+            soloScores.append((checkIn.day, analysis.overallScore))
+        }
+
+        guard soloScores.count >= 2 else { return 0 }
+
+        let sortedScores = soloScores.sorted { $0.day < $1.day }
+        var improvements: [Double] = []
+        for i in 1..<sortedScores.count {
+            let change = Double(sortedScores[i].score - sortedScores[i - 1].score)
+            improvements.append(change)
+        }
+
+        return improvements.isEmpty ? 0 : (analyzer.mean(improvements) / 100.0)
+    }
+
+    /// 计算分数变异性
+    private func calculateVariability(_ scores: [Int]) -> Double {
+        guard scores.count >= 2 else { return 0 }
+        let doubleScores = scores.map { Double($0) }
+        let mean = doubleScores.reduce(0, +) / Double(doubleScores.count)
+        let variance = doubleScores.map { pow($0 - mean, 2) }.reduce(0, +) / Double(doubleScores.count)
+        return sqrt(variance)
+    }
+
+    /// 计算组合效果置信度
+    private func calculateCombinationConfidence(
+        usageCount: Int,
+        scoreVariability: Double
+    ) -> ConfidenceScore {
+        var confidenceValue: Double = 0
+
+        // Usage count contribution (max 0.5)
+        confidenceValue += min(0.5, Double(usageCount) / 6.0 * 0.5)
+
+        // Stability contribution (max 0.5)
+        let stabilityScore = max(0, 1.0 - scoreVariability / 20.0)
+        confidenceValue += stabilityScore * 0.5
+
+        return ConfidenceScore(
+            value: max(0, min(1, confidenceValue)),
+            sampleCount: usageCount,
+            method: "combination-analysis"
+        )
+    }
     
     // MARK: - Product Effect Evaluation
     
