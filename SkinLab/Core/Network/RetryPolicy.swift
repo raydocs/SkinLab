@@ -25,11 +25,19 @@ struct RetryPolicy: Sendable {
     /// Jitter factor (0.0-1.0) to add randomness to delays
     let jitterFactor: Double
 
+    /// Initialize with validated parameters (clamped to safe ranges)
+    init(maxAttempts: Int, baseDelay: TimeInterval, maxDelay: TimeInterval, jitterFactor: Double) {
+        self.maxAttempts = max(0, maxAttempts)
+        self.baseDelay = max(0, baseDelay)
+        self.maxDelay = max(0, maxDelay)
+        self.jitterFactor = min(1.0, max(0, jitterFactor))
+    }
+
     /// Default retry policy for most network requests
     static let `default` = RetryPolicy(
         maxAttempts: AppConfiguration.API.maxRetryAttempts,
-        baseDelay: 1.0,
-        maxDelay: 30.0,
+        baseDelay: AppConfiguration.API.retryBaseDelay,
+        maxDelay: AppConfiguration.API.retryMaxDelay,
         jitterFactor: 0.2
     )
 
@@ -236,19 +244,21 @@ struct HTTPError: Error, Sendable {
 
 extension GeminiError {
     /// Determines if this GeminiError is retryable
+    /// Note: apiError is NOT retryable as it may contain 4xx client errors.
+    /// When migrating GeminiService to use withRetry, propagate status codes
+    /// via HTTPError for proper retryability detection.
     var isRetryable: Bool {
         switch self {
         case .networkError:
             return true
         case .rateLimited:
             return true
-        case .apiError:
-            // API errors might be server-side, allow retry
-            return true
-        case .invalidImage,
+        case .apiError,
+             .invalidImage,
              .invalidAPIKey,
              .parseError,
              .unauthorized:
+            // apiError could be 4xx client error - not retryable without status code
             // Client-side errors - not retryable
             return false
         }
@@ -284,12 +294,7 @@ actor GlobalRetryLimiter {
     private var activeRetries: Int = 0
     private let maxConcurrentRetries = 10
 
-    /// Check if a retry is allowed based on global limits
-    func canRetry() -> Bool {
-        return activeRetries < maxConcurrentRetries
-    }
-
-    /// Begin a retry attempt
+    /// Begin a retry attempt (returns true if allowed)
     func beginRetry() -> Bool {
         guard activeRetries < maxConcurrentRetries else {
             return false
@@ -307,9 +312,19 @@ actor GlobalRetryLimiter {
     func currentRetryCount() -> Int {
         return activeRetries
     }
+
+    #if DEBUG
+    /// Reset for testing (only available in DEBUG builds)
+    func reset() {
+        activeRetries = 0
+    }
+    #endif
 }
 
 // MARK: - Retry Helper
+
+/// Maximum delay to prevent pathological sleeps (5 minutes)
+private let maxRetryDelayCap: TimeInterval = 300.0
 
 /// Helper function to execute an async operation with retry support.
 /// Uses the specified retry policy and respects global retry limits.
@@ -319,7 +334,9 @@ func withRetry<T>(
 ) async throws -> T {
     var lastError: Error?
 
-    for attempt in 0...policy.maxAttempts {
+    // Safe iteration even if maxAttempts is 0 (just initial attempt)
+    let totalAttempts = policy.maxAttempts + 1
+    for attempt in 0..<totalAttempts {
         do {
             return try await operation()
         } catch {
@@ -330,13 +347,8 @@ func withRetry<T>(
                 throw error
             }
 
-            // Check if we have attempts left
-            guard policy.shouldRetry(attempt: attempt) else {
-                throw error
-            }
-
-            // Check global retry limit
-            guard await GlobalRetryLimiter.shared.canRetry() else {
+            // Check if we have attempts left (attempt is 0-indexed, so check against maxAttempts)
+            guard attempt < policy.maxAttempts else {
                 throw error
             }
 
@@ -346,12 +358,6 @@ func withRetry<T>(
                 throw error
             }
 
-            defer {
-                Task {
-                    await GlobalRetryLimiter.shared.endRetry()
-                }
-            }
-
             // Calculate delay (check for Retry-After header if HTTPError)
             var delay = policy.delay(for: attempt)
             if let httpError = error as? HTTPError,
@@ -359,8 +365,19 @@ func withRetry<T>(
                 delay = max(delay, retryAfter)
             }
 
-            // Wait before retry
-            try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            // Cap delay to prevent pathological sleeps and UInt64 overflow
+            let cappedDelay = min(delay, maxRetryDelayCap)
+            let nanoseconds = UInt64(cappedDelay * 1_000_000_000)
+
+            // Wait before retry, ensuring endRetry is called even on cancellation
+            do {
+                try await Task.sleep(nanoseconds: nanoseconds)
+                await GlobalRetryLimiter.shared.endRetry()
+            } catch {
+                // Task was cancelled during sleep - still clean up limiter
+                await GlobalRetryLimiter.shared.endRetry()
+                throw error
+            }
         }
     }
 

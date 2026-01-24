@@ -16,9 +16,34 @@ final class RetryPolicyTests: XCTestCase {
         let policy = RetryPolicy.default
 
         XCTAssertEqual(policy.maxAttempts, AppConfiguration.API.maxRetryAttempts)
-        XCTAssertEqual(policy.baseDelay, 1.0)
-        XCTAssertEqual(policy.maxDelay, 30.0)
+        XCTAssertEqual(policy.baseDelay, AppConfiguration.API.retryBaseDelay)
+        XCTAssertEqual(policy.maxDelay, AppConfiguration.API.retryMaxDelay)
         XCTAssertEqual(policy.jitterFactor, 0.2)
+    }
+
+    func testInitClampsNegativeValues() {
+        let policy = RetryPolicy(
+            maxAttempts: -5,
+            baseDelay: -1.0,
+            maxDelay: -10.0,
+            jitterFactor: -0.5
+        )
+
+        XCTAssertEqual(policy.maxAttempts, 0, "Negative maxAttempts should be clamped to 0")
+        XCTAssertEqual(policy.baseDelay, 0, "Negative baseDelay should be clamped to 0")
+        XCTAssertEqual(policy.maxDelay, 0, "Negative maxDelay should be clamped to 0")
+        XCTAssertEqual(policy.jitterFactor, 0, "Negative jitterFactor should be clamped to 0")
+    }
+
+    func testInitClampsJitterFactorAboveOne() {
+        let policy = RetryPolicy(
+            maxAttempts: 3,
+            baseDelay: 1.0,
+            maxDelay: 10.0,
+            jitterFactor: 2.5
+        )
+
+        XCTAssertEqual(policy.jitterFactor, 1.0, "jitterFactor > 1 should be clamped to 1.0")
     }
 
     func testExponentialBackoffDelay() {
@@ -197,12 +222,39 @@ final class RetryPolicyTests: XCTestCase {
         XCTAssertNil(error.retryAfter)
     }
 
+    func testHTTPErrorRetryAfterDateHeader() {
+        // Create a date 60 seconds in the future
+        let futureDate = Date().addingTimeInterval(60)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "GMT")
+        let dateString = formatter.string(from: futureDate)
+
+        let url = URL(string: "https://example.com")!
+        let response = HTTPURLResponse(
+            url: url,
+            statusCode: 429,
+            httpVersion: "HTTP/1.1",
+            headerFields: ["Retry-After": dateString]
+        )
+
+        let error = HTTPError(statusCode: 429, response: response)
+
+        // Should parse to approximately 60 seconds (allow some tolerance)
+        if let retryAfter = error.retryAfter {
+            XCTAssertGreaterThan(retryAfter, 55, "Retry-After date should parse to ~60 seconds")
+            XCTAssertLessThan(retryAfter, 65, "Retry-After date should parse to ~60 seconds")
+        } else {
+            XCTFail("Retry-After date header should be parsed")
+        }
+    }
+
     // MARK: - GeminiError Retryable Tests
 
     func testRetryableGeminiErrors() {
         XCTAssertTrue(GeminiError.networkError(URLError(.timedOut)).isRetryable)
         XCTAssertTrue(GeminiError.rateLimited.isRetryable)
-        XCTAssertTrue(GeminiError.apiError("Server error").isRetryable)
     }
 
     func testNonRetryableGeminiErrors() {
@@ -210,6 +262,8 @@ final class RetryPolicyTests: XCTestCase {
         XCTAssertFalse(GeminiError.invalidAPIKey.isRetryable)
         XCTAssertFalse(GeminiError.parseError.isRetryable)
         XCTAssertFalse(GeminiError.unauthorized.isRetryable)
+        // apiError is not retryable as it may contain 4xx client errors
+        XCTAssertFalse(GeminiError.apiError("Server error").isRetryable)
     }
 
     // MARK: - WeatherError Retryable Tests
@@ -316,31 +370,43 @@ final class RetryPolicyTests: XCTestCase {
 
     // MARK: - Global Retry Limiter Tests
 
+    override func setUp() async throws {
+        try await super.setUp()
+        // Reset the global limiter before each test to ensure isolation
+        #if DEBUG
+        await GlobalRetryLimiter.shared.reset()
+        #endif
+    }
+
     func testGlobalRetryLimiterAllowsRetries() async {
         let limiter = GlobalRetryLimiter.shared
 
         // Should allow retry when under limit
-        let canRetry = await limiter.canRetry()
-        XCTAssertTrue(canRetry)
+        let began = await limiter.beginRetry()
+        XCTAssertTrue(began)
+
+        // Clean up
+        await limiter.endRetry()
     }
 
     func testGlobalRetryLimiterTracksCount() async {
         let limiter = GlobalRetryLimiter.shared
 
-        // Get initial count
+        // Get initial count (should be 0 after reset)
         let initialCount = await limiter.currentRetryCount()
+        XCTAssertEqual(initialCount, 0)
 
         // Begin a retry
         let began = await limiter.beginRetry()
         XCTAssertTrue(began)
 
         let newCount = await limiter.currentRetryCount()
-        XCTAssertEqual(newCount, initialCount + 1)
+        XCTAssertEqual(newCount, 1)
 
         // End the retry
         await limiter.endRetry()
 
         let finalCount = await limiter.currentRetryCount()
-        XCTAssertEqual(finalCount, initialCount)
+        XCTAssertEqual(finalCount, 0)
     }
 }

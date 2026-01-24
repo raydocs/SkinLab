@@ -54,9 +54,8 @@ xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone
 ```
 
 ## Done summary
-TBD
-
+Implemented batch processing for SkinMatcher with concurrency-safe design using MatchCandidate Sendable struct, static compute functions, @MainActor enforcement for SwiftData access, and proper maxBatchSize chunking for bounded parallelism.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 119bc4e, 3f63475, 914097c, ca55639
+- Tests: xcodebuild test -scheme SkinLab -only-testing:SkinLabTests/SkinMatcherTests
 - PRs:
