@@ -18,8 +18,7 @@ struct SkinLabApp: App {
     /// Possible initialization states
     private enum InitializationState {
         case success
-        case inMemoryMode(Error)  // Running with in-memory storage due to error
-        case recoveryNeeded(Error)  // Complete failure, needs user intervention
+        case recoveryNeeded(Error)  // Reset+retry failed, needs user intervention (may have in-memory fallback)
     }
 
     /// Explicit store URL for reliable data reset
@@ -108,35 +107,36 @@ struct SkinLabApp: App {
 
             // Step 2: Attempt reset + retry (per acceptance criteria #2)
             Self.logger.info("Attempting store reset and retry...")
-            let didDelete = Self.deleteStoreFiles()
+            _ = Self.deleteStoreFiles()  // Always attempt delete, even if no files found
 
-            if didDelete {
-                // Retry persistent initialization after reset
-                do {
-                    let resetContainer = try createPersistentContainer()
-                    self.modelContainer = resetContainer
-                    self._initializationState = State(initialValue: .success)
-                    Self.logger.info("ModelContainer recovered after store reset")
-                    return
-                } catch let resetError {
-                    Self.logger.error("ModelContainer still failed after reset: \(resetError.localizedDescription)")
-                }
+            // Retry persistent initialization after reset attempt
+            do {
+                let resetContainer = try createPersistentContainer()
+                self.modelContainer = resetContainer
+                self._initializationState = State(initialValue: .success)
+                Self.logger.info("ModelContainer recovered after store reset")
+                return
+            } catch let resetError {
+                Self.logger.error("ModelContainer still failed after reset: \(resetError.localizedDescription)")
             }
 
-            // Step 3: Fall back to in-memory as last resort
+            // Step 3: Per acceptance criteria #3 - show recovery UI when reset fails
+            // We provide in-memory fallback WITH recovery UI (not just banner)
             let inMemoryConfig = ModelConfiguration(
                 schema: schema,
                 isStoredInMemoryOnly: true
             )
 
             do {
+                // Create in-memory container but show recovery UI for user intervention
                 let recoveryContainer = try ModelContainer(for: schema, configurations: [inMemoryConfig])
                 self.modelContainer = recoveryContainer
-                self._initializationState = State(initialValue: .inMemoryMode(primaryError))
-                Self.logger.warning("ModelContainer recovered with in-memory storage. Original error: \(primaryError.localizedDescription)")
+                // Show recovery UI since reset+retry failed (acceptance criteria #3)
+                self._initializationState = State(initialValue: .recoveryNeeded(primaryError))
+                Self.logger.warning("Reset+retry failed. Showing recovery UI with in-memory fallback.")
             } catch let recoveryError {
-                // Complete failure - will show recovery UI
-                Self.logger.critical("ModelContainer recovery also failed: \(recoveryError.localizedDescription). Original error: \(primaryError.localizedDescription)")
+                // Complete failure - no container at all
+                Self.logger.critical("All recovery attempts failed: \(recoveryError.localizedDescription). Original error: \(primaryError.localizedDescription)")
                 self.modelContainer = nil
                 self._initializationState = State(initialValue: .recoveryNeeded(primaryError))
             }
@@ -163,9 +163,6 @@ struct SkinLabApp: App {
         }
     }
 
-    /// Whether to show the recovery mode banner
-    @State private var showRecoveryBanner = false
-
     @ViewBuilder
     private var contentView: some View {
         switch initializationState {
@@ -178,58 +175,11 @@ struct SkinLabApp: App {
                 AppRecoveryView(error: nil, onResetData: resetAppData)
             }
 
-        case .inMemoryMode(let error):
-            if let container = modelContainer {
-                // Running in-memory mode - show content with persistent warning banner
-                ContentView()
-                    .modelContainer(container)
-                    .safeAreaInset(edge: .top) {
-                        if showRecoveryBanner {
-                            recoveryBanner(error: error)
-                        }
-                    }
-                    .onAppear {
-                        showRecoveryBanner = true
-                        Self.logger.warning("App running in recovery mode with in-memory storage")
-                    }
-            } else {
-                AppRecoveryView(error: error, onResetData: resetAppData)
-            }
-
         case .recoveryNeeded(let error):
-            // Complete failure - show recovery UI
+            // Reset+retry failed - show recovery UI (per acceptance criteria #3)
+            // AppRecoveryView provides both "Reset Data" and "Contact Support" options
             AppRecoveryView(error: error, onResetData: resetAppData)
         }
-    }
-
-    @ViewBuilder
-    private func recoveryBanner(error: Error) -> some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
-                Text("数据未保存")
-                    .fontWeight(.semibold)
-                Spacer()
-                Button {
-                    showRecoveryBanner = false
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
-                }
-            }
-            Text("应用正在临时模式下运行。您的更改不会被保存。")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Button("重置数据以修复") {
-                resetAppData()
-            }
-            .font(.caption)
-            .buttonStyle(.borderedProminent)
-            .tint(.orange)
-        }
-        .padding()
-        .background(.ultraThinMaterial)
     }
 
     /// State to show reset completion alert
@@ -238,32 +188,20 @@ struct SkinLabApp: App {
 
     /// Attempts to reset app data by deleting the SwiftData store
     private func resetAppData() {
-        Self.logger.info("Attempting to reset app data at \(Self.storeURL.path)")
+        Self.logger.info("User-initiated reset at \(Self.storeURL.path)")
 
-        // Use the explicit store URL we configured
-        let shmURL = Self.storeURL.deletingPathExtension().appendingPathExtension("store-shm")
-        let walURL = Self.storeURL.deletingPathExtension().appendingPathExtension("store-wal")
+        // Reuse the consolidated delete logic
+        let deleted = Self.deleteStoreFiles()
 
-        do {
-            let fileManager = FileManager.default
-
-            // Remove store files if they exist
-            for url in [Self.storeURL, shmURL, walURL] {
-                if fileManager.fileExists(atPath: url.path) {
-                    try fileManager.removeItem(at: url)
-                    Self.logger.info("Removed: \(url.lastPathComponent)")
-                }
-            }
-
+        if deleted {
             Self.logger.info("App data reset complete")
-
-            // Show completion alert prompting user to restart
             resetError = nil
-            showResetCompleteAlert = true
-        } catch {
-            Self.logger.error("Failed to reset app data: \(error.localizedDescription)")
-            resetError = error
-            showResetCompleteAlert = true
+        } else {
+            Self.logger.warning("No store files found to delete")
+            // Still consider this a success - files may already be gone
+            resetError = nil
         }
+
+        showResetCompleteAlert = true
     }
 }
