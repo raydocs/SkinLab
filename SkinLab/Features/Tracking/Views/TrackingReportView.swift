@@ -18,6 +18,7 @@ struct TrackingReportView: View {
     @State private var showLifestyleInsights = false
     @State private var showDataQuality = false
     @State private var showProductInsights = false
+    @State private var showForecast = false
 
     // Timeline mode: all data vs reliable only
     @State private var timelineMode: TimelineDisplayPolicy.TimelineMode = .all
@@ -47,7 +48,18 @@ struct TrackingReportView: View {
                 if let aiSummary = report.aiSummary {
                     aiSummarySection(aiSummary)
                 }
-                
+
+                // Skin Forecast (collapsed by default, show if forecasts available)
+                if !report.forecasts.isEmpty {
+                    disclosureCard(
+                        title: "皮肤预测",
+                        systemImage: "chart.line.uptrend.xyaxis",
+                        isExpanded: $showForecast
+                    ) {
+                        forecastSection
+                    }
+                }
+
                 // Before/After Comparison (collapsed by default)
                 if report.beforePhotoPath != nil || report.afterPhotoPath != nil {
                     disclosureCard(
@@ -589,6 +601,62 @@ struct TrackingReportView: View {
         .padding(.vertical, 2)
     }
 
+    // MARK: - Forecast Section
+    private var forecastSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Risk Alerts (prominently displayed if present)
+            if !report.riskAlerts.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.orange)
+                        Text("风险预警")
+                            .font(.skinLabSubheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.skinLabText)
+                    }
+
+                    ForEach(report.riskAlerts) { alert in
+                        PredictiveAlertCard(alert: alert)
+                    }
+                }
+            }
+
+            // Forecast Charts
+            ForEach(report.forecasts.indices, id: \.self) { index in
+                let forecast = report.forecasts[index]
+                ForecastChartView(
+                    forecast: forecast,
+                    historicalData: report.timeline
+                )
+            }
+
+            // Overall Data Confidence
+            HStack {
+                Image(systemName: "checkmark.seal.fill")
+                    .foregroundColor(confidenceColor(report.dataConfidence))
+                Text("数据置信度")
+                    .font(.skinLabCaption)
+                    .foregroundColor(.skinLabSubtext)
+                Spacer()
+                ConfidenceBadgeView(confidence: report.dataConfidence)
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(12)
+        }
+        .padding(.top, 4)
+    }
+
+    private func confidenceColor(_ confidence: ConfidenceScore) -> Color {
+        switch confidence.level {
+        case .high: return .green
+        case .medium: return .blue
+        case .low: return .orange
+        case .veryLow: return .red
+        }
+    }
+
     // MARK: - Share & Export
     private var shareAndExportSection: some View {
         VStack(spacing: 12) {
@@ -925,4 +993,82 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - Predictive Alert Card
+struct PredictiveAlertCard: View {
+    let alert: PredictiveAlert
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header with severity icon and metric
+            HStack {
+                Image(systemName: alert.icon)
+                    .foregroundColor(alertColor)
+                    .font(.title3)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text(alert.severity.rawValue)
+                            .font(.skinLabCaption)
+                            .fontWeight(.semibold)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(alertColor.opacity(0.2))
+                            .foregroundColor(alertColor)
+                            .cornerRadius(4)
+
+                        Text(alert.metric)
+                            .font(.skinLabSubheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.skinLabText)
+                    }
+
+                    Text(alert.message)
+                        .font(.skinLabBody)
+                        .foregroundColor(.skinLabText)
+                }
+
+                Spacer()
+
+                // Predicted date badge
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(alert.predictedDateText)
+                        .font(.skinLabCaption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.skinLabSubtext)
+                    ConfidenceBadgeView(confidence: alert.confidence)
+                }
+            }
+
+            // Action suggestion
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: "lightbulb.fill")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+                Text(alert.actionSuggestion)
+                    .font(.skinLabCaption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.orange.opacity(0.1))
+            .cornerRadius(8)
+        }
+        .padding()
+        .background(alertColor.opacity(0.05))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(alertColor.opacity(0.3), lineWidth: 1)
+        )
+        .cornerRadius(12)
+    }
+
+    private var alertColor: Color {
+        switch alert.severity {
+        case .low: return .blue
+        case .medium: return .orange
+        case .high: return .red
+        }
+    }
 }
