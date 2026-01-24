@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Added `weather: WeatherSnapshot?` field to CheckIn struct with initializer support. Build verified.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 1244b480af3f602e1e5cd0130ced1eed5c84fd26
+- Tests: xcodebuild build verified
 - PRs:

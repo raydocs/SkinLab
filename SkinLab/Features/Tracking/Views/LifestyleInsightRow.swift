@@ -74,14 +74,8 @@ struct LifestyleInsightRow: View {
     }
 
     private var iconName: String {
-        switch insight.factor {
-        case .sleepHours: return "bed.double"
-        case .stressLevel: return "wind"
-        case .waterIntakeLevel: return "drop"
-        case .alcohol: return "wineglass"
-        case .exerciseMinutes: return "figure.run"
-        case .sunExposureLevel: return "sun.max"
-        }
+        // Use the icon property from LifestyleFactorKey
+        insight.factor.icon
     }
 
     private var iconColor: Color {
@@ -92,18 +86,16 @@ struct LifestyleInsightRow: View {
         case .alcohol: return .red
         case .exerciseMinutes: return .green
         case .sunExposureLevel: return .orange
+        // Weather factors
+        case .humidity: return .teal
+        case .uvIndex: return .orange
+        case .airQuality: return .gray
         }
     }
 
     private var factorLabel: String {
-        switch insight.factor {
-        case .sleepHours: return "睡眠时间"
-        case .stressLevel: return "压力水平"
-        case .waterIntakeLevel: return "饮水量"
-        case .alcohol: return "饮酒"
-        case .exerciseMinutes: return "运动"
-        case .sunExposureLevel: return "日晒"
-        }
+        // Use the label property from LifestyleFactorKey
+        insight.factor.label
     }
 
     private var directionIcon: String {

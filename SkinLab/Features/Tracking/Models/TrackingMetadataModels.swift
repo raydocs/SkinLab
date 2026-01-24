@@ -284,6 +284,40 @@ struct LifestyleCorrelationInsight: Codable, Identifiable, Sendable {
         case alcohol
         case exerciseMinutes
         case sunExposureLevel
+        // Weather factors
+        case humidity
+        case uvIndex
+        case airQuality
+
+        /// Display label for the factor
+        var label: String {
+            switch self {
+            case .sleepHours: return "睡眠时间"
+            case .stressLevel: return "压力水平"
+            case .waterIntakeLevel: return "饮水量"
+            case .alcohol: return "饮酒"
+            case .exerciseMinutes: return "运动"
+            case .sunExposureLevel: return "日晒"
+            case .humidity: return "湿度"
+            case .uvIndex: return "紫外线"
+            case .airQuality: return "空气质量"
+            }
+        }
+
+        /// SF Symbol icon for the factor
+        var icon: String {
+            switch self {
+            case .sleepHours: return "moon.zzz.fill"
+            case .stressLevel: return "brain.head.profile"
+            case .waterIntakeLevel: return "drop.fill"
+            case .alcohol: return "wineglass.fill"
+            case .exerciseMinutes: return "figure.run"
+            case .sunExposureLevel: return "sun.max.fill"
+            case .humidity: return "humidity.fill"
+            case .uvIndex: return "sun.max.trianglebadge.exclamationmark"
+            case .airQuality: return "aqi.medium"
+            }
+        }
     }
 
     enum CorrelationDirection: String, Codable, Sendable {

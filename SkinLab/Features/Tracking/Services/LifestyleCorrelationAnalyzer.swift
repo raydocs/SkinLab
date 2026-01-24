@@ -33,10 +33,12 @@ struct LifestyleCorrelationAnalyzer {
             reliability: reliability
         )
 
-        // Analyze each lifestyle factor
+        // Analyze each lifestyle factor (including weather factors)
         let factors: [LifestyleCorrelationInsight.LifestyleFactorKey] = [
             .sleepHours, .stressLevel, .waterIntakeLevel, .alcohol,
-            .exerciseMinutes, .sunExposureLevel
+            .exerciseMinutes, .sunExposureLevel,
+            // Weather factors
+            .humidity, .uvIndex, .airQuality
         ]
 
         for factor in factors {
@@ -147,26 +149,49 @@ struct LifestyleCorrelationAnalyzer {
         )
     }
 
-    /// Extract numeric value from lifestyle factors
+    /// Extract numeric value from lifestyle or weather factors
     private func extractFactorValue(
         _ factor: LifestyleCorrelationInsight.LifestyleFactorKey,
         from checkIn: CheckIn
     ) -> Double? {
-        guard let lifestyle = checkIn.lifestyle else { return nil }
-
+        // Weather factors - extract from CheckIn.weather
         switch factor {
-        case .sleepHours:
-            return lifestyle.sleepHours
-        case .stressLevel:
-            return lifestyle.stressLevel.map(Double.init)
-        case .waterIntakeLevel:
-            return lifestyle.waterIntakeLevel.map(Double.init)
-        case .alcohol:
-            return lifestyle.alcoholConsumed.map { $0 ? 1.0 : 0.0 }
-        case .exerciseMinutes:
-            return lifestyle.exerciseMinutes.map(Double.init)
-        case .sunExposureLevel:
-            return lifestyle.sunExposureLevel.map(Double.init)
+        case .humidity:
+            return checkIn.weather?.humidity
+        case .uvIndex:
+            return checkIn.weather.map { Double($0.uvIndex) }
+        case .airQuality:
+            // Convert AQI level to numeric scale (1-6, lower is better)
+            return checkIn.weather.map { weather in
+                switch weather.airQuality {
+                case .good: return 1.0
+                case .moderate: return 2.0
+                case .unhealthySensitive: return 3.0
+                case .unhealthy: return 4.0
+                case .veryUnhealthy: return 5.0
+                case .hazardous: return 6.0
+                }
+            }
+        default:
+            // Lifestyle factors - extract from CheckIn.lifestyle
+            guard let lifestyle = checkIn.lifestyle else { return nil }
+
+            switch factor {
+            case .sleepHours:
+                return lifestyle.sleepHours
+            case .stressLevel:
+                return lifestyle.stressLevel.map(Double.init)
+            case .waterIntakeLevel:
+                return lifestyle.waterIntakeLevel.map(Double.init)
+            case .alcohol:
+                return lifestyle.alcoholConsumed.map { $0 ? 1.0 : 0.0 }
+            case .exerciseMinutes:
+                return lifestyle.exerciseMinutes.map(Double.init)
+            case .sunExposureLevel:
+                return lifestyle.sunExposureLevel.map(Double.init)
+            case .humidity, .uvIndex, .airQuality:
+                return nil  // Already handled above
+            }
         }
     }
 
@@ -197,25 +222,38 @@ struct LifestyleCorrelationAnalyzer {
         correlation: Double,
         confidence: ConfidenceScore
     ) -> String {
-        let factorName: String
-        switch factor {
-        case .sleepHours: factorName = "睡眠时间"
-        case .stressLevel: factorName = "压力水平"
-        case .waterIntakeLevel: factorName = "饮水量"
-        case .alcohol: factorName = "饮酒"
-        case .exerciseMinutes: factorName = "运动"
-        case .sunExposureLevel: factorName = "日晒"
-        }
+        // Use the factor's label property for display name
+        let factorName = factor.label
 
         let direction: String
-        if correlation > 0.5 {
-            direction = "可能与改善相关"
-        } else if correlation > 0.3 {
-            direction = "可能略有相关"
-        } else if correlation < -0.5 {
-            direction = "可能与恶化相关"
+        // Weather factors may have inverted correlation meanings
+        let isInvertedFactor = factor == .uvIndex || factor == .airQuality
+
+        if isInvertedFactor {
+            // Higher UV/AQI values are worse, so negative correlation means improvement
+            if correlation < -0.5 {
+                direction = "可能与改善相关"
+            } else if correlation < -0.3 {
+                direction = "可能略有正面影响"
+            } else if correlation > 0.5 {
+                direction = "可能与恶化相关"
+            } else if correlation > 0.3 {
+                direction = "可能略有负面影响"
+            } else {
+                direction = "暂未发现明显相关性"
+            }
         } else {
-            direction = "可能略有负面影响"
+            if correlation > 0.5 {
+                direction = "可能与改善相关"
+            } else if correlation > 0.3 {
+                direction = "可能略有正面影响"
+            } else if correlation < -0.5 {
+                direction = "可能与恶化相关"
+            } else if correlation < -0.3 {
+                direction = "可能略有负面影响"
+            } else {
+                direction = "暂未发现明显相关性"
+            }
         }
 
         return "\(factorName)\(direction)，但需更多数据验证。仅供参考，不表示因果关系。"
