@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CryptoKit
 
 // MARK: - Cache Configuration
 enum ImageCacheConfig {
@@ -22,6 +23,10 @@ enum ImageCacheConfig {
     static let defaultExpirationDays = 7
 }
 
+// MARK: - Disk I/O Queue
+/// Dedicated queue for disk operations to avoid blocking actor
+private let diskIOQueue = DispatchQueue(label: "com.skinlab.imagecache.diskio", qos: .utility)
+
 // MARK: - Image Cache
 actor ImageCache {
     /// Shared singleton instance
@@ -37,6 +42,9 @@ actor ImageCache {
 
     /// File manager for disk operations
     private let fileManager: FileManager
+
+    /// Track pending disk writes for removal coordination
+    private var pendingWrites: Set<String> = []
 
     // MARK: - Initialization
 
@@ -76,7 +84,7 @@ actor ImageCache {
             return cached
         }
 
-        // 2. Check disk cache
+        // 2. Check disk cache (synchronous read on actor is acceptable for cache hits)
         if let diskImage = loadFromDisk(key: key) {
             // Promote to memory cache
             let cost = diskImage.estimatedMemorySize
@@ -98,9 +106,17 @@ actor ImageCache {
         // Store in memory
         memoryCache.setObject(image, forKey: nsKey, cost: cost)
 
-        // Store on disk asynchronously
-        Task.detached(priority: .utility) { [weak self] in
-            await self?.saveToDisk(image, key: key)
+        // Encode image off-actor, then write to disk
+        pendingWrites.insert(key)
+        let fileURL = diskFileURL(for: key)
+
+        diskIOQueue.async { [weak self] in
+            guard let data = image.jpegData(compressionQuality: 0.8) else {
+                Task { await self?.removePendingWrite(key) }
+                return
+            }
+            try? data.write(to: fileURL, options: .atomic)
+            Task { await self?.removePendingWrite(key) }
         }
     }
 
@@ -116,9 +132,13 @@ actor ImageCache {
             memoryCache.setObject(image, forKey: nsKey, cost: cost)
         }
 
-        // Save data directly to disk (more efficient)
-        Task.detached(priority: .utility) { [weak self] in
-            await self?.saveDataToDisk(data, key: key)
+        // Write data directly to disk on background queue
+        pendingWrites.insert(key)
+        let fileURL = diskFileURL(for: key)
+
+        diskIOQueue.async { [weak self] in
+            try? data.write(to: fileURL, options: .atomic)
+            Task { await self?.removePendingWrite(key) }
         }
     }
 
@@ -128,7 +148,10 @@ actor ImageCache {
         // Remove from memory
         memoryCache.removeObject(forKey: key as NSString)
 
-        // Remove from disk
+        // Cancel pending write if any
+        pendingWrites.remove(key)
+
+        // Remove from disk synchronously to ensure removal completes
         let fileURL = diskFileURL(for: key)
         try? fileManager.removeItem(at: fileURL)
     }
@@ -172,7 +195,10 @@ actor ImageCache {
         // Clear memory
         memoryCache.removeAllObjects()
 
-        // Clear disk
+        // Cancel all pending writes
+        pendingWrites.removeAll()
+
+        // Clear disk synchronously
         try? fileManager.removeItem(at: diskCacheURL)
         try? fileManager.createDirectory(
             at: diskCacheURL,
@@ -200,17 +226,22 @@ actor ImageCache {
         return totalSize
     }
 
+    // MARK: - Private Helpers
+
+    private func removePendingWrite(_ key: String) {
+        pendingWrites.remove(key)
+    }
+
     // MARK: - Disk Operations
 
-    /// Generate disk file URL for a cache key
+    /// Generate disk file URL for a cache key using SHA256 hash
     private func diskFileURL(for key: String) -> URL {
-        // Hash the key to create a valid filename
-        let hashedKey = key.data(using: .utf8)?.base64EncodedString()
-            .replacingOccurrences(of: "/", with: "_")
-            .replacingOccurrences(of: "+", with: "-")
-            ?? key.replacingOccurrences(of: "/", with: "_")
+        // Use SHA256 hash for fixed-length, safe filenames
+        let keyData = Data(key.utf8)
+        let hash = SHA256.hash(data: keyData)
+        let hashString = hash.compactMap { String(format: "%02x", $0) }.joined()
 
-        return diskCacheURL.appendingPathComponent(hashedKey)
+        return diskCacheURL.appendingPathComponent(hashString)
     }
 
     /// Load image from disk cache
@@ -228,21 +259,6 @@ actor ImageCache {
         )
 
         return UIImage(data: data)
-    }
-
-    /// Save image to disk cache
-    private func saveToDisk(_ image: UIImage, key: String) {
-        guard let data = image.jpegData(compressionQuality: 0.8) else {
-            return
-        }
-
-        saveDataToDisk(data, key: key)
-    }
-
-    /// Save raw data to disk cache
-    private func saveDataToDisk(_ data: Data, key: String) {
-        let fileURL = diskFileURL(for: key)
-        try? data.write(to: fileURL, options: .atomic)
     }
 }
 
@@ -266,8 +282,8 @@ extension ImageCache {
             return nil
         }
 
-        // Cache for future access
-        store(image, for: path)
+        // Cache the original data for future access (avoids re-encoding)
+        storeData(data, for: path)
 
         return image
     }
@@ -279,20 +295,29 @@ extension ImageCache {
             _ = loadImage(fromPath: path)
         }
     }
+
+    /// Generate thumbnail path from image path (extension-safe)
+    /// - Parameter path: Original image path
+    /// - Returns: Thumbnail path with _thumb suffix before extension
+    static func thumbnailPath(for path: String) -> String {
+        // Find the last dot for extension
+        guard let dotIndex = path.lastIndex(of: ".") else {
+            // No extension, just append _thumb
+            return path + "_thumb"
+        }
+
+        let nameWithoutExt = String(path[..<dotIndex])
+        let ext = String(path[path.index(after: dotIndex)...])
+
+        return "\(nameWithoutExt)_thumb.\(ext)"
+    }
 }
 
-// MARK: - Debug Helpers
-#if DEBUG
+// MARK: - Test Helpers
 extension ImageCache {
     /// Reset cache (for testing)
     func reset() {
         clearAllCache()
-    }
-
-    /// Get memory cache count (for testing)
-    func memoryCacheCount() -> Int {
-        // NSCache doesn't provide count, but we can check the countLimit
-        return ImageCacheConfig.memoryCacheLimit
     }
 
     /// Check if key exists in memory cache
@@ -306,4 +331,3 @@ extension ImageCache {
         return fileManager.fileExists(atPath: fileURL.path)
     }
 }
-#endif

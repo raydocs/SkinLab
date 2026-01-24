@@ -104,8 +104,8 @@ struct CachedThumbnailView: View {
         isLoading = true
         defer { isLoading = false }
 
-        // Try loading thumbnail first (path_thumb.jpg)
-        let thumbnailPath = path.replacingOccurrences(of: ".jpg", with: "_thumb.jpg")
+        // Try loading thumbnail first using extension-safe path helper
+        let thumbnailPath = ImageCache.thumbnailPath(for: path)
 
         if let cached = await ImageCache.shared.loadImage(fromPath: thumbnailPath) {
             await MainActor.run {

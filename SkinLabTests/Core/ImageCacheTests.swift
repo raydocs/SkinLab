@@ -341,6 +341,55 @@ final class ImageCacheTests: XCTestCase {
         XCTAssertNil(result, "Invalid data should return nil")
     }
 
+    // MARK: - Thumbnail Path Tests
+
+    func testThumbnailPathWithJpgExtension() {
+        let path = "analysis_photos/uuid.jpg"
+        let thumbPath = ImageCache.thumbnailPath(for: path)
+        XCTAssertEqual(thumbPath, "analysis_photos/uuid_thumb.jpg")
+    }
+
+    func testThumbnailPathWithJpegExtension() {
+        let path = "photos/image.jpeg"
+        let thumbPath = ImageCache.thumbnailPath(for: path)
+        XCTAssertEqual(thumbPath, "photos/image_thumb.jpeg")
+    }
+
+    func testThumbnailPathWithPngExtension() {
+        let path = "images/photo.png"
+        let thumbPath = ImageCache.thumbnailPath(for: path)
+        XCTAssertEqual(thumbPath, "images/photo_thumb.png")
+    }
+
+    func testThumbnailPathWithoutDirectory() {
+        let path = "image.jpg"
+        let thumbPath = ImageCache.thumbnailPath(for: path)
+        XCTAssertEqual(thumbPath, "image_thumb.jpg")
+    }
+
+    func testThumbnailDoesNotUpscale() {
+        // Create a small image (50x50 pixels at 1x)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1.0
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 50, height: 50), format: format)
+        let smallImage = renderer.image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(origin: .zero, size: CGSize(width: 50, height: 50)))
+        }
+
+        // Request a 200x200 thumbnail
+        let thumbnail = smallImage.thumbnail(size: CGSize(width: 200, height: 200))
+
+        XCTAssertNotNil(thumbnail)
+        // Should return original since it's smaller than requested
+        if let thumb = thumbnail {
+            // Thumbnail should be same as original (no upscaling)
+            let thumbPixels = thumb.size.width * thumb.scale
+            let originalPixels = smallImage.size.width * smallImage.scale
+            XCTAssertEqual(thumbPixels, originalPixels, "Small image should not be upscaled")
+        }
+    }
+
     // MARK: - Helpers
 
     /// Create a test image with solid color

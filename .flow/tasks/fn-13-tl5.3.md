@@ -91,9 +91,8 @@ xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone
 ```
 
 ## Done summary
-TBD
-
+Implemented intelligent network retry policy with exponential backoff, jitter, and global rate limiting. Added comprehensive error classification for URLError, HTTPError, GeminiError, and WeatherError. Includes 31 unit tests covering all edge cases including NaN/Inf handling and cancellation safety.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 74d4966, e96796f, a78ea59
+- Tests: xcodebuild test -scheme SkinLab -only-testing:SkinLabTests/RetryPolicyTests
 - PRs:

@@ -84,7 +84,8 @@ class AnalysisViewModel: ObservableObject {
             var photoPath: String? = nil
             if let modelContext = modelContext,
                let capturedImage = lastCapturedImage {
-                photoPath = savePhoto(image: capturedImage, analysisId: analysis.id)
+                // Move compression off main actor to avoid UI hitching
+                photoPath = await savePhotoOffMainActor(image: capturedImage, analysisId: analysis.id)
 
                 // Create and insert SkinAnalysisRecord
                 let record = SkinAnalysisRecord(from: analysis, photoPath: photoPath)
@@ -110,8 +111,16 @@ class AnalysisViewModel: ObservableObject {
 
     // MARK: - Private
 
-    /// Save photo with compression for storage optimization
-    private func savePhoto(image: UIImage, analysisId: UUID) -> String? {
+    /// Save photo with compression off main actor to avoid UI hitching
+    private func savePhotoOffMainActor(image: UIImage, analysisId: UUID) async -> String? {
+        // Run compression and disk I/O on background thread
+        return await Task.detached(priority: .userInitiated) {
+            Self.compressAndSavePhoto(image: image, analysisId: analysisId)
+        }.value
+    }
+
+    /// Static helper for photo compression and saving (runs on background thread)
+    private nonisolated static func compressAndSavePhoto(image: UIImage, analysisId: UUID) -> String? {
         // Use image compression utilities for optimized storage
         guard let data = image.compressed(
             quality: ImageCompressionConfig.defaultQuality,
@@ -132,7 +141,7 @@ class AnalysisViewModel: ObservableObject {
         try? data.write(to: fileURL)
 
         // Also generate and save thumbnail for faster loading in lists
-        saveThumbnail(image: image, analysisId: analysisId)
+        saveThumbnailStatic(image: image, analysisId: analysisId)
 
         // Cache the full image for quick access
         Task {
@@ -142,8 +151,8 @@ class AnalysisViewModel: ObservableObject {
         return relativePath
     }
 
-    /// Generate and save thumbnail for the analysis photo
-    private func saveThumbnail(image: UIImage, analysisId: UUID) {
+    /// Static helper for thumbnail generation (runs on background thread)
+    private nonisolated static func saveThumbnailStatic(image: UIImage, analysisId: UUID) {
         guard let thumbnailData = image.thumbnailData(
             size: ImageCompressionConfig.defaultThumbnailSize,
             quality: 0.7

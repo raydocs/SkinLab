@@ -88,18 +88,23 @@ extension UIImage {
         compressed(quality: preset.value, maxDimension: maxDimension)
     }
 
-    /// Generate a thumbnail image
+    /// Generate a thumbnail image (only downscales, never upscales)
     /// - Parameter size: Target thumbnail size in pixels. Default is 200x200
-    /// - Returns: Thumbnail image, or nil if generation fails
+    /// - Returns: Thumbnail image, or original if already smaller than target
     func thumbnail(size: CGSize = ImageCompressionConfig.defaultThumbnailSize) -> UIImage? {
         // Calculate actual pixel dimensions
         let pixelWidth = self.size.width * scale
         let pixelHeight = self.size.height * scale
 
-        // Calculate aspect-fit size
+        // Calculate aspect-fit size, clamped to <= 1.0 to prevent upscaling
         let widthRatio = size.width / pixelWidth
         let heightRatio = size.height / pixelHeight
-        let ratio = min(widthRatio, heightRatio)
+        let ratio = min(widthRatio, heightRatio, 1.0)
+
+        // If image is already smaller than target, return self
+        if ratio >= 1.0 {
+            return self
+        }
 
         let targetSize = CGSize(
             width: (pixelWidth * ratio).rounded(),
