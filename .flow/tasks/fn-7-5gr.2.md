@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Enhanced TrendForecast.riskAlert to return PredictiveAlert with coverage for four metrics (痘痘, 泛红, 综合评分, 敏感度), severity-based thresholds, and Chinese action suggestions.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 9e1aa9dc4b44a08040bbb7ad387cc4d79510e316
+- Tests: xcodebuild build verified
 - PRs:
