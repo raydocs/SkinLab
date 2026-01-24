@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Verified scenario-specific rules implementation is complete. All 10 scenarios have 3-5 do items, 2-4 don't items, 3 product tips, 3-5 ingredient focus, and 0-6 ingredient avoid lists. Rules adapt to user skin type (dry, oily, combination, sensitive), pregnancy status, budget level, and current skin analysis results.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 7172f13
+- Tests: Build verified
 - PRs:
