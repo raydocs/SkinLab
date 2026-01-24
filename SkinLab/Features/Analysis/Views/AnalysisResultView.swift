@@ -525,61 +525,253 @@ struct AnalysisResultView: View {
 
     // MARK: - Issues Section
     private var issuesSection: some View {
-        VStack(spacing: 14) {
-            IssueRow(name: "色斑", score: analysis.issues.spots, icon: "circle.lefthalf.filled")
-            IssueRow(name: "痘痘", score: analysis.issues.acne, icon: "circle.fill")
-            IssueRow(name: "毛孔", score: analysis.issues.pores, icon: "circle.grid.3x3")
-            IssueRow(name: "皱纹", score: analysis.issues.wrinkles, icon: "water.waves")
-            IssueRow(name: "红血丝", score: analysis.issues.redness, icon: "flame")
-            IssueRow(name: "肤色不均", score: analysis.issues.evenness, icon: "paintpalette")
-            IssueRow(name: "纹理", score: analysis.issues.texture, icon: "square.grid.3x3")
+        VStack(spacing: 16) {
+            // Primary issues (top 3 most severe) - always visible
+            let sortedIssues = issuesSorted
+            let primaryIssues = Array(sortedIssues.prefix(3))
+            let secondaryIssues = Array(sortedIssues.dropFirst(3))
+
+            // Key issues summary
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("主要关注")
+                        .font(.skinLabHeadline)
+                        .foregroundColor(.skinLabText)
+                    Spacer()
+                    Text("\(primaryIssues.filter { $0.score >= 5 }.count)项需关注")
+                        .font(.skinLabCaption)
+                        .foregroundColor(.skinLabWarning)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.skinLabWarning.opacity(0.1))
+                        .cornerRadius(6)
+                }
+
+                ForEach(primaryIssues, id: \.name) { issue in
+                    IssueRow(name: issue.name, score: issue.score, icon: issue.icon)
+                }
+            }
+            .padding()
+            .freshGlassCard()
+
+            // Secondary issues - collapsible
+            if !secondaryIssues.isEmpty {
+                ProgressiveDisclosureCard(
+                    title: "其他指标",
+                    systemImage: "list.bullet"
+                ) {
+                    Text("\(secondaryIssues.count)项")
+                        .font(.skinLabCaption)
+                        .foregroundColor(.skinLabSubtext)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.skinLabSubtext.opacity(0.1))
+                        .cornerRadius(6)
+                } detail: {
+                    VStack(spacing: 14) {
+                        ForEach(secondaryIssues, id: \.name) { issue in
+                            IssueRow(name: issue.name, score: issue.score, icon: issue.icon)
+                        }
+                    }
+                }
+            }
         }
-        .padding()
-        .freshGlassCard()
+    }
+
+    /// Helper to sort issues by severity (highest score first)
+    private var issuesSorted: [(name: String, score: Int, icon: String)] {
+        [
+            ("色斑", analysis.issues.spots, "circle.lefthalf.filled"),
+            ("痘痘", analysis.issues.acne, "circle.fill"),
+            ("毛孔", analysis.issues.pores, "circle.grid.3x3"),
+            ("皱纹", analysis.issues.wrinkles, "water.waves"),
+            ("红血丝", analysis.issues.redness, "flame"),
+            ("肤色不均", analysis.issues.evenness, "paintpalette"),
+            ("纹理", analysis.issues.texture, "square.grid.3x3")
+        ].sorted { $0.score > $1.score }
     }
     
     // MARK: - Regions Section
     private var regionsSection: some View {
-        VStack(spacing: 14) {
-            RegionRow(name: "T区", score: analysis.regions.tZone)
-            RegionRow(name: "左脸颊", score: analysis.regions.leftCheek)
-            RegionRow(name: "右脸颊", score: analysis.regions.rightCheek)
-            RegionRow(name: "眼周", score: analysis.regions.eyeArea)
-            RegionRow(name: "下巴", score: analysis.regions.chin)
+        VStack(spacing: 16) {
+            // Primary regions (lowest scores first - needs most attention)
+            let sortedRegions = regionsSorted
+            let needsAttention = sortedRegions.filter { $0.score < 70 }
+            let healthyRegions = sortedRegions.filter { $0.score >= 70 }
+
+            // Regions needing attention - prominent display
+            if !needsAttention.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("需要关注")
+                            .font(.skinLabHeadline)
+                            .foregroundColor(.skinLabText)
+                        Spacer()
+                        Text("\(needsAttention.count)个区域")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabWarning)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.skinLabWarning.opacity(0.1))
+                            .cornerRadius(6)
+                    }
+
+                    ForEach(needsAttention, id: \.name) { region in
+                        RegionRow(name: region.name, score: region.score)
+                    }
+                }
+                .padding()
+                .freshGlassCard()
+            }
+
+            // Healthy regions - collapsible
+            if !healthyRegions.isEmpty {
+                ProgressiveDisclosureCard(
+                    title: "状态良好",
+                    systemImage: "checkmark.circle"
+                ) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 10, weight: .bold))
+                        Text("\(healthyRegions.count)个区域")
+                            .font(.skinLabCaption)
+                    }
+                    .foregroundColor(.skinLabSuccess)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.skinLabSuccess.opacity(0.1))
+                    .cornerRadius(6)
+                } detail: {
+                    VStack(spacing: 14) {
+                        ForEach(healthyRegions, id: \.name) { region in
+                            RegionRow(name: region.name, score: region.score)
+                        }
+                    }
+                }
+            }
+
+            // Show all if no problematic regions
+            if needsAttention.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundColor(.skinLabSuccess)
+                        Text("所有区域状态良好")
+                            .font(.skinLabHeadline)
+                            .foregroundColor(.skinLabText)
+                    }
+
+                    ForEach(sortedRegions, id: \.name) { region in
+                        RegionRow(name: region.name, score: region.score)
+                    }
+                }
+                .padding()
+                .freshGlassCard()
+            }
         }
-        .padding()
-        .freshGlassCard()
+    }
+
+    /// Helper to sort regions by score (lowest first for attention priority)
+    private var regionsSorted: [(name: String, score: Int)] {
+        [
+            ("T区", analysis.regions.tZone),
+            ("左脸颊", analysis.regions.leftCheek),
+            ("右脸颊", analysis.regions.rightCheek),
+            ("眼周", analysis.regions.eyeArea),
+            ("下巴", analysis.regions.chin)
+        ].sorted { $0.score < $1.score }
     }
     
     // MARK: - Recommendations Section
     private var recommendationsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            ForEach(Array(analysis.recommendations.enumerated()), id: \.offset) { index, recommendation in
-                HStack(alignment: .top, spacing: 14) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.freshPrimary)
-                            .frame(width: 32, height: 32)
-                        
-                        Text("\(index + 1)")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
-                    }
-                    
-                    Text(recommendation)
-                        .font(.skinLabBody)
+        VStack(spacing: 16) {
+            let recommendations = analysis.recommendations
+            let primaryRecs = Array(recommendations.prefix(3))
+            let moreRecs = Array(recommendations.dropFirst(3))
+
+            // Top 3 recommendations - always visible (key insights)
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text("重点建议")
+                        .font(.skinLabHeadline)
                         .foregroundColor(.skinLabText)
-                        .lineSpacing(4)
+                    Spacer()
+                    if recommendations.count > 3 {
+                        Text("共\(recommendations.count)条")
+                            .font(.skinLabCaption)
+                            .foregroundColor(.skinLabSubtext)
+                    }
                 }
-                
-                if index < analysis.recommendations.count - 1 {
-                    Divider()
-                        .padding(.leading, 46)
+
+                ForEach(Array(primaryRecs.enumerated()), id: \.offset) { index, recommendation in
+                    RecommendationRow(index: index + 1, text: recommendation, isPrimary: true)
+
+                    if index < primaryRecs.count - 1 {
+                        Divider()
+                            .padding(.leading, 46)
+                    }
+                }
+            }
+            .padding()
+            .freshGlassCard()
+
+            // More recommendations - collapsible
+            if !moreRecs.isEmpty {
+                ProgressiveDisclosureCard(
+                    title: "更多建议",
+                    systemImage: "lightbulb"
+                ) {
+                    Text("+\(moreRecs.count)条")
+                        .font(.skinLabCaption)
+                        .foregroundColor(.skinLabPrimary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.skinLabPrimary.opacity(0.1))
+                        .cornerRadius(6)
+                } detail: {
+                    VStack(alignment: .leading, spacing: 14) {
+                        ForEach(Array(moreRecs.enumerated()), id: \.offset) { index, recommendation in
+                            RecommendationRow(index: index + 4, text: recommendation, isPrimary: false)
+
+                            if index < moreRecs.count - 1 {
+                                Divider()
+                                    .padding(.leading, 46)
+                            }
+                        }
+                    }
                 }
             }
         }
-        .padding()
-        .freshGlassCard()
+    }
+}
+
+// MARK: - Recommendation Row
+
+/// A styled row for displaying a recommendation with numbered badge
+struct RecommendationRow: View {
+    let index: Int
+    let text: String
+    let isPrimary: Bool
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(isPrimary ? Color.freshPrimary : Color.freshPrimary.opacity(0.6))
+                    .frame(width: 32, height: 32)
+
+                Text("\(index)")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+            }
+
+            Text(text)
+                .font(.skinLabBody)
+                .foregroundColor(isPrimary ? .skinLabText : .skinLabText.opacity(0.9))
+                .lineSpacing(4)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("建议\(index): \(text)")
     }
 }
 

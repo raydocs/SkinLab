@@ -223,43 +223,51 @@ struct TrackingReportView: View {
 
     // MARK: - Header Stats
     private var headerStatsSection: some View {
-        VStack(spacing: 16) {
-            // Duration Badge
-            HStack {
-                Image(systemName: "calendar")
-                    .foregroundStyle(LinearGradient.skinLabRoseGradient)
-                Text("追踪 \(report.duration) 天")
-                    .font(.skinLabHeadline)
-                    .foregroundColor(.skinLabText)
-            }
-            
-            // Main Stats
-            HStack(spacing: 16) {
-                ReportStatCard(
+        VStack(spacing: 20) {
+            // Duration Badge - auxiliary info (small, subtle)
+            AuxiliaryInfoText("追踪 \(report.duration) 天", icon: "calendar")
+
+            // Primary Key Metrics - Large and prominent
+            HStack(spacing: 12) {
+                KeyMetricCard(
                     value: report.scoreChange > 0 ? "+\(report.scoreChange)" : "\(report.scoreChange)",
                     label: "评分变化",
-                    icon: "chart.line.uptrend.xyaxis"
+                    icon: "chart.line.uptrend.xyaxis",
+                    trend: scoreTrend,
+                    trendLabel: scoreTrendLabel,
+                    gradient: .skinLabRoseGradient
                 )
 
-                ReportStatCard(
+                KeyMetricCard(
                     value: report.skinAgeChange > 0 ? "+\(report.skinAgeChange)" : "\(report.skinAgeChange)",
                     label: "皮肤年龄",
-                    icon: "sparkles"
-                )
-
-                ReportStatCard(
-                    value: "\(Int(report.completionRate * 100))%",
-                    label: "完成度",
-                    icon: "checkmark.circle"
+                    icon: "sparkles",
+                    trend: skinAgeTrend,
+                    trendLabel: skinAgeTrendLabel,
+                    gradient: .skinLabLavenderGradient
                 )
             }
+
+            // Secondary metric - completion rate (smaller, less prominent)
+            HStack(spacing: 16) {
+                SummaryStatRow(
+                    icon: "checkmark.circle",
+                    label: "完成度",
+                    value: "\(Int(report.completionRate * 100))%",
+                    iconColor: completionColor
+                )
+            }
+            .padding()
+            .background(Color.skinLabCardBackground)
+            .cornerRadius(16)
+            .skinLabSoftShadow()
 
             // Streak indicator
             if let metrics = engagementMetrics.first, metrics.streakCount > 0 {
                 streakIndicator(metrics)
             }
 
-            // Improvement Label
+            // Improvement Label - key insight summary
             Text(report.improvementLabel)
                 .font(.skinLabTitle3)
                 .foregroundStyle(LinearGradient.skinLabRoseGradient)
@@ -267,11 +275,43 @@ struct TrackingReportView: View {
                 .padding(.vertical, 10)
                 .background(Color.skinLabPrimary.opacity(0.1))
                 .cornerRadius(20)
+                .accessibilityLabel("总体趋势: \(report.improvementLabel)")
         }
-        .padding()
-        .background(Color.skinLabCardBackground)
-        .cornerRadius(20)
-        .skinLabSoftShadow()
+        .padding(.vertical, 8)
+    }
+
+    // MARK: - Trend Helpers
+
+    private var scoreTrend: KeyMetricCard.TrendDirection {
+        if report.scoreChange > 0 { return .up }
+        else if report.scoreChange < 0 { return .down }
+        return .neutral
+    }
+
+    private var scoreTrendLabel: String {
+        if report.scoreChange > 0 { return "提升" }
+        else if report.scoreChange < 0 { return "下降" }
+        return "持平"
+    }
+
+    private var skinAgeTrend: KeyMetricCard.TrendDirection {
+        // For skin age, lower is better
+        if report.skinAgeChange < 0 { return .up }
+        else if report.skinAgeChange > 0 { return .down }
+        return .neutral
+    }
+
+    private var skinAgeTrendLabel: String {
+        if report.skinAgeChange < 0 { return "年轻化" }
+        else if report.skinAgeChange > 0 { return "老化" }
+        return "稳定"
+    }
+
+    private var completionColor: Color {
+        let rate = report.completionRate
+        if rate >= 0.8 { return .skinLabSuccess }
+        else if rate >= 0.5 { return .skinLabWarning }
+        return .skinLabSubtext
     }
 
     // MARK: - Streak Indicator
@@ -882,34 +922,6 @@ struct TrackingReportView: View {
                 }
                 return cleaned
             }
-    }
-}
-
-// MARK: - Report Stat Card
-struct ReportStatCard: View {
-    let value: String
-    let label: String
-    let icon: String
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
-
-            Text(value)
-                .font(.skinLabTitle2)
-                .fontWeight(.bold)
-                .foregroundColor(.skinLabText)
-
-            Text(label)
-                .font(.skinLabCaption)
-                .foregroundColor(.skinLabSubtext)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.skinLabPrimary.opacity(0.1))
-        .cornerRadius(12)
     }
 }
 
