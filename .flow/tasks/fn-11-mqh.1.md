@@ -44,9 +44,8 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
-
+Implemented collapsible sections with persistence for TrackingReportView. Created reusable CollapsibleSection component with @MainActor-safe CollapsibleSectionManager using @Published + @AppStorage for user preference persistence. Added expand/collapse all button, summary badges on collapsed sections, and VoiceOver accessibility support. Key insights (header stats, trend chart, AI summary) remain always visible while detailed analysis sections default to collapsed state.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 5361a29d19a08b3e1c8c8e76fb05a6e5e92b44a2, 3aac885a7f7ebb651d238c8a1c1d5322c356bea8
+- Tests: xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17'
 - PRs:

@@ -121,6 +121,8 @@ struct HomeView: View {
             .padding(.top, 24)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("发现你的肌肤之美。AI智能分析，定制专属护肤方案")
+        .accessibilityHint("双击开始皮肤分析")
     }
 
     private var streakBadgeSection: some View {

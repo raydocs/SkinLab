@@ -149,8 +149,11 @@ struct TrackingView: View {
                 .cornerRadius(28)
                 .shadow(color: .skinLabPrimary.opacity(0.35), radius: 12, y: 6)
             }
+            .accessibilityLabel("开始28天追踪")
         }
         .padding(.top, 32)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("开始28天追踪。记录护肤过程，见证皮肤变化，获得真实的效果数据")
     }
     
     // MARK: - Active Session

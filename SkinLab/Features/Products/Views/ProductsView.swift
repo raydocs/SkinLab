@@ -4,7 +4,19 @@ struct ProductsView: View {
     @State private var searchText = ""
     @State private var selectedCategory: ProductCategory?
     @State private var showScanner = false
-    
+
+    /// Filtered products based on search text
+    private var filteredProducts: [RealProductData] {
+        if searchText.isEmpty {
+            return RealProductData.products
+        }
+        let lowercasedSearch = searchText.lowercased()
+        return RealProductData.products.filter { product in
+            product.name.lowercased().contains(lowercasedSearch) ||
+            product.brand.lowercased().contains(lowercasedSearch)
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -102,10 +114,14 @@ struct ProductsView: View {
                             }
                         }
                         
-                        // Product List with real data
-                        VStack(spacing: 14) {
-                            ForEach(0..<RealProductData.products.count, id: \.self) { index in
-                                BeautifulProductCard(index: index)
+                        // Product List with filtering
+                        if filteredProducts.isEmpty {
+                            productsEmptyState
+                        } else {
+                            VStack(spacing: 14) {
+                                ForEach(Array(filteredProducts.enumerated()), id: \.offset) { index, _ in
+                                    BeautifulProductCard(product: filteredProducts[index])
+                                }
                             }
                         }
                     }
@@ -118,6 +134,59 @@ struct ProductsView: View {
                 IngredientScannerFullView()
             }
         }
+    }
+
+    // MARK: - Empty State for Search Results
+
+    private var productsEmptyState: some View {
+        VStack(spacing: 24) {
+            ZStack {
+                Circle()
+                    .fill(LinearGradient.skinLabLavenderGradient.opacity(0.12))
+                    .frame(width: 100, height: 100)
+
+                Circle()
+                    .fill(LinearGradient.skinLabLavenderGradient.opacity(0.2))
+                    .frame(width: 72, height: 72)
+
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 36))
+                    .foregroundStyle(LinearGradient.skinLabLavenderGradient)
+            }
+
+            VStack(spacing: 10) {
+                Text("未找到相关产品")
+                    .font(.skinLabTitle3)
+                    .foregroundColor(.skinLabText)
+
+                Text("试试其他关键词，或扫描成分表\n获取产品信息")
+                    .font(.skinLabBody)
+                    .foregroundColor(.skinLabSubtext)
+                    .multilineTextAlignment(.center)
+            }
+
+            Button {
+                showScanner = true
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "camera.fill")
+                        .font(.system(size: 14))
+                    Text("扫描成分表")
+                        .font(.skinLabHeadline)
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .background(LinearGradient.skinLabPrimaryGradient)
+                .cornerRadius(26)
+                .shadow(color: .skinLabPrimary.opacity(0.3), radius: 10, y: 5)
+            }
+            .padding(.horizontal, 20)
+        }
+        .padding(.top, 40)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("未找到相关产品。试试其他关键词，或扫描成分表获取产品信息")
+        .accessibilityHint("双击打开扫描成分表功能")
     }
 }
 
@@ -272,12 +341,8 @@ struct RealProductData {
 
 // MARK: - Beautiful Product Card
 struct BeautifulProductCard: View {
-    var index: Int = 0
-    
-    private var product: RealProductData {
-        RealProductData.products[index % RealProductData.products.count]
-    }
-    
+    let product: RealProductData
+
     var body: some View {
         VStack(spacing: 12) {
             HStack(spacing: 14) {
