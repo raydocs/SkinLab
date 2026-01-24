@@ -150,6 +150,109 @@ struct TrendForecast: Codable, Sendable {
     }
 }
 
+// MARK: - Predictive Alerts
+
+/// 预警严重程度等级
+enum AlertSeverity: String, Codable, Sendable {
+    case low = "提醒"
+    case medium = "注意"
+    case high = "警告"
+
+    /// 显示图标
+    var icon: String {
+        switch self {
+        case .low: return "info.circle.fill"
+        case .medium: return "exclamationmark.triangle.fill"
+        case .high: return "exclamationmark.octagon.fill"
+        }
+    }
+
+    /// 主题颜色名称 (用于 Color(colorName))
+    var colorName: String {
+        switch self {
+        case .low: return "blue"
+        case .medium: return "orange"
+        case .high: return "red"
+        }
+    }
+}
+
+/// 预测性护肤预警
+/// 基于趋势分析预测未来可能出现的皮肤问题
+struct PredictiveAlert: Codable, Identifiable, Sendable {
+    let id: UUID
+
+    /// 预警相关指标 ("痘痘", "泛红", "综合评分", "敏感度")
+    let metric: String
+
+    /// 预警严重程度
+    let severity: AlertSeverity
+
+    /// 预警消息
+    let message: String
+
+    /// 行动建议
+    let actionSuggestion: String
+
+    /// 预测发生日期
+    let predictedDate: Date
+
+    /// 预测置信度
+    let confidence: ConfidenceScore
+
+    init(
+        id: UUID = UUID(),
+        metric: String,
+        severity: AlertSeverity,
+        message: String,
+        actionSuggestion: String,
+        predictedDate: Date,
+        confidence: ConfidenceScore
+    ) {
+        self.id = id
+        self.metric = metric
+        self.severity = severity
+        self.message = message
+        self.actionSuggestion = actionSuggestion
+        self.predictedDate = predictedDate
+        self.confidence = confidence
+    }
+
+    /// 显示图标
+    var icon: String {
+        severity.icon
+    }
+
+    /// 主题颜色名称
+    var colorName: String {
+        severity.colorName
+    }
+
+    /// 预测距今天数
+    var daysFromNow: Int {
+        Calendar.current.dateComponents([.day], from: Date(), to: predictedDate).day ?? 0
+    }
+
+    /// 格式化的预测日期文本
+    var predictedDateText: String {
+        let days = daysFromNow
+        if days == 0 {
+            return "今天"
+        } else if days == 1 {
+            return "明天"
+        } else if days > 0 {
+            return "\(days)天后"
+        } else {
+            return "已过期"
+        }
+    }
+
+    /// 完整预警标签
+    var label: String {
+        "[\(severity.rawValue)] \(metric): \(message)"
+    }
+}
+
 // MARK: - Heatmap Data
 
 /// 热力图单元格数据
