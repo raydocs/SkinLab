@@ -6,6 +6,7 @@ struct NotificationSettingsView: View {
     @AppStorage("notifications.enabled") private var notificationsEnabled = true
     @AppStorage("notifications.trackingReminders") private var trackingReminders = true
     @AppStorage("notifications.weeklyReport") private var weeklyReport = false
+    @AppStorage("notifications.predictiveAlerts") private var predictiveAlertsEnabled = true
 
     var body: some View {
         NavigationStack {
@@ -43,6 +44,24 @@ struct NotificationSettingsView: View {
                             .toggleStyle(SwitchToggleStyle(tint: .skinLabPrimary))
                             .padding()
                             .disabled(!notificationsEnabled)
+
+                        Divider()
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Toggle("预测性护肤提醒", isOn: $predictiveAlertsEnabled)
+                                .toggleStyle(SwitchToggleStyle(tint: .skinLabPrimary))
+                                .disabled(!notificationsEnabled)
+
+                            HStack(spacing: 6) {
+                                Image(systemName: "wand.and.stars")
+                                    .font(.skinLabCaption)
+                                    .foregroundColor(.skinLabSubtext)
+                                Text("在皮肤状态可能恶化前收到预警通知")
+                                    .font(.skinLabCaption)
+                                    .foregroundColor(.skinLabSubtext)
+                            }
+                        }
+                        .padding()
                     }
                     .background(Color.skinLabCardBackground)
                     .cornerRadius(16)

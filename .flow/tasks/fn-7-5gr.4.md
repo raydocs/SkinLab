@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Integrated ForecastChartView into TrackingReportView with collapsible forecast section, prominent risk alerts via PredictiveAlertCard, and confidence level indicator.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 30e4dcfe439589a5c2a373de1e3847822fd18a7f
+- Tests: xcodebuild build verified
 - PRs:
