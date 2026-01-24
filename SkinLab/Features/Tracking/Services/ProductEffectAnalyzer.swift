@@ -47,7 +47,8 @@ struct ProductEffectAnalyzer {
                     day: checkIn.day,
                     overallScore: analysis.overallScore,
                     feeling: checkIn.feeling,
-                    checkInIndex: index
+                    checkInIndex: index,
+                    allProductsUsedThatDay: checkIn.usedProducts
                 )
             }
         }
@@ -272,6 +273,8 @@ private struct ProductUsageData {
     var scores: [Int] = []
     var feelings: [CheckIn.Feeling] = []
     var checkInIndices: [Int] = []
+    var coUsedProducts: [String: Int] = [:]  // 同日使用的其他产品 -> 次数
+    var soloUsageDays: [Int] = []  // 单独使用的日期
     
     var usageCount: Int {
         days.count
@@ -294,12 +297,24 @@ private struct ProductUsageData {
         return sqrt(variance)
     }
     
-    mutating func addUsage(day: Int, overallScore: Int, feeling: CheckIn.Feeling?, checkInIndex: Int) {
+    mutating func addUsage(day: Int, overallScore: Int, feeling: CheckIn.Feeling?, checkInIndex: Int, allProductsUsedThatDay: [String]) {
         days.append(day)
         scores.append(overallScore)
         if let feeling = feeling {
             feelings.append(feeling)
         }
         checkInIndices.append(checkInIndex)
+
+        // Track co-used products (exclude self)
+        let otherProducts = allProductsUsedThatDay.filter { $0 != productId }
+        if otherProducts.isEmpty {
+            // This is a solo usage day
+            soloUsageDays.append(day)
+        } else {
+            // Track each co-used product
+            for otherProductId in otherProducts {
+                coUsedProducts[otherProductId, default: 0] += 1
+            }
+        }
     }
 }
