@@ -92,6 +92,7 @@
 		A1000091 /* RomanticDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000091 /* RomanticDecorations.swift */; };
 		A1000092 /* FreshThemeModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000092 /* FreshThemeModifiers.swift */; };
 		A13B571B06A76D25EBD730DA /* ReliabilityBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEDE94003C210FE421D74DBB /* ReliabilityBadgeView.swift */; };
+		A22AD9666E7C0CC0BC313F36 /* ScenarioAdvisor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE7886BB9B42D4B17EC4483 /* ScenarioAdvisor.swift */; };
 		A246142DCE242C8FB297A6E4 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25C4829B04FC75BA0C6D73F /* FeedbackView.swift */; };
 		A57E243816AA8E5F23C5E443 /* ForecastEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBAB226955E3CA24C059B2F /* ForecastEngine.swift */; };
 		A6EA712F1330C8B6CF300B92 /* ProductPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AD55FD6D5510D7F3CCFB71 /* ProductPickerView.swift */; };
@@ -203,6 +204,7 @@
 		9A635EA3C39E9DD8654262A3 /* RoutineService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RoutineService.swift; path = ../../SkinLab/Core/Network/RoutineService.swift; sourceTree = "<group>"; };
 		9A7B8E871536EE6F08D08030 /* AnomalyDetector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnomalyDetector.swift; sourceTree = "<group>"; };
 		9C2B4D6E8F1A3057C4D89A12 /* PredictiveAlertTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PredictiveAlertTests.swift; sourceTree = "<group>"; };
+		9CE7886BB9B42D4B17EC4483 /* ScenarioAdvisor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScenarioAdvisor.swift; sourceTree = "<group>"; };
 		9DFB1033AB474D7ACEE79DF3 /* SkinTwinViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinViewModelTests.swift; sourceTree = "<group>"; };
 		A06B8226FA6F257A587D6D1B /* RoutineView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RoutineView.swift; path = ../../../SkinLab/Features/Analysis/Views/RoutineView.swift; sourceTree = "<group>"; };
 		A5E2775EF6D0F3ED4872DB5A /* MatchPoolRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchPoolRepository.swift; sourceTree = "<group>"; };
@@ -378,6 +380,7 @@
 			isa = PBXGroup;
 			children = (
 				35720BEB5970E2C7EFF36049 /* Models */,
+				521B4209D752237375A2205C /* Services */,
 			);
 			name = Scenario;
 			path = Scenario;
@@ -485,6 +488,15 @@
 				79FE9E555CC189B9FEB772A8 /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		521B4209D752237375A2205C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				9CE7886BB9B42D4B17EC4483 /* ScenarioAdvisor.swift */,
+			);
+			name = Services;
+			path = Services;
 			sourceTree = "<group>";
 		};
 		57A32E1C2367DEF3A2D3DA5A /* Products */ = {
@@ -1234,6 +1246,7 @@
 				48B9B88C27CA298A33E3C9E5 /* CheckInView.swift in Sources */,
 				D80C48F787313223CDD43E10 /* TrackingDetailComponents.swift in Sources */,
 				D8F53C8C53BD040E9A24F7E5 /* ScenarioModels.swift in Sources */,
+				A22AD9666E7C0CC0BC313F36 /* ScenarioAdvisor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
