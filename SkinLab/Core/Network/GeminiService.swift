@@ -70,8 +70,8 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             self.session = session
         } else {
             let config = URLSessionConfiguration.default
-            config.timeoutIntervalForRequest = 30
-            config.timeoutIntervalForResource = 60
+            config.timeoutIntervalForRequest = AppConfiguration.API.requestTimeout
+            config.timeoutIntervalForResource = AppConfiguration.API.resourceTimeout
             self.session = URLSession(configuration: config)
         }
     }
@@ -119,7 +119,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
                 throw GeminiError.unauthorized
             case 429:
                 // Rate limited - retry with exponential backoff
-                if retryCount < 3 {
+                if retryCount < AppConfiguration.API.maxRetryAttempts {
                     let delay = pow(2.0, Double(retryCount)) // 1s, 2s, 4s
                     try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                     return try await analyzeSkin(
@@ -137,7 +137,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             throw error
         } catch {
             // Network error - retry
-            if retryCount < 2 {
+            if retryCount < AppConfiguration.API.maxNetworkRetryAttempts {
                 let delay = pow(2.0, Double(retryCount))
                 try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                 return try await analyzeSkin(
@@ -182,21 +182,20 @@ actor GeminiService: SkinAnalysisServiceProtocol {
         base64Image: String,
         previousAnalysis: SkinAnalysis?
     ) throws -> URLRequest {
-        let endpoint = "\(GeminiConfig.baseURL)/chat/completions"
-        guard let url = URL(string: endpoint) else {
+        guard let url = URL(string: AppConfiguration.API.chatCompletionsEndpoint) else {
             throw GeminiError.apiError("Invalid URL")
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue(AppConfiguration.API.referer, forHTTPHeaderField: "HTTP-Referer")
         request.setValue(AppConfiguration.API.title, forHTTPHeaderField: "X-Title")
-        
+
         // Build prompt with historical context if available
         let prompt = buildPrompt(with: previousAnalysis)
-        
+
         // OpenRouter uses OpenAI-compatible format
         let body: [String: Any] = [
             "model": GeminiConfig.model,
@@ -217,7 +216,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
                     ]
                 ]
             ],
-            "temperature": 0.1,
+            "temperature": AppConfiguration.API.defaultTemperature,
             "max_tokens": AppConfiguration.Limits.skinAnalysisMaxTokens
         ]
         
@@ -481,7 +480,7 @@ extension GeminiService: IngredientAIServiceProtocol {
         }
 
         // Retry logic with exponential backoff
-        let maxRetries = 3
+        let maxRetries = AppConfiguration.API.maxRetryAttempts
         var retryDelay: TimeInterval = 1.0
 
         for attempt in 0..<maxRetries {
@@ -555,20 +554,19 @@ extension GeminiService: IngredientAIServiceProtocol {
     }
     
     private func buildIngredientAnalysisRequest(request: IngredientAIRequest) throws -> URLRequest {
-        let endpoint = "\(GeminiConfig.baseURL)/chat/completions"
-        guard let url = URL(string: endpoint) else {
+        guard let url = URL(string: AppConfiguration.API.chatCompletionsEndpoint) else {
             throw GeminiError.apiError("Invalid URL")
         }
-        
+
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue(AppConfiguration.API.referer, forHTTPHeaderField: "HTTP-Referer")
         urlRequest.setValue(AppConfiguration.API.title, forHTTPHeaderField: "X-Title")
-        
+
         let prompt = buildIngredientPrompt(request: request)
-        
+
         let body: [String: Any] = [
             "model": GeminiConfig.model,
             "messages": [
@@ -577,7 +575,7 @@ extension GeminiService: IngredientAIServiceProtocol {
                     "content": prompt
                 ]
             ],
-            "temperature": 0.1,
+            "temperature": AppConfiguration.API.defaultTemperature,
             "max_tokens": AppConfiguration.Limits.ingredientAnalysisMaxTokens
         ]
 

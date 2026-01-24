@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 // MARK: - App Configuration
 /// Centralized configuration management for the SkinLab app.
@@ -6,7 +7,7 @@ import Foundation
 enum AppConfiguration {
 
     // MARK: - Environment
-    enum Environment {
+    enum Environment: String {
         case development
         case staging
         case production
@@ -32,8 +33,24 @@ enum AppConfiguration {
         }
     }
 
-    /// Current environment based on build configuration
+    /// Current environment based on build configuration and overrides.
+    /// Priority: 1) Environment variable (DEBUG only), 2) Info.plist, 3) Build configuration
     static var current: Environment {
+        #if DEBUG
+        // Allow environment override via env var in debug builds
+        if let override = ProcessInfo.processInfo.environment["SKINLAB_ENV"],
+           let env = Environment(rawValue: override) {
+            return env
+        }
+        #endif
+
+        // Check Info.plist for environment setting (for staging builds)
+        if let raw = Bundle.main.object(forInfoDictionaryKey: "SKINLAB_ENV") as? String,
+           let env = Environment(rawValue: raw) {
+            return env
+        }
+
+        // Fall back to build configuration
         #if DEBUG
         return .development
         #else
@@ -45,6 +62,9 @@ enum AppConfiguration {
     enum API {
         /// Base URL for OpenRouter API
         static var baseURL: String { current.apiBaseURL }
+
+        /// Full URL for chat completions endpoint
+        static var chatCompletionsEndpoint: String { "\(baseURL)/chat/completions" }
 
         /// HTTP Referer header value for API requests
         static let referer = "https://skinlab.app"
@@ -60,6 +80,12 @@ enum AppConfiguration {
 
         /// Maximum retry attempts for API requests
         static let maxRetryAttempts = 3
+
+        /// Maximum retry attempts for network errors (slightly fewer)
+        static let maxNetworkRetryAttempts = 2
+
+        /// Default temperature for AI requests
+        static let defaultTemperature: Double = 0.1
 
         /// AI model for skin analysis
         static let skinAnalysisModel = "google/gemini-3-flash-preview"

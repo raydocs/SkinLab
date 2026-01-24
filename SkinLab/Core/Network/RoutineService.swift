@@ -289,10 +289,17 @@ enum RoutineError: LocalizedError {
 
 // MARK: - GeminiService Extension
 extension GeminiService {
+    /// Configured URLSession for routine generation with proper timeouts
+    private static var routineSession: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = AppConfiguration.API.requestTimeout
+        config.timeoutIntervalForResource = AppConfiguration.API.resourceTimeout
+        return URLSession(configuration: config)
+    }()
+
     func generateRoutine(prompt: String) async throws -> String {
         // Reuse existing Gemini infrastructure
-        let endpoint = "\(AppConfiguration.API.baseURL)/chat/completions"
-        guard let url = URL(string: endpoint) else {
+        guard let url = URL(string: AppConfiguration.API.chatCompletionsEndpoint) else {
             throw GeminiError.apiError("Invalid URL")
         }
 
@@ -301,6 +308,7 @@ extension GeminiService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue(AppConfiguration.API.referer, forHTTPHeaderField: "HTTP-Referer")
+        request.setValue(AppConfiguration.API.title, forHTTPHeaderField: "X-Title")
 
         let requestBody: [String: Any] = [
             "model": AppConfiguration.API.routineGenerationModel,
@@ -312,7 +320,7 @@ extension GeminiService {
 
         request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
 
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, _) = try await Self.routineSession.data(for: request)
 
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let choices = json["choices"] as? [[String: Any]],
