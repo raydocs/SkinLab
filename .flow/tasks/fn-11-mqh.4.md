@@ -51,9 +51,8 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
-
+Implemented information hierarchy simplification with KeyMetricCard, ProgressiveDisclosureCard, and SummaryStatRow components. Updated TrackingReportView with prominent key metrics and trend indicators. Enhanced AnalysisResultView with severity-sorted issues and progressive disclosure for secondary content.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 05a81706d3e50e68f63bd0ad0b88c8b3c4ca2e0e, 49f246f5bbe548b4692dfcf2e839ee3d2a91442b
+- Tests: xcodebuild build -scheme SkinLab
 - PRs:
