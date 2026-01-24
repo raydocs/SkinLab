@@ -26,6 +26,10 @@ struct CheckInView: View {
     // User override for photo quality
     @State private var userFlaggedPhotoIssue = false
 
+    // Product selection
+    @State private var selectedProducts: [String] = []
+    @State private var showProductPicker = false
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -71,6 +75,61 @@ struct CheckInView: View {
                                 FeelingButton(feeling: f, isSelected: feeling == f) {
                                     feeling = f
                                 }
+                            }
+                        }
+                    }
+                    .skinLabCard()
+
+                    // Product Selection
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("使用的产品")
+                                .font(.skinLabHeadline)
+
+                            Text("可选")
+                                .font(.skinLabCaption)
+                                .foregroundColor(.skinLabSubtext)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.skinLabPrimary.opacity(0.1))
+                                )
+                        }
+
+                        if selectedProducts.isEmpty {
+                            Text("未选择产品")
+                                .font(.skinLabSubheadline)
+                                .foregroundColor(.skinLabSubtext)
+                        } else {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ForEach(selectedProducts, id: \.self) { product in
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.skinLabPrimary)
+                                        Text(product)
+                                            .font(.skinLabSubheadline)
+                                            .foregroundColor(.skinLabText)
+                                    }
+                                }
+                            }
+                        }
+
+                        Button {
+                            showProductPicker = true
+                        } label: {
+                            HStack(spacing: 8) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.skinLabPrimary.opacity(0.15))
+                                        .frame(width: 32, height: 32)
+                                    Image(systemName: selectedProducts.isEmpty ? "plus" : "pencil")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundColor(.skinLabPrimary)
+                                }
+                                Text(selectedProducts.isEmpty ? "选择产品" : "修改选择")
+                                    .font(.skinLabSubheadline)
+                                    .foregroundColor(.skinLabPrimary)
                             }
                         }
                     }
@@ -149,6 +208,11 @@ struct CheckInView: View {
         .onAppear {
             // Capture scheduled day ONCE when view opens
             scheduledDay = session.nextCheckInDay
+            // Pre-populate with session's target products if available
+            selectedProducts = session.targetProducts
+        }
+        .sheet(isPresented: $showProductPicker) {
+            ProductPickerView(selectedProducts: $selectedProducts)
         }
         .alert("保存失败", isPresented: Binding(
             get: { errorMessage != nil },
@@ -434,7 +498,7 @@ struct CheckInView: View {
                     captureDate: Date(),
                     photoPath: photoPath,
                     analysisId: analysis.id,
-                    usedProducts: [],
+                    usedProducts: selectedProducts,
                     notes: notes.isEmpty ? nil : notes,
                     feeling: feeling,
                     photoStandardization: updatedStandardization,
@@ -457,7 +521,7 @@ struct CheckInView: View {
                     captureDate: Date(),
                     photoPath: photoPath,
                     analysisId: analysis.id,
-                    usedProducts: [],
+                    usedProducts: selectedProducts,
                     notes: notes.isEmpty ? nil : notes,
                     feeling: feeling,
                     photoStandardization: updatedStandardization,
