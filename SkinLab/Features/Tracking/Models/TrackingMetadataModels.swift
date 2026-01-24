@@ -122,6 +122,7 @@ struct LifestyleFactors: Codable, Sendable {
     let sunExposureLevel: Int?       // 1-5 scale
     let dietNotes: String?           // optional short notes
     let cyclePhase: CyclePhase?      // menstrual cycle phase
+    let sceneContext: SkinScenario?  // current skincare scenario context
 
     enum StressLevel: Int, Codable, Sendable {
         case veryLow = 1
@@ -149,7 +150,8 @@ struct LifestyleFactors: Codable, Sendable {
         exerciseMinutes: Int? = nil,
         sunExposureLevel: Int? = nil,
         dietNotes: String? = nil,
-        cyclePhase: CyclePhase? = nil
+        cyclePhase: CyclePhase? = nil,
+        sceneContext: SkinScenario? = nil
     ) {
         self.sleepHours = sleepHours
         self.stressLevel = stressLevel
@@ -159,6 +161,7 @@ struct LifestyleFactors: Codable, Sendable {
         self.sunExposureLevel = sunExposureLevel
         self.dietNotes = dietNotes
         self.cyclePhase = cyclePhase
+        self.sceneContext = sceneContext
     }
 }
 
