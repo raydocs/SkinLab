@@ -109,12 +109,20 @@ class AnalysisViewModel: ObservableObject {
     }
 
     // MARK: - Private
+
+    /// Save photo with compression for storage optimization
     private func savePhoto(image: UIImage, analysisId: UUID) -> String? {
-        guard let data = image.jpegData(compressionQuality: 0.8) else {
+        // Use image compression utilities for optimized storage
+        guard let data = image.compressed(
+            quality: ImageCompressionConfig.defaultQuality,
+            maxDimension: ImageCompressionConfig.defaultMaxDimension
+        ) else {
             return nil
         }
 
         let filename = "\(analysisId.uuidString).jpg"
+        let relativePath = "analysis_photos/\(filename)"
+
         let photosDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("analysis_photos", isDirectory: true)
 
@@ -123,8 +131,39 @@ class AnalysisViewModel: ObservableObject {
         let fileURL = photosDir.appendingPathComponent(filename)
         try? data.write(to: fileURL)
 
-        // Return full relative path including subdirectory for correct loading
-        return "analysis_photos/\(filename)"
+        // Also generate and save thumbnail for faster loading in lists
+        saveThumbnail(image: image, analysisId: analysisId)
+
+        // Cache the full image for quick access
+        Task {
+            await ImageCache.shared.storeData(data, for: relativePath)
+        }
+
+        return relativePath
+    }
+
+    /// Generate and save thumbnail for the analysis photo
+    private func saveThumbnail(image: UIImage, analysisId: UUID) {
+        guard let thumbnailData = image.thumbnailData(
+            size: ImageCompressionConfig.defaultThumbnailSize,
+            quality: 0.7
+        ) else {
+            return
+        }
+
+        let thumbnailFilename = "\(analysisId.uuidString)_thumb.jpg"
+        let thumbnailPath = "analysis_photos/\(thumbnailFilename)"
+
+        let photosDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("analysis_photos", isDirectory: true)
+
+        let thumbnailURL = photosDir.appendingPathComponent(thumbnailFilename)
+        try? thumbnailData.write(to: thumbnailURL)
+
+        // Cache thumbnail
+        Task {
+            await ImageCache.shared.storeData(thumbnailData, for: thumbnailPath)
+        }
     }
 }
 
