@@ -7,10 +7,11 @@ struct ProductsView: View {
 
     /// Filtered products based on search text
     private var filteredProducts: [RealProductData] {
-        if searchText.isEmpty {
+        let trimmedSearch = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedSearch.isEmpty {
             return RealProductData.products
         }
-        let lowercasedSearch = searchText.lowercased()
+        let lowercasedSearch = trimmedSearch.lowercased()
         return RealProductData.products.filter { product in
             product.name.lowercased().contains(lowercasedSearch) ||
             product.brand.lowercased().contains(lowercasedSearch)
@@ -182,11 +183,11 @@ struct ProductsView: View {
                 .shadow(color: .skinLabPrimary.opacity(0.3), radius: 10, y: 5)
             }
             .padding(.horizontal, 20)
+            .accessibilityLabel("扫描成分表")
+            .accessibilityHint("试试其他关键词，或扫描成分表获取产品信息")
         }
         .padding(.top, 40)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("未找到相关产品。试试其他关键词，或扫描成分表获取产品信息")
-        .accessibilityHint("双击打开扫描成分表功能")
+        .accessibilityElement(children: .contain)
     }
 }
 

@@ -33,9 +33,7 @@ struct EmptyStateView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 32)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title). \(message)")
-        .accessibilityHint("Double tap to \(actionTitle)")
+        .accessibilityElement(children: .contain)
     }
 
     // MARK: - Icon Section
@@ -124,6 +122,7 @@ struct EmptyStateView: View {
             .shadow(color: .skinLabPrimary.opacity(0.35), radius: 12, y: 6)
         }
         .accessibilityLabel(actionTitle)
+        .accessibilityHint(message)
     }
 }
 
