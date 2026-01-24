@@ -95,9 +95,8 @@ xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone
 ```
 
 ## Done summary
-TBD
-
+Implemented image compression and caching system with actor-based ImageCache (memory + disk layers), UIImage compression/thumbnail extensions, and SwiftUI CachedImageView components. Includes 27 unit tests and integration with AnalysisViewModel.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: b336115375b3157b7ca4ce6af8e683938ac9441e, 94f21c7
+- Tests: xcodebuild test -scheme SkinLab -only-testing:SkinLabTests/ImageCacheTests
 - PRs:
