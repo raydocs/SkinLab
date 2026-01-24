@@ -13,6 +13,148 @@ struct ProductEffectAnalyzer {
 
     private let analyzer = TimeSeriesAnalyzer()
 
+    // MARK: - Attribution Weight Calculation
+
+    /// 计算归因权重
+    /// 当多个产品同时使用时，确定每个产品对皮肤变化的贡献权重
+    /// - Parameters:
+    ///   - products: 产品ID列表
+    ///   - checkIns: 打卡记录
+    ///   - analyses: 分析结果字典
+    ///   - historyStore: 用户历史数据存储(可选)
+    /// - Returns: 产品ID -> 归因权重 (总和为1.0)
+    func calculateAttributionWeights(
+        products: [String],
+        checkIns: [CheckIn],
+        analyses: [UUID: SkinAnalysis],
+        historyStore: UserHistoryStore? = nil
+    ) async -> [String: Double] {
+        guard !products.isEmpty else { return [:] }
+
+        // Build usage data for each product
+        var productUsageMap: [String: ProductUsageData] = [:]
+
+        for checkIn in checkIns {
+            guard let analysis = checkIn.analysisId.flatMap({ analyses[$0] }) else { continue }
+
+            for productId in checkIn.usedProducts where products.contains(productId) {
+                if productUsageMap[productId] == nil {
+                    productUsageMap[productId] = ProductUsageData(
+                        productId: productId,
+                        productName: productId
+                    )
+                }
+
+                productUsageMap[productId]?.addUsage(
+                    day: checkIn.day,
+                    overallScore: analysis.overallScore,
+                    feeling: checkIn.feeling,
+                    checkInIndex: 0,
+                    allProductsUsedThatDay: checkIn.usedProducts
+                )
+            }
+        }
+
+        var weights: [String: Double] = [:]
+
+        for product in products {
+            guard let usageData = productUsageMap[product] else {
+                weights[product] = 0
+                continue
+            }
+
+            // Factor 1: Solo effect (weight: 0.4)
+            let soloEffect = calculateSoloEffect(usageData: usageData, checkIns: checkIns, analyses: analyses)
+
+            // Factor 2: Usage frequency (weight: 0.3)
+            let frequency = calculateUsageFrequency(usageData: usageData, totalCheckIns: checkIns.count)
+
+            // Factor 3: Ingredient history score (weight: 0.3)
+            var ingredientScore: Double = 0.5  // Default neutral score
+            if let historyStore = historyStore {
+                ingredientScore = await calculateIngredientHistoryScore(
+                    productId: product,
+                    historyStore: historyStore
+                )
+                // Normalize from -1..1 to 0..1 range
+                ingredientScore = (ingredientScore + 1) / 2
+            }
+
+            weights[product] = 0.4 * soloEffect + 0.3 * frequency + 0.3 * ingredientScore
+        }
+
+        // Normalize so weights sum to 1.0
+        return normalizeWeights(weights)
+    }
+
+    /// 计算产品单独使用时的效果
+    /// - Returns: 0-1 范围的效果值 (0.5 为中性)
+    private func calculateSoloEffect(
+        usageData: ProductUsageData,
+        checkIns: [CheckIn],
+        analyses: [UUID: SkinAnalysis]
+    ) -> Double {
+        let soloUsageDays = usageData.soloUsageDays
+        guard soloUsageDays.count >= 2 else {
+            // Not enough solo usage data, return neutral
+            return 0.5
+        }
+
+        // Find solo usage scores
+        var soloScores: [Int] = []
+        for checkIn in checkIns {
+            if soloUsageDays.contains(checkIn.day),
+               checkIn.usedProducts.contains(usageData.productId),
+               let analysis = checkIn.analysisId.flatMap({ analyses[$0] }) {
+                soloScores.append(analysis.overallScore)
+            }
+        }
+
+        guard soloScores.count >= 2 else { return 0.5 }
+
+        // Calculate average improvement during solo usage
+        var improvements: [Double] = []
+        for i in 1..<soloScores.count {
+            let change = Double(soloScores[i] - soloScores[i - 1])
+            improvements.append(change)
+        }
+
+        let avgImprovement = analyzer.mean(improvements) / 100.0  // Normalize to -1..1
+        let normalizedEffect = max(-1, min(1, avgImprovement))
+
+        // Convert from -1..1 to 0..1 range
+        return (normalizedEffect + 1) / 2
+    }
+
+    /// 计算产品使用频率
+    /// - Returns: 0-1 范围的频率值
+    private func calculateUsageFrequency(usageData: ProductUsageData, totalCheckIns: Int) -> Double {
+        guard totalCheckIns > 0 else { return 0 }
+        let frequency = Double(usageData.usageCount) / Double(totalCheckIns)
+        return min(1.0, frequency)  // Cap at 1.0
+    }
+
+    /// 归一化权重使总和为1
+    private func normalizeWeights(_ weights: [String: Double]) -> [String: Double] {
+        let total = weights.values.reduce(0, +)
+        guard total > 0 else {
+            // If all weights are 0, distribute evenly
+            let count = Double(weights.count)
+            guard count > 0 else { return [:] }
+            var result: [String: Double] = [:]
+            for key in weights.keys {
+                result[key] = 1.0 / count
+            }
+            return result
+        }
+
+        var result: [String: Double] = [:]
+        for (key, value) in weights {
+            result[key] = value / total
+        }
+        return result
+    }
+
     // MARK: - Product Overlap Detection
 
     /// 检测产品使用重叠
