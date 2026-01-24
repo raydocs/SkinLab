@@ -25,12 +25,21 @@ struct RetryPolicy: Sendable {
     /// Jitter factor (0.0-1.0) to add randomness to delays
     let jitterFactor: Double
 
+    /// Maximum allowed retry attempts (safety cap)
+    private static let maxRetryAttemptsCap = 10
+
     /// Initialize with validated parameters (clamped to safe ranges)
+    /// - Parameters:
+    ///   - maxAttempts: Clamped to 0...10
+    ///   - baseDelay: Clamped to >= 0, NaN/Inf treated as 0
+    ///   - maxDelay: Clamped to >= 0, NaN/Inf treated as 0
+    ///   - jitterFactor: Clamped to 0...1, NaN/Inf treated as 0
     init(maxAttempts: Int, baseDelay: TimeInterval, maxDelay: TimeInterval, jitterFactor: Double) {
-        self.maxAttempts = max(0, maxAttempts)
-        self.baseDelay = max(0, baseDelay)
-        self.maxDelay = max(0, maxDelay)
-        self.jitterFactor = min(1.0, max(0, jitterFactor))
+        self.maxAttempts = max(0, min(maxAttempts, Self.maxRetryAttemptsCap))
+        self.baseDelay = baseDelay.isFinite ? max(0, baseDelay) : 0
+        self.maxDelay = maxDelay.isFinite ? max(0, maxDelay) : 0
+        let jf = jitterFactor.isFinite ? jitterFactor : 0
+        self.jitterFactor = min(1.0, max(0, jf))
     }
 
     /// Default retry policy for most network requests
@@ -144,11 +153,11 @@ extension URLError {
              .cannotParseResponse:
             return true
 
-        // SSL/TLS issues - might be temporary
+        // SSL/TLS issues - usually permanent (cert config, clock, MITM)
         case .secureConnectionFailed,
              .serverCertificateHasBadDate,
              .serverCertificateNotYetValid:
-            return true
+            return false
 
         // Client errors or permanent failures - not retryable
         case .cancelled,
@@ -249,8 +258,9 @@ extension GeminiError {
     /// via HTTPError for proper retryability detection.
     var isRetryable: Bool {
         switch self {
-        case .networkError:
-            return true
+        case .networkError(let underlying):
+            // Delegate to underlying error's retryability
+            return underlying.isRetryable
         case .rateLimited:
             return true
         case .apiError,
@@ -363,6 +373,11 @@ func withRetry<T>(
             if let httpError = error as? HTTPError,
                let retryAfter = httpError.retryAfter {
                 delay = max(delay, retryAfter)
+            }
+
+            // Sanitize NaN/Inf/negative values
+            if !delay.isFinite || delay < 0 {
+                delay = 0
             }
 
             // Cap delay to prevent pathological sleeps and UInt64 overflow

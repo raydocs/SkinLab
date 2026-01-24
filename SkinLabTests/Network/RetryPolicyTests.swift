@@ -46,6 +46,30 @@ final class RetryPolicyTests: XCTestCase {
         XCTAssertEqual(policy.jitterFactor, 1.0, "jitterFactor > 1 should be clamped to 1.0")
     }
 
+    func testInitClampsExcessiveMaxAttempts() {
+        let policy = RetryPolicy(
+            maxAttempts: Int.max,
+            baseDelay: 1.0,
+            maxDelay: 10.0,
+            jitterFactor: 0.2
+        )
+
+        XCTAssertLessThanOrEqual(policy.maxAttempts, 10, "Excessive maxAttempts should be capped")
+    }
+
+    func testInitHandlesNaNAndInfinity() {
+        let policy = RetryPolicy(
+            maxAttempts: 3,
+            baseDelay: .infinity,
+            maxDelay: .nan,
+            jitterFactor: .nan
+        )
+
+        XCTAssertEqual(policy.baseDelay, 0, "Infinity baseDelay should become 0")
+        XCTAssertEqual(policy.maxDelay, 0, "NaN maxDelay should become 0")
+        XCTAssertEqual(policy.jitterFactor, 0, "NaN jitterFactor should become 0")
+    }
+
     func testExponentialBackoffDelay() {
         let policy = RetryPolicy(
             maxAttempts: 5,
@@ -173,7 +197,11 @@ final class RetryPolicyTests: XCTestCase {
             .cancelled,
             .badURL,
             .unsupportedURL,
-            .userCancelledAuthentication
+            .userCancelledAuthentication,
+            // SSL/TLS errors are not retryable (usually permanent)
+            .secureConnectionFailed,
+            .serverCertificateHasBadDate,
+            .serverCertificateNotYetValid
         ]
 
         for code in nonRetryableErrors {
@@ -253,6 +281,7 @@ final class RetryPolicyTests: XCTestCase {
     // MARK: - GeminiError Retryable Tests
 
     func testRetryableGeminiErrors() {
+        // networkError delegates to underlying error
         XCTAssertTrue(GeminiError.networkError(URLError(.timedOut)).isRetryable)
         XCTAssertTrue(GeminiError.rateLimited.isRetryable)
     }
@@ -264,6 +293,8 @@ final class RetryPolicyTests: XCTestCase {
         XCTAssertFalse(GeminiError.unauthorized.isRetryable)
         // apiError is not retryable as it may contain 4xx client errors
         XCTAssertFalse(GeminiError.apiError("Server error").isRetryable)
+        // networkError with non-retryable underlying error
+        XCTAssertFalse(GeminiError.networkError(URLError(.badURL)).isRetryable)
     }
 
     // MARK: - WeatherError Retryable Tests
