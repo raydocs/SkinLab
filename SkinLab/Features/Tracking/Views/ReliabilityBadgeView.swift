@@ -123,9 +123,9 @@ struct ReliabilityReasonsView: View {
 
     private func reasonColor(_ reason: ReliabilityMetadata.ReliabilityReason) -> Color {
         switch reason {
-        case .lowLight, .highLight, .angleOff, .distanceOff, .noFaceDetected,
-             .missingLiveConditions, .longInterval, .userFlaggedIssue,
-             .lowAnalysisConfidence, .inconsistentCameraPosition:
+        case .lowLight, .highLight, .angleOff, .distanceOff, .centeringOff,
+             .blurry, .noFaceDetected, .missingLiveConditions, .longInterval,
+             .userFlaggedIssue, .lowAnalysisConfidence, .inconsistentCameraPosition:
             return .orange
         }
     }

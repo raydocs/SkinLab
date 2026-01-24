@@ -13,6 +13,8 @@ struct PhotoStandardizationMetadata: Codable, Sendable {
     let pitchDegrees: Double
     let rollDegrees: Double
     let distance: DistanceRating
+    let centering: CenteringRating
+    let sharpness: SharpnessRating
     let isReady: Bool
     let suggestions: [String]
     let userOverride: UserOverride?
@@ -77,6 +79,40 @@ struct PhotoStandardizationMetadata: Codable, Sendable {
         }
     }
 
+    enum CenteringRating: String, Codable, Sendable {
+        case tooLeft
+        case tooRight
+        case tooHigh
+        case tooLow
+        case optimal
+
+        init(from condition: CenteringCondition) {
+            switch condition {
+            case .tooLeft: self = .tooLeft
+            case .tooRight: self = .tooRight
+            case .tooHigh: self = .tooHigh
+            case .tooLow: self = .tooLow
+            case .optimal: self = .optimal
+            case .unknown: self = .optimal
+            }
+        }
+    }
+
+    enum SharpnessRating: String, Codable, Sendable {
+        case blurry
+        case slightlyBlurry
+        case sharp
+
+        init(from condition: SharpnessCondition) {
+            switch condition {
+            case .blurry: self = .blurry
+            case .slightlyBlurry: self = .slightlyBlurry
+            case .sharp: self = .sharp
+            case .unknown: self = .sharp
+            }
+        }
+    }
+
     enum UserOverride: String, Codable, Sendable {
         case userConfirmedGood  // User says "photo is fine despite conditions"
         case userFlaggedIssue   // User says "photo is not standard"
@@ -93,6 +129,8 @@ struct PhotoStandardizationMetadata: Codable, Sendable {
         pitchDegrees: Double,
         rollDegrees: Double,
         distance: DistanceRating,
+        centering: CenteringRating = .optimal,
+        sharpness: SharpnessRating = .sharp,
         isReady: Bool,
         suggestions: [String],
         userOverride: UserOverride? = nil
@@ -106,6 +144,8 @@ struct PhotoStandardizationMetadata: Codable, Sendable {
         self.pitchDegrees = pitchDegrees
         self.rollDegrees = rollDegrees
         self.distance = distance
+        self.centering = centering
+        self.sharpness = sharpness
         self.isReady = isReady
         self.suggestions = suggestions
         self.userOverride = userOverride
@@ -183,6 +223,8 @@ struct ReliabilityMetadata: Codable, Sendable {
         case highLight
         case angleOff
         case distanceOff
+        case centeringOff
+        case blurry
         case noFaceDetected
         case missingLiveConditions  // From library pick
         case longInterval           // Check-in was late
@@ -216,6 +258,10 @@ struct ReliabilityMetadata: Codable, Sendable {
                 description = "角度偏差"
             case .distanceOff:
                 description = "距离不合适"
+            case .centeringOff:
+                description = "面部偏离中心"
+            case .blurry:
+                description = "图像模糊"
             case .noFaceDetected:
                 description = "未检测到面部"
             case .missingLiveConditions:

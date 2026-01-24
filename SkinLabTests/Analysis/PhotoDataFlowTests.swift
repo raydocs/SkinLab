@@ -289,10 +289,7 @@ extension ReliabilityMetadata {
         ReliabilityMetadata(
             score: 0.9,
             level: .high,
-            reasons: [],
-            photoQualityScore: 0.9,
-            analysisConfidence: 0.85,
-            timingScore: 1.0
+            reasons: []
         )
     }
 }

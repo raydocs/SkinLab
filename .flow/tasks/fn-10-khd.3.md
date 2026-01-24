@@ -43,9 +43,8 @@ xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone
 ```
 
 ## Done summary
-TBD
-
+Completed streak freeze functionality with shouldSuggestFreeze() detection, HomeView integration with manual usage confirmation dialog, auto-detection of missed days with freeze suggestion popup, and success confirmation after freeze usage.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: d6e2bbe3ce438d53f1e137a884f8dc94cb6eb819
+- Tests: xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17'
 - PRs:

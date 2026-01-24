@@ -130,6 +130,8 @@
 		FN5FOQ05CONFLICTTEST00001 /* IngredientConflictTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */; };
 		LM00000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LM00000002 /* LocationManager.swift */; };
 		WS00000001 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = WS00000002 /* WeatherService.swift */; };
+		PQC0000001 /* PhotoQualityCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PQC0000002 /* PhotoQualityCheckerTests.swift */; };
+		PDF0000001 /* PhotoDataFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDF0000002 /* PhotoDataFlowTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -197,6 +199,8 @@
 		6DD37543E7F0B5A97188891F /* AchievementProgress.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementProgress.swift; sourceTree = "<group>"; };
 		7047266E22AF07847CFC0CA6 /* AchievementShareService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementShareService.swift; sourceTree = "<group>"; };
 		70E492412869BCF377917304 /* SkinAnalysisTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinAnalysisTests.swift; sourceTree = "<group>"; };
+		PQC0000002 /* PhotoQualityCheckerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoQualityCheckerTests.swift; sourceTree = "<group>"; };
+		PDF0000002 /* PhotoDataFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoDataFlowTests.swift; sourceTree = "<group>"; };
 		7144358F4B6B8D70DA122923 /* EngagementMigrationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EngagementMigrationService.swift; sourceTree = "<group>"; };
 		7551BCDBC96ED5FBA80E1DDA /* SkinTwinDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinDetailView.swift; sourceTree = "<group>"; };
 		7A5B3AE2E986F636B26C6316 /* MatchResultRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchResultRecord.swift; sourceTree = "<group>"; };
@@ -559,6 +563,8 @@
 			isa = PBXGroup;
 			children = (
 				FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */,
+				PDF0000002 /* PhotoDataFlowTests.swift */,
+				PQC0000002 /* PhotoQualityCheckerTests.swift */,
 				70E492412869BCF377917304 /* SkinAnalysisTests.swift */,
 			);
 			name = Analysis;
@@ -1325,6 +1331,8 @@
 				3FA7B2C5D9E1F34A8B6C0123 /* PredictiveAlertTests.swift in Sources */,
 				AB34143BEA40AE7CE309E3C1 /* ScenarioTests.swift in Sources */,
 				43DF5F81CCF0997D88C3FA45 /* WeatherTests.swift in Sources */,
+				PQC0000001 /* PhotoQualityCheckerTests.swift in Sources */,
+				PDF0000001 /* PhotoDataFlowTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

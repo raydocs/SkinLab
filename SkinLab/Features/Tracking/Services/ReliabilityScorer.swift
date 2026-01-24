@@ -49,6 +49,23 @@ struct ReliabilityScorer {
                 score -= 0.05
             }
 
+            // Centering check
+            switch photoMeta.centering {
+            case .tooLeft, .tooRight, .tooHigh, .tooLow:
+                reasons.append(.centeringOff)
+                score -= 0.10
+            case .optimal:
+                break
+            }
+
+            // Sharpness check
+            if photoMeta.sharpness == .blurry {
+                reasons.append(.blurry)
+                score -= 0.20
+            } else if photoMeta.sharpness == .slightlyBlurry {
+                score -= 0.05
+            }
+
             // Face detection
             if !photoMeta.faceDetected {
                 reasons.append(.noFaceDetected)

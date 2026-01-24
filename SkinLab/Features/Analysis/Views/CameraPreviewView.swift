@@ -63,6 +63,8 @@ struct CameraPreviewView: View {
                     pitchDegrees: 0,
                     rollDegrees: 0,
                     distance: .optimal,
+                    centering: .optimal,
+                    sharpness: .sharp,
                     isReady: false,
                     suggestions: ["从相册选择，无实时拍照条件数据"],
                     userOverride: nil
@@ -240,6 +242,8 @@ struct CameraPreviewView: View {
                     pitchDegrees: condition.faceAngle.pitch,
                     rollDegrees: condition.faceAngle.roll,
                     distance: PhotoStandardizationMetadata.DistanceRating(from: condition.faceDistance),
+                    centering: PhotoStandardizationMetadata.CenteringRating(from: condition.faceCentering),
+                    sharpness: PhotoStandardizationMetadata.SharpnessRating(from: condition.sharpness),
                     isReady: condition.isReady,
                     suggestions: condition.suggestions,
                     userOverride: nil

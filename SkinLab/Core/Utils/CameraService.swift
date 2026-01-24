@@ -251,33 +251,45 @@ struct PhotoCondition {
     var faceDetected: Bool = false
     var faceAngle: FaceAngle = .init()
     var faceDistance: DistanceCondition = .unknown
-    
+    var faceCentering: CenteringCondition = .unknown
+    var sharpness: SharpnessCondition = .unknown
+
     var isReady: Bool {
-        faceDetected && 
-        lighting.isAcceptable && 
-        faceAngle.isOptimal && 
-        faceDistance.isAcceptable
+        faceDetected &&
+        lighting.isAcceptable &&
+        faceAngle.isOptimal &&
+        faceDistance.isAcceptable &&
+        faceCentering.isAcceptable &&
+        sharpness.isAcceptable
     }
-    
+
     var suggestions: [String] {
         var result: [String] = []
-        
+
         if !faceDetected {
             result.append("请将面部对准框内")
         }
-        
+
         if let suggestion = lighting.suggestion {
             result.append(suggestion)
         }
-        
+
         if let suggestion = faceAngle.suggestion {
             result.append(suggestion)
         }
-        
+
         if let suggestion = faceDistance.suggestion {
             result.append(suggestion)
         }
-        
+
+        if let suggestion = faceCentering.suggestion {
+            result.append(suggestion)
+        }
+
+        if let suggestion = sharpness.suggestion {
+            result.append(suggestion)
+        }
+
         return result
     }
 }
@@ -338,7 +350,7 @@ enum DistanceCondition {
     case optimal
     case slightlyClose
     case tooClose
-    
+
     var isAcceptable: Bool {
         switch self {
         case .optimal, .slightlyFar, .slightlyClose:
@@ -347,12 +359,98 @@ enum DistanceCondition {
             return false
         }
     }
-    
+
     var suggestion: String? {
         switch self {
         case .tooFar: return "请靠近一些"
         case .tooClose: return "请稍微远一点"
         default: return nil
+        }
+    }
+}
+
+// MARK: - Centering Condition
+enum CenteringCondition {
+    case unknown
+    case tooLeft
+    case tooRight
+    case tooHigh
+    case tooLow
+    case optimal
+
+    var isAcceptable: Bool {
+        self == .optimal || self == .unknown
+    }
+
+    var suggestion: String? {
+        switch self {
+        case .tooLeft: return "请稍微向右移动"
+        case .tooRight: return "请稍微向左移动"
+        case .tooHigh: return "请稍微向下移动"
+        case .tooLow: return "请稍微向上移动"
+        default: return nil
+        }
+    }
+
+    /// Create centering condition from face bounding box center
+    /// - Parameter faceCenter: Normalized face center (0-1 range, origin at bottom-left per Vision framework)
+    static func from(faceCenter: CGPoint) -> CenteringCondition {
+        // Vision uses normalized coordinates (0-1) with origin at bottom-left
+        // Center of frame is (0.5, 0.5)
+        let centerX = faceCenter.x
+        let centerY = faceCenter.y
+
+        // Allow 15% deviation from center
+        let tolerance: CGFloat = 0.15
+
+        if centerX < 0.5 - tolerance {
+            return .tooLeft
+        } else if centerX > 0.5 + tolerance {
+            return .tooRight
+        } else if centerY < 0.5 - tolerance {
+            return .tooLow
+        } else if centerY > 0.5 + tolerance {
+            return .tooHigh
+        }
+
+        return .optimal
+    }
+}
+
+// MARK: - Sharpness Condition
+enum SharpnessCondition {
+    case unknown
+    case blurry
+    case slightlyBlurry
+    case sharp
+
+    var isAcceptable: Bool {
+        switch self {
+        case .sharp, .slightlyBlurry:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var suggestion: String? {
+        switch self {
+        case .blurry: return "图像模糊，请保持稳定"
+        default: return nil
+        }
+    }
+
+    /// Create sharpness condition from Laplacian variance
+    /// Higher variance = sharper image
+    static func from(laplacianVariance: Double) -> SharpnessCondition {
+        // Thresholds determined empirically for mobile camera
+        switch laplacianVariance {
+        case ..<50:
+            return .blurry
+        case 50..<100:
+            return .slightlyBlurry
+        default:
+            return .sharp
         }
     }
 }
@@ -365,31 +463,31 @@ actor FaceDetector {
         }
         return CIContext()
     }()
-    
+
     func analyze(cgImage: CGImage, ciImage: CIImage? = nil) async -> PhotoCondition? {
         // Use VNDetectFaceLandmarksRequest for more accurate detection
         let request = VNDetectFaceLandmarksRequest()
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        
+
         do {
             try handler.perform([request])
         } catch {
             return nil
         }
-        
+
         guard let face = request.results?.first else {
             return PhotoCondition(faceDetected: false)
         }
-        
+
         var condition = PhotoCondition(faceDetected: true)
-        
+
         // Analyze face angle
         condition.faceAngle = FaceAngle(
             yaw: (face.yaw?.doubleValue ?? 0) * 180 / .pi,
             pitch: (face.pitch?.doubleValue ?? 0) * 180 / .pi,
             roll: (face.roll?.doubleValue ?? 0) * 180 / .pi
         )
-        
+
         // Analyze distance based on face size
         let faceArea = face.boundingBox.width * face.boundingBox.height
         switch faceArea {
@@ -404,49 +502,59 @@ actor FaceDetector {
         default:
             condition.faceDistance = .tooClose
         }
-        
+
+        // Analyze face centering
+        let faceCenter = CGPoint(
+            x: face.boundingBox.midX,
+            y: face.boundingBox.midY
+        )
+        condition.faceCentering = CenteringCondition.from(faceCenter: faceCenter)
+
         // Analyze lighting based on image brightness
         condition.lighting = analyzeLighting(cgImage: cgImage)
-        
+
+        // Analyze sharpness using Laplacian variance
+        condition.sharpness = analyzeSharpness(cgImage: cgImage)
+
         return condition
     }
-    
+
     private func analyzeLighting(cgImage: CGImage) -> LightingCondition {
         let width = cgImage.width
         let height = cgImage.height
         let bytesPerPixel = 4
         let bytesPerRow = width * bytesPerPixel
         let totalBytes = bytesPerRow * height
-        
+
         guard let data = cgImage.dataProvider?.data,
               let bytes = CFDataGetBytePtr(data) else {
             return .unknown
         }
-        
+
         // Sample pixels for brightness calculation (every 10th pixel for performance)
         var totalBrightness: Double = 0
         var sampleCount: Double = 0
         let step = 10
-        
+
         for y in stride(from: 0, to: height, by: step) {
             for x in stride(from: 0, to: width, by: step) {
                 let offset = (y * bytesPerRow) + (x * bytesPerPixel)
                 guard offset + 2 < totalBytes else { continue }
-                
+
                 let r = Double(bytes[offset])
                 let g = Double(bytes[offset + 1])
                 let b = Double(bytes[offset + 2])
-                
+
                 // Calculate perceived brightness (ITU-R BT.601)
                 let brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
                 totalBrightness += brightness
                 sampleCount += 1
             }
         }
-        
+
         guard sampleCount > 0 else { return .unknown }
         let avgBrightness = totalBrightness / sampleCount
-        
+
         switch avgBrightness {
         case ..<0.15:
             return .tooDark
@@ -459,5 +567,62 @@ actor FaceDetector {
         default:
             return .tooBright
         }
+    }
+
+    /// Analyze image sharpness using Laplacian variance method
+    /// Higher variance indicates sharper image
+    private func analyzeSharpness(cgImage: CGImage) -> SharpnessCondition {
+        let width = cgImage.width
+        let height = cgImage.height
+
+        // Skip for very small images
+        guard width > 10 && height > 10 else { return .unknown }
+
+        guard let data = cgImage.dataProvider?.data,
+              let bytes = CFDataGetBytePtr(data) else {
+            return .unknown
+        }
+
+        let bytesPerPixel = 4
+        let bytesPerRow = width * bytesPerPixel
+
+        // Convert to grayscale and compute Laplacian
+        // Laplacian kernel: [0, 1, 0], [1, -4, 1], [0, 1, 0]
+        var laplacianValues: [Double] = []
+
+        // Sample every 5th pixel for performance
+        let step = 5
+
+        for y in stride(from: 1, to: height - 1, by: step) {
+            for x in stride(from: 1, to: width - 1, by: step) {
+                // Get grayscale values for 3x3 neighborhood
+                func grayscale(atX px: Int, atY py: Int) -> Double {
+                    let offset = (py * bytesPerRow) + (px * bytesPerPixel)
+                    guard offset + 2 < CFDataGetLength(data) else { return 0 }
+                    let r = Double(bytes[offset])
+                    let g = Double(bytes[offset + 1])
+                    let b = Double(bytes[offset + 2])
+                    return 0.299 * r + 0.587 * g + 0.114 * b
+                }
+
+                let center = grayscale(atX: x, atY: y)
+                let top = grayscale(atX: x, atY: y - 1)
+                let bottom = grayscale(atX: x, atY: y + 1)
+                let left = grayscale(atX: x - 1, atY: y)
+                let right = grayscale(atX: x + 1, atY: y)
+
+                // Apply Laplacian kernel
+                let laplacian = top + bottom + left + right - 4 * center
+                laplacianValues.append(laplacian)
+            }
+        }
+
+        guard !laplacianValues.isEmpty else { return .unknown }
+
+        // Calculate variance of Laplacian values
+        let mean = laplacianValues.reduce(0, +) / Double(laplacianValues.count)
+        let variance = laplacianValues.reduce(0) { $0 + pow($1 - mean, 2) } / Double(laplacianValues.count)
+
+        return SharpnessCondition.from(laplacianVariance: variance)
     }
 }
