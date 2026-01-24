@@ -472,7 +472,7 @@ struct CheckInView: View {
                 // 5. Build photo standardization with user override
                 var updatedStandardization = standardization
                 if userFlaggedPhotoIssue {
-                    if var meta = standardization {
+                    if let meta = standardization {
                         updatedStandardization = PhotoStandardizationMetadata(
                             capturedAt: meta.capturedAt,
                             cameraPosition: meta.cameraPosition,
@@ -550,14 +550,15 @@ struct CheckInView: View {
         }
 
         let filename = "\(session.id.uuidString)_day\(scheduledDay).jpg"
-        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let photosDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("tracking_photos", isDirectory: true)
 
-        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: photosDir, withIntermediateDirectories: true)
 
-        let fileURL = url.appendingPathComponent(filename)
+        let fileURL = photosDir.appendingPathComponent(filename)
         try? data.write(to: fileURL)
 
-        return filename
+        // Return full relative path including subdirectory for correct loading
+        return "tracking_photos/\(filename)"
     }
 }

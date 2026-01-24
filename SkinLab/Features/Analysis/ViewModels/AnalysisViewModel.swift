@@ -115,15 +115,16 @@ class AnalysisViewModel: ObservableObject {
         }
 
         let filename = "\(analysisId.uuidString).jpg"
-        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let photosDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("analysis_photos", isDirectory: true)
 
-        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: photosDir, withIntermediateDirectories: true)
 
-        let fileURL = url.appendingPathComponent(filename)
+        let fileURL = photosDir.appendingPathComponent(filename)
         try? data.write(to: fileURL)
 
-        return filename
+        // Return full relative path including subdirectory for correct loading
+        return "analysis_photos/\(filename)"
     }
 }
 

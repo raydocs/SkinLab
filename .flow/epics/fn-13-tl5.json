@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-13-tl5",
+  "created_at": "2026-01-24T06:41:23.114351Z",
+  "depends_on_epics": [],
+  "id": "fn-13-tl5",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-13-tl5.md",
+  "status": "open",
+  "title": "\u6027\u80fd\u4f18\u5316 - Performance Optimization",
+  "updated_at": "2026-01-24T06:41:23.114545Z"
+}

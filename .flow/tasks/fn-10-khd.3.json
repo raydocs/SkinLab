@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-24T06:41:47.564012Z",
+  "depends_on": [],
+  "epic": "fn-10-khd",
+  "id": "fn-10-khd.3",
+  "priority": 3,
+  "spec_path": ".flow/tasks/fn-10-khd.3.md",
+  "status": "todo",
+  "title": "Freeze\u51bb\u7ed3\u529f\u80fd\u5b8c\u6210",
+  "updated_at": "2026-01-24T06:41:47.564279Z"
+}

@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-24T06:42:01.095718Z",
+  "depends_on": [],
+  "epic": "fn-12-z04",
+  "id": "fn-12-z04.4",
+  "priority": 4,
+  "spec_path": ".flow/tasks/fn-12-z04.4.md",
+  "status": "todo",
+  "title": "\u8f6c\u5316\u6f0f\u6597\u5206\u6790",
+  "updated_at": "2026-01-24T06:42:01.095897Z"
+}

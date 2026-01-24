@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-24T06:41:54.050448Z",
+  "depends_on": [],
+  "epic": "fn-11-mqh",
+  "id": "fn-11-mqh.1",
+  "priority": 1,
+  "spec_path": ".flow/tasks/fn-11-mqh.1.md",
+  "status": "todo",
+  "title": "\u62a5\u544a\u533a\u5757\u6298\u53e0\u4f18\u5316",
+  "updated_at": "2026-01-24T06:41:54.050629Z"
+}

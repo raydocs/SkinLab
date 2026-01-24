@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-10-khd",
+  "created_at": "2026-01-24T06:41:18.138785Z",
+  "depends_on_epics": [],
+  "id": "fn-10-khd",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-10-khd.md",
+  "status": "open",
+  "title": "\u5173\u952e\u529f\u80fd\u4fee\u590d - Critical Feature Fixes",
+  "updated_at": "2026-01-24T06:41:18.138961Z"
+}

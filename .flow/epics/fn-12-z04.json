@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-12-z04",
+  "created_at": "2026-01-24T06:41:22.986945Z",
+  "depends_on_epics": [],
+  "id": "fn-12-z04",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-12-z04.md",
+  "status": "open",
+  "title": "\u65e0\u969c\u788d\u4e0e\u5206\u6790 - Accessibility & Analytics",
+  "updated_at": "2026-01-24T06:41:22.987122Z"
+}
