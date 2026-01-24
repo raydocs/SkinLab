@@ -67,6 +67,7 @@
 		9C10B35C9061237FC10EF679 /* LifestyleCorrelationAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225B3AAF53AD6B134589486C /* LifestyleCorrelationAnalyzerTests.swift */; };
 		A1000001 /* SkinLabApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000001 /* SkinLabApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000002 /* ContentView.swift */; };
+		ARV0000001 /* AppRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ARV0000002 /* AppRecoveryView.swift */; };
 		A1000010 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000010 /* GeminiService.swift */; };
 		A1000020 /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000020 /* CameraService.swift */; };
 		A1000021 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000021 /* PhotoPicker.swift */; };
@@ -223,6 +224,7 @@
 		AEDE94003C210FE421D74DBB /* ReliabilityBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReliabilityBadgeView.swift; sourceTree = "<group>"; };
 		AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SkinLab.xcodeproj; sourceTree = "<group>"; };
 		B0F0C462C1084ECA826196B4 /* AchievementDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementDetailView.swift; sourceTree = "<group>"; };
+		ARV0000002 /* AppRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRecoveryView.swift; sourceTree = "<group>"; };
 		B1000001 /* SkinLabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkinLabApp.swift; sourceTree = "<group>"; };
 		B1000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B1000010 /* GeminiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiService.swift; sourceTree = "<group>"; };
@@ -764,6 +766,7 @@
 		E1000010 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				ARV0000002 /* AppRecoveryView.swift */,
 				B1000001 /* SkinLabApp.swift */,
 				B1000002 /* ContentView.swift */,
 			);
@@ -1207,6 +1210,7 @@
 			files = (
 				A1000001 /* SkinLabApp.swift in Sources */,
 				A1000002 /* ContentView.swift in Sources */,
+				ARV0000001 /* AppRecoveryView.swift in Sources */,
 				A1000010 /* GeminiService.swift in Sources */,
 				A1000020 /* CameraService.swift in Sources */,
 				A1000021 /* PhotoPicker.swift in Sources */,
