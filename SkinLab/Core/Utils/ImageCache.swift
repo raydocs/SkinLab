@@ -2,8 +2,8 @@
 //  ImageCache.swift
 //  SkinLab
 //
-//  Thread-safe image caching with memory and disk layers.
-//  All disk operations are serialized through a single DispatchQueue.
+//  Thread-safe image cache with memory and disk layers.
+//  All disk I/O executes directly on a serial DispatchQueue (no spawned Tasks).
 //
 
 import UIKit
@@ -24,9 +24,28 @@ enum ImageCacheConfig {
     static let defaultExpirationDays = 7
 }
 
+// MARK: - Pending Write Token
+/// Token to track and cancel pending disk writes
+private final class WriteToken: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _cancelled = false
+
+    var isCancelled: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return _cancelled
+    }
+
+    func cancel() {
+        lock.lock()
+        _cancelled = true
+        lock.unlock()
+    }
+}
+
 // MARK: - Image Cache
 /// Thread-safe image cache with memory (NSCache) and disk layers.
-/// All disk I/O is serialized through a single dispatch queue to prevent race conditions.
+/// All disk I/O is serialized through a single dispatch queue with no spawned Tasks.
 actor ImageCache {
     /// Shared singleton instance
     static let shared = ImageCache()
@@ -42,8 +61,8 @@ actor ImageCache {
     /// Serial queue for ALL disk operations (reads, writes, deletes)
     private let diskQueue = DispatchQueue(label: "com.skinlab.imagecache.disk", qos: .utility)
 
-    /// Generation counter to invalidate pending writes after clear
-    private var generation: UInt64 = 0
+    /// Pending write tokens by key - allows cancellation
+    private var pendingTokens: [String: WriteToken] = [:]
 
     // MARK: - Initialization
 
@@ -70,10 +89,10 @@ actor ImageCache {
 
     // MARK: - Public API
 
-    /// Retrieve an image from cache (memory first, then disk)
+    /// Retrieve an image from cache (memory first, then disk) - async
     /// - Parameter key: Cache key (typically the image path or identifier)
     /// - Returns: Cached image, or nil if not found
-    func image(for key: String) -> UIImage? {
+    func image(for key: String) async -> UIImage? {
         let nsKey = key as NSString
 
         // 1. Check memory cache first (fast path)
@@ -81,18 +100,21 @@ actor ImageCache {
             return cached
         }
 
-        // 2. Check disk cache - dispatch sync to serialize with writes
+        // 2. Check disk cache - async to avoid blocking actor
         let fileURL = diskFileURL(for: key)
-        let diskImage: UIImage? = diskQueue.sync {
-            guard let data = try? Data(contentsOf: fileURL) else {
-                return nil
+        let diskImage: UIImage? = await withCheckedContinuation { continuation in
+            diskQueue.async {
+                guard let data = try? Data(contentsOf: fileURL) else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                // Update modification date on access (for LRU-like behavior)
+                try? FileManager.default.setAttributes(
+                    [.modificationDate: Date()],
+                    ofItemAtPath: fileURL.path
+                )
+                continuation.resume(returning: UIImage(data: data))
             }
-            // Update modification date on access (for LRU-like behavior)
-            try? FileManager.default.setAttributes(
-                [.modificationDate: Date()],
-                ofItemAtPath: fileURL.path
-            )
-            return UIImage(data: data)
         }
 
         if let image = diskImage {
@@ -117,22 +139,21 @@ actor ImageCache {
         // Store in memory immediately
         memoryCache.setObject(image, forKey: nsKey, cost: cost)
 
-        // Capture current generation to detect invalidation
-        let storeGeneration = generation
+        // Create cancellable token for this write
+        let token = WriteToken()
+        pendingTokens[key] = token
+
         let fileURL = diskFileURL(for: key)
 
-        // Encode image on disk queue (off main/actor)
-        diskQueue.async { [weak self] in
-            guard let self else { return }
-            // Check if cache was cleared since we started
-            Task {
-                let currentGen = await self.generation
-                guard currentGen == storeGeneration else { return }
+        // All I/O happens directly on diskQueue (no Task spawning)
+        diskQueue.async {
+            // Check if cancelled before writing
+            guard !token.isCancelled else { return }
 
-                // Perform I/O on disk queue
-                if let data = image.jpegData(compressionQuality: 0.8) {
-                    try? data.write(to: fileURL, options: .atomic)
-                }
+            if let data = image.jpegData(compressionQuality: 0.8) {
+                // Check again after encoding (in case cancelled during encode)
+                guard !token.isCancelled else { return }
+                try? data.write(to: fileURL, options: .atomic)
             }
         }
     }
@@ -150,23 +171,20 @@ actor ImageCache {
             memoryCache.setObject(image, forKey: nsKey, cost: cost)
         }
 
-        // Capture current generation
-        let storeGeneration = generation
-        let fileURL = diskFileURL(for: key)
-        let dataCopy = data // Copy for sendability
+        // Create cancellable token
+        let token = WriteToken()
+        pendingTokens[key] = token
 
-        // Write to disk asynchronously
-        diskQueue.async { [weak self] in
-            guard let self else { return }
-            Task {
-                let currentGen = await self.generation
-                guard currentGen == storeGeneration else { return }
-                try? dataCopy.write(to: fileURL, options: .atomic)
-            }
+        let fileURL = diskFileURL(for: key)
+
+        // All I/O happens directly on diskQueue
+        diskQueue.async {
+            guard !token.isCancelled else { return }
+            try? data.write(to: fileURL, options: .atomic)
         }
     }
 
-    /// Store data and wait for disk write to complete (for testing)
+    /// Store data and wait for disk write to complete
     /// - Parameters:
     ///   - data: Image data
     ///   - key: Cache key
@@ -178,6 +196,7 @@ actor ImageCache {
             memoryCache.setObject(image, forKey: nsKey, cost: cost)
         }
 
+        // No token needed for sync - we wait for completion
         let fileURL = diskFileURL(for: key)
         await withCheckedContinuation { continuation in
             diskQueue.async {
@@ -187,13 +206,17 @@ actor ImageCache {
         }
     }
 
-    /// Remove an image from cache (sync - waits for disk removal)
+    /// Remove an image from cache - waits for disk removal
     /// - Parameter key: Cache key
     func remove(for key: String) async {
         // Remove from memory immediately
         memoryCache.removeObject(forKey: key as NSString)
 
-        // Remove from disk synchronously on disk queue
+        // Cancel any pending write for this key
+        pendingTokens[key]?.cancel()
+        pendingTokens.removeValue(forKey: key)
+
+        // Remove from disk on queue
         let fileURL = diskFileURL(for: key)
         await withCheckedContinuation { continuation in
             diskQueue.async {
@@ -248,10 +271,13 @@ actor ImageCache {
         // Clear memory
         memoryCache.removeAllObjects()
 
-        // Increment generation to invalidate any pending writes
-        generation += 1
+        // Cancel ALL pending writes
+        for (_, token) in pendingTokens {
+            token.cancel()
+        }
+        pendingTokens.removeAll()
 
-        // Clear disk synchronously on disk queue
+        // Clear disk on queue
         await withCheckedContinuation { continuation in
             diskQueue.async { [diskCacheURL] in
                 try? FileManager.default.removeItem(at: diskCacheURL)
@@ -303,25 +329,28 @@ actor ImageCache {
 
 // MARK: - Convenience Extensions
 extension ImageCache {
-    /// Load image from path (file system or cache)
+    /// Load image from path (file system or cache) - async
     /// - Parameter path: Relative path to image (e.g., "analysis_photos/uuid.jpg")
     /// - Returns: Loaded image
-    func loadImage(fromPath path: String) -> UIImage? {
+    func loadImage(fromPath path: String) async -> UIImage? {
         // Check cache first
-        if let cached = image(for: path) {
+        if let cached = await image(for: path) {
             return cached
         }
 
-        // Load from file system (on disk queue for consistency)
+        // Load from file system on disk queue
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsURL.appendingPathComponent(path)
 
-        let result: (data: Data, image: UIImage)? = diskQueue.sync {
-            guard let data = try? Data(contentsOf: fileURL),
-                  let image = UIImage(data: data) else {
-                return nil
+        let result: (data: Data, image: UIImage)? = await withCheckedContinuation { continuation in
+            diskQueue.async {
+                guard let data = try? Data(contentsOf: fileURL),
+                      let image = UIImage(data: data) else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                continuation.resume(returning: (data, image))
             }
-            return (data, image)
         }
 
         guard let (data, image) = result else {
@@ -336,9 +365,9 @@ extension ImageCache {
 
     /// Preload images into cache
     /// - Parameter paths: Array of image paths to preload
-    func preloadImages(paths: [String]) {
+    func preloadImages(paths: [String]) async {
         for path in paths {
-            _ = loadImage(fromPath: path)
+            _ = await loadImage(fromPath: path)
         }
     }
 
@@ -371,15 +400,17 @@ extension ImageCache {
         memoryCache.object(forKey: key as NSString) != nil
     }
 
-    /// Check if key exists on disk (serialized through disk queue)
-    func isOnDisk(key: String) -> Bool {
+    /// Check if key exists on disk (async, serialized through disk queue)
+    func isOnDisk(key: String) async -> Bool {
         let fileURL = diskFileURL(for: key)
-        return diskQueue.sync {
-            FileManager.default.fileExists(atPath: fileURL.path)
+        return await withCheckedContinuation { continuation in
+            diskQueue.async {
+                continuation.resume(returning: FileManager.default.fileExists(atPath: fileURL.path))
+            }
         }
     }
 
-    /// Flush all pending disk writes (for testing)
+    /// Flush all pending disk operations (for testing)
     func flush() async {
         await withCheckedContinuation { continuation in
             diskQueue.async {

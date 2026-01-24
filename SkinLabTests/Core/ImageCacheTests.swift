@@ -306,7 +306,7 @@ final class ImageCacheTests: XCTestCase {
         XCTAssertNotNil(retrieved, "Should retrieve image stored as data")
     }
 
-    /// Test that remove after store doesn't resurrect file
+    /// Test that remove after store doesn't resurrect file (token cancellation)
     func testNoResurrectionAfterRemove() async {
         let testImage = createTestImage(size: CGSize(width: 100, height: 100))
         let data = testImage.jpegData(compressionQuality: 0.8)!
@@ -315,31 +315,31 @@ final class ImageCacheTests: XCTestCase {
         // Store async (doesn't wait for disk)
         await testCache.storeData(data, for: key)
 
-        // Immediately remove (waits for removal)
+        // Immediately remove (cancels token + waits for removal on queue)
         await testCache.remove(for: key)
 
-        // Flush any pending writes
+        // Flush to ensure queue is drained
         await testCache.flush()
 
-        // File should not exist (no resurrection)
+        // File should not exist (token was cancelled before write)
         let isOnDisk = await testCache.isOnDisk(key: key)
         XCTAssertFalse(isOnDisk, "File should not be resurrected after remove")
     }
 
-    /// Test that clearAllCache invalidates pending writes
+    /// Test that clearAllCache cancels all pending writes
     func testClearInvalidatesPendingWrites() async {
         let testImage = createTestImage(size: CGSize(width: 100, height: 100))
         let data = testImage.jpegData(compressionQuality: 0.8)!
 
-        // Store multiple items async
+        // Store multiple items async (all get tokens)
         for i in 0..<5 {
             await testCache.storeData(data, for: "pending-\(i)")
         }
 
-        // Immediately clear
+        // Immediately clear (cancels all tokens + clears directory)
         await testCache.clearAllCache()
 
-        // Flush any remaining operations
+        // Flush to ensure queue is drained
         await testCache.flush()
 
         // Check that none of the files exist

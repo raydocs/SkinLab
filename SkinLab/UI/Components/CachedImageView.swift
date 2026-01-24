@@ -14,7 +14,7 @@ struct CachedImageView: View {
     let contentMode: ContentMode
 
     @State private var loadedImage: UIImage?
-    @State private var isLoading = false
+    @State private var currentLoadingPath: String?
 
     init(
         path: String?,
@@ -45,14 +45,18 @@ struct CachedImageView: View {
     }
 
     private func loadImage() async {
-        guard let path = path, !isLoading else { return }
+        guard let path = path else {
+            loadedImage = nil
+            return
+        }
 
-        isLoading = true
-        defer { isLoading = false }
+        // Track which path we're loading to detect if it changed
+        currentLoadingPath = path
 
         // Load from cache (memory or disk)
         if let cached = await ImageCache.shared.loadImage(fromPath: path) {
-            await MainActor.run {
+            // Only update if we're still loading this path
+            if currentLoadingPath == path {
                 loadedImage = cached
             }
         }
@@ -66,7 +70,7 @@ struct CachedThumbnailView: View {
     let size: CGSize
 
     @State private var loadedImage: UIImage?
-    @State private var isLoading = false
+    @State private var currentLoadingPath: String?
 
     init(
         path: String?,
@@ -99,16 +103,19 @@ struct CachedThumbnailView: View {
     }
 
     private func loadThumbnail() async {
-        guard let path = path, !isLoading else { return }
+        guard let path = path else {
+            loadedImage = nil
+            return
+        }
 
-        isLoading = true
-        defer { isLoading = false }
+        // Track which path we're loading
+        currentLoadingPath = path
 
         // Try loading thumbnail first using extension-safe path helper
         let thumbnailPath = ImageCache.thumbnailPath(for: path)
 
         if let cached = await ImageCache.shared.loadImage(fromPath: thumbnailPath) {
-            await MainActor.run {
+            if currentLoadingPath == path {
                 loadedImage = cached
             }
             return
@@ -116,7 +123,7 @@ struct CachedThumbnailView: View {
 
         // Fall back to full image if thumbnail doesn't exist
         if let cached = await ImageCache.shared.loadImage(fromPath: path) {
-            await MainActor.run {
+            if currentLoadingPath == path {
                 loadedImage = cached
             }
         }
