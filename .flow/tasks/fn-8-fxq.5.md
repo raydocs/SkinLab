@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Added sceneContext: SkinScenario? field to LifestyleFactors struct with optional initializer parameter, enabling CheckIn to record the active skincare scenario context.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 9d26aa5b2ca8d08f5ecc4ea557e7c92a3115aab1
+- Tests: xcodebuild build verified
 - PRs:

@@ -99,6 +99,7 @@
 		A7AD6E91750734BAF68982F2 /* SkinTwin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A58DF68D6DDCEAF216E43D7 /* SkinTwin.swift */; };
 		A8F5C2909F3916C6AB15F71A /* AnalysisResultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */; };
 		A9BC1BEBDE572094393A95A9 /* AnalyticsVisualizationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26570A1CAB05DFDBA766336 /* AnalyticsVisualizationViews.swift */; };
+		AB34143BEA40AE7CE309E3C1 /* ScenarioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB99D818DD2005FDC13FE6B7 /* ScenarioTests.swift */; };
 		B22AC52F957E7B176982049F /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC65AC35783AB2F86B445973 /* AchievementBadgeView.swift */; };
 		B62D7EE47904AF48CF80DA3D /* MatchResultRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A5B3AE2E986F636B26C6316 /* MatchResultRecord.swift */; };
 		B72ED38F555A9CAF00399DBE /* LifestyleInsightRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B81B66FC81B1E6D024AF70B4 /* LifestyleInsightRow.swift */; };
@@ -245,6 +246,7 @@
 		B49424533B2007108AD154BB /* TwinMatchCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TwinMatchCard.swift; sourceTree = "<group>"; };
 		B73C2A64FBC2E667D6933AC8 /* TrackingModelsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingModelsTests.swift; sourceTree = "<group>"; };
 		B81B66FC81B1E6D024AF70B4 /* LifestyleInsightRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifestyleInsightRow.swift; sourceTree = "<group>"; };
+		BB99D818DD2005FDC13FE6B7 /* ScenarioTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScenarioTests.swift; path = ScenarioTests.swift; sourceTree = "<group>"; };
 		C0693584B4125C0D8E8E7B9E /* StreakCelebrationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakCelebrationView.swift; sourceTree = "<group>"; };
 		C1000001 /* SkinLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkinLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimeSeriesAnalyzerTests.swift; sourceTree = "<group>"; };
@@ -349,6 +351,7 @@
 				2AA7BDDC8F882FAEEB13D841 /* Community */,
 				72C7D8E59D68F7103EC36C3A /* Core */,
 				8C8EEB66B81E12494D7199DB /* Mocks */,
+				F107D95DD2B2BE0424150245 /* Scenario */,
 			);
 			name = SkinLabTests;
 			path = SkinLabTests;
@@ -988,6 +991,15 @@
 			path = Profile;
 			sourceTree = "<group>";
 		};
+		F107D95DD2B2BE0424150245 /* Scenario */ = {
+			isa = PBXGroup;
+			children = (
+				BB99D818DD2005FDC13FE6B7 /* ScenarioTests.swift */,
+			);
+			name = Scenario;
+			path = Scenario;
+			sourceTree = "<group>";
+		};
 		F6EC78BA2BF94DC093FE82D5 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -1271,6 +1283,7 @@
 				F45568C91977D609E538B5C8 /* MockURLProtocol.swift in Sources */,
 				3F822D76DFB5991E34253B08 /* ProductAttributionTests.swift in Sources */,
 				3FA7B2C5D9E1F34A8B6C0123 /* PredictiveAlertTests.swift in Sources */,
+				AB34143BEA40AE7CE309E3C1 /* ScenarioTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
