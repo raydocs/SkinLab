@@ -37,10 +37,10 @@ struct TrackingReportView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            LazyVStack(spacing: 24) {
                 // Header Stats
                 headerStatsSection
-                
+
                 // Trend Chart (core - always visible)
                 trendChartSection
 

@@ -6,13 +6,19 @@ struct TrackingView: View {
     @Query(filter: #Predicate<TrackingSession> { $0.statusRaw == "active" },
            sort: [SortDescriptor(\TrackingSession.startDate, order: .reverse)])
     private var activeSessions: [TrackingSession]
-    
+
     @Query(filter: #Predicate<TrackingSession> { $0.statusRaw != "active" },
            sort: [SortDescriptor(\TrackingSession.startDate, order: .reverse)])
     private var pastSessions: [TrackingSession]
-    
+
     @State private var showNewSession = false
     @State private var showPastSessions = false
+
+    /// Number of past sessions currently displayed (for pagination)
+    @State private var displayedPastSessionsCount = 20
+
+    /// Page size for loading more sessions
+    private static let pageSize = 20
     
     var body: some View {
         NavigationStack {
@@ -40,13 +46,13 @@ struct TrackingView: View {
                 }
                 
                 ScrollView {
-                    VStack(spacing: 24) {
+                    LazyVStack(spacing: 24) {
                         if let activeSession = activeSessions.first {
                             activeSessionView(activeSession)
                         } else {
                             emptyStateView
                         }
-                        
+
                         if !pastSessions.isEmpty {
                             pastSessionsSection
                         }
@@ -57,6 +63,12 @@ struct TrackingView: View {
             .navigationTitle("效果追踪")
             .sheet(isPresented: $showNewSession) {
                 NewTrackingSessionView()
+            }
+            .onChange(of: showPastSessions) { _, isExpanded in
+                // Reset pagination when disclosure group is collapsed
+                if !isExpanded {
+                    displayedPastSessionsCount = Self.pageSize
+                }
             }
         }
     }
@@ -281,9 +293,25 @@ struct TrackingView: View {
     private var pastSessionsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             DisclosureGroup(isExpanded: $showPastSessions) {
-                VStack(spacing: 12) {
-                    ForEach(pastSessions, id: \.id) { session in
+                LazyVStack(spacing: 12) {
+                    ForEach(Array(pastSessions.prefix(displayedPastSessionsCount).enumerated()), id: \.element.id) { index, session in
                         PastSessionRow(session: session)
+                            .onAppear {
+                                loadMorePastSessionsIfNeeded(currentIndex: index)
+                            }
+                    }
+
+                    // Loading indicator when more sessions available
+                    if displayedPastSessionsCount < pastSessions.count {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                                .onAppear {
+                                    loadMorePastSessions()
+                                }
+                            Spacer()
+                        }
+                        .padding(.vertical, 8)
                     }
                 }
             } label: {
@@ -297,6 +325,28 @@ struct TrackingView: View {
                         .foregroundColor(.skinLabSubtext)
                 }
             }
+        }
+    }
+
+    // MARK: - Pagination Helpers
+
+    /// Load more past sessions when approaching the end of the displayed list
+    private func loadMorePastSessionsIfNeeded(currentIndex: Int) {
+        // Load more when user is 5 items from the end
+        let threshold = displayedPastSessionsCount - 5
+        if currentIndex >= threshold {
+            loadMorePastSessions()
+        }
+    }
+
+    /// Increment the displayed count to show more sessions
+    private func loadMorePastSessions() {
+        guard displayedPastSessionsCount < pastSessions.count else { return }
+        withAnimation(.easeInOut(duration: 0.2)) {
+            displayedPastSessionsCount = min(
+                displayedPastSessionsCount + Self.pageSize,
+                pastSessions.count
+            )
         }
     }
 

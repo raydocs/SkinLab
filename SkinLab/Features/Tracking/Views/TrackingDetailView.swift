@@ -27,7 +27,7 @@ private struct TrackingDetailViewContent: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            LazyVStack(spacing: 20) {
                 // Progress Header
                 progressHeader
 
@@ -180,9 +180,11 @@ private struct TrackingDetailViewContent: View {
                 }
             }
 
-            // Check-in list
-            ForEach(session.checkIns.sorted(by: { $0.day < $1.day })) { checkIn in
-                CheckInRow(checkIn: checkIn)
+            // Check-in list (using LazyVStack for performance with many check-ins)
+            LazyVStack(spacing: 8) {
+                ForEach(session.checkIns.sorted(by: { $0.day < $1.day })) { checkIn in
+                    CheckInRow(checkIn: checkIn)
+                }
             }
         }
         .freshGlassCard()
