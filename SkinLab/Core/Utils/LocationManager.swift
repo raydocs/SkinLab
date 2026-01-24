@@ -94,7 +94,7 @@ final class LocationManager: NSObject, ObservableObject {
     /// - Throws: LocationError if location cannot be obtained
     func requestLocation() async throws -> CLLocation {
         // Check authorization first
-        guard isAuthorized else {
+        if !isAuthorized {
             switch authorizationStatus {
             case .denied:
                 throw LocationError.permissionDenied
@@ -106,8 +106,9 @@ final class LocationManager: NSObject, ObservableObject {
                 if !granted {
                     throw LocationError.permissionDenied
                 }
+                // Permission granted, continue to location request
             default:
-                break
+                throw LocationError.locationUnavailable
             }
         }
 
