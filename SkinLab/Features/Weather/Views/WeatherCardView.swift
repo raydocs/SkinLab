@@ -315,6 +315,7 @@ struct CompactWeatherCardView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.skinLabSubtext)
+                        .accessibilityHidden(true)
                 }
             }
             .padding()
@@ -323,6 +324,9 @@ struct CompactWeatherCardView: View {
             .skinLabSoftShadow()
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(weather.temperatureDisplay)，\(weather.condition.displayName)，UV指数\(weather.uvIndex)，湿度\(weather.humidityDisplay)，空气\(weather.airQuality.rawValue)")
+        .accessibilityHint(onTap != nil ? "双击查看详情" : "")
     }
 
     private func compactMetric(icon: String, value: String, color: Color) -> some View {
@@ -330,10 +334,13 @@ struct CompactWeatherCardView: View {
             Image(systemName: icon)
                 .font(.system(size: 12))
                 .foregroundColor(color)
+                .accessibilityHidden(true)
             Text(value)
                 .font(.skinLabCaption)
                 .foregroundColor(.skinLabText)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(value)
     }
 }
 

@@ -331,6 +331,7 @@ struct TrackingView: View {
                             .font(.system(size: 20))
                             .foregroundColor(isCompleted ? .skinLabSuccess : .skinLabSubtext)
                     }
+                    .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 6) {
                         Text("\(session.startDate.formatted(date: .abbreviated, time: .omitted))")
@@ -352,6 +353,7 @@ struct TrackingView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.skinLabPrimary.opacity(0.5))
+                        .accessibilityHidden(true)
                 }
                 .padding(16)
                 .background(
@@ -361,6 +363,9 @@ struct TrackingView: View {
                 .shadow(color: .black.opacity(0.03), radius: 8, y: 3)
             }
             .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("历史追踪：\(session.startDate.formatted(date: .abbreviated, time: .omitted))，\(isCompleted ? "已完成" : "已放弃")，\(session.checkIns.count)次打卡")
+            .accessibilityHint("双击查看详情")
         }
     }
 }
