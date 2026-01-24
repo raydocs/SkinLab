@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Added predictive alerts toggle to NotificationSettingsView with @AppStorage persistence and descriptive text explaining the feature
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 86f5239cc714995ef83b0059bac5b55b005fcf1a
+- Tests: xcodebuild build verified
 - PRs:
