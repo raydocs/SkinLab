@@ -163,7 +163,7 @@ struct StreakCelebrationView: View {
         milestone: 7,
         isVisible: true
     ) {
-        print("Dismissed")
+        // Preview action placeholder
     }
 }
 
@@ -172,6 +172,6 @@ struct StreakCelebrationView: View {
         milestone: 28,
         isVisible: true
     ) {
-        print("Dismissed")
+        // Preview action placeholder
     }
 }

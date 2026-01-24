@@ -154,7 +154,7 @@ struct StreakBadgeView: View {
         longestStreak: 0,
         freezesAvailable: 1
     ) {
-        print("Freeze tapped")
+        // Preview action placeholder
     }
     .padding()
 }
@@ -165,7 +165,7 @@ struct StreakBadgeView: View {
         longestStreak: 7,
         freezesAvailable: 1
     ) {
-        print("Freeze tapped")
+        // Preview action placeholder
     }
     .padding()
 }
@@ -176,7 +176,7 @@ struct StreakBadgeView: View {
         longestStreak: 28,
         freezesAvailable: 1
     ) {
-        print("Freeze tapped")
+        // Preview action placeholder
     }
     .padding()
 }

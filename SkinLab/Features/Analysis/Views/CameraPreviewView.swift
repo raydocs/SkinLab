@@ -249,7 +249,7 @@ struct CameraPreviewView: View {
                     userOverride: nil
                 )
             } catch {
-                print("Capture error: \(error)")
+                AppLogger.error("Capture failed", error: error)
             }
             isCapturing = false
         }

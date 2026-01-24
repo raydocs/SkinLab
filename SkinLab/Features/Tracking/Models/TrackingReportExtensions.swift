@@ -598,7 +598,7 @@ final class TrackingReportGenerator {
 
             return lines.isEmpty ? nil : lines.joined(separator: "\n")
         } catch {
-            print("Failed to generate AI summary: \(error)")
+            AppLogger.error("Failed to generate AI summary", error: error)
             return nil
         }
     }
@@ -976,7 +976,7 @@ final class TrackingReportGenerator {
 
             return lines.isEmpty ? nil : lines.joined(separator: "\n")
         } catch {
-            print("Failed to generate AI summary: \(error)")
+            AppLogger.error("Failed to generate AI summary", error: error)
             return nil
         }
     }

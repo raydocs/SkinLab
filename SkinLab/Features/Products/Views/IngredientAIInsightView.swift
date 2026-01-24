@@ -393,7 +393,7 @@ struct AIAnalysisErrorView: View {
             AIAnalysisLoadingView()
             
             AIAnalysisErrorView(errorMessage: "网络连接失败") {
-                print("Retry")
+                // Preview action placeholder
             }
         }
         .padding()

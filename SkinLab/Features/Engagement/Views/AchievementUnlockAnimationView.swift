@@ -197,6 +197,6 @@ struct ConfettiParticle: View {
         badge: AchievementDefinitions.allBadges[0],
         isVisible: true
     ) {
-        print("Dismissed")
+        // Preview action placeholder
     }
 }

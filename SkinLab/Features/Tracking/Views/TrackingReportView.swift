@@ -791,7 +791,7 @@ struct TrackingReportView: View {
                 shareFile(url)
             }
         } catch {
-            print("Failed to generate JSON: \(error)")
+            AppLogger.error("Failed to generate JSON for export", error: error)
         }
     }
 
@@ -803,7 +803,7 @@ struct TrackingReportView: View {
                 try content.write(to: fileURL, atomically: true, encoding: .utf8)
                 return fileURL
             } catch {
-                print("Failed to save file: \(error)")
+                AppLogger.error("Failed to save temporary file", error: error)
             }
         }
         return nil
@@ -813,7 +813,7 @@ struct TrackingReportView: View {
         // Show share sheet with file
         // You'll need to add @State var showFileShareSheet and fileToShare
         // For now, placeholder
-        print("Sharing file: \(url)")
+        AppLogger.debug("Sharing file: \(url)")
     }
     
     // MARK: - Helper Methods

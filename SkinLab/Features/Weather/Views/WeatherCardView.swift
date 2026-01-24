@@ -479,13 +479,13 @@ private extension View {
                 recordedAt: Date(),
                 location: "上海"
             )) {
-                print("Tapped")
+                // Preview action placeholder
             }
 
             WeatherLoadingCardView()
 
             WeatherErrorCardView(message: "请检查网络连接或位置权限") {
-                print("Retry")
+                // Preview action placeholder
             }
         }
         .padding()
