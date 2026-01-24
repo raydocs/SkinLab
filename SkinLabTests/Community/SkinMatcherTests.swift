@@ -178,13 +178,99 @@ final class SkinMatcherTests: XCTestCase {
         XCTAssertEqual(results.count, fingerprints.count)
     }
 
-    func testBatchProcessing_withFallback_returnsResults() async {
-        let fingerprints = [createTestFingerprint()]
-        let pool: [UserProfile] = []
+    // MARK: - Batch Processing with Candidates Tests
 
-        let results = await matcher.findMatchesBatchWithFallback(for: fingerprints, in: pool)
+    func testBatchProcessing_withCandidates_returnsExpectedTopMatch() async {
+        // Create a user fingerprint
+        let userFP = createTestFingerprint(skinType: .oily, ageRange: .age20to25, concerns: [.acne, .pores])
+
+        // Create candidates - one very similar, one quite different
+        let bestCandidate = createTestCandidate(
+            skinType: .oily,
+            ageRange: .age20to25,
+            concerns: [.acne, .pores]
+        )
+        let worstCandidate = createTestCandidate(
+            skinType: .dry,
+            ageRange: .over40,
+            concerns: [.aging, .dryness]
+        )
+
+        let candidates = [worstCandidate, bestCandidate]
+        let results = await matcher.findMatchesBatch(for: [userFP], candidates: candidates, limit: 5)
 
         XCTAssertEqual(results.count, 1)
+        XCTAssertFalse(results[0].isEmpty, "Should find at least one match")
+        XCTAssertEqual(results[0].first?.userId, bestCandidate.userId, "Best candidate should be first match")
+    }
+
+    func testBatchProcessing_withCandidates_batchResultsMatchSingleResults() async {
+        // Create fingerprints
+        let fp1 = createTestFingerprint(skinType: .oily, concerns: [.acne])
+        let fp2 = createTestFingerprint(skinType: .dry, concerns: [.dryness])
+
+        // Create candidates
+        let candidates = [
+            createTestCandidate(skinType: .oily, concerns: [.acne, .pores]),
+            createTestCandidate(skinType: .dry, concerns: [.dryness, .sensitivity]),
+            createTestCandidate(skinType: .combination, concerns: [.acne, .dryness])
+        ]
+
+        // Get batch results
+        let batchResults = await matcher.findMatchesBatch(for: [fp1, fp2], candidates: candidates, limit: 10)
+
+        // Get single results
+        let singleResult1 = matcher.findMatchesFromCandidates(for: fp1, candidates: candidates, limit: 10)
+        let singleResult2 = matcher.findMatchesFromCandidates(for: fp2, candidates: candidates, limit: 10)
+
+        // Compare results
+        XCTAssertEqual(batchResults.count, 2)
+        XCTAssertEqual(batchResults[0].count, singleResult1.count, "Batch and single should have same count for fp1")
+        XCTAssertEqual(batchResults[1].count, singleResult2.count, "Batch and single should have same count for fp2")
+
+        // Verify ordering matches
+        if !batchResults[0].isEmpty && !singleResult1.isEmpty {
+            XCTAssertEqual(batchResults[0][0].userId, singleResult1[0].userId, "Top match should be same")
+        }
+    }
+
+    func testBatchProcessing_withCandidates_respectsMinSimilarityThreshold() async {
+        // Create a fingerprint that won't match well
+        let userFP = createTestFingerprint(skinType: .oily, ageRange: .under20, concerns: [.oiliness])
+
+        // Create a very different candidate
+        let differentCandidate = createTestCandidate(
+            skinType: .dry,
+            ageRange: .over40,
+            concerns: [.aging, .dryness]
+        )
+
+        // Use high similarity threshold
+        let strictMatcher = SkinMatcher(config: SkinMatcher.BatchConfig(
+            maxBatchSize: 5,
+            minSimilarity: 0.9,  // Very high threshold
+            enableParallelProcessing: true
+        ))
+
+        let results = await strictMatcher.findMatchesBatch(for: [userFP], candidates: [differentCandidate], limit: 10)
+
+        XCTAssertEqual(results.count, 1)
+        XCTAssertTrue(results[0].isEmpty, "Should not match with very different candidate at high threshold")
+    }
+
+    func testExtractCandidates_precomputesVectors() {
+        // Test that MatchCandidate has precomputed vector
+        let fingerprint = createTestFingerprint()
+        let candidate = MatchCandidate(
+            userId: UUID(),
+            fingerprint: fingerprint,
+            vector: fingerprint.vector,
+            anonymousProfile: .mock
+        )
+
+        // Vector should be non-empty and match fingerprint vector
+        XCTAssertFalse(candidate.vector.isEmpty)
+        XCTAssertEqual(candidate.vector, fingerprint.vector)
     }
 
     func testBatchConfig_customConfig_respected() {
@@ -310,6 +396,30 @@ final class SkinMatcherTests: XCTestCase {
             uvExposure: .medium,
             irritationHistory: irritationHistory,
             budgetLevel: .moderate
+        )
+    }
+
+    private func createTestCandidate(
+        skinType: SkinType = .combination,
+        ageRange: AgeRange = .age25to30,
+        concerns: [SkinConcern] = [.acne, .pores],
+        irritationHistory: Double = 0.3
+    ) -> MatchCandidate {
+        let fingerprint = SkinFingerprint(
+            skinType: skinType,
+            ageRange: ageRange,
+            concerns: concerns,
+            issueVector: [0.5, 0.5, 0.5, 0.5, 0.5],
+            fragranceTolerance: .neutral,
+            uvExposure: .medium,
+            irritationHistory: irritationHistory,
+            budgetLevel: .moderate
+        )
+        return MatchCandidate(
+            userId: UUID(),
+            fingerprint: fingerprint,
+            vector: fingerprint.vector,
+            anonymousProfile: .mock
         )
     }
 }

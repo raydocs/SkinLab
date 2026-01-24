@@ -1,18 +1,15 @@
 // SkinLab/Features/Community/Services/SkinMatcher.swift
 import Foundation
 
-// MARK: - Array Chunked Extension
+// MARK: - Match Candidate (Sendable value type for concurrency safety)
 
-extension Array {
-    /// 将数组分割成指定大小的块
-    /// - Parameter size: 每块的最大元素数量
-    /// - Returns: 分块后的二维数组
-    func chunked(into size: Int) -> [[Element]] {
-        guard size > 0 else { return [] }
-        return stride(from: 0, to: count, by: size).map {
-            Array(self[$0..<Swift.min($0 + size, count)])
-        }
-    }
+/// Pre-extracted candidate data for concurrency-safe matching
+/// This captures all necessary data from UserProfile before crossing concurrency boundaries
+struct MatchCandidate: Sendable {
+    let userId: UUID
+    let fingerprint: SkinFingerprint
+    let vector: [Double]
+    let anonymousProfile: AnonymousProfile
 }
 
 // MARK: - SkinMatcher
@@ -20,14 +17,18 @@ extension Array {
 /// 皮肤匹配服务 - 核心算法实现
 ///
 /// 支持单条和批量处理模式:
-/// - 单条处理: `findMatches(for:in:limit:)`
-/// - 批量处理: `findMatchesBatch(for:in:limit:)` - 减少计算开销
+/// - 单条处理: `findMatches(for:in:limit:)` - 接受 UserProfile 数组
+/// - 批量处理: `findMatchesBatch(for:candidates:limit:)` - 接受预提取的 MatchCandidate 数组
+///
+/// **Concurrency Safety**: Batch methods accept `[MatchCandidate]` (Sendable) instead of
+/// `[UserProfile]` (SwiftData model). Callers must extract candidates on the main actor
+/// before calling batch methods.
 class SkinMatcher {
 
     // MARK: - Configuration
 
     /// 批处理配置
-    struct BatchConfig {
+    struct BatchConfig: Sendable {
         /// 每批最大处理数量
         let maxBatchSize: Int
         /// 最小相似度阈值
@@ -50,7 +51,26 @@ class SkinMatcher {
         self.config = config
     }
 
-    // MARK: - Public Methods
+    // MARK: - Candidate Extraction (call on main actor)
+
+    /// Extract match candidates from UserProfile array
+    /// - Parameter pool: Array of UserProfile (must be called on main actor for SwiftData safety)
+    /// - Returns: Array of Sendable MatchCandidate for use in batch processing
+    ///
+    /// **Important**: Call this method on the main actor before passing to batch methods.
+    static func extractCandidates(from pool: [UserProfile]) -> [MatchCandidate] {
+        pool.compactMap { profile -> MatchCandidate? in
+            guard let fingerprint = profile.getFingerprint() else { return nil }
+            return MatchCandidate(
+                userId: profile.id,
+                fingerprint: fingerprint,
+                vector: fingerprint.vector,  // Pre-compute vector once
+                anonymousProfile: profile.toAnonymousProfile()
+            )
+        }
+    }
+
+    // MARK: - Public Methods (Single Processing)
 
     /// 查找皮肤双胞胎（单条处理）
     /// - Parameters:
@@ -58,144 +78,73 @@ class SkinMatcher {
     ///   - pool: 候选用户池
     ///   - limit: 返回结果数量限制 (默认20)
     /// - Returns: 匹配结果列表，按相似度降序排列
+    ///
+    /// **Note**: For batch processing, use `findMatchesBatch(for:candidates:limit:)` with
+    /// pre-extracted candidates for better performance and concurrency safety.
     func findMatches(
         for fingerprint: SkinFingerprint,
         in pool: [UserProfile],
         limit: Int = 20
     ) async -> [SkinTwin] {
-        await Task.detached {
-            pool
-                .compactMap { profile -> SkinTwin? in
-                    // 1. 获取候选用户的指纹
-                    guard let otherFingerprint = profile.getFingerprint() else {
-                        return nil
-                    }
-
-                    // 2. 计算加权相似度
-                    let similarity = self.weightedSimilarity(
-                        user: fingerprint,
-                        other: otherFingerprint
-                    )
-
-                    // 3. 过滤低相似度结果 (< 0.6)
-                    guard similarity >= self.config.minSimilarity else { return nil }
-
-                    // 4. 构建匹配结果
-                    return SkinTwin(
-                        userId: profile.id,
-                        similarity: similarity,
-                        matchLevel: MatchLevel(similarity: similarity),
-                        anonymousProfile: profile.toAnonymousProfile(),
-                        effectiveProducts: [] // 稍后由 ProductRecommendationEngine 填充
-                    )
-                }
-                .sorted { $0.similarity > $1.similarity } // 相似度降序
-                .prefix(limit)
-                .map { $0 }
-        }.value
+        // Extract candidates synchronously (assumes caller is on main actor)
+        let candidates = Self.extractCandidates(from: pool)
+        return findMatchesFromCandidates(for: fingerprint, candidates: candidates, limit: limit)
     }
+
+    /// 查找皮肤双胞胎（使用预提取的候选）
+    /// - Parameters:
+    ///   - fingerprint: 当前用户的皮肤指纹
+    ///   - candidates: 预提取的候选列表
+    ///   - limit: 返回结果数量限制 (默认20)
+    /// - Returns: 匹配结果列表，按相似度降序排列
+    func findMatchesFromCandidates(
+        for fingerprint: SkinFingerprint,
+        candidates: [MatchCandidate],
+        limit: Int = 20
+    ) -> [SkinTwin] {
+        let userVector = fingerprint.vector  // Pre-compute once
+        return computeMatches(
+            userVector: userVector,
+            userFingerprint: fingerprint,
+            candidates: candidates,
+            limit: limit
+        )
+    }
+
+    // MARK: - Public Methods (Batch Processing)
 
     /// 批量查找皮肤双胞胎
     /// - Parameters:
     ///   - fingerprints: 多个用户的皮肤指纹
-    ///   - pool: 候选用户池
+    ///   - candidates: 预提取的候选列表（一次提取，多次复用）
     ///   - limit: 每个指纹返回的结果数量限制 (默认20)
     /// - Returns: 每个指纹对应的匹配结果列表
     ///
     /// 批量处理优势:
-    /// - 共享候选池预处理开销
+    /// - 候选池只需预提取一次（调用前通过 `extractCandidates` 完成）
+    /// - 候选向量预计算，避免重复计算
     /// - 并行计算多个指纹的匹配
     /// - 减少50%以上的重复计算
     func findMatchesBatch(
         for fingerprints: [SkinFingerprint],
-        in pool: [UserProfile],
+        candidates: [MatchCandidate],
         limit: Int = 20
     ) async -> [[SkinTwin]] {
         guard !fingerprints.isEmpty else { return [] }
-        guard !pool.isEmpty else { return fingerprints.map { _ in [] } }
+        guard !candidates.isEmpty else { return fingerprints.map { _ in [] } }
 
-        // 分批处理，每批最多 maxBatchSize 个
-        var allResults: [[SkinTwin]] = []
-
-        for batch in fingerprints.chunked(into: config.maxBatchSize) {
-            let batchResults = await processBatch(
-                fingerprints: batch,
-                pool: pool,
-                limit: limit
-            )
-            allResults.append(contentsOf: batchResults)
-        }
-
-        return allResults
-    }
-
-    /// 批量处理（带回退机制）
-    /// - Parameters:
-    ///   - fingerprints: 多个用户的皮肤指纹
-    ///   - pool: 候选用户池
-    ///   - limit: 每个指纹返回的结果数量限制
-    /// - Returns: 每个指纹对应的匹配结果列表
-    ///
-    /// 如果批处理失败，自动回退到单条处理
-    func findMatchesBatchWithFallback(
-        for fingerprints: [SkinFingerprint],
-        in pool: [UserProfile],
-        limit: Int = 20
-    ) async -> [[SkinTwin]] {
-        do {
-            return try await findMatchesBatchSafe(for: fingerprints, in: pool, limit: limit)
-        } catch {
-            // 批处理失败，回退到单条处理
-            AppLogger.warning("Batch processing failed, falling back to single processing: \(error.localizedDescription)")
-            return await fallbackToSingleProcessing(fingerprints: fingerprints, pool: pool, limit: limit)
-        }
-    }
-
-    // MARK: - Batch Processing Implementation
-
-    /// 安全的批处理（可抛出错误）
-    private func findMatchesBatchSafe(
-        for fingerprints: [SkinFingerprint],
-        in pool: [UserProfile],
-        limit: Int
-    ) async throws -> [[SkinTwin]] {
-        guard !fingerprints.isEmpty else { return [] }
-        guard !pool.isEmpty else { return fingerprints.map { _ in [] } }
-
-        var allResults: [[SkinTwin]] = []
-
-        for batch in fingerprints.chunked(into: config.maxBatchSize) {
-            let batchResults = await processBatch(
-                fingerprints: batch,
-                pool: pool,
-                limit: limit
-            )
-            allResults.append(contentsOf: batchResults)
-        }
-
-        return allResults
-    }
-
-    /// 处理单个批次
-    private func processBatch(
-        fingerprints: [SkinFingerprint],
-        pool: [UserProfile],
-        limit: Int
-    ) async -> [[SkinTwin]] {
-        // 预处理：提取所有候选用户的指纹（一次性计算，复用）
-        let poolFingerprints: [(profile: UserProfile, fingerprint: SkinFingerprint)] = pool.compactMap { profile in
-            guard let fingerprint = profile.getFingerprint() else { return nil }
-            return (profile, fingerprint)
-        }
+        // Pre-compute all user vectors once
+        let userVectors = fingerprints.map { ($0, $0.vector) }
 
         if config.enableParallelProcessing {
-            // 并行处理每个指纹
+            // Parallel processing via TaskGroup
             return await withTaskGroup(of: (Int, [SkinTwin]).self) { group in
-                for (index, fingerprint) in fingerprints.enumerated() {
+                for (index, (fingerprint, userVector)) in userVectors.enumerated() {
                     group.addTask {
                         let matches = self.computeMatches(
-                            for: fingerprint,
-                            against: poolFingerprints,
+                            userVector: userVector,
+                            userFingerprint: fingerprint,
+                            candidates: candidates,
                             limit: limit
                         )
                         return (index, matches)
@@ -207,41 +156,66 @@ class SkinMatcher {
                     results.append(result)
                 }
 
-                // 按原始顺序排序返回
+                // Return in original order
                 return results.sorted { $0.0 < $1.0 }.map { $0.1 }
             }
         } else {
-            // 串行处理
-            return fingerprints.map { fingerprint in
+            // Serial processing
+            return userVectors.map { (fingerprint, userVector) in
                 computeMatches(
-                    for: fingerprint,
-                    against: poolFingerprints,
+                    userVector: userVector,
+                    userFingerprint: fingerprint,
+                    candidates: candidates,
                     limit: limit
                 )
             }
         }
     }
 
-    /// 计算单个指纹与候选池的匹配
+    /// 批量查找皮肤双胞胎（从 UserProfile 数组，便捷方法）
+    /// - Parameters:
+    ///   - fingerprints: 多个用户的皮肤指纹
+    ///   - pool: 候选用户池
+    ///   - limit: 每个指纹返回的结果数量限制 (默认20)
+    /// - Returns: 每个指纹对应的匹配结果列表
+    ///
+    /// **Note**: This method extracts candidates internally. For multiple calls with the
+    /// same pool, prefer extracting candidates once and using `findMatchesBatch(for:candidates:limit:)`.
+    func findMatchesBatch(
+        for fingerprints: [SkinFingerprint],
+        in pool: [UserProfile],
+        limit: Int = 20
+    ) async -> [[SkinTwin]] {
+        let candidates = Self.extractCandidates(from: pool)
+        return await findMatchesBatch(for: fingerprints, candidates: candidates, limit: limit)
+    }
+
+    // MARK: - Internal Match Computation
+
+    /// Compute matches for a single fingerprint against candidates
+    /// All inputs are Sendable, safe for concurrent execution
     private func computeMatches(
-        for fingerprint: SkinFingerprint,
-        against pool: [(profile: UserProfile, fingerprint: SkinFingerprint)],
+        userVector: [Double],
+        userFingerprint: SkinFingerprint,
+        candidates: [MatchCandidate],
         limit: Int
     ) -> [SkinTwin] {
-        pool
-            .compactMap { (profile, otherFingerprint) -> SkinTwin? in
+        candidates
+            .compactMap { candidate -> SkinTwin? in
                 let similarity = weightedSimilarity(
-                    user: fingerprint,
-                    other: otherFingerprint
+                    userVector: userVector,
+                    userFingerprint: userFingerprint,
+                    candidateVector: candidate.vector,
+                    candidateFingerprint: candidate.fingerprint
                 )
 
                 guard similarity >= config.minSimilarity else { return nil }
 
                 return SkinTwin(
-                    userId: profile.id,
+                    userId: candidate.userId,
                     similarity: similarity,
                     matchLevel: MatchLevel(similarity: similarity),
-                    anonymousProfile: profile.toAnonymousProfile(),
+                    anonymousProfile: candidate.anonymousProfile,
                     effectiveProducts: []
                 )
             }
@@ -250,26 +224,10 @@ class SkinMatcher {
             .map { $0 }
     }
 
-    /// 回退到单条处理
-    private func fallbackToSingleProcessing(
-        fingerprints: [SkinFingerprint],
-        pool: [UserProfile],
-        limit: Int
-    ) async -> [[SkinTwin]] {
-        var results: [[SkinTwin]] = []
+    // MARK: - Similarity Algorithm
 
-        for fingerprint in fingerprints {
-            let matches = await findMatches(for: fingerprint, in: pool, limit: limit)
-            results.append(matches)
-        }
-
-        return results
-    }
-    
-    // MARK: - Private Methods
-    
-    /// 加权相似度算法
-    /// 
+    /// 加权相似度算法（使用预计算向量）
+    ///
     /// 公式:
     /// finalScore = baseSimilarity (60%)
     ///            + skinTypeBonus (±20%)
@@ -278,17 +236,19 @@ class SkinMatcher {
     ///            + sensitivityBonus (0-5%)
     ///
     private func weightedSimilarity(
-        user: SkinFingerprint,
-        other: SkinFingerprint
+        userVector: [Double],
+        userFingerprint: SkinFingerprint,
+        candidateVector: [Double],
+        candidateFingerprint: SkinFingerprint
     ) -> Double {
-        // 1️⃣ 基础余弦相似度 (权重 60%)
-        let baseSimilarity = cosineSimilarity(user.vector, other.vector)
-        
-        // 2️⃣ 肤质类型匹配加成/惩罚 (±20%)
-        let skinTypeBonus = user.skinType == other.skinType ? 0.2 : -0.3
-        
-        // 3️⃣ 年龄段接近加成 (±10%)
-        let ageDiff = abs(user.ageRange.normalized - other.ageRange.normalized)
+        // 1. 基础余弦相似度 (使用预计算向量)
+        let baseSimilarity = cosineSimilarity(userVector, candidateVector)
+
+        // 2. 肤质类型匹配加成/惩罚 (±20%)
+        let skinTypeBonus = userFingerprint.skinType == candidateFingerprint.skinType ? 0.2 : -0.3
+
+        // 3. 年龄段接近加成 (±10%)
+        let ageDiff = abs(userFingerprint.ageRange.normalized - candidateFingerprint.ageRange.normalized)
         let ageBonus: Double
         if ageDiff < 0.2 {
             ageBonus = 0.1      // 年龄非常接近
@@ -297,37 +257,64 @@ class SkinMatcher {
         } else {
             ageBonus = 0        // 年龄适中
         }
-        
-        // 4️⃣ 共同关注点加成 (0-10%)
-        let concernOverlap = Set(user.concerns).intersection(other.concerns)
+
+        // 4. 共同关注点加成 (0-10%)
+        let concernOverlap = Set(userFingerprint.concerns).intersection(candidateFingerprint.concerns)
         let concernBonus = Double(concernOverlap.count) * 0.03
-        
-        // 5️⃣ 敏感度一致性加成 (0-5%)
-        let sensitivityBonus = abs(user.irritationHistory - other.irritationHistory) < 0.2
+
+        // 5. 敏感度一致性加成 (0-5%)
+        let sensitivityBonus = abs(userFingerprint.irritationHistory - candidateFingerprint.irritationHistory) < 0.2
             ? 0.05
             : 0
-        
+
         // 最终分数归一化到 [0, 1]
         let finalScore = baseSimilarity + skinTypeBonus + ageBonus + concernBonus + sensitivityBonus
         return min(1.0, max(0, finalScore))
     }
-    
+
+    /// Legacy weighted similarity (for backward compatibility with tests)
+    private func weightedSimilarity(
+        user: SkinFingerprint,
+        other: SkinFingerprint
+    ) -> Double {
+        weightedSimilarity(
+            userVector: user.vector,
+            userFingerprint: user,
+            candidateVector: other.vector,
+            candidateFingerprint: other
+        )
+    }
+
     /// 计算余弦相似度
     ///
     /// 公式: cos(θ) = (A · B) / (||A|| * ||B||)
     ///
     private func cosineSimilarity(_ a: [Double], _ b: [Double]) -> Double {
         guard a.count == b.count, !a.isEmpty else { return 0 }
-        
+
         // 点积 (dot product)
         let dotProduct = zip(a, b).map(*).reduce(0, +)
-        
+
         // 向量长度 (magnitude)
         let magnitudeA = sqrt(a.map { $0 * $0 }.reduce(0, +))
         let magnitudeB = sqrt(b.map { $0 * $0 }.reduce(0, +))
-        
+
         guard magnitudeA > 0, magnitudeB > 0 else { return 0 }
-        
+
         return dotProduct / (magnitudeA * magnitudeB)
+    }
+}
+
+// MARK: - Array Extension
+
+extension Array {
+    /// 将数组分割成指定大小的块
+    /// - Parameter size: 每块的最大元素数量
+    /// - Returns: 分块后的二维数组
+    func chunked(into size: Int) -> [[Element]] {
+        guard size > 0 else { return [] }
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0..<Swift.min($0 + size, count)])
+        }
     }
 }
