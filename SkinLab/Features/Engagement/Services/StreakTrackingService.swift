@@ -102,11 +102,11 @@ final class StreakTrackingService {
         }
 
         // Track streak milestones (7, 14, 21, 28, 30, 60, 90, etc.)
-        let milestones = [7, 14, 21, 28, 30, 60, 90, 180, 365]
-        if milestones.contains(metrics.streakCount) {
-            AnalyticsEvents.streakMilestoneReached(
+        let milestoneValues = [7, 14, 21, 28, 30, 60, 90, 180, 365]
+        if milestoneValues.contains(metrics.streakCount) {
+            AnalyticsEvents.milestoneReached(
                 milestone: metrics.streakCount,
-                currentStreak: metrics.streakCount
+                type: .streak
             )
         }
 

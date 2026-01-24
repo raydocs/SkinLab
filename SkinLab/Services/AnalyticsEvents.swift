@@ -263,17 +263,6 @@ struct AnalyticsEvents {
 
     // MARK: - Engagement Events
 
-    /// Log streak milestone event
-    static func streakMilestoneReached(milestone: Int, currentStreak: Int) {
-        logEvent(
-            name: "streak_milestone",
-            parameters: [
-                "milestone": milestone,
-                "streak_count": currentStreak
-            ]
-        )
-    }
-
     /// Log badge earned event
     static func badgeEarned(achievementId: String, badgeName: String) {
         logEvent(
@@ -299,7 +288,12 @@ struct AnalyticsEvents {
     // MARK: - Navigation Events
 
     /// Log feature discovered event (first time user interacts with a feature)
+    /// Uses UserDefaults to ensure it only fires once per feature
     static func featureDiscovered(featureName: String) {
+        let key = "analytics.feature_discovered.\(featureName)"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        UserDefaults.standard.set(true, forKey: key)
+
         logEvent(
             name: "feature_discovered",
             parameters: [

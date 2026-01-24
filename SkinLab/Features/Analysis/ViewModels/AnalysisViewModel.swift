@@ -128,6 +128,12 @@ class AnalysisViewModel: ObservableObject {
                 score: analysis.overallScore,
                 durationSeconds: duration
             )
+
+            // Track report viewed (user sees result immediately after analysis)
+            AnalyticsEvents.reportViewed(
+                analysisId: analysis.id.uuidString,
+                score: analysis.overallScore
+            )
         } catch let error as GeminiError {
             lastError = error
             state = .error(error.localizedDescription)

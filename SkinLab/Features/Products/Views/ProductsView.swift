@@ -49,7 +49,8 @@ struct ProductsView: View {
                         // Quick Actions with glass effect
                         HStack(spacing: 14) {
                             Button {
-                                AnalyticsEvents.productScanned(success: true)
+                                // Track scan started (success/failure tracked later when scan completes)
+                                AnalyticsEvents.logEvent(name: "product_scan_started", parameters: nil)
                                 showScanner = true
                             } label: {
                                 BeautifulQuickActionCard(
