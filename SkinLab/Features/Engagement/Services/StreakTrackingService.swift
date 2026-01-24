@@ -175,6 +175,49 @@ final class StreakTrackingService {
         return true
     }
 
+    /// Check if user should be suggested to use a freeze
+    /// Returns true if: yesterday was missed, user has freezes available, and has an active streak
+    /// - Parameter now: Current date (defaults to now)
+    /// - Returns: True if freeze suggestion should be shown
+    func shouldSuggestFreeze(now: Date = Date()) -> Bool {
+        let metrics = getOrCreateMetrics()
+
+        // Must have freezes available
+        guard metrics.streakFreezesAvailable > 0 else {
+            return false
+        }
+
+        // Must have an active streak worth protecting
+        guard metrics.streakCount > 0 else {
+            return false
+        }
+
+        // Check if yesterday was missed (no check-in yesterday)
+        guard let lastCheckIn = metrics.lastCheckInDate else {
+            return false
+        }
+
+        let lastCheckInDay = dayKey(for: lastCheckIn)
+        let today = dayKey(for: now)
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today) ?? today
+
+        // Last check-in was before yesterday (missed at least one day)
+        let daysSinceLastCheckIn = deltaDays(from: lastCheckInDay, to: today)
+
+        // Only suggest if exactly 1 day was missed (yesterday)
+        // If more days were missed, streak is already broken
+        if daysSinceLastCheckIn == 2 {
+            // Check if freeze was already used for yesterday
+            if let freezeUsedDay = metrics.lastFreezeUsedForDay,
+               calendar.isDate(freezeUsedDay, inSameDayAs: yesterday) {
+                return false // Already protected
+            }
+            return true
+        }
+
+        return false
+    }
+
     /// Check and refill freezes if 30-day cycle has completed
     /// Should be called on app launch
     func checkAndRefillFreezes() {

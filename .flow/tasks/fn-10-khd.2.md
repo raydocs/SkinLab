@@ -37,9 +37,8 @@ xcodebuild test -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone
 ```
 
 ## Done summary
-TBD
-
+Fixed photo data flow by ensuring savePhoto() returns full relative paths including subdirectory (analysis_photos/ or tracking_photos/). This fixes the breakpoint where loadImage() could not locate photos because paths were missing the subdirectory prefix. Added PhotoDataFlowTests to verify data integrity.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 0ad85a3857f6da1d6cdbf0f90632240898ccebf4
+- Tests: xcodebuild test -scheme SkinLab -only-testing:SkinLabTests/PhotoDataFlowTests, xcodebuild test -scheme SkinLab -only-testing:SkinLabTests/SkinAnalysisTests, xcodebuild test -scheme SkinLab -only-testing:SkinLabTests/TrackingSessionTests
 - PRs:

@@ -161,4 +161,77 @@ final class StreakTrackingServiceTests: XCTestCase {
         let status2 = service.getStreakStatus()
         XCTAssertEqual(status2.longestStreak, 7) // Longest should remain 7
     }
+
+    // MARK: - Freeze Suggestion Tests
+
+    func testShouldSuggestFreezeWhenMissedYesterday() async throws {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // Check in 2 days ago (yesterday was missed)
+        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: now)!
+        service.checkIn(at: twoDaysAgo)
+
+        // Should suggest freeze since yesterday was missed
+        XCTAssertTrue(service.shouldSuggestFreeze(now: now))
+    }
+
+    func testShouldNotSuggestFreezeWhenCheckedInYesterday() async throws {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // Check in yesterday
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: now)!
+        service.checkIn(at: yesterday)
+
+        // Should not suggest freeze since we checked in yesterday
+        XCTAssertFalse(service.shouldSuggestFreeze(now: now))
+    }
+
+    func testShouldNotSuggestFreezeWhenNoStreak() async throws {
+        // No check-ins at all
+        XCTAssertFalse(service.shouldSuggestFreeze())
+    }
+
+    func testShouldNotSuggestFreezeWhenNoFreezeAvailable() async throws {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // Check in 2 days ago
+        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: now)!
+        service.checkIn(at: twoDaysAgo)
+
+        // Use the freeze
+        _ = service.useStreakFreeze()
+
+        // Should not suggest freeze since none available
+        XCTAssertFalse(service.shouldSuggestFreeze(now: now))
+    }
+
+    func testShouldNotSuggestFreezeWhenAlreadyUsedForYesterday() async throws {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // Check in 2 days ago
+        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: now)!
+        service.checkIn(at: twoDaysAgo)
+
+        // Use freeze (protects yesterday)
+        _ = service.useStreakFreeze(now: now)
+
+        // Should not suggest freeze since already protected
+        XCTAssertFalse(service.shouldSuggestFreeze(now: now))
+    }
+
+    func testShouldNotSuggestFreezeWhenMissedMultipleDays() async throws {
+        let calendar = Calendar.current
+        let now = Date()
+
+        // Check in 3 days ago (missed 2 days)
+        let threeDaysAgo = calendar.date(byAdding: .day, value: -3, to: now)!
+        service.checkIn(at: threeDaysAgo)
+
+        // Should not suggest freeze since streak is already broken
+        XCTAssertFalse(service.shouldSuggestFreeze(now: now))
+    }
 }

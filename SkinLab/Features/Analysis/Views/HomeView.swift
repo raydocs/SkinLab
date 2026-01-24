@@ -2,6 +2,8 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @Environment(\.modelContext) private var modelContext
+
     @Query(sort: [SortDescriptor(\SkinAnalysisRecord.analyzedAt, order: .reverse)])
     private var recentAnalyses: [SkinAnalysisRecord]
 
@@ -15,6 +17,8 @@ struct HomeView: View {
     @State private var showNewTracking = false
     @State private var showFreezeAlert = false
     @State private var showAchievements = false
+    @State private var showFreezeSuggestion = false
+    @State private var freezeUsedSuccessfully = false
 
     var body: some View {
         NavigationStack {
@@ -130,10 +134,26 @@ struct HomeView: View {
         .alert("使用冻结卡", isPresented: $showFreezeAlert) {
             Button("取消", role: .cancel) {}
             Button("使用") {
-                // TODO: Implement freeze usage
+                useFreeze()
             }
         } message: {
             Text("使用冻结卡可以保护你的连续打卡，即使错过一天打卡也不会中断。确定要使用吗？")
+        }
+        .alert("昨天忘记打卡了？", isPresented: $showFreezeSuggestion) {
+            Button("不用了", role: .cancel) {}
+            Button("使用冻结卡") {
+                useFreeze()
+            }
+        } message: {
+            Text("你有可用的冻结卡！使用后可以保护你 \(engagementMetrics.first?.streakCount ?? 0) 天的连续打卡记录。")
+        }
+        .alert("冻结成功", isPresented: $freezeUsedSuccessfully) {
+            Button("好的") {}
+        } message: {
+            Text("冻结卡已使用，你的连续打卡记录已被保护！")
+        }
+        .onAppear {
+            checkFreezeSuggestion()
         }
     }
 
@@ -194,6 +214,26 @@ struct HomeView: View {
 
     private func getProgress(for badge: AchievementDefinition) -> AchievementProgress? {
         achievementProgress.first { $0.achievementID == badge.id }
+    }
+
+    // MARK: - Freeze Methods
+
+    private func useFreeze() {
+        let streakService = StreakTrackingService(modelContext: modelContext)
+        let success = streakService.useStreakFreeze()
+        if success {
+            freezeUsedSuccessfully = true
+        }
+    }
+
+    private func checkFreezeSuggestion() {
+        let streakService = StreakTrackingService(modelContext: modelContext)
+        if streakService.shouldSuggestFreeze() {
+            // Small delay to avoid alert conflicts on appear
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                showFreezeSuggestion = true
+            }
+        }
     }
 
     private var quickActionsSection: some View {
