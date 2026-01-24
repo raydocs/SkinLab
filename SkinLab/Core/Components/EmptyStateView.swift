@@ -8,12 +8,27 @@ struct EmptyStateView: View {
     let message: String
     let actionTitle: String
     let action: () -> Void
+    let features: [EmptyStateFeature]
+    let iconGradient: LinearGradient
 
-    /// Optional features to display as bullet points
-    var features: [EmptyStateFeature] = []
-
-    /// Optional gradient for the icon (defaults to primary gradient)
-    var iconGradient: LinearGradient = .skinLabPrimaryGradient
+    /// Creates an empty state with optional features list
+    init(
+        icon: String,
+        title: String,
+        message: String,
+        actionTitle: String,
+        iconGradient: LinearGradient = .skinLabPrimaryGradient,
+        features: [EmptyStateFeature] = [],
+        action: @escaping () -> Void
+    ) {
+        self.icon = icon
+        self.title = title
+        self.message = message
+        self.actionTitle = actionTitle
+        self.iconGradient = iconGradient
+        self.features = features
+        self.action = action
+    }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -59,6 +74,7 @@ struct EmptyStateView: View {
             SparkleView(size: 16)
                 .offset(x: 45, y: -40)
         }
+        .accessibilityHidden(true)
     }
 
     // MARK: - Text Section
@@ -162,28 +178,6 @@ private struct EmptyStateFeatureRow: View {
     }
 }
 
-// MARK: - Convenience Initializer for Simple Empty States
-
-extension EmptyStateView {
-    /// Creates a simple empty state without features list
-    init(
-        icon: String,
-        title: String,
-        message: String,
-        actionTitle: String,
-        iconGradient: LinearGradient = .skinLabPrimaryGradient,
-        action: @escaping () -> Void
-    ) {
-        self.icon = icon
-        self.title = title
-        self.message = message
-        self.actionTitle = actionTitle
-        self.iconGradient = iconGradient
-        self.features = []
-        self.action = action
-    }
-}
-
 // MARK: - Preview
 
 #Preview("Empty State - Simple") {
@@ -191,10 +185,11 @@ extension EmptyStateView {
         icon: "face.smiling",
         title: "Start Your Skin Journey",
         message: "Take your first photo to get a personalized skin analysis",
-        actionTitle: "Start Analysis"
-    ) {
-        print("Action tapped")
-    }
+        actionTitle: "Start Analysis",
+        action: {
+            print("Action tapped")
+        }
+    )
 }
 
 #Preview("Empty State - With Features") {
@@ -207,8 +202,9 @@ extension EmptyStateView {
             EmptyStateFeature(icon: "camera.fill", text: "Standardized photos for accurate comparison", gradient: .skinLabPrimaryGradient),
             EmptyStateFeature(icon: "calendar.badge.clock", text: "Day 7/14/21/28 check-in reminders", gradient: .skinLabLavenderGradient),
             EmptyStateFeature(icon: "chart.bar.fill", text: "AI-powered trend analysis", gradient: .skinLabGoldGradient)
-        ]
-    ) {
-        print("Action tapped")
-    }
+        ],
+        action: {
+            print("Action tapped")
+        }
+    )
 }

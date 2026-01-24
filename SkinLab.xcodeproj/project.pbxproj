@@ -10,7 +10,6 @@
 		0125E6E643B3B4B97CDA3D40 /* ProductRecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3EB7BFD9E873145B7A021B /* ProductRecommendationEngine.swift */; };
 		03F04B25FD40ABAD5F758971 /* TimeSeriesAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */; };
 		04DFAA9B69678765610ECB6C /* CachedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE409C5ACEBDB17926A688A7 /* CachedImageView.swift */; };
-		COLLSEC00001 /* CollapsibleSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = COLLSEC00002 /* CollapsibleSection.swift */; };
 		06C6BAE11880E838CE86B781 /* EngagementMigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7144358F4B6B8D70DA122923 /* EngagementMigrationService.swift */; };
 		0705628C35CB4156025336E1 /* SkinTwinMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21C4E7B2AB0841A770CFE82 /* SkinTwinMatchView.swift */; };
 		089A8A6836C903055B64230B /* AchievementDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F0C462C1084ECA826196B4 /* AchievementDetailView.swift */; };
@@ -105,6 +104,7 @@
 		A57E243816AA8E5F23C5E443 /* ForecastEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBAB226955E3CA24C059B2F /* ForecastEngine.swift */; };
 		A6EA712F1330C8B6CF300B92 /* ProductPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AD55FD6D5510D7F3CCFB71 /* ProductPickerView.swift */; };
 		A7AD6E91750734BAF68982F2 /* SkinTwin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A58DF68D6DDCEAF216E43D7 /* SkinTwin.swift */; };
+		A8CE1040399C23F11981675F /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AC5B6BCA89D4D662011178 /* EmptyStateView.swift */; };
 		A8F5C2909F3916C6AB15F71A /* AnalysisResultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */; };
 		A9BC1BEBDE572094393A95A9 /* AnalyticsVisualizationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26570A1CAB05DFDBA766336 /* AnalyticsVisualizationViews.swift */; };
 		AB34143BEA40AE7CE309E3C1 /* ScenarioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB99D818DD2005FDC13FE6B7 /* ScenarioTests.swift */; };
@@ -121,6 +121,7 @@
 		C0ACDEE8C5ACB09CBF956804 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8339588DC76582E8946C61D2 /* Logger.swift */; };
 		C3B3646598B6F3B8052A1F6B /* SkinMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F4507420FA9D2341FF3B1D /* SkinMatcher.swift */; };
 		C6E53A5BE0DABFFC57A351A7 /* ProductModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE694A9EC5F6F030CDF4F89 /* ProductModelTests.swift */; };
+		COLLSEC00001 /* CollapsibleSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = COLLSEC00002 /* CollapsibleSection.swift */; };
 		D80C48F787313223CDD43E10 /* TrackingDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A0BC5E7D5FA1FE060BE735 /* TrackingDetailComponents.swift */; };
 		D8F53C8C53BD040E9A24F7E5 /* ScenarioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E980A6FCDB798763A00307CB /* ScenarioModels.swift */; };
 		DA2439B12D92CF51502570EB /* AchievementDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D7C37FB894280706B27128 /* AchievementDefinitions.swift */; };
@@ -268,13 +269,13 @@
 		B1000090 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
 		B1000091 /* RomanticDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomanticDecorations.swift; sourceTree = "<group>"; };
 		B1000092 /* FreshThemeModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshThemeModifiers.swift; sourceTree = "<group>"; };
+		B3AC5B6BCA89D4D662011178 /* EmptyStateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		B49424533B2007108AD154BB /* TwinMatchCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TwinMatchCard.swift; sourceTree = "<group>"; };
 		B50B7C51214A1FC1352887FC /* ImageCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		B73C2A64FBC2E667D6933AC8 /* TrackingModelsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingModelsTests.swift; sourceTree = "<group>"; };
 		B81B66FC81B1E6D024AF70B4 /* LifestyleInsightRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifestyleInsightRow.swift; sourceTree = "<group>"; };
 		BB99D818DD2005FDC13FE6B7 /* ScenarioTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScenarioTests.swift; path = ScenarioTests.swift; sourceTree = "<group>"; };
 		BE409C5ACEBDB17926A688A7 /* CachedImageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CachedImageView.swift; sourceTree = "<group>"; };
-		COLLSEC00002 /* CollapsibleSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CollapsibleSection.swift; sourceTree = "<group>"; };
 		C0693584B4125C0D8E8E7B9E /* StreakCelebrationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakCelebrationView.swift; sourceTree = "<group>"; };
 		C1000001 /* SkinLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkinLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C25293995D966A735A5AC85B /* TimeSeriesAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimeSeriesAnalyzerTests.swift; sourceTree = "<group>"; };
@@ -286,6 +287,7 @@
 		C72371672A252B7B8E05C861 /* AppError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppError.swift; path = ../../SkinLab/Core/Utils/AppError.swift; sourceTree = "<group>"; };
 		C7E4198FE08291644B292638 /* AchievementDashboardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementDashboardView.swift; sourceTree = "<group>"; };
 		CC09663356DE55C0E82B5381 /* ShareCardRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ShareCardRenderer.swift; path = ../../SkinLab/Core/Utils/ShareCardRenderer.swift; sourceTree = "<group>"; };
+		COLLSEC00002 /* CollapsibleSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CollapsibleSection.swift; sourceTree = "<group>"; };
 		D26570A1CAB05DFDBA766336 /* AnalyticsVisualizationViews.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalyticsVisualizationViews.swift; sourceTree = "<group>"; };
 		D7A0BC5E7D5FA1FE060BE735 /* TrackingDetailComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingDetailComponents.swift; sourceTree = "<group>"; };
 		D9F4507420FA9D2341FF3B1D /* SkinMatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinMatcher.swift; sourceTree = "<group>"; };
@@ -814,6 +816,7 @@
 				APPCONFIG0003 /* Config */,
 				E1000021 /* Network */,
 				E1000022 /* Utils */,
+				F231B5B65AD01B8A1882217A /* Components */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -1077,6 +1080,15 @@
 			);
 			name = Scenario;
 			path = Scenario;
+			sourceTree = "<group>";
+		};
+		F231B5B65AD01B8A1882217A /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B3AC5B6BCA89D4D662011178 /* EmptyStateView.swift */,
+			);
+			name = Components;
+			path = Components;
 			sourceTree = "<group>";
 		};
 		F6EC78BA2BF94DC093FE82D5 /* Views */ = {
@@ -1367,6 +1379,7 @@
 				B0997141CAD76E221C33B61D /* ImageCache.swift in Sources */,
 				04DFAA9B69678765610ECB6C /* CachedImageView.swift in Sources */,
 				COLLSEC00001 /* CollapsibleSection.swift in Sources */,
+				A8CE1040399C23F11981675F /* EmptyStateView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

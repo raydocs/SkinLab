@@ -140,54 +140,16 @@ struct ProductsView: View {
     // MARK: - Empty State for Search Results
 
     private var productsEmptyState: some View {
-        VStack(spacing: 24) {
-            ZStack {
-                Circle()
-                    .fill(LinearGradient.skinLabLavenderGradient.opacity(0.12))
-                    .frame(width: 100, height: 100)
-
-                Circle()
-                    .fill(LinearGradient.skinLabLavenderGradient.opacity(0.2))
-                    .frame(width: 72, height: 72)
-
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 36))
-                    .foregroundStyle(LinearGradient.skinLabLavenderGradient)
-            }
-
-            VStack(spacing: 10) {
-                Text("未找到相关产品")
-                    .font(.skinLabTitle3)
-                    .foregroundColor(.skinLabText)
-
-                Text("试试其他关键词，或扫描成分表\n获取产品信息")
-                    .font(.skinLabBody)
-                    .foregroundColor(.skinLabSubtext)
-                    .multilineTextAlignment(.center)
-            }
-
-            Button {
-                showScanner = true
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "camera.fill")
-                        .font(.system(size: 14))
-                    Text("扫描成分表")
-                        .font(.skinLabHeadline)
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
-                .background(LinearGradient.skinLabPrimaryGradient)
-                .cornerRadius(26)
-                .shadow(color: .skinLabPrimary.opacity(0.3), radius: 10, y: 5)
-            }
-            .padding(.horizontal, 20)
-            .accessibilityLabel("扫描成分表")
-            .accessibilityHint("试试其他关键词，或扫描成分表获取产品信息")
+        EmptyStateView(
+            icon: "magnifyingglass",
+            title: "未找到相关产品",
+            message: "试试其他关键词，或扫描成分表\n获取产品信息",
+            actionTitle: "扫描成分表",
+            iconGradient: .skinLabLavenderGradient
+        ) {
+            showScanner = true
         }
         .padding(.top, 40)
-        .accessibilityElement(children: .contain)
     }
 }
 

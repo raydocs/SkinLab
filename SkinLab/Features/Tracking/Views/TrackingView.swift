@@ -75,85 +75,22 @@ struct TrackingView: View {
     
     // MARK: - Empty State
     private var emptyStateView: some View {
-        VStack(spacing: 28) {
-            // Icon with sparkle
-            ZStack {
-                Circle()
-                    .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.15))
-                    .frame(width: 120, height: 120)
-                
-                Circle()
-                    .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.25))
-                    .frame(width: 90, height: 90)
-                
-                Image(systemName: "chart.line.uptrend.xyaxis")
-                    .font(.system(size: 44))
-                    .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
-                
-                // Sparkle
-                SparkleView(size: 16)
-                    .offset(x: 45, y: -40)
-            }
-            
-            VStack(spacing: 12) {
-                Text("开始28天追踪")
-                    .font(.skinLabTitle2)
-                    .foregroundColor(.skinLabText)
-                
-                Text("记录护肤过程，见证皮肤变化\n获得真实的效果数据")
-                    .font(.skinLabBody)
-                    .foregroundColor(.skinLabSubtext)
-                    .multilineTextAlignment(.center)
-            }
-            
-            // Feature list with glass effect
-            VStack(alignment: .leading, spacing: 16) {
-                TrackingFeatureRow(icon: "camera.fill", text: "标准化拍照，确保对比准确", gradient: .skinLabPrimaryGradient)
-                TrackingFeatureRow(icon: "calendar.badge.clock", text: "第7/14/21/28天提醒打卡", gradient: .skinLabLavenderGradient)
-                TrackingFeatureRow(icon: "chart.bar.fill", text: "AI分析改善趋势", gradient: .skinLabGoldGradient)
-                TrackingFeatureRow(icon: "square.and.arrow.up.fill", text: "生成可分享的对比图", gradient: .skinLabRoseGradient)
-            }
-            .padding(20)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(.ultraThinMaterial)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(
-                        LinearGradient(
-                            colors: [Color.white.opacity(0.5), Color.white.opacity(0.1)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-            )
-            
-            // Start button
-            Button {
+        EmptyStateView(
+            icon: "chart.line.uptrend.xyaxis",
+            title: "开始28天追踪",
+            message: "记录护肤过程，见证皮肤变化\n获得真实的效果数据",
+            actionTitle: "开始28天追踪",
+            features: [
+                EmptyStateFeature(icon: "camera.fill", text: "标准化拍照，确保对比准确", gradient: .skinLabPrimaryGradient),
+                EmptyStateFeature(icon: "calendar.badge.clock", text: "第7/14/21/28天提醒打卡", gradient: .skinLabLavenderGradient),
+                EmptyStateFeature(icon: "chart.bar.fill", text: "AI分析改善趋势", gradient: .skinLabGoldGradient),
+                EmptyStateFeature(icon: "square.and.arrow.up.fill", text: "生成可分享的对比图", gradient: .skinLabRoseGradient)
+            ],
+            action: {
                 showNewSession = true
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "play.fill")
-                        .font(.system(size: 14))
-                    Text("开始28天追踪")
-                        .font(.skinLabHeadline)
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(
-                    LinearGradient.skinLabPrimaryGradient
-                )
-                .cornerRadius(28)
-                .shadow(color: .skinLabPrimary.opacity(0.35), radius: 12, y: 6)
             }
-            .accessibilityLabel("开始28天追踪")
-        }
+        )
         .padding(.top, 32)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("开始28天追踪。记录护肤过程，见证皮肤变化，获得真实的效果数据")
     }
     
     // MARK: - Active Session
