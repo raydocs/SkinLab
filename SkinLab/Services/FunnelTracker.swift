@@ -25,7 +25,7 @@ final class FunnelTracker: @unchecked Sendable {
         case profileCompleted = "analytics.funnel.profile_completed"
         case firstAnalysisCompleted = "analytics.funnel.first_analysis_completed"
         case firstCheckInCompleted = "analytics.funnel.first_checkin_completed"
-        case firstProductAdded = "analytics.funnel.first_product_added"
+        case firstIngredientScanCompleted = "analytics.funnel.first_ingredient_scan_completed"
         case firstReportViewed = "analytics.funnel.first_report_viewed"
         case firstScenarioUsed = "analytics.funnel.first_scenario_used"
         case firstWeatherViewed = "analytics.funnel.first_weather_viewed"
@@ -120,15 +120,13 @@ final class FunnelTracker: @unchecked Sendable {
 
     // MARK: - Feature Usage Depth
 
-    /// Track first product added
-    func trackFirstProductAdded(productName: String, source: String) {
+    /// Track first ingredient scan completed (product feature usage milestone)
+    /// This tracks when a user successfully completes their first ingredient scan
+    func trackFirstIngredientScanCompleted() {
         trackFirstTimeEvent(
-            key: .firstProductAdded,
-            eventName: "first_product_added",
-            parameters: [
-                "product_name": productName,
-                "source": source
-            ]
+            key: .firstIngredientScanCompleted,
+            eventName: "first_ingredient_scan_completed",
+            parameters: nil
         )
     }
 
@@ -298,7 +296,7 @@ final class FunnelTracker: @unchecked Sendable {
         let keysToReset: [FirstTimeKey] = [
             .firstOpen, .profileStarted, .profileCompleted,
             .firstAnalysisCompleted, .firstCheckInCompleted,
-            .firstProductAdded, .firstReportViewed,
+            .firstIngredientScanCompleted, .firstReportViewed,
             .firstScenarioUsed, .firstWeatherViewed, .firstPredictionUsed
         ]
 

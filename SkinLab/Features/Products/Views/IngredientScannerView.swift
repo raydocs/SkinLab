@@ -690,11 +690,8 @@ class IngredientScannerViewModel: ObservableObject {
 
             // Track successful ingredient scan for analytics
             AnalyticsEvents.productScanned(success: true)
-            // Track first product scanned for activation funnel (product feature usage)
-            FunnelTracker.shared.trackFirstProductAdded(
-                productName: "ingredient_scan",
-                source: "scan"
-            )
+            // Track first ingredient scan completed for activation funnel
+            FunnelTracker.shared.trackFirstIngredientScanCompleted()
 
             // Start AI analysis in background
             await runAIAnalysis()

@@ -631,21 +631,23 @@ struct EditProfileView: View {
         }
 
         // Track profile completion for activation funnel
-        if isNewProfile {
+        // Profile is considered "complete" when skinType is set
+        // FunnelTracker.trackProfileCompleted only fires once (first time)
+        if skinType != nil {
             FunnelTracker.shared.trackProfileCompleted(
                 skinType: skinType?.rawValue,
                 ageGroup: ageRange.rawValue,
                 concernsCount: selectedConcerns.count
             )
-        } else {
-            // Update user properties on profile update
-            FunnelTracker.shared.updateUserProperties(
-                skinType: skinType?.rawValue,
-                ageGroup: ageRange.rawValue,
-                concernsCount: selectedConcerns.count,
-                daysActive: FunnelTracker.shared.getDaysActive()
-            )
         }
+
+        // Always update user properties on any profile save
+        FunnelTracker.shared.updateUserProperties(
+            skinType: skinType?.rawValue,
+            ageGroup: ageRange.rawValue,
+            concernsCount: selectedConcerns.count,
+            daysActive: FunnelTracker.shared.getDaysActive()
+        )
     }
 }
 
