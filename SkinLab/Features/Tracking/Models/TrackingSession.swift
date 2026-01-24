@@ -24,6 +24,9 @@ struct CheckIn: Codable, Identifiable, Sendable {
     let photoStandardization: PhotoStandardizationMetadata?
     let lifestyle: LifestyleFactors?
     let reliability: ReliabilityMetadata?
+
+    // MARK: - Weather Data
+    let weather: WeatherSnapshot?
     
     enum Feeling: String, Codable, Sendable {
         case better, same, worse
@@ -65,7 +68,8 @@ struct CheckIn: Codable, Identifiable, Sendable {
         feeling: Feeling? = nil,
         photoStandardization: PhotoStandardizationMetadata? = nil,
         lifestyle: LifestyleFactors? = nil,
-        reliability: ReliabilityMetadata? = nil
+        reliability: ReliabilityMetadata? = nil,
+        weather: WeatherSnapshot? = nil
     ) {
         self.id = id
         self.sessionId = sessionId
@@ -79,6 +83,7 @@ struct CheckIn: Codable, Identifiable, Sendable {
         self.photoStandardization = photoStandardization
         self.lifestyle = lifestyle
         self.reliability = reliability
+        self.weather = weather
     }
 }
 
