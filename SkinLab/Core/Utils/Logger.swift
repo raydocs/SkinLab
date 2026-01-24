@@ -87,6 +87,26 @@ enum AppLogger {
         #endif
     }
 
+    /// Log a warning message
+    /// - Parameters:
+    ///   - message: Warning information
+    ///   - file: Source file (auto-populated)
+    ///   - function: Function name (auto-populated)
+    ///   - line: Line number (auto-populated)
+    static func warning(
+        _ message: String,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        let fileName = (file as NSString).lastPathComponent
+        let location = "\(fileName):\(line) \(function)"
+        os_log(.fault, log: errorLog, "[WARNING] [%{public}@] %{public}@", location, message)
+        #if DEBUG
+        print("[WARNING] [\(location)] \(message)")
+        #endif
+    }
+
     /// Log a data operation (fetch, save, delete)
     /// - Parameters:
     ///   - operation: Type of operation (fetch, save, delete)

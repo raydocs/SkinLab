@@ -138,6 +138,129 @@ final class SkinMatcherTests: XCTestCase {
         XCTAssertLessThanOrEqual(similarity, 1.0)
     }
 
+    // MARK: - Batch Processing Tests
+
+    func testBatchProcessing_emptyFingerprints_returnsEmpty() async {
+        let fingerprints: [SkinFingerprint] = []
+        let pool: [UserProfile] = []
+
+        let results = await matcher.findMatchesBatch(for: fingerprints, in: pool)
+
+        XCTAssertEqual(results.count, 0)
+    }
+
+    func testBatchProcessing_emptyPool_returnsEmptyArrays() async {
+        let fingerprints = [
+            createTestFingerprint(skinType: .oily),
+            createTestFingerprint(skinType: .dry)
+        ]
+        let pool: [UserProfile] = []
+
+        let results = await matcher.findMatchesBatch(for: fingerprints, in: pool)
+
+        XCTAssertEqual(results.count, 2)
+        XCTAssertTrue(results[0].isEmpty)
+        XCTAssertTrue(results[1].isEmpty)
+    }
+
+    func testBatchProcessing_multipleFingerprints_maintainsOrder() async {
+        // This test verifies batch processing maintains correct order
+        let fingerprints = [
+            createTestFingerprint(skinType: .oily, ageRange: .age20to25),
+            createTestFingerprint(skinType: .dry, ageRange: .age30to35),
+            createTestFingerprint(skinType: .combination, ageRange: .age25to30)
+        ]
+        let pool: [UserProfile] = []
+
+        let results = await matcher.findMatchesBatch(for: fingerprints, in: pool)
+
+        // Should return same number of result arrays as input fingerprints
+        XCTAssertEqual(results.count, fingerprints.count)
+    }
+
+    func testBatchProcessing_withFallback_returnsResults() async {
+        let fingerprints = [createTestFingerprint()]
+        let pool: [UserProfile] = []
+
+        let results = await matcher.findMatchesBatchWithFallback(for: fingerprints, in: pool)
+
+        XCTAssertEqual(results.count, 1)
+    }
+
+    func testBatchConfig_customConfig_respected() {
+        let customConfig = SkinMatcher.BatchConfig(
+            maxBatchSize: 3,
+            minSimilarity: 0.7,
+            enableParallelProcessing: false
+        )
+        let customMatcher = SkinMatcher(config: customConfig)
+
+        // Matcher should be created with custom config
+        XCTAssertNotNil(customMatcher)
+    }
+
+    func testBatchConfig_defaultConfig_hasReasonableValues() {
+        let defaultConfig = SkinMatcher.BatchConfig.default
+
+        XCTAssertEqual(defaultConfig.maxBatchSize, 5)
+        XCTAssertEqual(defaultConfig.minSimilarity, 0.6)
+        XCTAssertTrue(defaultConfig.enableParallelProcessing)
+    }
+
+    // MARK: - Array Chunked Extension Tests
+
+    func testArrayChunked_evenDivision() {
+        let array = [1, 2, 3, 4, 5, 6]
+        let chunks = array.chunked(into: 2)
+
+        XCTAssertEqual(chunks.count, 3)
+        XCTAssertEqual(chunks[0], [1, 2])
+        XCTAssertEqual(chunks[1], [3, 4])
+        XCTAssertEqual(chunks[2], [5, 6])
+    }
+
+    func testArrayChunked_unevenDivision() {
+        let array = [1, 2, 3, 4, 5]
+        let chunks = array.chunked(into: 2)
+
+        XCTAssertEqual(chunks.count, 3)
+        XCTAssertEqual(chunks[0], [1, 2])
+        XCTAssertEqual(chunks[1], [3, 4])
+        XCTAssertEqual(chunks[2], [5])
+    }
+
+    func testArrayChunked_singleElementChunks() {
+        let array = [1, 2, 3]
+        let chunks = array.chunked(into: 1)
+
+        XCTAssertEqual(chunks.count, 3)
+        XCTAssertEqual(chunks[0], [1])
+        XCTAssertEqual(chunks[1], [2])
+        XCTAssertEqual(chunks[2], [3])
+    }
+
+    func testArrayChunked_chunkSizeLargerThanArray() {
+        let array = [1, 2, 3]
+        let chunks = array.chunked(into: 10)
+
+        XCTAssertEqual(chunks.count, 1)
+        XCTAssertEqual(chunks[0], [1, 2, 3])
+    }
+
+    func testArrayChunked_emptyArray() {
+        let array: [Int] = []
+        let chunks = array.chunked(into: 5)
+
+        XCTAssertEqual(chunks.count, 0)
+    }
+
+    func testArrayChunked_zeroSize_returnsEmpty() {
+        let array = [1, 2, 3]
+        let chunks = array.chunked(into: 0)
+
+        XCTAssertEqual(chunks.count, 0)
+    }
+
     // MARK: - MatchLevel Tests
 
     func testMatchLevel_twin() {

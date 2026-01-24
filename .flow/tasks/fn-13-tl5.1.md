@@ -67,9 +67,8 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
-
+Implemented pagination for past sessions list using LazyVStack with onAppear-based loading. Initial 20 sessions are displayed, with automatic loading of more when scrolling near the end. Also converted main ScrollViews in TrackingView, TrackingDetailView, and TrackingReportView to use LazyVStack for improved scroll performance.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 1168d519185d5c17033b6392c74d753623d5e813
+- Tests: xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17'
 - PRs:
