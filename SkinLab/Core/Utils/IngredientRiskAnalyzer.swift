@@ -207,7 +207,7 @@ struct EnhancedIngredientScanResult {
     }
 }
 
-// MARK: - User Reaction Summary
+/// MARK: - User Reaction Summary
 struct IngredientUserReaction {
     let ingredientName: String
     let totalUses: Int
@@ -263,6 +263,9 @@ final class IngredientRiskAnalyzer {
             historyStore: historyStore
         )
 
+        // Detect ingredient conflicts
+        let conflicts = detectConflicts(ingredients: scanResult.ingredients)
+
         // Analyze for user with enhanced context
         let (warnings, recommendations, suitability, allergies, concerns) = analyzeForUser(
             ingredients: scanResult.ingredients,
@@ -282,8 +285,107 @@ final class IngredientRiskAnalyzer {
             allergyMatches: allergies,
             concernMatches: concerns,
             userReactions: userReactions,
-            conflicts: [] // TODO: fn-5-foq.2 will implement detectConflicts method
+            conflicts: conflicts
         )
+    }
+
+    // MARK: - Detect Conflicts
+    /// Detects ingredient conflicts by matching parsed ingredients against the knowledge base
+    /// - Parameter ingredients: List of parsed ingredients from the scan
+    /// - Returns: Array of detected conflicts between ingredient pairs
+    private func detectConflicts(ingredients: [IngredientScanResult.ParsedIngredient]) -> [IngredientConflict] {
+        var detectedConflicts: [IngredientConflict] = []
+
+        // Build a set of normalized ingredient names (lowercased) for efficient lookup
+        let normalizedNames = Set(ingredients.map { $0.normalizedName.lowercased() })
+
+        // Also create a mapping for common ingredient aliases that might match conflict keywords
+        // This handles cases like "Ascorbic Acid" matching "vitamin c" in conflicts
+        let ingredientKeywords = buildIngredientKeywordMap(ingredients: ingredients)
+
+        // Check each conflict in the knowledge base
+        for conflict in ConflictKnowledgeBase.conflicts {
+            let ing1 = conflict.ingredient1.lowercased()
+            let ing2 = conflict.ingredient2.lowercased()
+
+            // Check if both ingredients are present
+            let hasIngredient1 = matchesIngredient(ing1, in: normalizedNames, keywords: ingredientKeywords)
+            let hasIngredient2 = matchesIngredient(ing2, in: normalizedNames, keywords: ingredientKeywords)
+
+            if hasIngredient1 && hasIngredient2 {
+                detectedConflicts.append(conflict)
+            }
+        }
+
+        return detectedConflicts
+    }
+
+    /// Builds a keyword map from ingredients for flexible conflict matching
+    /// Maps common terms to whether they're present in the ingredient list
+    private func buildIngredientKeywordMap(ingredients: [IngredientScanResult.ParsedIngredient]) -> Set<String> {
+        var keywords = Set<String>()
+
+        for ingredient in ingredients {
+            let name = ingredient.normalizedName.lowercased()
+
+            // Add the full normalized name
+            keywords.insert(name)
+
+            // Add specific keyword mappings for common ingredients
+            if name.contains("ascorbic") || name.contains("vitamin c") || name.contains("vc") {
+                keywords.insert("vitamin c")
+            }
+            if name.contains("retinol") || name.contains("retinal") || name.contains("retinoid") || name.contains("retin") {
+                keywords.insert("retinol")
+                keywords.insert("retinoid")
+            }
+            if name.contains("salicylic") {
+                keywords.insert("salicylic acid")
+                keywords.insert("bha")
+            }
+            if name.contains("glycolic") || name.contains("lactic") || name.contains("mandelic") {
+                keywords.insert("aha")
+            }
+            if name.contains("niacinamide") || name.contains("nicotinamide") {
+                keywords.insert("niacinamide")
+            }
+            if name.contains("benzoyl peroxide") || name.contains("过氧化苯甲酰") {
+                keywords.insert("benzoyl peroxide")
+            }
+            if name.contains("azelaic") {
+                keywords.insert("azelaic acid")
+            }
+            if name.contains("hydroquinone") || name.contains("氢醌") {
+                keywords.insert("hydroquinone")
+            }
+            if name.contains("copper peptide") || name.contains("铜肽") {
+                keywords.insert("copper peptide")
+            }
+        }
+
+        return keywords
+    }
+
+    /// Checks if a conflict ingredient matches any ingredient in the scanned list
+    /// - Parameters:
+    ///   - conflictIngredient: The ingredient name from the conflict knowledge base
+    ///   - normalizedNames: Set of normalized ingredient names from the scan
+    ///   - keywords: Additional keyword mappings for flexible matching
+    /// - Returns: True if the ingredient is present in the scanned list
+    private func matchesIngredient(_ conflictIngredient: String, in normalizedNames: Set<String>, keywords: Set<String>) -> Bool {
+        // Direct match in keywords (which includes mapped terms)
+        if keywords.contains(conflictIngredient) {
+            return true
+        }
+
+        // Check if any normalized name contains the conflict ingredient
+        for name in normalizedNames {
+            if name.contains(conflictIngredient) {
+                return true
+            }
+        }
+
+        return false
     }
 
     // MARK: - User Reactions
