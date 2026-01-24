@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Added WeatherModels.swift with WeatherSnapshot struct, AQILevel/WeatherCondition/UVLevel enums, and comprehensive display helpers including icons, colors, descriptions, and skincare tips.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 79cb664f6af9e9e0c9bbeefb00d35f109d5da171
+- Tests: xcodebuild build verified
 - PRs:
