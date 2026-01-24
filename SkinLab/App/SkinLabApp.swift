@@ -28,8 +28,42 @@ struct SkinLabApp: App {
             for: .applicationSupportDirectory,
             in: .userDomainMask
         ).first!
+
+        // Ensure the Application Support directory exists
+        do {
+            try FileManager.default.createDirectory(
+                at: applicationSupportURL,
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+        } catch {
+            logger.error("Failed to create Application Support directory: \(error.localizedDescription)")
+        }
+
         return applicationSupportURL.appendingPathComponent("SkinLab.store")
     }()
+
+    /// Attempts to delete store files for reset
+    /// Returns true if files were deleted, false otherwise
+    private static func deleteStoreFiles() -> Bool {
+        let shmURL = storeURL.deletingPathExtension().appendingPathExtension("store-shm")
+        let walURL = storeURL.deletingPathExtension().appendingPathExtension("store-wal")
+        let fileManager = FileManager.default
+        var deletedAny = false
+
+        for url in [storeURL, shmURL, walURL] {
+            if fileManager.fileExists(atPath: url.path) {
+                do {
+                    try fileManager.removeItem(at: url)
+                    logger.info("Deleted store file: \(url.lastPathComponent)")
+                    deletedAny = true
+                } catch {
+                    logger.error("Failed to delete \(url.lastPathComponent): \(error.localizedDescription)")
+                }
+            }
+        }
+        return deletedAny
+    }
 
     init() {
         let schema = Schema([
@@ -58,16 +92,38 @@ struct SkinLabApp: App {
             cloudKitDatabase: .none
         )
 
+        // Helper to create persistent container
+        func createPersistentContainer() throws -> ModelContainer {
+            try ModelContainer(for: schema, configurations: [persistentConfig])
+        }
+
         // Attempt primary initialization with explicit store URL
         do {
-            let container = try ModelContainer(for: schema, configurations: [persistentConfig])
+            let container = try createPersistentContainer()
             self.modelContainer = container
             self._initializationState = State(initialValue: .success)
             Self.logger.info("ModelContainer initialized successfully at \(Self.storeURL.path)")
         } catch let primaryError {
             Self.logger.error("Primary ModelContainer initialization failed: \(primaryError.localizedDescription)")
 
-            // Attempt recovery with in-memory configuration
+            // Step 2: Attempt reset + retry (per acceptance criteria #2)
+            Self.logger.info("Attempting store reset and retry...")
+            let didDelete = Self.deleteStoreFiles()
+
+            if didDelete {
+                // Retry persistent initialization after reset
+                do {
+                    let resetContainer = try createPersistentContainer()
+                    self.modelContainer = resetContainer
+                    self._initializationState = State(initialValue: .success)
+                    Self.logger.info("ModelContainer recovered after store reset")
+                    return
+                } catch let resetError {
+                    Self.logger.error("ModelContainer still failed after reset: \(resetError.localizedDescription)")
+                }
+            }
+
+            // Step 3: Fall back to in-memory as last resort
             let inMemoryConfig = ModelConfiguration(
                 schema: schema,
                 isStoredInMemoryOnly: true

@@ -111,9 +111,14 @@ struct AppRecoveryView: View {
         isResetting = true
         Self.logger.info("User initiated app data reset from recovery view")
 
-        // Give UI time to update
+        // Give UI time to update, then call reset
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             onResetData()
+            // Reset the loading state after callback completes
+            // (The parent handles showing completion alert)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                isResetting = false
+            }
         }
     }
 
