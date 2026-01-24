@@ -3,27 +3,26 @@ import SwiftUI
 // MARK: - Collapsible Section Manager
 
 /// Manages the expanded state of collapsible sections with persistence
+@MainActor
 final class CollapsibleSectionManager: ObservableObject {
     @AppStorage("report.expandedSections")
     private var expandedSectionsData: Data = Data()
 
     /// Default sections that should be expanded on first load
-    static let defaultExpandedSections: Set<String> = ["summary", "trendChart"]
+    /// Uses actual section IDs from TrackingReportView
+    static let defaultExpandedSections: Set<String> = ["dimensionChanges", "recommendations"]
 
-    /// Currently expanded section IDs
-    var expandedSections: Set<String> {
-        get {
-            guard !expandedSectionsData.isEmpty,
-                  let decoded = try? JSONDecoder().decode(Set<String>.self, from: expandedSectionsData) else {
-                return Self.defaultExpandedSections
-            }
-            return decoded
-        }
-        set {
-            if let encoded = try? JSONEncoder().encode(newValue) {
-                expandedSectionsData = encoded
-                objectWillChange.send()
-            }
+    /// Currently expanded section IDs (drives UI updates via @Published)
+    @Published var expandedSections: Set<String> = []
+
+    init(defaultExpandedSections: Set<String>? = nil) {
+        // Load from storage or use defaults
+        let defaults = defaultExpandedSections ?? CollapsibleSectionManager.defaultExpandedSections
+        if let decoded = try? JSONDecoder().decode(Set<String>.self, from: expandedSectionsData) {
+            self.expandedSections = decoded
+        } else {
+            self.expandedSections = defaults
+            persist()
         }
     }
 
@@ -34,38 +33,34 @@ final class CollapsibleSectionManager: ObservableObject {
 
     /// Toggle a section's expanded state
     func toggle(_ sectionId: String) {
-        var sections = expandedSections
-        if sections.contains(sectionId) {
-            sections.remove(sectionId)
+        if expandedSections.contains(sectionId) {
+            expandedSections.remove(sectionId)
         } else {
-            sections.insert(sectionId)
+            expandedSections.insert(sectionId)
         }
-        expandedSections = sections
+        persist()
     }
 
     /// Set a section's expanded state
     func setExpanded(_ sectionId: String, _ expanded: Bool) {
-        var sections = expandedSections
         if expanded {
-            sections.insert(sectionId)
+            expandedSections.insert(sectionId)
         } else {
-            sections.remove(sectionId)
+            expandedSections.remove(sectionId)
         }
-        expandedSections = sections
+        persist()
     }
 
     /// Expand all sections
     func expandAll(_ sectionIds: [String]) {
-        var sections = expandedSections
-        for id in sectionIds {
-            sections.insert(id)
-        }
-        expandedSections = sections
+        expandedSections.formUnion(sectionIds)
+        persist()
     }
 
     /// Collapse all sections
     func collapseAll() {
-        expandedSections = []
+        expandedSections.removeAll()
+        persist()
     }
 
     /// Check if all sections are expanded
@@ -76,6 +71,12 @@ final class CollapsibleSectionManager: ObservableObject {
     /// Reset to default expanded sections
     func resetToDefaults() {
         expandedSections = Self.defaultExpandedSections
+        persist()
+    }
+
+    /// Persist current state to @AppStorage
+    private func persist() {
+        expandedSectionsData = (try? JSONEncoder().encode(expandedSections)) ?? Data()
     }
 }
 
@@ -89,8 +90,6 @@ struct CollapsibleSection<Content: View>: View {
     let badge: String?
     @ObservedObject var manager: CollapsibleSectionManager
     @ViewBuilder let content: () -> Content
-
-    @State private var isAnimating = false
 
     init(
         sectionId: String,
@@ -156,8 +155,9 @@ struct CollapsibleSection<Content: View>: View {
             }
             .buttonStyle(.plain)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(title)")
-            .accessibilityHint(isExpanded ? "已展开，点击折叠" : "已折叠，点击展开")
+            .accessibilityLabel(badge != nil ? "\(title), \(badge!)" : title)
+            .accessibilityValue(isExpanded ? "已展开" : "已折叠")
+            .accessibilityHint(isExpanded ? "点击折叠" : "点击展开")
             .accessibilityAddTraits(.isButton)
 
             // Content (collapsible)

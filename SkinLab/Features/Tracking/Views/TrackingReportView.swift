@@ -575,10 +575,10 @@ struct TrackingReportView: View {
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
 
-                // Get check-in IDs sorted by day
-                let sortedCheckInIds = report.timelineReliable.isEmpty
-                    ? report.timeline.map { $0.checkInId }
-                    : report.timelineReliable.map { $0.checkInId }
+                // Get check-in IDs sorted by day (use full timeline to show all check-ins including low reliability)
+                let sortedCheckInIds = report.timeline
+                    .sorted { $0.day < $1.day }
+                    .map { $0.checkInId }
 
                 ForEach(sortedCheckInIds, id: \.self) { checkInId in
                     if let reliability = report.reliabilityMap[checkInId] {
