@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import os.log
 
 /// View displayed when the app encounters a critical initialization error
