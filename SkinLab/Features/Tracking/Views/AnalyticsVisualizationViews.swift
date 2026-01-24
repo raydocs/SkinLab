@@ -36,15 +36,20 @@ struct ForecastChartView: View {
             
             // 风险预警
             if let alert = forecast.riskAlert {
-                HStack(spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.orange)
-                    Text(alert)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Image(systemName: alert.icon)
+                            .foregroundColor(Color(alert.colorName))
+                        Text("[\(alert.severity.rawValue)] \(alert.message)")
+                            .font(.skinLabCaption)
+                            .foregroundColor(Color(alert.colorName))
+                    }
+                    Text(alert.actionSuggestion)
                         .font(.skinLabCaption)
-                        .foregroundColor(.orange)
+                        .foregroundColor(.secondary)
                 }
                 .padding(8)
-                .background(Color.orange.opacity(0.1))
+                .background(Color(alert.colorName).opacity(0.1))
                 .cornerRadius(8)
             }
             

@@ -131,21 +131,218 @@ struct TrendForecast: Codable, Sendable {
         return change > 0 ? "上升" : "下降"
     }
     
-    /// 风险预警
-    var riskAlert: String? {
-        // 针对痘痘、泛红等指标的风险预警
-        guard let last = points.last else { return nil }
-        
-        if metric == "痘痘" && last.predictedValue >= 6.0 && trendDirection == "上升" {
-            return "痘痘风险较高,建议加强清洁和护理"
+    /// 风险预警 - 基于预测结果生成预测性护肤预警
+    var riskAlert: PredictiveAlert? {
+        guard let last = points.last, let first = points.first else { return nil }
+
+        let predictedChange = last.predictedValue - first.predictedValue
+        let predictedDate = last.date
+
+        switch metric {
+        case "痘痘", "acne":
+            return generateAcneAlert(
+                predictedValue: last.predictedValue,
+                change: predictedChange,
+                predictedDate: predictedDate
+            )
+
+        case "泛红", "redness":
+            return generateRednessAlert(
+                predictedValue: last.predictedValue,
+                change: predictedChange,
+                predictedDate: predictedDate
+            )
+
+        case "综合评分", "overall", "overallScore":
+            return generateOverallScoreAlert(
+                predictedValue: last.predictedValue,
+                change: predictedChange,
+                predictedDate: predictedDate
+            )
+
+        case "敏感度", "sensitivity":
+            return generateSensitivityAlert(
+                predictedValue: last.predictedValue,
+                change: predictedChange,
+                predictedDate: predictedDate
+            )
+
+        default:
+            return nil
         }
-        if metric == "泛红" && last.predictedValue >= 6.0 && trendDirection == "上升" {
-            return "泛红风险较高,注意保湿和舒缓"
+    }
+
+    // MARK: - Alert Generation Helpers
+
+    /// 生成痘痘风险预警
+    private func generateAcneAlert(
+        predictedValue: Double,
+        change: Double,
+        predictedDate: Date
+    ) -> PredictiveAlert? {
+        // 痘痘指标: 值越高越严重 (0-10)
+        // 高风险: 预测值 >= 7 且上升 >= 2
+        // 中等风险: 预测值 >= 5 且上升 >= 1
+        // 低风险: 预测值 >= 4 且上升
+
+        if predictedValue >= 7 && change >= 2 {
+            return PredictiveAlert(
+                metric: "痘痘",
+                severity: .high,
+                message: "痘痘问题可能显著加重",
+                actionSuggestion: "建议立即加强清洁,使用含水杨酸的产品,避免高糖饮食和熬夜",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        } else if predictedValue >= 5 && change >= 1 {
+            return PredictiveAlert(
+                metric: "痘痘",
+                severity: .medium,
+                message: "痘痘有加重趋势",
+                actionSuggestion: "注意面部清洁,减少油腻食物摄入,保持规律作息",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        } else if predictedValue >= 4 && change > 0 {
+            return PredictiveAlert(
+                metric: "痘痘",
+                severity: .low,
+                message: "痘痘状况需要关注",
+                actionSuggestion: "保持当前护肤习惯,注意观察皮肤变化",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
         }
-        if metric == "综合评分" && last.predictedValue < 50 && trendDirection == "下降" {
-            return "皮肤状态趋于恶化,建议调整护肤方案"
+
+        return nil
+    }
+
+    /// 生成泛红风险预警
+    private func generateRednessAlert(
+        predictedValue: Double,
+        change: Double,
+        predictedDate: Date
+    ) -> PredictiveAlert? {
+        // 泛红指标: 值越高越严重 (0-10)
+        // 高风险: 预测值 >= 7 且上升 >= 2
+        // 中等风险: 预测值 >= 5 且上升 >= 1
+        // 低风险: 预测值 >= 4 且上升
+
+        if predictedValue >= 7 && change >= 2 {
+            return PredictiveAlert(
+                metric: "泛红",
+                severity: .high,
+                message: "泛红问题可能显著加重",
+                actionSuggestion: "立即使用舒缓修复产品,避免刺激性成分,外出做好防晒",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        } else if predictedValue >= 5 && change >= 1 {
+            return PredictiveAlert(
+                metric: "泛红",
+                severity: .medium,
+                message: "泛红有加重趋势",
+                actionSuggestion: "加强保湿补水,使用温和型护肤品,避免过度清洁",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        } else if predictedValue >= 4 && change > 0 {
+            return PredictiveAlert(
+                metric: "泛红",
+                severity: .low,
+                message: "泛红状况需要关注",
+                actionSuggestion: "注意皮肤保湿,避免冷热刺激",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
         }
-        
+
+        return nil
+    }
+
+    /// 生成综合评分下降预警
+    private func generateOverallScoreAlert(
+        predictedValue: Double,
+        change: Double,
+        predictedDate: Date
+    ) -> PredictiveAlert? {
+        // 综合评分: 值越高越好 (0-100)
+        // 高风险: 预测值 < 40 且下降 >= 15
+        // 中等风险: 预测值 < 50 且下降 >= 10
+        // 低风险: 预测值 < 60 且下降 >= 5
+
+        if predictedValue < 40 && change <= -15 {
+            return PredictiveAlert(
+                metric: "综合评分",
+                severity: .high,
+                message: "皮肤状态可能明显恶化",
+                actionSuggestion: "建议调整护肤方案,检查近期使用的新产品,考虑咨询皮肤科医生",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        } else if predictedValue < 50 && change <= -10 {
+            return PredictiveAlert(
+                metric: "综合评分",
+                severity: .medium,
+                message: "皮肤状态呈下降趋势",
+                actionSuggestion: "回顾近期护肤习惯和生活作息,适当简化护肤步骤",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        } else if predictedValue < 60 && change <= -5 {
+            return PredictiveAlert(
+                metric: "综合评分",
+                severity: .low,
+                message: "皮肤状态略有下降",
+                actionSuggestion: "保持健康作息,注意饮食均衡和充足睡眠",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        }
+
+        return nil
+    }
+
+    /// 生成敏感度上升预警
+    private func generateSensitivityAlert(
+        predictedValue: Double,
+        change: Double,
+        predictedDate: Date
+    ) -> PredictiveAlert? {
+        // 敏感度指标: 值越高越敏感 (0-10)
+        // 高风险: 预测值 >= 7 且上升 >= 2
+        // 中等风险: 预测值 >= 5 且上升 >= 1
+        // 低风险: 预测值 >= 4 且上升
+
+        if predictedValue >= 7 && change >= 2 {
+            return PredictiveAlert(
+                metric: "敏感度",
+                severity: .high,
+                message: "皮肤敏感度可能显著增加",
+                actionSuggestion: "暂停使用功效型产品,只用温和的基础保湿,避免更换护肤品",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        } else if predictedValue >= 5 && change >= 1 {
+            return PredictiveAlert(
+                metric: "敏感度",
+                severity: .medium,
+                message: "皮肤敏感度有上升趋势",
+                actionSuggestion: "减少护肤步骤,选择无香精无酒精的产品,加强屏障修复",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        } else if predictedValue >= 4 && change > 0 {
+            return PredictiveAlert(
+                metric: "敏感度",
+                severity: .low,
+                message: "皮肤敏感度需要关注",
+                actionSuggestion: "注意观察皮肤反应,避免使用刺激性成分",
+                predictedDate: predictedDate,
+                confidence: confidence
+            )
+        }
+
         return nil
     }
 }

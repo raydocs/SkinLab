@@ -141,7 +141,7 @@ struct EnhancedTrackingReport: Codable {
     }
     
     /// 高风险预警列表
-    var riskAlerts: [String] {
+    var riskAlerts: [PredictiveAlert] {
         forecasts.compactMap { $0.riskAlert }
     }
     
@@ -921,7 +921,7 @@ final class TrackingReportGenerator {
             prompt += "\n趋势预警：\n"
             for forecast in riskForecasts {
                 if let alert = forecast.riskAlert {
-                    prompt += "- \(alert)\n"
+                    prompt += "- [\(alert.severity.rawValue)] \(alert.message): \(alert.actionSuggestion)\n"
                 }
             }
         }
