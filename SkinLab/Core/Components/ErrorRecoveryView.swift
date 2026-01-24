@@ -132,7 +132,7 @@ enum ErrorCategory {
         case .invalidInput:
             return "请检查输入内容后重试"
         case .unauthorized:
-            return "请检查网络设置或联系支持"
+            return "请检查登录状态或API配置"
         case .unknown:
             return "请稍后重试"
         }
@@ -469,26 +469,28 @@ struct CompactErrorRecoveryView: View {
 
             Spacer()
 
-            // Retry button
-            Button(action: {
-                isRetrying = true
-                Task {
-                    await retryAction()
-                    await MainActor.run {
-                        isRetrying = false
+            // Retry button (only show if retryable)
+            if category.isRetryable {
+                Button(action: {
+                    isRetrying = true
+                    Task {
+                        await retryAction()
+                        await MainActor.run {
+                            isRetrying = false
+                        }
                     }
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 44, height: 44)
+                        .background(
+                            LinearGradient.skinLabPrimaryGradient
+                        )
+                        .clipShape(Circle())
                 }
-            }) {
-                Image(systemName: "arrow.clockwise")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.white)
-                    .frame(width: 44, height: 44)
-                    .background(
-                        LinearGradient.skinLabPrimaryGradient
-                    )
-                    .clipShape(Circle())
+                .disabled(isRetrying)
             }
-            .disabled(isRetrying)
         }
         .padding(16)
         .background(
@@ -501,7 +503,7 @@ struct CompactErrorRecoveryView: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(category.title). \(category.description)")
-        .accessibilityHint("双击重试")
+        .accessibilityHint(category.isRetryable ? "双击重试" : "")
     }
 }
 
