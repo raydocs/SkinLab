@@ -36,6 +36,9 @@ class AnalysisViewModel: ObservableObject {
     @Published var selectedImage: UIImage?
     @Published var analysisProgress: String = ""
 
+    /// The last error that occurred, preserved for retry context
+    @Published private(set) var lastError: Error?
+
     private let analysisService: SkinAnalysisServiceProtocol
     private var modelContext: ModelContext?
 
@@ -68,6 +71,16 @@ class AnalysisViewModel: ObservableObject {
         analysisProgress = ""
         lastCapturedImage = nil
         lastStandardization = nil
+        lastError = nil
+    }
+
+    /// Retry analysis with the previously captured image
+    func retryWithLastImage() async {
+        guard let image = lastCapturedImage ?? selectedImage else {
+            retry()
+            return
+        }
+        await analyzeImage(image)
     }
 
     // MARK: - Analysis
@@ -102,9 +115,12 @@ class AnalysisViewModel: ObservableObject {
             )
 
             state = .result(result)
+            lastError = nil
         } catch let error as GeminiError {
+            lastError = error
             state = .error(error.localizedDescription)
         } catch {
+            lastError = error
             state = .error("分析失败: \(error.localizedDescription)")
         }
     }

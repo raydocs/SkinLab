@@ -436,44 +436,25 @@ struct IngredientScannerFullView: View {
     
     // MARK: - Error View
     private func errorView(_ error: Error) -> some View {
-        VStack(spacing: 28) {
-            ZStack {
-                Circle()
-                    .fill(Color.skinLabWarning.opacity(0.12))
-                    .frame(width: 100, height: 100)
-                
-                Image(systemName: "exclamationmark.triangle")
-                    .font(.system(size: 44))
-                    .foregroundColor(.skinLabWarning)
-            }
-            
-            VStack(spacing: 10) {
-                Text("识别失败")
-                    .font(.skinLabTitle3)
-                    .foregroundColor(.skinLabText)
-                
-                Text(error.localizedDescription)
-                    .font(.skinLabBody)
-                    .foregroundColor(.skinLabSubtext)
-                    .multilineTextAlignment(.center)
-            }
-            
-            Button {
-                viewModel.reset()
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 14))
-                    Text("重试")
-                        .font(.skinLabHeadline)
+        ErrorRecoveryView(
+            error: error,
+            retryAction: {
+                // If we have a captured image, retry scanning
+                if let image = capturedImage {
+                    await viewModel.scan(
+                        image: image,
+                        profile: userProfile,
+                        historyStore: historyStore,
+                        preferences: preferences
+                    )
+                } else {
+                    viewModel.reset()
                 }
-                .foregroundColor(.white)
-                .frame(width: 160, height: 50)
-                .background(LinearGradient.skinLabPrimaryGradient)
-                .cornerRadius(25)
-                .shadow(color: .skinLabPrimary.opacity(0.3), radius: 10, y: 5)
+            },
+            dismissAction: {
+                viewModel.reset()
             }
-        }
+        )
         .padding()
     }
     

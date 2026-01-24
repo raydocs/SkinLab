@@ -233,41 +233,23 @@ struct AnalysisView: View {
     
     // MARK: - Error View
     private func errorView(_ message: String) -> some View {
-        VStack(spacing: 28) {
-            Spacer()
-            
-            ZStack {
-                Circle()
-                    .fill(Color.skinLabError.opacity(0.1))
-                    .frame(width: 120, height: 120)
-                
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 48))
-                    .foregroundColor(.skinLabError)
-            }
-            
-            VStack(spacing: 8) {
-                Text("分析失败")
-                    .font(.skinLabTitle3)
-                    .foregroundColor(.skinLabText)
-                
-                Text(message)
-                    .font(.skinLabBody)
-                    .foregroundColor(.skinLabSubtext)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-            }
-            
-            Button {
+        // Use the preserved error for better categorization, fallback to message-based error
+        let displayError: Error = viewModel.lastError ?? NSError(
+            domain: "SkinLabAnalysis",
+            code: -1,
+            userInfo: [NSLocalizedDescriptionKey: message]
+        )
+
+        return ErrorRecoveryView(
+            error: displayError,
+            retryAction: {
+                // Retry with the last captured image if available
+                await viewModel.retryWithLastImage()
+            },
+            dismissAction: {
                 viewModel.retry()
-            } label: {
-                Text("Retry")
             }
-            .buttonStyle(FreshGlassButton(color: .freshPrimary))
-            .padding(.horizontal, 48)
-            
-            Spacer()
-        }
+        )
         .padding()
     }
 }

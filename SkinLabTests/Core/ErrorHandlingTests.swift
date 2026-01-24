@@ -102,4 +102,112 @@ final class ErrorHandlingTests: XCTestCase {
 
         XCTAssertTrue(true)
     }
+
+    // MARK: - ErrorCategory Tests
+
+    func testErrorCategoryFromGeminiError() {
+        // Test network error
+        let networkError = GeminiError.networkError(URLError(.timedOut))
+        XCTAssertEqual(ErrorCategory(from: networkError), .network)
+        XCTAssertEqual(ErrorCategory(from: networkError).title, "网络连接失败")
+        XCTAssertTrue(ErrorCategory(from: networkError).isRetryable)
+
+        // Test rate limited
+        let rateLimitedError = GeminiError.rateLimited
+        XCTAssertEqual(ErrorCategory(from: rateLimitedError), .rateLimited)
+        XCTAssertEqual(ErrorCategory(from: rateLimitedError).title, "请求过于频繁")
+        XCTAssertTrue(ErrorCategory(from: rateLimitedError).isRetryable)
+        XCTAssertEqual(ErrorCategory(from: rateLimitedError).suggestedRetryDelay, 30)
+
+        // Test unauthorized
+        let unauthorizedError = GeminiError.unauthorized
+        XCTAssertEqual(ErrorCategory(from: unauthorizedError), .unauthorized)
+        XCTAssertEqual(ErrorCategory(from: unauthorizedError).title, "认证失败")
+        XCTAssertFalse(ErrorCategory(from: unauthorizedError).isRetryable)
+
+        // Test invalid API key
+        let invalidKeyError = GeminiError.invalidAPIKey
+        XCTAssertEqual(ErrorCategory(from: invalidKeyError), .unauthorized)
+
+        // Test invalid image
+        let invalidImageError = GeminiError.invalidImage
+        XCTAssertEqual(ErrorCategory(from: invalidImageError), .invalidInput)
+        XCTAssertFalse(ErrorCategory(from: invalidImageError).isRetryable)
+
+        // Test API error
+        let apiError = GeminiError.apiError("Server error")
+        XCTAssertEqual(ErrorCategory(from: apiError), .serverError)
+        XCTAssertTrue(ErrorCategory(from: apiError).isRetryable)
+
+        // Test parse error
+        let parseError = GeminiError.parseError
+        XCTAssertEqual(ErrorCategory(from: parseError), .serverError)
+    }
+
+    func testErrorCategoryFromURLError() {
+        // Test not connected to internet
+        let offlineError = URLError(.notConnectedToInternet)
+        XCTAssertEqual(ErrorCategory(from: offlineError), .offline)
+        XCTAssertEqual(ErrorCategory(from: offlineError).title, "无网络连接")
+        XCTAssertTrue(ErrorCategory(from: offlineError).isRetryable)
+
+        // Test network connection lost
+        let connectionLostError = URLError(.networkConnectionLost)
+        XCTAssertEqual(ErrorCategory(from: connectionLostError), .offline)
+
+        // Test timeout
+        let timeoutError = URLError(.timedOut)
+        XCTAssertEqual(ErrorCategory(from: timeoutError), .network)
+
+        // Test cannot connect to host
+        let cannotConnectError = URLError(.cannotConnectToHost)
+        XCTAssertEqual(ErrorCategory(from: cannotConnectError), .network)
+    }
+
+    func testErrorCategoryFromAppError() {
+        // Test network request error
+        let networkError = AppError.networkRequest(operation: "test", underlying: NSError(domain: "test", code: 1))
+        XCTAssertEqual(ErrorCategory(from: networkError), .network)
+
+        // Test other AppError types default to unknown
+        let dataError = AppError.dataFetch(entity: "Test", underlying: NSError(domain: "test", code: 1))
+        XCTAssertEqual(ErrorCategory(from: dataError), .unknown)
+    }
+
+    func testErrorCategoryFromUnknownError() {
+        // Test unknown error type
+        struct CustomError: Error {}
+        let customError = CustomError()
+        XCTAssertEqual(ErrorCategory(from: customError), .unknown)
+        XCTAssertEqual(ErrorCategory(from: customError).title, "出错了")
+        XCTAssertFalse(ErrorCategory(from: customError).isRetryable)
+    }
+
+    func testErrorCategoryIconNames() {
+        // Verify all categories have valid SF Symbol names
+        let categories: [ErrorCategory] = [.network, .offline, .serverError, .rateLimited, .invalidInput, .unauthorized, .unknown]
+
+        for category in categories {
+            XCTAssertFalse(category.iconName.isEmpty, "Icon name should not be empty for \(category)")
+            XCTAssertFalse(category.title.isEmpty, "Title should not be empty for \(category)")
+            XCTAssertFalse(category.description.isEmpty, "Description should not be empty for \(category)")
+        }
+    }
+
+    func testErrorCategorySuggestedRetryDelays() {
+        // Rate limited should have longest delay
+        XCTAssertEqual(ErrorCategory.rateLimited.suggestedRetryDelay, 30)
+
+        // Server error should have medium delay
+        XCTAssertEqual(ErrorCategory.serverError.suggestedRetryDelay, 5)
+
+        // Network/offline should have short delay
+        XCTAssertEqual(ErrorCategory.network.suggestedRetryDelay, 2)
+        XCTAssertEqual(ErrorCategory.offline.suggestedRetryDelay, 2)
+
+        // Non-retryable errors should have 0 delay
+        XCTAssertEqual(ErrorCategory.invalidInput.suggestedRetryDelay, 0)
+        XCTAssertEqual(ErrorCategory.unauthorized.suggestedRetryDelay, 0)
+        XCTAssertEqual(ErrorCategory.unknown.suggestedRetryDelay, 0)
+    }
 }

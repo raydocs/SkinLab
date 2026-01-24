@@ -58,9 +58,8 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
-
+Created reusable EmptyStateView component with full accessibility support and unified empty states across TrackingView and ProductsView. Added search filtering with empty state for ProductsView.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 14d0a61, 5a58a67, d47ce77
+- Tests: xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17'
 - PRs:

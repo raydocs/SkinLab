@@ -63,6 +63,7 @@
 		853C5CF316EA4CD5159913BB /* LifestyleCorrelationAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BEC74AD60A57749BBFBCE3B /* LifestyleCorrelationAnalyzer.swift */; };
 		85E1AFC46CE9ED5683B4BDA5 /* ShareCardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC09663356DE55C0E82B5381 /* ShareCardRenderer.swift */; };
 		86D3A96F89087B45F0F703F3 /* SkinTwinDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7551BCDBC96ED5FBA80E1DDA /* SkinTwinDetailView.swift */; };
+		873B3CA9502F3759BD595F40 /* ErrorRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E551B56CAB16F872AF9A005A /* ErrorRecoveryView.swift */; };
 		8C220A652E3BF84B034F0F0F /* IngredientAIAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71175FB49EB76BABEE91712 /* IngredientAIAnalyzer.swift */; };
 		934C7257FE649E829D275A45 /* SeasonalityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176175C87A79A04F115018EA /* SeasonalityAnalyzer.swift */; };
 		9834A1C1D237F9C8F07CFAAC /* IngredientExposureRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07946CB369F610D5C517AE6B /* IngredientExposureRecord.swift */; };
@@ -293,6 +294,7 @@
 		D9F4507420FA9D2341FF3B1D /* SkinMatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinMatcher.swift; sourceTree = "<group>"; };
 		E07CD05159EC0DA35DFBF371 /* UserFeedbackRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserFeedbackRecord.swift; sourceTree = "<group>"; };
 		E27B8881E8E8A084EBAA5787 /* WeatherModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WeatherModels.swift; path = Weather/Models/WeatherModels.swift; sourceTree = "<group>"; };
+		E551B56CAB16F872AF9A005A /* ErrorRecoveryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ErrorRecoveryView.swift; sourceTree = "<group>"; };
 		E8E3C69A912A089C3C055662 /* IngredientAIInsightView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientAIInsightView.swift; sourceTree = "<group>"; };
 		E97C8AFE89FBEA292CA488AB /* TrendAnalyticsModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrendAnalyticsModels.swift; sourceTree = "<group>"; };
 		E980A6FCDB798763A00307CB /* ScenarioModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScenarioModels.swift; sourceTree = "<group>"; };
@@ -1086,6 +1088,7 @@
 			isa = PBXGroup;
 			children = (
 				B3AC5B6BCA89D4D662011178 /* EmptyStateView.swift */,
+				E551B56CAB16F872AF9A005A /* ErrorRecoveryView.swift */,
 			);
 			name = Components;
 			path = Components;
@@ -1380,6 +1383,7 @@
 				04DFAA9B69678765610ECB6C /* CachedImageView.swift in Sources */,
 				COLLSEC00001 /* CollapsibleSection.swift in Sources */,
 				A8CE1040399C23F11981675F /* EmptyStateView.swift in Sources */,
+				873B3CA9502F3759BD595F40 /* ErrorRecoveryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
