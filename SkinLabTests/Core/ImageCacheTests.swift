@@ -194,15 +194,13 @@ final class ImageCacheTests: XCTestCase {
 
     func testCacheStoreAndRetrieve() async {
         let testImage = createTestImage(size: CGSize(width: 100, height: 100))
+        let data = testImage.jpegData(compressionQuality: 0.8)!
         let key = "test-image-\(UUID().uuidString)"
 
-        await testCache.store(testImage, for: key)
-
-        // Allow disk write to complete
-        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+        // Use sync store to ensure disk write completes
+        await testCache.storeDataSync(data, for: key)
 
         let retrieved = await testCache.image(for: key)
-
         XCTAssertNotNil(retrieved, "Should retrieve stored image")
     }
 
@@ -213,17 +211,14 @@ final class ImageCacheTests: XCTestCase {
 
     func testCacheRemove() async {
         let testImage = createTestImage(size: CGSize(width: 100, height: 100))
+        let data = testImage.jpegData(compressionQuality: 0.8)!
         let key = "remove-test-\(UUID().uuidString)"
 
-        await testCache.store(testImage, for: key)
+        // Use sync store
+        await testCache.storeDataSync(data, for: key)
 
-        // Allow disk write to complete
-        try? await Task.sleep(nanoseconds: 100_000_000)
-
+        // Remove awaits disk deletion
         await testCache.remove(for: key)
-
-        // Allow disk removal to complete
-        try? await Task.sleep(nanoseconds: 50_000_000)
 
         let retrieved = await testCache.image(for: key)
         XCTAssertNil(retrieved, "Should return nil after removal")
@@ -231,9 +226,10 @@ final class ImageCacheTests: XCTestCase {
 
     func testMemoryCacheCheck() async {
         let testImage = createTestImage(size: CGSize(width: 100, height: 100))
+        let data = testImage.jpegData(compressionQuality: 0.8)!
         let key = "memory-test-\(UUID().uuidString)"
 
-        await testCache.store(testImage, for: key)
+        await testCache.storeDataSync(data, for: key)
 
         let isInMemory = await testCache.isInMemoryCache(key: key)
         XCTAssertTrue(isInMemory, "Image should be in memory cache")
@@ -241,12 +237,11 @@ final class ImageCacheTests: XCTestCase {
 
     func testDiskCacheCheck() async {
         let testImage = createTestImage(size: CGSize(width: 100, height: 100))
+        let data = testImage.jpegData(compressionQuality: 0.8)!
         let key = "disk-test-\(UUID().uuidString)"
 
-        await testCache.store(testImage, for: key)
-
-        // Allow disk write to complete
-        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+        // Use sync store
+        await testCache.storeDataSync(data, for: key)
 
         let isOnDisk = await testCache.isOnDisk(key: key)
         XCTAssertTrue(isOnDisk, "Image should be on disk")
@@ -254,35 +249,29 @@ final class ImageCacheTests: XCTestCase {
 
     func testClearMemoryCache() async {
         let testImage = createTestImage(size: CGSize(width: 100, height: 100))
+        let data = testImage.jpegData(compressionQuality: 0.8)!
         let key = "clear-memory-test-\(UUID().uuidString)"
 
-        await testCache.store(testImage, for: key)
+        await testCache.storeDataSync(data, for: key)
         await testCache.clearMemoryCache()
 
         let isInMemory = await testCache.isInMemoryCache(key: key)
         XCTAssertFalse(isInMemory, "Memory cache should be cleared")
 
-        // Allow disk write
-        try? await Task.sleep(nanoseconds: 100_000_000)
-
-        // But disk should still have it
+        // Disk should still have it
         let isOnDisk = await testCache.isOnDisk(key: key)
         XCTAssertTrue(isOnDisk, "Disk cache should still have image")
     }
 
     func testClearAllCache() async {
         let testImage = createTestImage(size: CGSize(width: 100, height: 100))
+        let data = testImage.jpegData(compressionQuality: 0.8)!
         let key = "clear-all-test-\(UUID().uuidString)"
 
-        await testCache.store(testImage, for: key)
+        await testCache.storeDataSync(data, for: key)
 
-        // Allow disk write
-        try? await Task.sleep(nanoseconds: 100_000_000)
-
+        // clearAllCache is now awaitable
         await testCache.clearAllCache()
-
-        // Allow clearing to complete
-        try? await Task.sleep(nanoseconds: 50_000_000)
 
         let isInMemory = await testCache.isInMemoryCache(key: key)
         let isOnDisk = await testCache.isOnDisk(key: key)
@@ -298,11 +287,9 @@ final class ImageCacheTests: XCTestCase {
         XCTAssertEqual(initialSize, 0, "Initial disk cache should be empty")
 
         let testImage = createTestImage(size: CGSize(width: 200, height: 200))
-        await testCache.store(testImage, for: "size-test-1")
-        await testCache.store(testImage, for: "size-test-2")
-
-        // Allow disk writes
-        try? await Task.sleep(nanoseconds: 200_000_000)
+        let data = testImage.jpegData(compressionQuality: 0.8)!
+        await testCache.storeDataSync(data, for: "size-test-1")
+        await testCache.storeDataSync(data, for: "size-test-2")
 
         let newSize = await testCache.diskCacheSize()
         XCTAssertGreaterThan(newSize, 0, "Disk cache should have content")
@@ -313,13 +300,53 @@ final class ImageCacheTests: XCTestCase {
         let data = testImage.jpegData(compressionQuality: 0.8)!
         let key = "data-test-\(UUID().uuidString)"
 
-        await testCache.storeData(data, for: key)
-
-        // Allow disk write
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await testCache.storeDataSync(data, for: key)
 
         let retrieved = await testCache.image(for: key)
         XCTAssertNotNil(retrieved, "Should retrieve image stored as data")
+    }
+
+    /// Test that remove after store doesn't resurrect file
+    func testNoResurrectionAfterRemove() async {
+        let testImage = createTestImage(size: CGSize(width: 100, height: 100))
+        let data = testImage.jpegData(compressionQuality: 0.8)!
+        let key = "resurrection-test-\(UUID().uuidString)"
+
+        // Store async (doesn't wait for disk)
+        await testCache.storeData(data, for: key)
+
+        // Immediately remove (waits for removal)
+        await testCache.remove(for: key)
+
+        // Flush any pending writes
+        await testCache.flush()
+
+        // File should not exist (no resurrection)
+        let isOnDisk = await testCache.isOnDisk(key: key)
+        XCTAssertFalse(isOnDisk, "File should not be resurrected after remove")
+    }
+
+    /// Test that clearAllCache invalidates pending writes
+    func testClearInvalidatesPendingWrites() async {
+        let testImage = createTestImage(size: CGSize(width: 100, height: 100))
+        let data = testImage.jpegData(compressionQuality: 0.8)!
+
+        // Store multiple items async
+        for i in 0..<5 {
+            await testCache.storeData(data, for: "pending-\(i)")
+        }
+
+        // Immediately clear
+        await testCache.clearAllCache()
+
+        // Flush any remaining operations
+        await testCache.flush()
+
+        // Check that none of the files exist
+        for i in 0..<5 {
+            let isOnDisk = await testCache.isOnDisk(key: "pending-\(i)")
+            XCTAssertFalse(isOnDisk, "File pending-\(i) should not exist after clear")
+        }
     }
 
     // MARK: - Data Extension Tests

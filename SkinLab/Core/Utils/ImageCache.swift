@@ -3,6 +3,7 @@
 //  SkinLab
 //
 //  Thread-safe image caching with memory and disk layers.
+//  All disk operations are serialized through a single DispatchQueue.
 //
 
 import UIKit
@@ -23,11 +24,9 @@ enum ImageCacheConfig {
     static let defaultExpirationDays = 7
 }
 
-// MARK: - Disk I/O Queue
-/// Dedicated queue for disk operations to avoid blocking actor
-private let diskIOQueue = DispatchQueue(label: "com.skinlab.imagecache.diskio", qos: .utility)
-
 // MARK: - Image Cache
+/// Thread-safe image cache with memory (NSCache) and disk layers.
+/// All disk I/O is serialized through a single dispatch queue to prevent race conditions.
 actor ImageCache {
     /// Shared singleton instance
     static let shared = ImageCache()
@@ -40,17 +39,15 @@ actor ImageCache {
     /// Disk cache directory URL
     private let diskCacheURL: URL
 
-    /// File manager for disk operations
-    private let fileManager: FileManager
+    /// Serial queue for ALL disk operations (reads, writes, deletes)
+    private let diskQueue = DispatchQueue(label: "com.skinlab.imagecache.disk", qos: .utility)
 
-    /// Track pending disk writes for removal coordination
-    private var pendingWrites: Set<String> = []
+    /// Generation counter to invalidate pending writes after clear
+    private var generation: UInt64 = 0
 
     // MARK: - Initialization
 
-    init(fileManager: FileManager = .default) {
-        self.fileManager = fileManager
-
+    init() {
         // Configure memory cache
         let cache = NSCache<NSString, UIImage>()
         cache.countLimit = ImageCacheConfig.memoryCacheLimit
@@ -58,14 +55,14 @@ actor ImageCache {
         self.memoryCache = cache
 
         // Setup disk cache directory
-        let cacheDir = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         self.diskCacheURL = cacheDir.appendingPathComponent(
             ImageCacheConfig.diskCacheDirectory,
             isDirectory: true
         )
 
         // Create disk cache directory if needed
-        try? fileManager.createDirectory(
+        try? FileManager.default.createDirectory(
             at: diskCacheURL,
             withIntermediateDirectories: true
         )
@@ -79,23 +76,37 @@ actor ImageCache {
     func image(for key: String) -> UIImage? {
         let nsKey = key as NSString
 
-        // 1. Check memory cache first
+        // 1. Check memory cache first (fast path)
         if let cached = memoryCache.object(forKey: nsKey) {
             return cached
         }
 
-        // 2. Check disk cache (synchronous read on actor is acceptable for cache hits)
-        if let diskImage = loadFromDisk(key: key) {
+        // 2. Check disk cache - dispatch sync to serialize with writes
+        let fileURL = diskFileURL(for: key)
+        let diskImage: UIImage? = diskQueue.sync {
+            guard let data = try? Data(contentsOf: fileURL) else {
+                return nil
+            }
+            // Update modification date on access (for LRU-like behavior)
+            try? FileManager.default.setAttributes(
+                [.modificationDate: Date()],
+                ofItemAtPath: fileURL.path
+            )
+            return UIImage(data: data)
+        }
+
+        if let image = diskImage {
             // Promote to memory cache
-            let cost = diskImage.estimatedMemorySize
-            memoryCache.setObject(diskImage, forKey: nsKey, cost: cost)
-            return diskImage
+            let cost = image.estimatedMemorySize
+            memoryCache.setObject(image, forKey: nsKey, cost: cost)
+            return image
         }
 
         return nil
     }
 
     /// Store an image in cache (both memory and disk)
+    /// Memory storage is immediate; disk write is async but serialized
     /// - Parameters:
     ///   - image: Image to cache
     ///   - key: Cache key
@@ -103,57 +114,93 @@ actor ImageCache {
         let nsKey = key as NSString
         let cost = image.estimatedMemorySize
 
-        // Store in memory
+        // Store in memory immediately
         memoryCache.setObject(image, forKey: nsKey, cost: cost)
 
-        // Encode image off-actor, then write to disk
-        pendingWrites.insert(key)
+        // Capture current generation to detect invalidation
+        let storeGeneration = generation
         let fileURL = diskFileURL(for: key)
 
-        diskIOQueue.async { [weak self] in
-            guard let data = image.jpegData(compressionQuality: 0.8) else {
-                Task { await self?.removePendingWrite(key) }
-                return
+        // Encode image on disk queue (off main/actor)
+        diskQueue.async { [weak self] in
+            guard let self else { return }
+            // Check if cache was cleared since we started
+            Task {
+                let currentGen = await self.generation
+                guard currentGen == storeGeneration else { return }
+
+                // Perform I/O on disk queue
+                if let data = image.jpegData(compressionQuality: 0.8) {
+                    try? data.write(to: fileURL, options: .atomic)
+                }
             }
-            try? data.write(to: fileURL, options: .atomic)
-            Task { await self?.removePendingWrite(key) }
         }
     }
 
     /// Store image data directly (more efficient if you already have Data)
+    /// Memory storage is immediate; disk write is async but serialized
     /// - Parameters:
     ///   - data: Image data (JPEG/PNG)
     ///   - key: Cache key
     func storeData(_ data: Data, for key: String) {
-        // Load into memory cache
+        // Load into memory cache immediately
         if let image = UIImage(data: data) {
             let nsKey = key as NSString
             let cost = image.estimatedMemorySize
             memoryCache.setObject(image, forKey: nsKey, cost: cost)
         }
 
-        // Write data directly to disk on background queue
-        pendingWrites.insert(key)
+        // Capture current generation
+        let storeGeneration = generation
         let fileURL = diskFileURL(for: key)
+        let dataCopy = data // Copy for sendability
 
-        diskIOQueue.async { [weak self] in
-            try? data.write(to: fileURL, options: .atomic)
-            Task { await self?.removePendingWrite(key) }
+        // Write to disk asynchronously
+        diskQueue.async { [weak self] in
+            guard let self else { return }
+            Task {
+                let currentGen = await self.generation
+                guard currentGen == storeGeneration else { return }
+                try? dataCopy.write(to: fileURL, options: .atomic)
+            }
         }
     }
 
-    /// Remove an image from cache
+    /// Store data and wait for disk write to complete (for testing)
+    /// - Parameters:
+    ///   - data: Image data
+    ///   - key: Cache key
+    func storeDataSync(_ data: Data, for key: String) async {
+        // Load into memory cache immediately
+        if let image = UIImage(data: data) {
+            let nsKey = key as NSString
+            let cost = image.estimatedMemorySize
+            memoryCache.setObject(image, forKey: nsKey, cost: cost)
+        }
+
+        let fileURL = diskFileURL(for: key)
+        await withCheckedContinuation { continuation in
+            diskQueue.async {
+                try? data.write(to: fileURL, options: .atomic)
+                continuation.resume()
+            }
+        }
+    }
+
+    /// Remove an image from cache (sync - waits for disk removal)
     /// - Parameter key: Cache key
-    func remove(for key: String) {
-        // Remove from memory
+    func remove(for key: String) async {
+        // Remove from memory immediately
         memoryCache.removeObject(forKey: key as NSString)
 
-        // Cancel pending write if any
-        pendingWrites.remove(key)
-
-        // Remove from disk synchronously to ensure removal completes
+        // Remove from disk synchronously on disk queue
         let fileURL = diskFileURL(for: key)
-        try? fileManager.removeItem(at: fileURL)
+        await withCheckedContinuation { continuation in
+            diskQueue.async {
+                try? FileManager.default.removeItem(at: fileURL)
+                continuation.resume()
+            }
+        }
     }
 
     /// Clear all memory cache
@@ -163,102 +210,94 @@ actor ImageCache {
 
     /// Clear old cache entries from disk
     /// - Parameter days: Remove entries older than this many days. Default is 7
-    func clearOldCache(olderThan days: Int = ImageCacheConfig.defaultExpirationDays) {
-        guard let contents = try? fileManager.contentsOfDirectory(
-            at: diskCacheURL,
-            includingPropertiesForKeys: [.contentModificationDateKey],
-            options: .skipsHiddenFiles
-        ) else {
-            return
-        }
+    func clearOldCache(olderThan days: Int = ImageCacheConfig.defaultExpirationDays) async {
+        await withCheckedContinuation { continuation in
+            diskQueue.async { [diskCacheURL] in
+                guard let contents = try? FileManager.default.contentsOfDirectory(
+                    at: diskCacheURL,
+                    includingPropertiesForKeys: [.contentModificationDateKey],
+                    options: .skipsHiddenFiles
+                ) else {
+                    continuation.resume()
+                    return
+                }
 
-        let cutoffDate = Calendar.current.date(
-            byAdding: .day,
-            value: -days,
-            to: Date()
-        ) ?? Date()
+                let cutoffDate = Calendar.current.date(
+                    byAdding: .day,
+                    value: -days,
+                    to: Date()
+                ) ?? Date()
 
-        for fileURL in contents {
-            guard let attributes = try? fileURL.resourceValues(forKeys: [.contentModificationDateKey]),
-                  let modificationDate = attributes.contentModificationDate else {
-                continue
-            }
+                for fileURL in contents {
+                    guard let attributes = try? fileURL.resourceValues(forKeys: [.contentModificationDateKey]),
+                          let modificationDate = attributes.contentModificationDate else {
+                        continue
+                    }
 
-            if modificationDate < cutoffDate {
-                try? fileManager.removeItem(at: fileURL)
+                    if modificationDate < cutoffDate {
+                        try? FileManager.default.removeItem(at: fileURL)
+                    }
+                }
+                continuation.resume()
             }
         }
     }
 
-    /// Clear all cache (memory and disk)
-    func clearAllCache() {
+    /// Clear all cache (memory and disk) - waits for completion
+    func clearAllCache() async {
         // Clear memory
         memoryCache.removeAllObjects()
 
-        // Cancel all pending writes
-        pendingWrites.removeAll()
+        // Increment generation to invalidate any pending writes
+        generation += 1
 
-        // Clear disk synchronously
-        try? fileManager.removeItem(at: diskCacheURL)
-        try? fileManager.createDirectory(
-            at: diskCacheURL,
-            withIntermediateDirectories: true
-        )
+        // Clear disk synchronously on disk queue
+        await withCheckedContinuation { continuation in
+            diskQueue.async { [diskCacheURL] in
+                try? FileManager.default.removeItem(at: diskCacheURL)
+                try? FileManager.default.createDirectory(
+                    at: diskCacheURL,
+                    withIntermediateDirectories: true
+                )
+                continuation.resume()
+            }
+        }
     }
 
     /// Get current disk cache size in bytes
-    func diskCacheSize() -> Int {
-        guard let contents = try? fileManager.contentsOfDirectory(
-            at: diskCacheURL,
-            includingPropertiesForKeys: [.fileSizeKey],
-            options: .skipsHiddenFiles
-        ) else {
-            return 0
-        }
+    func diskCacheSize() async -> Int {
+        await withCheckedContinuation { continuation in
+            diskQueue.async { [diskCacheURL] in
+                guard let contents = try? FileManager.default.contentsOfDirectory(
+                    at: diskCacheURL,
+                    includingPropertiesForKeys: [.fileSizeKey],
+                    options: .skipsHiddenFiles
+                ) else {
+                    continuation.resume(returning: 0)
+                    return
+                }
 
-        var totalSize = 0
-        for fileURL in contents {
-            if let size = try? fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize {
-                totalSize += size
+                var totalSize = 0
+                for fileURL in contents {
+                    if let size = try? fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize {
+                        totalSize += size
+                    }
+                }
+                continuation.resume(returning: totalSize)
             }
         }
-
-        return totalSize
-    }
-
-    // MARK: - Private Helpers
-
-    private func removePendingWrite(_ key: String) {
-        pendingWrites.remove(key)
     }
 
     // MARK: - Disk Operations
 
     /// Generate disk file URL for a cache key using SHA256 hash
-    private func diskFileURL(for key: String) -> URL {
+    private nonisolated func diskFileURL(for key: String) -> URL {
         // Use SHA256 hash for fixed-length, safe filenames
         let keyData = Data(key.utf8)
         let hash = SHA256.hash(data: keyData)
         let hashString = hash.compactMap { String(format: "%02x", $0) }.joined()
 
         return diskCacheURL.appendingPathComponent(hashString)
-    }
-
-    /// Load image from disk cache
-    private func loadFromDisk(key: String) -> UIImage? {
-        let fileURL = diskFileURL(for: key)
-
-        guard let data = try? Data(contentsOf: fileURL) else {
-            return nil
-        }
-
-        // Update modification date on access (for LRU-like behavior)
-        try? fileManager.setAttributes(
-            [.modificationDate: Date()],
-            ofItemAtPath: fileURL.path
-        )
-
-        return UIImage(data: data)
     }
 }
 
@@ -273,12 +312,19 @@ extension ImageCache {
             return cached
         }
 
-        // Load from file system
+        // Load from file system (on disk queue for consistency)
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsURL.appendingPathComponent(path)
 
-        guard let data = try? Data(contentsOf: fileURL),
-              let image = UIImage(data: data) else {
+        let result: (data: Data, image: UIImage)? = diskQueue.sync {
+            guard let data = try? Data(contentsOf: fileURL),
+                  let image = UIImage(data: data) else {
+                return nil
+            }
+            return (data, image)
+        }
+
+        guard let (data, image) = result else {
             return nil
         }
 
@@ -315,9 +361,9 @@ extension ImageCache {
 
 // MARK: - Test Helpers
 extension ImageCache {
-    /// Reset cache (for testing)
-    func reset() {
-        clearAllCache()
+    /// Reset cache (for testing) - awaitable
+    func reset() async {
+        await clearAllCache()
     }
 
     /// Check if key exists in memory cache
@@ -325,9 +371,20 @@ extension ImageCache {
         memoryCache.object(forKey: key as NSString) != nil
     }
 
-    /// Check if key exists on disk
+    /// Check if key exists on disk (serialized through disk queue)
     func isOnDisk(key: String) -> Bool {
         let fileURL = diskFileURL(for: key)
-        return fileManager.fileExists(atPath: fileURL.path)
+        return diskQueue.sync {
+            FileManager.default.fileExists(atPath: fileURL.path)
+        }
+    }
+
+    /// Flush all pending disk writes (for testing)
+    func flush() async {
+        await withCheckedContinuation { continuation in
+            diskQueue.async {
+                continuation.resume()
+            }
+        }
     }
 }
