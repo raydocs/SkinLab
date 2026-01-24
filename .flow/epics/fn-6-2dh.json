@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-6-2dh",
+  "created_at": "2026-01-23T23:47:59.217283Z",
+  "depends_on_epics": [],
+  "id": "fn-6-2dh",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-6-2dh.md",
+  "status": "open",
+  "title": "\u4ea7\u54c1\u5f52\u56e0\u589e\u5f3a - Multi-Product Attribution",
+  "updated_at": "2026-01-23T23:47:59.217454Z"
+}

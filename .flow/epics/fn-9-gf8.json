@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-9-gf8",
+  "created_at": "2026-01-23T23:50:49.656332Z",
+  "depends_on_epics": [],
+  "id": "fn-9-gf8",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-9-gf8.md",
+  "status": "open",
+  "title": "\u5929\u6c14\u73af\u5883\u6574\u5408 - Weather & Environment Integration",
+  "updated_at": "2026-01-23T23:50:49.656531Z"
+}

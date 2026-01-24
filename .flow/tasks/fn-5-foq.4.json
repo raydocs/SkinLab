@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-23T23:47:49.184792Z",
+  "depends_on": [],
+  "epic": "fn-5-foq",
+  "id": "fn-5-foq.4",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-5-foq.4.md",
+  "status": "todo",
+  "title": "\u6269\u5c55 UI \u5c55\u793a\u51b2\u7a81\u8b66\u544a",
+  "updated_at": "2026-01-23T23:47:49.185026Z"
+}

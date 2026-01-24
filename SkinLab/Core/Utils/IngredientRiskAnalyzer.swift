@@ -1,5 +1,177 @@
 import Foundation
 
+// MARK: - Conflict Severity
+enum ConflictSeverity: String, Codable, Sendable {
+    case warning = "警告"   // 建议分开使用
+    case danger = "危险"    // 不建议同时使用
+
+    var displayColor: String {
+        switch self {
+        case .warning: return "orange"
+        case .danger: return "red"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .warning: return "exclamationmark.triangle.fill"
+        case .danger: return "xmark.octagon.fill"
+        }
+    }
+}
+
+// MARK: - Ingredient Conflict
+struct IngredientConflict: Codable, Identifiable, Sendable {
+    let id: UUID
+    let ingredient1: String  // normalized ingredient name
+    let ingredient2: String
+    let severity: ConflictSeverity
+    let description: String  // Chinese description
+    let recommendation: String  // Usage recommendation like "间隔12小时"
+
+    init(
+        id: UUID = UUID(),
+        ingredient1: String,
+        ingredient2: String,
+        severity: ConflictSeverity,
+        description: String,
+        recommendation: String
+    ) {
+        self.id = id
+        self.ingredient1 = ingredient1
+        self.ingredient2 = ingredient2
+        self.severity = severity
+        self.description = description
+        self.recommendation = recommendation
+    }
+}
+
+// MARK: - Conflict Knowledge Base
+struct ConflictKnowledgeBase {
+    /// Static knowledge base of known ingredient conflicts (at least 15 pairs)
+    static let conflicts: [IngredientConflict] = [
+        // Retinol conflicts (6 pairs)
+        IngredientConflict(
+            ingredient1: "retinol",
+            ingredient2: "aha",
+            severity: .danger,
+            description: "过度刺激，可能损伤皮肤屏障",
+            recommendation: "建议分开早晚使用，或间隔24小时"
+        ),
+        IngredientConflict(
+            ingredient1: "retinol",
+            ingredient2: "bha",
+            severity: .danger,
+            description: "刺激叠加，可能引起脱皮和干燥",
+            recommendation: "建议分开早晚使用，或间隔24小时"
+        ),
+        IngredientConflict(
+            ingredient1: "retinol",
+            ingredient2: "benzoyl peroxide",
+            severity: .danger,
+            description: "相互作用使两者失效",
+            recommendation: "建议分开早晚使用，避免同时涂抹"
+        ),
+        IngredientConflict(
+            ingredient1: "retinol",
+            ingredient2: "vitamin c",
+            severity: .warning,
+            description: "pH环境冲突，影响各自效果",
+            recommendation: "建议早C晚A，分开使用效果更佳"
+        ),
+        IngredientConflict(
+            ingredient1: "retinol",
+            ingredient2: "azelaic acid",
+            severity: .warning,
+            description: "刺激叠加，敏感肌需注意",
+            recommendation: "建议先建立耐受再联用，或间隔使用"
+        ),
+        IngredientConflict(
+            ingredient1: "retinol",
+            ingredient2: "salicylic acid",
+            severity: .danger,
+            description: "刺激叠加，可能引起严重干燥脱皮",
+            recommendation: "避免同时使用，建议间隔24小时"
+        ),
+        IngredientConflict(
+            ingredient1: "retinol",
+            ingredient2: "lactic acid",
+            severity: .danger,
+            description: "过度刺激，屏障易受损",
+            recommendation: "避免同时使用，建议间隔24小时"
+        ),
+
+        // Vitamin C conflicts (3 pairs)
+        IngredientConflict(
+            ingredient1: "vitamin c",
+            ingredient2: "niacinamide",
+            severity: .warning,
+            description: "高浓度时可能产生冲突",
+            recommendation: "低浓度可以同用，高浓度建议间隔15-30分钟"
+        ),
+        IngredientConflict(
+            ingredient1: "aha",
+            ingredient2: "vitamin c",
+            severity: .warning,
+            description: "刺激叠加，可能引起不适",
+            recommendation: "建议分开使用，间隔12小时"
+        ),
+        IngredientConflict(
+            ingredient1: "benzoyl peroxide",
+            ingredient2: "vitamin c",
+            severity: .danger,
+            description: "过氧化苯甲酰会氧化VC使其失效",
+            recommendation: "避免同时使用，分开早晚更佳"
+        ),
+        IngredientConflict(
+            ingredient1: "glycolic acid",
+            ingredient2: "vitamin c",
+            severity: .warning,
+            description: "pH冲突，影响VC稳定性",
+            recommendation: "建议分开使用，间隔12小时"
+        ),
+
+        // AHA/BHA conflicts (2 pairs)
+        IngredientConflict(
+            ingredient1: "aha",
+            ingredient2: "bha",
+            severity: .warning,
+            description: "过度去角质，可能损伤屏障",
+            recommendation: "新手避免同时使用，建议隔天交替"
+        ),
+        IngredientConflict(
+            ingredient1: "niacinamide",
+            ingredient2: "aha",
+            severity: .warning,
+            description: "酸性环境影响烟酰胺稳定性",
+            recommendation: "建议间隔15-30分钟使用"
+        ),
+
+        // Other dangerous combinations (3 pairs)
+        IngredientConflict(
+            ingredient1: "hydroquinone",
+            ingredient2: "benzoyl peroxide",
+            severity: .danger,
+            description: "可能导致皮肤染色",
+            recommendation: "严禁同时使用"
+        ),
+        IngredientConflict(
+            ingredient1: "benzoyl peroxide",
+            ingredient2: "retinoid",
+            severity: .danger,
+            description: "相互作用使两者失效",
+            recommendation: "建议分开早晚使用"
+        ),
+        IngredientConflict(
+            ingredient1: "copper peptide",
+            ingredient2: "vitamin c",
+            severity: .warning,
+            description: "铜离子会加速VC氧化",
+            recommendation: "避免同时使用，建议间隔12小时"
+        )
+    ]
+}
+
 // MARK: - Enhanced Ingredient Scan Result
 struct EnhancedIngredientScanResult {
     let baseResult: IngredientScanResult
@@ -11,9 +183,27 @@ struct EnhancedIngredientScanResult {
     let allergyMatches: [String]
     let concernMatches: [SkinConcern: [String]]
     let userReactions: [String: IngredientUserReaction] // 新增：成分名 -> 用户反应
+    let conflicts: [IngredientConflict] // 成分冲突检测结果
 
     var hasPersonalizedInfo: Bool {
-        !personalizedWarnings.isEmpty || !personalizedRecommendations.isEmpty || !allergyMatches.isEmpty || !userReactions.isEmpty
+        !personalizedWarnings.isEmpty || !personalizedRecommendations.isEmpty || !allergyMatches.isEmpty || !userReactions.isEmpty || !conflicts.isEmpty
+    }
+
+    /// Convenience computed properties for conflict summary
+    var hasDangerConflicts: Bool {
+        conflicts.contains { $0.severity == .danger }
+    }
+
+    var hasWarningConflicts: Bool {
+        conflicts.contains { $0.severity == .warning }
+    }
+
+    var dangerConflicts: [IngredientConflict] {
+        conflicts.filter { $0.severity == .danger }
+    }
+
+    var warningConflicts: [IngredientConflict] {
+        conflicts.filter { $0.severity == .warning }
     }
 }
 
@@ -91,7 +281,8 @@ final class IngredientRiskAnalyzer {
             suitableForUser: suitability >= 60,
             allergyMatches: allergies,
             concernMatches: concerns,
-            userReactions: userReactions
+            userReactions: userReactions,
+            conflicts: [] // TODO: fn-5-foq.2 will implement detectConflicts method
         )
     }
 

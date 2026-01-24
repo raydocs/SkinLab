@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-23T23:48:40.841655Z",
+  "depends_on": [],
+  "epic": "fn-6-2dh",
+  "id": "fn-6-2dh.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-6-2dh.1.md",
+  "status": "todo",
+  "title": "\u6269\u5c55 ProductUsageData \u8ffd\u8e2a\u5171\u540c\u4f7f\u7528",
+  "updated_at": "2026-01-23T23:48:40.842006Z"
+}

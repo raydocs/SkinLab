@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-7-5gr",
+  "created_at": "2026-01-23T23:48:54.051025Z",
+  "depends_on_epics": [],
+  "id": "fn-7-5gr",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-7-5gr.md",
+  "status": "open",
+  "title": "\u9884\u6d4b\u6027\u62a4\u80a4 - Predictive Skincare Alerts",
+  "updated_at": "2026-01-23T23:48:54.051227Z"
+}

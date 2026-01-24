@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-23T23:50:35.969912Z",
+  "depends_on": [],
+  "epic": "fn-8-fxq",
+  "id": "fn-8-fxq.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-8-fxq.1.md",
+  "status": "todo",
+  "title": "\u5b9a\u4e49\u573a\u666f\u679a\u4e3e\u548c\u5efa\u8bae\u6a21\u578b",
+  "updated_at": "2026-01-23T23:50:35.970100Z"
+}

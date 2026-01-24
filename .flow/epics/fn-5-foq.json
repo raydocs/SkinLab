@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-5-foq",
+  "created_at": "2026-01-23T23:46:45.887548Z",
+  "depends_on_epics": [],
+  "id": "fn-5-foq",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-5-foq.md",
+  "status": "open",
+  "title": "\u6210\u5206\u51b2\u7a81\u68c0\u6d4b\u589e\u5f3a - Ingredient Conflict Detection",
+  "updated_at": "2026-01-23T23:46:45.887837Z"
+}

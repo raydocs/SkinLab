@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-23T23:50:36.099210Z",
+  "depends_on": [],
+  "epic": "fn-8-fxq",
+  "id": "fn-8-fxq.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-8-fxq.2.md",
+  "status": "todo",
+  "title": "\u521b\u5efa ScenarioAdvisor \u670d\u52a1",
+  "updated_at": "2026-01-23T23:50:36.099432Z"
+}
