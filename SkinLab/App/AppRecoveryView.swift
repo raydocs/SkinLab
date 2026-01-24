@@ -125,7 +125,7 @@ struct AppRecoveryView: View {
     private func openSupportEmail() {
         Self.logger.info("User requested support contact from recovery view")
 
-        let email = "support@skinlab.app"
+        let email = AppConfiguration.Support.email
         let subject = "SkinLab App Crash Report"
         let body = """
         App Version: \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown")

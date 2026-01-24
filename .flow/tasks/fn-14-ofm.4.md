@@ -67,9 +67,8 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
-
+Added [weak self] capture lists with guard let self to all Task callbacks in CameraService and LocationManager classes to prevent potential retain cycles in async delegate callbacks.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 3c283249c7380746b3bb003184d2ca300c96a766
+- Tests: xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17'
 - PRs:

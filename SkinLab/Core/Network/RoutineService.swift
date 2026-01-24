@@ -291,7 +291,7 @@ enum RoutineError: LocalizedError {
 extension GeminiService {
     func generateRoutine(prompt: String) async throws -> String {
         // Reuse existing Gemini infrastructure
-        let endpoint = "https://openrouter.ai/api/v1/chat/completions"
+        let endpoint = "\(AppConfiguration.API.baseURL)/chat/completions"
         guard let url = URL(string: endpoint) else {
             throw GeminiError.apiError("Invalid URL")
         }
@@ -300,14 +300,14 @@ extension GeminiService {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
-        request.setValue("https://skinlab.app", forHTTPHeaderField: "HTTP-Referer")
+        request.setValue(AppConfiguration.API.referer, forHTTPHeaderField: "HTTP-Referer")
 
         let requestBody: [String: Any] = [
-            "model": "google/gemini-2.0-flash-exp:free",
+            "model": AppConfiguration.API.routineGenerationModel,
             "messages": [
                 ["role": "user", "content": prompt]
             ],
-            "max_tokens": 1024
+            "max_tokens": AppConfiguration.Limits.routineGenerationMaxTokens
         ]
 
         request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)

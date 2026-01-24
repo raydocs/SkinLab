@@ -135,6 +135,7 @@
 		PDF0000001 /* PhotoDataFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDF0000002 /* PhotoDataFlowTests.swift */; };
 		C0ACDEE8C5ACB09CBF956804 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8339588DC76582E8946C61D2 /* Logger.swift */; };
 		9A173C29F89D0EFF269816F5 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72371672A252B7B8E05C861 /* AppError.swift */; };
+		APPCONFIG0002 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPCONFIG0001 /* AppConfiguration.swift */; };
 		34FD77791A382AE52770F9E4 /* ErrorHandlingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B94F96CB181E794F7D649CF /* ErrorHandlingTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -210,6 +211,7 @@
 		7A5B3AE2E986F636B26C6316 /* MatchResultRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchResultRecord.swift; sourceTree = "<group>"; };
 				8339588DC76582E8946C61D2 /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = ../../SkinLab/Core/Utils/Logger.swift; sourceTree = "<group>"; };
 		C72371672A252B7B8E05C861 /* AppError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppError.swift; path = ../../SkinLab/Core/Utils/AppError.swift; sourceTree = "<group>"; };
+		APPCONFIG0001 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		3B94F96CB181E794F7D649CF /* ErrorHandlingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ErrorHandlingTests.swift; path = ../../SkinLabTests/Core/ErrorHandlingTests.swift; sourceTree = "<group>"; };
 		7CCFAD1851E0FB2F410EE993 /* UserHistoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserHistoryStore.swift; path = ../../SkinLab/Core/Utils/UserHistoryStore.swift; sourceTree = "<group>"; };
 		83088D4EEFA516F79EB25EE1 /* ProductRecommendationEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductRecommendationEngineTests.swift; sourceTree = "<group>"; };
@@ -787,10 +789,19 @@
 		E1000020 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				APPCONFIG0003 /* Config */,
 				E1000021 /* Network */,
 				E1000022 /* Utils */,
 			);
 			path = Core;
+			sourceTree = "<group>";
+		};
+		APPCONFIG0003 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				APPCONFIG0001 /* AppConfiguration.swift */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		E1000021 /* Network */ = {
@@ -1222,6 +1233,7 @@
 				A1000001 /* SkinLabApp.swift in Sources */,
 				A1000002 /* ContentView.swift in Sources */,
 				ARV0000001 /* AppRecoveryView.swift in Sources */,
+				APPCONFIG0002 /* AppConfiguration.swift in Sources */,
 				A1000010 /* GeminiService.swift in Sources */,
 				A1000020 /* CameraService.swift in Sources */,
 				A1000021 /* PhotoPicker.swift in Sources */,

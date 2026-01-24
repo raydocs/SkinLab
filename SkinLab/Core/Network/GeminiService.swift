@@ -3,8 +3,8 @@ import UIKit
 
 // MARK: - OpenRouter Configuration (Gemini via OpenRouter)
 enum GeminiConfig {
-    static let model = "google/gemini-3-flash-preview"
-    static let baseURL = "https://openrouter.ai/api/v1"
+    static let model = AppConfiguration.API.skinAnalysisModel
+    static let baseURL = AppConfiguration.API.baseURL
 
     // API Key from environment or Info.plist (NEVER hardcode!)
     static var apiKey: String {
@@ -21,8 +21,8 @@ enum GeminiConfig {
     }
 
     // Image optimization settings
-    static let maxImageDimension: CGFloat = 1024
-    static let imageCompressionQuality: CGFloat = 0.6
+    static let maxImageDimension: CGFloat = AppConfiguration.ImageProcessing.maxImageDimension
+    static let imageCompressionQuality: CGFloat = AppConfiguration.ImageProcessing.compressionQuality
 }
 
 // MARK: - Skin Analysis Service Protocol (for dependency injection)
@@ -191,8 +191,8 @@ actor GeminiService: SkinAnalysisServiceProtocol {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
-        request.setValue("https://skinlab.app", forHTTPHeaderField: "HTTP-Referer")
-        request.setValue("SkinLab", forHTTPHeaderField: "X-Title")
+        request.setValue(AppConfiguration.API.referer, forHTTPHeaderField: "HTTP-Referer")
+        request.setValue(AppConfiguration.API.title, forHTTPHeaderField: "X-Title")
         
         // Build prompt with historical context if available
         let prompt = buildPrompt(with: previousAnalysis)
@@ -218,7 +218,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
                 ]
             ],
             "temperature": 0.1,
-            "max_tokens": 512
+            "max_tokens": AppConfiguration.Limits.skinAnalysisMaxTokens
         ]
         
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -564,8 +564,8 @@ extension GeminiService: IngredientAIServiceProtocol {
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
-        urlRequest.setValue("https://skinlab.app", forHTTPHeaderField: "HTTP-Referer")
-        urlRequest.setValue("SkinLab", forHTTPHeaderField: "X-Title")
+        urlRequest.setValue(AppConfiguration.API.referer, forHTTPHeaderField: "HTTP-Referer")
+        urlRequest.setValue(AppConfiguration.API.title, forHTTPHeaderField: "X-Title")
         
         let prompt = buildIngredientPrompt(request: request)
         
@@ -578,13 +578,13 @@ extension GeminiService: IngredientAIServiceProtocol {
                 ]
             ],
             "temperature": 0.1,
-            "max_tokens": 1024
+            "max_tokens": AppConfiguration.Limits.ingredientAnalysisMaxTokens
         ]
-        
+
         urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)
         return urlRequest
     }
-    
+
     private func buildIngredientPrompt(request: IngredientAIRequest) -> String {
         var prompt = """
         你是资深皮肤科医生和化妆品配方专家，拥有15年临床经验。请基于用户的个人资料，对以下成分配方进行专业、个性化的分析。
