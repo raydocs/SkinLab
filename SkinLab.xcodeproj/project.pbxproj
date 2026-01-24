@@ -30,6 +30,7 @@
 		3B0B99359B6CD65A51CEE9F6 /* TrackingMetadataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65ED8CCF0F67719203868C01 /* TrackingMetadataModels.swift */; };
 		3B14FDF424032D3EDF954D86 /* IngredientRiskAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC24F5570D8E1F73373DA94 /* IngredientRiskAnalyzer.swift */; };
 		3BEB398DDDD7077A90999B22 /* SkinAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E492412869BCF377917304 /* SkinAnalysisTests.swift */; };
+		FN5FOQ05CONFLICTTEST00001 /* IngredientConflictTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */; };
 		3D4A64FF06C5FD0516547900 /* FeedbackAnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5E121DD7AE09146D2E6CC9 /* FeedbackAnalyticsService.swift */; };
 		3F2A62BAB4DE1C75424E3487 /* SkincareRoutine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553386FE85CB219F08ACDA07 /* SkincareRoutine.swift */; };
 		402AA3369BA5B7C3753B65CD /* TrackingReportExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA7BE94D8E3D4DEC72F5114 /* TrackingReportExtensions.swift */; };
@@ -186,6 +187,7 @@
 		6DD37543E7F0B5A97188891F /* AchievementProgress.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementProgress.swift; sourceTree = "<group>"; };
 		7047266E22AF07847CFC0CA6 /* AchievementShareService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementShareService.swift; sourceTree = "<group>"; };
 		70E492412869BCF377917304 /* SkinAnalysisTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinAnalysisTests.swift; sourceTree = "<group>"; };
+		FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientConflictTests.swift; sourceTree = "<group>"; };
 		7144358F4B6B8D70DA122923 /* EngagementMigrationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EngagementMigrationService.swift; sourceTree = "<group>"; };
 		7551BCDBC96ED5FBA80E1DDA /* SkinTwinDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinDetailView.swift; sourceTree = "<group>"; };
 		7A5B3AE2E986F636B26C6316 /* MatchResultRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchResultRecord.swift; sourceTree = "<group>"; };
@@ -489,6 +491,7 @@
 		7708436C8FA671CD557E22B3 /* Analysis */ = {
 			isa = PBXGroup;
 			children = (
+				FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */,
 				70E492412869BCF377917304 /* SkinAnalysisTests.swift */,
 			);
 			name = Analysis;
@@ -1213,6 +1216,7 @@
 			files = (
 				C6E53A5BE0DABFFC57A351A7 /* ProductModelTests.swift in Sources */,
 				3BEB398DDDD7077A90999B22 /* SkinAnalysisTests.swift in Sources */,
+				FN5FOQ05CONFLICTTEST00001 /* IngredientConflictTests.swift in Sources */,
 				F405186565CE2C23CC08CCC3 /* UserProfileTests.swift in Sources */,
 				03F04B25FD40ABAD5F758971 /* TimeSeriesAnalyzerTests.swift in Sources */,
 				510D4BC8742383BA03AFE09F /* TrackingModelsTests.swift in Sources */,
