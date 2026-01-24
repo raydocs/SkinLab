@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Implemented calculateAttributionWeights method with helper functions for solo effect, usage frequency, and weight normalization to determine product contribution to skin changes.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: b192988a7eb4674a05d5deee7d091af85e88a2e3
+- Tests: Build verified with xcodebuild
 - PRs:

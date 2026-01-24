@@ -17,6 +17,7 @@ struct TrackingReportView: View {
     @State private var showRecommendations = false
     @State private var showLifestyleInsights = false
     @State private var showDataQuality = false
+    @State private var showProductInsights = false
 
     // Timeline mode: all data vs reliable only
     @State private var timelineMode: TimelineDisplayPolicy.TimelineMode = .all
@@ -66,6 +67,17 @@ struct TrackingReportView: View {
                         isExpanded: $showProductEffectiveness
                     ) {
                         productEffectivenessSection
+                    }
+                }
+
+                // Enhanced Product Insights with Attribution (collapsed by default)
+                if !report.productInsights.isEmpty {
+                    disclosureCard(
+                        title: "产品归因分析",
+                        systemImage: "sparkles.rectangle.stack.fill",
+                        isExpanded: $showProductInsights
+                    ) {
+                        productInsightsSection
                     }
                 }
 
@@ -442,6 +454,28 @@ struct TrackingReportView: View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(report.usedProducts, id: \.productId) { product in
                 ProductEffectivenessRow(product: product)
+            }
+        }
+        .padding(.top, 4)
+    }
+
+    // MARK: - Product Insights (Attribution Analysis)
+    private var productInsightsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section description
+            Text("多产品使用时，分析各产品对皮肤变化的贡献")
+                .font(.skinLabCaption)
+                .foregroundColor(.skinLabSubtext)
+
+            // Product insights with attribution
+            ForEach(report.productInsights.prefix(5), id: \.productId) { insight in
+                ProductInsightRow(insight: insight)
+            }
+
+            // Multi-product usage tip (if any product needs solo validation)
+            let needsValidation = report.productInsights.contains { $0.needsSoloUsageValidation }
+            if needsValidation {
+                MultiProductUsageTip()
             }
         }
         .padding(.top, 4)

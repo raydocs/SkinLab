@@ -278,24 +278,37 @@ struct ProductCombinationInsight: Codable, Sendable {
 struct ProductEffectInsight: Codable, Sendable {
     /// 产品ID
     let productId: String
-    
+
     /// 产品名称
     let productName: String
-    
+
     /// 效果评分 (-1 to 1, 负值表示恶化)
     let effectivenessScore: Double
-    
+
     /// 置信度
     let confidence: ConfidenceScore
-    
+
     /// 影响因素列表
     let contributingFactors: [String]
-    
+
     /// 使用次数
     let usageCount: Int
-    
+
     /// 平均间隔天数
     let avgDayInterval: Double
+
+    // MARK: - Multi-Product Attribution Fields
+
+    /// 归因权重 (0-1, 表示该产品对皮肤变化的贡献比例)
+    /// 当多个产品同时使用时, > 0.4 被视为主要贡献者
+    let attributionWeight: Double?
+
+    /// 单独使用天数列表
+    /// 如果为空, 表示该产品总是与其他产品一起使用
+    let soloUsageDays: [Int]?
+
+    /// 经常一起使用的产品ID列表 (按共同使用次数排序)
+    let coUsedProductIds: [String]?
     
     /// 效果等级
     var effectLevel: EffectLevel {
@@ -319,7 +332,33 @@ struct ProductEffectInsight: Codable, Sendable {
     /// 详细说明
     var detailedDescription: String {
         let factorsText = contributingFactors.prefix(3).joined(separator: ", ")
-        return "(productName) (effectLevel.rawValue)(置信度:(confidence.level.rawValue))。主要因素:(factorsText)。"
+        return "\(productName) \(effectLevel.rawValue)(置信度:\(confidence.level.rawValue))。主要因素:\(factorsText)。"
+    }
+
+    // MARK: - Attribution UI Helpers
+
+    /// 是否为主要贡献者 (attributionWeight > 0.4)
+    var isPrimaryContributor: Bool {
+        guard let weight = attributionWeight else { return false }
+        return weight > 0.4
+    }
+
+    /// 是否缺少单独使用数据
+    var needsSoloUsageValidation: Bool {
+        guard let soloUsage = soloUsageDays else { return true }
+        return soloUsage.isEmpty
+    }
+
+    /// 建议单独使用天数 (用于验证效果)
+    var suggestedSoloUsageDays: Int {
+        // 建议至少单独使用5天以验证效果
+        5
+    }
+
+    /// 归因建议文案
+    var attributionSuggestion: String? {
+        guard needsSoloUsageValidation else { return nil }
+        return "建议单独使用\(suggestedSoloUsageDays)天以验证效果"
     }
 }
 

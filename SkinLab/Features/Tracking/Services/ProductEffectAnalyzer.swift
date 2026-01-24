@@ -344,13 +344,13 @@ struct ProductEffectAnalyzer {
         productDatabase: [String: Product],
         historyStore: UserHistoryStore? = nil
     ) async -> [ProductEffectInsight] {
-        
+
         // 收集所有使用过的产品
         var productUsageMap: [String: ProductUsageData] = [:]
-        
+
         for (index, checkIn) in checkIns.enumerated() {
             guard let analysis = checkIn.analysisId.flatMap({ analyses[$0] }) else { continue }
-            
+
             for productId in checkIn.usedProducts {
                 if productUsageMap[productId] == nil {
                     productUsageMap[productId] = ProductUsageData(
@@ -358,7 +358,7 @@ struct ProductEffectAnalyzer {
                         productName: productDatabase[productId]?.name ?? productId
                     )
                 }
-                
+
                 productUsageMap[productId]?.addUsage(
                     day: checkIn.day,
                     overallScore: analysis.overallScore,
@@ -368,22 +368,35 @@ struct ProductEffectAnalyzer {
                 )
             }
         }
-        
+
+        // 计算归因权重 (仅当有多个产品时)
+        let allProductIds = Array(productUsageMap.keys)
+        var attributionWeights: [String: Double] = [:]
+        if allProductIds.count > 1 {
+            attributionWeights = await calculateAttributionWeights(
+                products: allProductIds,
+                checkIns: checkIns,
+                analyses: analyses,
+                historyStore: historyStore
+            )
+        }
+
         // 分析每个产品的效果
         var insights: [ProductEffectInsight] = []
-        
+
         for (productId, usageData) in productUsageMap {
             if let insight = await analyzeProductEffect(
                 productId: productId,
                 usageData: usageData,
                 checkIns: checkIns,
                 analyses: analyses,
-                historyStore: historyStore
+                historyStore: historyStore,
+                attributionWeight: attributionWeights[productId]
             ) {
                 insights.append(insight)
             }
         }
-        
+
         return insights.sorted { $0.effectivenessScore > $1.effectivenessScore }
     }
     
@@ -395,15 +408,16 @@ struct ProductEffectAnalyzer {
         usageData: ProductUsageData,
         checkIns: [CheckIn],
         analyses: [UUID: SkinAnalysis],
-        historyStore: UserHistoryStore?
+        historyStore: UserHistoryStore?,
+        attributionWeight: Double? = nil
     ) async -> ProductEffectInsight? {
-        
+
         guard usageData.usageCount >= 2 else { return nil }
-        
+
         // 计算效果评分
         let scoreChange = calculateScoreChange(usageData: usageData)
         let feelingScore = calculateFeelingScore(usageData: usageData)
-        
+
         // 成分历史效果 (如果有历史数据)
         var ingredientScore: Double = 0
         if let historyStore = historyStore {
@@ -412,24 +426,30 @@ struct ProductEffectAnalyzer {
                 historyStore: historyStore
             )
         }
-        
+
         // 综合效果评分
         let effectivenessScore = 0.5 * scoreChange + 0.3 * feelingScore + 0.2 * ingredientScore
-        
+
         // 计算置信度
         let confidence = calculateEffectConfidence(
             usageCount: usageData.usageCount,
             scoreVariability: usageData.scoreVariability,
             avgInterval: usageData.avgInterval
         )
-        
+
         // 识别影响因素
         let factors = identifyContributingFactors(
             usageData: usageData,
             scoreChange: scoreChange,
             feelingScore: feelingScore
         )
-        
+
+        // 获取经常一起使用的产品ID列表 (按次数排序, 取前3个)
+        let sortedCoUsedProducts = usageData.coUsedProducts
+            .sorted { $0.value > $1.value }
+            .prefix(3)
+            .map { $0.key }
+
         return ProductEffectInsight(
             productId: productId,
             productName: usageData.productName,
@@ -437,7 +457,10 @@ struct ProductEffectAnalyzer {
             confidence: confidence,
             contributingFactors: factors,
             usageCount: usageData.usageCount,
-            avgDayInterval: usageData.avgInterval
+            avgDayInterval: usageData.avgInterval,
+            attributionWeight: attributionWeight,
+            soloUsageDays: usageData.soloUsageDays,
+            coUsedProductIds: sortedCoUsedProducts.isEmpty ? nil : Array(sortedCoUsedProducts)
         )
     }
     

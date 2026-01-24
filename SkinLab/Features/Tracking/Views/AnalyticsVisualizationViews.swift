@@ -493,18 +493,26 @@ struct ProductEffectDetailView: View {
 
 struct ProductInsightRow: View {
     let insight: ProductEffectInsight
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            // Header row: product name + badges
             HStack {
                 Text(insight.productName)
                     .font(.skinLabSubheadline)
                     .fontWeight(.medium)
                     .lineLimit(1)
+
+                // Primary contributor badge
+                if insight.isPrimaryContributor {
+                    PrimaryContributorBadge()
+                }
+
                 Spacer()
                 ConfidenceBadgeView(confidence: insight.confidence)
             }
-            
+
+            // Effect level and usage count row
             HStack {
                 Text(insight.effectLevel.rawValue)
                     .font(.skinLabCaption)
@@ -514,29 +522,35 @@ struct ProductInsightRow: View {
                     .background(effectColor.opacity(0.2))
                     .foregroundColor(effectColor)
                     .cornerRadius(6)
-                
+
                 Text("使用\(insight.usageCount)次")
                     .font(.skinLabCaption)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 Text(String(format: "%.1f%%", insight.effectivenessScore * 100))
                     .font(.skinLabCaption)
                     .fontWeight(.medium)
                     .foregroundColor(effectColor)
             }
-            
+
+            // Contributing factors
             Text("影响因素: \(insight.contributingFactors.prefix(2).joined(separator: ", "))")
                 .font(.skinLabCaption)
                 .foregroundColor(.secondary)
                 .lineLimit(2)
+
+            // Attribution suggestion (if needs solo usage validation)
+            if let suggestion = insight.attributionSuggestion {
+                AttributionSuggestionView(suggestion: suggestion)
+            }
         }
         .padding()
         .background(Color(.secondarySystemBackground))
         .cornerRadius(12)
     }
-    
+
     private var effectColor: Color {
         switch insight.effectLevel {
         case .highlyEffective: return .green
@@ -545,5 +559,197 @@ struct ProductInsightRow: View {
         case .ineffective: return .orange
         case .harmful: return .red
         }
+    }
+}
+
+// MARK: - Primary Contributor Badge
+
+/// 主要贡献者徽章
+struct PrimaryContributorBadge: View {
+    var body: some View {
+        HStack(spacing: 2) {
+            Image(systemName: "star.fill")
+                .font(.system(size: 8))
+            Text("主要贡献者")
+                .font(.system(size: 10, weight: .medium))
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 3)
+        .background(Color.purple.opacity(0.2))
+        .foregroundColor(.purple)
+        .cornerRadius(6)
+    }
+}
+
+// MARK: - Attribution Suggestion View
+
+/// 归因建议视图
+struct AttributionSuggestionView: View {
+    let suggestion: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "lightbulb.fill")
+                .font(.skinLabCaption)
+                .foregroundColor(.orange)
+            Text(suggestion)
+                .font(.skinLabCaption)
+                .foregroundColor(.orange)
+        }
+        .padding(8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.orange.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+// MARK: - Multi-Product Usage Tip
+
+/// 多产品使用提示卡片
+struct MultiProductUsageTip: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: "info.circle.fill")
+                    .foregroundColor(.blue)
+                Text("提升分析精度")
+                    .font(.skinLabSubheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.blue)
+            }
+
+            Text("尝试单独使用某款产品5-7天，可帮助验证其真实效果并提高归因准确度。")
+                .font(.skinLabCaption)
+                .foregroundColor(.secondary)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.blue.opacity(0.1))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Product Combination Synergy View
+
+/// 产品组合协同效果视图
+struct ProductCombinationSynergyView: View {
+    let insight: ProductCombinationInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header
+            HStack {
+                Image(systemName: synergyIcon)
+                    .foregroundColor(synergyColor)
+                Text("产品组合效果")
+                    .font(.skinLabSubheadline)
+                    .fontWeight(.medium)
+                Spacer()
+                ConfidenceBadgeView(confidence: insight.confidence)
+            }
+
+            // Product combination display
+            HStack(spacing: 4) {
+                ForEach(Array(insight.productIds.prefix(3)), id: \.self) { productId in
+                    Text(productId)
+                        .font(.skinLabCaption)
+                        .lineLimit(1)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.gray.opacity(0.15))
+                        .cornerRadius(6)
+                }
+                if insight.productIds.count > 3 {
+                    Text("+\(insight.productIds.count - 3)")
+                        .font(.skinLabCaption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            // Synergy indicator
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("协同效果")
+                        .font(.skinLabCaption)
+                        .foregroundColor(.secondary)
+                    Text(insight.synergyLevel.rawValue)
+                        .font(.skinLabSubheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(synergyColor)
+                }
+
+                Spacer()
+
+                // Synergy score bar
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(String(format: "%.0f%%", insight.synergyScore * 100))
+                        .font(.skinLabCaption)
+                        .fontWeight(.medium)
+                        .foregroundColor(synergyColor)
+                    SynergyBar(score: insight.synergyScore)
+                }
+            }
+
+            // Usage count
+            Text("组合使用 \(insight.usageCount) 次")
+                .font(.skinLabCaption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(12)
+    }
+
+    private var synergyIcon: String {
+        switch insight.synergyLevel {
+        case .highSynergy: return "arrow.up.right.circle.fill"
+        case .mildSynergy: return "arrow.up.right"
+        case .neutral: return "minus.circle"
+        case .mildAntagonism: return "arrow.down.right"
+        case .highAntagonism: return "arrow.down.right.circle.fill"
+        }
+    }
+
+    private var synergyColor: Color {
+        switch insight.synergyLevel {
+        case .highSynergy: return .green
+        case .mildSynergy: return .blue
+        case .neutral: return .gray
+        case .mildAntagonism: return .orange
+        case .highAntagonism: return .red
+        }
+    }
+}
+
+// MARK: - Synergy Bar
+
+/// 协同效果指示条
+struct SynergyBar: View {
+    let score: Double  // -1 to 1
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                // Background
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(height: 6)
+
+                // Indicator
+                let normalizedScore = (score + 1) / 2  // Convert -1..1 to 0..1
+                let width = geometry.size.width * normalizedScore
+                Rectangle()
+                    .fill(barColor)
+                    .frame(width: max(4, width), height: 6)
+            }
+            .cornerRadius(3)
+        }
+        .frame(width: 80, height: 6)
+    }
+
+    private var barColor: Color {
+        if score > 0.1 { return .green }
+        if score < -0.1 { return .red }
+        return .gray
     }
 }
