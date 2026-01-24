@@ -131,6 +131,8 @@
 		FN5FOQ05CONFLICTTEST00001 /* IngredientConflictTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */; };
 		LM00000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LM00000002 /* LocationManager.swift */; };
 		WS00000001 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = WS00000002 /* WeatherService.swift */; };
+		RETRYPOLICY0001 /* RetryPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = RETRYPOLICY0002 /* RetryPolicy.swift */; };
+		RETRYPOLICYTEST0001 /* RetryPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = RETRYPOLICYTEST0002 /* RetryPolicyTests.swift */; };
 		PQC0000001 /* PhotoQualityCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PQC0000002 /* PhotoQualityCheckerTests.swift */; };
 		PDF0000001 /* PhotoDataFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDF0000002 /* PhotoDataFlowTests.swift */; };
 		C0ACDEE8C5ACB09CBF956804 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8339588DC76582E8946C61D2 /* Logger.swift */; };
@@ -300,6 +302,8 @@
 		FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientConflictTests.swift; sourceTree = "<group>"; };
 		LM00000002 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		WS00000002 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		RETRYPOLICY0002 /* RetryPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryPolicy.swift; sourceTree = "<group>"; };
+		RETRYPOLICYTEST0002 /* RetryPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryPolicyTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -378,9 +382,19 @@
 				8C8EEB66B81E12494D7199DB /* Mocks */,
 				F107D95DD2B2BE0424150245 /* Scenario */,
 				3EEA7D6F29E7B3375CC3D6AD /* Weather */,
+				NETWORKTEST0001 /* Network */,
 			);
 			name = SkinLabTests;
 			path = SkinLabTests;
+			sourceTree = "<group>";
+		};
+		NETWORKTEST0001 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				RETRYPOLICYTEST0002 /* RetryPolicyTests.swift */,
+			);
+			name = Network;
+			path = Network;
 			sourceTree = "<group>";
 		};
 		0FCE3AF2D23519733BB10D8C /* Views */ = {
@@ -809,6 +823,7 @@
 			children = (
 				B1000010 /* GeminiService.swift */,
 				WS00000002 /* WeatherService.swift */,
+				RETRYPOLICY0002 /* RetryPolicy.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -1334,6 +1349,7 @@
 				58F35B1AF8475797B85BA709 /* WeatherModels.swift in Sources */,
 				WS00000001 /* WeatherService.swift in Sources */,
 				LM00000001 /* LocationManager.swift in Sources */,
+				RETRYPOLICY0001 /* RetryPolicy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1363,6 +1379,7 @@
 				43DF5F81CCF0997D88C3FA45 /* WeatherTests.swift in Sources */,
 				PQC0000001 /* PhotoQualityCheckerTests.swift in Sources */,
 				PDF0000001 /* PhotoDataFlowTests.swift in Sources */,
+				RETRYPOLICYTEST0001 /* RetryPolicyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

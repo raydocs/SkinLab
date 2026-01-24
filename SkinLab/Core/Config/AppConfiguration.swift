@@ -84,6 +84,12 @@ enum AppConfiguration {
         /// Maximum retry attempts for network errors (slightly fewer)
         static let maxNetworkRetryAttempts = 2
 
+        /// Base delay for retry backoff (in seconds)
+        static let retryBaseDelay: TimeInterval = 1.0
+
+        /// Maximum delay cap for retry backoff (in seconds)
+        static let retryMaxDelay: TimeInterval = 30.0
+
         /// Default temperature for AI requests
         static let defaultTemperature: Double = 0.1
 
