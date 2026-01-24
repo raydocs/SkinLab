@@ -68,6 +68,8 @@ struct IngredientScannerFullView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("关闭") { dismiss() }
                         .foregroundColor(.skinLabPrimary)
+                        .accessibilityLabel("关闭")
+                        .accessibilityHint("返回上一页面")
                 }
             }
         }
@@ -168,7 +170,9 @@ struct IngredientScannerFullView: View {
                     .cornerRadius(28)
                     .shadow(color: .skinLabPrimary.opacity(0.35), radius: 12, y: 6)
                 }
-                
+                .accessibilityLabel("拍照扫描")
+                .accessibilityHint("打开相机拍摄成分表照片")
+
                 Button {
                     showPhotoPicker = true
                 } label: {
@@ -190,6 +194,8 @@ struct IngredientScannerFullView: View {
                             .stroke(LinearGradient.skinLabPrimaryGradient, lineWidth: 2)
                     )
                 }
+                .accessibilityLabel("从相册选择")
+                .accessibilityHint("从照片库选择成分表照片")
             }
             .padding(.horizontal)
             .padding(.bottom, 32)
@@ -492,43 +498,48 @@ struct BeautifulHintRow: View {
     let icon: String
     let text: String
     var gradient: LinearGradient = .skinLabPrimaryGradient
-    
+
     var body: some View {
         HStack(spacing: 14) {
             ZStack {
                 Circle()
                     .fill(gradient.opacity(0.15))
                     .frame(width: 36, height: 36)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 15))
                     .foregroundStyle(gradient)
             }
-            
+            .accessibilityHidden(true)
+
             Text(text)
                 .font(.skinLabSubheadline)
                 .foregroundColor(.skinLabText)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(text)
     }
 }
 
 // MARK: - Beautiful Ingredient Chip
 struct BeautifulIngredientChip: View {
     let ingredient: IngredientScanResult.ParsedIngredient
-    
+
     var body: some View {
         HStack(spacing: 5) {
             if ingredient.isHighlight {
                 Image(systemName: "star.fill")
                     .font(.system(size: 10))
                     .foregroundColor(.skinLabAccent)
+                    .accessibilityHidden(true)
             }
             if ingredient.isWarning {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: 10))
                     .foregroundColor(.skinLabWarning)
+                    .accessibilityHidden(true)
             }
-            
+
             Text(ingredient.name)
                 .font(.system(size: 12, weight: .medium))
         }
@@ -537,6 +548,19 @@ struct BeautifulIngredientChip: View {
         .padding(.vertical, 7)
         .background(chipBackground)
         .cornerRadius(14)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(ingredientAccessibilityLabel)
+    }
+
+    private var ingredientAccessibilityLabel: String {
+        var label = ingredient.name
+        if ingredient.isHighlight {
+            label += "，亮点成分"
+        }
+        if ingredient.isWarning {
+            label += "，需注意"
+        }
+        return label
     }
     
     private var chipTextColor: Color {

@@ -25,13 +25,15 @@ struct ProfileView: View {
                     .blur(radius: 100)
                     .offset(x: 100, y: -250)
                     .opacity(0.4)
-                
+                    .accessibilityHidden(true)
+
                 Circle()
                     .fill(LinearGradient.skinLabRoseGradient)
                     .frame(width: 200, height: 200)
                     .blur(radius: 80)
                     .offset(x: -120, y: 300)
                     .opacity(0.3)
+                    .accessibilityHidden(true)
                 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 24) {
@@ -99,9 +101,11 @@ struct ProfileView: View {
                 // 闪光装饰
                 SparkleView(size: 14)
                     .offset(x: 50, y: -40)
-                
+                    .accessibilityHidden(true)
+
                 SparkleView(size: 10)
                     .offset(x: -45, y: 35)
+                    .accessibilityHidden(true)
             }
             
             VStack(spacing: 6) {
@@ -160,6 +164,8 @@ struct ProfileView: View {
                 }
             }
             .buttonStyle(SkinLabPrimaryButtonStyle())
+            .accessibilityLabel("开始设置皮肤档案")
+            .accessibilityHint("创建你的皮肤档案以获得个性化推荐")
         }
         .padding(.vertical, 24)
         .padding(.horizontal)
@@ -197,6 +203,8 @@ struct ProfileView: View {
                     .background(Color.skinLabPrimary.opacity(0.1))
                     .cornerRadius(12)
                 }
+                .accessibilityLabel("编辑皮肤档案")
+                .accessibilityHint("修改你的皮肤类型和问题设置")
             }
             
             Divider()
@@ -394,23 +402,24 @@ struct StatCard: View {
     let label: String
     let icon: String
     var gradient: LinearGradient = .skinLabPrimaryGradient
-    
+
     var body: some View {
         VStack(spacing: 10) {
             ZStack {
                 Circle()
                     .fill(gradient.opacity(0.15))
                     .frame(width: 40, height: 40)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 16))
                     .foregroundStyle(gradient)
             }
-            
+            .accessibilityHidden(true)
+
             Text(value)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundColor(.skinLabText)
-            
+
             Text(label)
                 .font(.skinLabCaption)
                 .foregroundColor(.skinLabSubtext)
@@ -420,6 +429,8 @@ struct StatCard: View {
         .background(Color.skinLabCardBackground)
         .cornerRadius(16)
         .skinLabSoftShadow()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label)：\(value)")
     }
 }
 
@@ -429,31 +440,35 @@ struct SettingsRow: View {
     let title: String
     var iconColor: Color = .skinLabPrimary
     var isDestructive: Bool = false
-    
+
     var body: some View {
         HStack(spacing: 14) {
             ZStack {
                 Circle()
                     .fill(iconColor.opacity(0.12))
                     .frame(width: 32, height: 32)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 14))
                     .foregroundColor(iconColor)
             }
-            
+            .accessibilityHidden(true)
+
             Text(title)
                 .font(.skinLabBody)
                 .foregroundColor(isDestructive ? .skinLabError : .skinLabText)
-            
+
             Spacer()
-            
+
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(.skinLabSubtext.opacity(0.5))
+                .accessibilityHidden(true)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
     }
 }
 

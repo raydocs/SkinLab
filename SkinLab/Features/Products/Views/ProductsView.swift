@@ -42,6 +42,7 @@ struct ProductsView: View {
                     FloatingBubble(size: 65, color: .skinLabAccent)
                         .offset(x: geometry.size.width * 0.75, y: geometry.size.height * 0.45)
                 }
+                .accessibilityHidden(true)
                 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -57,7 +58,9 @@ struct ProductsView: View {
                                     gradient: .skinLabPrimaryGradient
                                 )
                             }
-                            
+                            .accessibilityLabel("扫描成分")
+                            .accessibilityHint("拍照识别护肤品成分表")
+
                             NavigationLink {
                                 // Compare products view
                             } label: {
@@ -68,6 +71,8 @@ struct ProductsView: View {
                                     gradient: .skinLabLavenderGradient
                                 )
                             }
+                            .accessibilityLabel("对比产品")
+                            .accessibilityHint("对比两款产品的成分")
                         }
                         
                         // Categories with beautiful chips
@@ -211,13 +216,14 @@ struct BeautifulCategoryChip: View {
     var icon: String = ""
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {
                 if !icon.isEmpty {
                     Image(systemName: icon)
                         .font(.system(size: 12))
+                        .accessibilityHidden(true)
                 }
                 Text(name)
                     .font(.system(size: 14, weight: .medium))
@@ -231,6 +237,9 @@ struct BeautifulCategoryChip: View {
             )
             .shadow(color: isSelected ? .skinLabPrimary.opacity(0.3) : .clear, radius: 6, y: 3)
         }
+        .accessibilityLabel(name)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityHint("筛选\(name)类产品")
     }
 }
 
@@ -323,7 +332,7 @@ struct BeautifulProductCard: View {
                             )
                         )
                         .frame(width: 70, height: 70)
-                    
+
                     Image(systemName: product.icon)
                         .font(.system(size: 26))
                         .foregroundStyle(
@@ -334,44 +343,45 @@ struct BeautifulProductCard: View {
                             )
                         )
                 }
-                
+                .accessibilityHidden(true)
+
                 VStack(alignment: .leading, spacing: 6) {
                     Text(product.name)
                         .font(.skinLabHeadline)
                         .foregroundColor(.skinLabText)
-                    
+
                     Text(product.brand)
                         .font(.skinLabCaption)
                         .foregroundColor(.skinLabSubtext)
-                    
+
                     HStack(spacing: 6) {
                         HStack(spacing: 3) {
                             Image(systemName: "star.fill")
                                 .font(.system(size: 11))
                                 .foregroundStyle(LinearGradient.skinLabGoldGradient)
-                            
+
                             Text(product.rating)
                                 .font(.system(size: 12, weight: .semibold))
                                 .foregroundColor(.skinLabText)
                         }
-                        
+
                         Text("·")
                             .foregroundColor(.skinLabSubtext)
-                        
+
                         Text("\(product.reviewCount)条评价")
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Effectiveness badge
                 VStack(spacing: 4) {
                     Text(product.effectRate)
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
-                    
+
                     Text("好评率")
                         .font(.system(size: 10))
                         .foregroundColor(.skinLabSubtext)
@@ -383,18 +393,19 @@ struct BeautifulProductCard: View {
                         .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.1))
                 )
             }
-            
+
             // User Review Section
             HStack(spacing: 8) {
                 Image(systemName: "quote.opening")
                     .font(.system(size: 10))
                     .foregroundColor(.skinLabPrimary.opacity(0.5))
-                
+                    .accessibilityHidden(true)
+
                 Text(product.userReview)
                     .font(.system(size: 12))
                     .foregroundColor(.skinLabSubtext)
                     .lineLimit(2)
-                
+
                 Spacer()
             }
             .padding(.horizontal, 4)
@@ -405,6 +416,9 @@ struct BeautifulProductCard: View {
                 .fill(Color.skinLabCardBackground)
         )
         .shadow(color: .black.opacity(0.04), radius: 10, y: 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(product.name)，\(product.brand)，评分\(product.rating)星，\(product.reviewCount)条评价，好评率\(product.effectRate)")
+        .accessibilityHint("用户评价：\(product.userReview)")
     }
 }
 

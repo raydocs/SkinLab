@@ -133,12 +133,13 @@ struct AnalysisResultView: View {
     private var tabSelector: some View {
         HStack(spacing: 0) {
             ForEach(["问题", "区域", "建议"].indices, id: \.self) { index in
+                let tabNames = ["问题", "区域", "建议"]
                 Button {
                     withAnimation(.spring(response: 0.3)) {
                         selectedTab = index
                     }
                 } label: {
-                    Text(["问题", "区域", "建议"][index])
+                    Text(tabNames[index])
                         .font(.skinLabHeadline)
                         .foregroundColor(selectedTab == index ? .freshPrimary : .skinLabSubtext)
                         .frame(maxWidth: .infinity)
@@ -146,6 +147,9 @@ struct AnalysisResultView: View {
                         .background(selectedTab == index ? Color.freshPrimary.opacity(0.1) : Color.clear)
                         .cornerRadius(12)
                 }
+                .accessibilityLabel(tabNames[index])
+                .accessibilityAddTraits(selectedTab == index ? .isSelected : [])
+                .accessibilityHint("查看\(tabNames[index])详情")
             }
         }
         .padding(4)
@@ -779,17 +783,17 @@ struct RecommendationRow: View {
 struct ScoreRing: View {
     let score: Int
     let size: CGFloat
-    
+
     private var color: Color {
         Color.scoreColor(for: score)
     }
-    
+
     var body: some View {
         ZStack {
             Circle()
                 .stroke(color.opacity(0.1), lineWidth: 10)
                 .frame(width: size, height: size)
-            
+
             Circle()
                 .trim(from: 0, to: CGFloat(score) / 100)
                 .stroke(
@@ -799,17 +803,19 @@ struct ScoreRing: View {
                 .frame(width: size, height: size)
                 .rotationEffect(.degrees(-90))
                 .animation(.easeOut(duration: 1.0), value: score)
-            
+
             VStack(spacing: 2) {
                 Text("\(score)")
                     .font(.system(size: 48, weight: .light, design: .rounded))
                     .foregroundStyle(color)
-                
+
                 Text("综合评分")
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("综合评分\(score)分")
     }
 }
 
@@ -818,23 +824,26 @@ struct StatItem: View {
     let label: String
     let value: String
     var icon: String = ""
-    
+
     var body: some View {
         VStack(spacing: 6) {
             if !icon.isEmpty {
                 Image(systemName: icon)
                     .font(.system(size: 14))
                     .foregroundColor(.freshSecondary)
+                    .accessibilityHidden(true)
             }
-            
+
             Text(value)
                 .font(.skinLabHeadline)
                 .foregroundColor(.skinLabText)
-            
+
             Text(label)
                 .font(.skinLabCaption)
                 .foregroundColor(.skinLabSubtext)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label)：\(value)")
     }
 }
 
@@ -843,7 +852,7 @@ struct IssueRow: View {
     let name: String
     let score: Int
     let icon: String
-    
+
     private var color: Color {
         switch score {
         case 0...3: return .skinLabSuccess
@@ -851,32 +860,44 @@ struct IssueRow: View {
         default: return .skinLabError
         }
     }
-    
+
+    private var severityLabel: String {
+        switch score {
+        case 0...3: return "轻微"
+        case 4...6: return "中等"
+        default: return "明显"
+        }
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             ZStack {
                 Circle()
                     .fill(color.opacity(0.15))
                     .frame(width: 32, height: 32)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 14))
                     .foregroundColor(color)
             }
-            
+            .accessibilityHidden(true)
+
             Text(name)
                 .font(.skinLabBody)
                 .foregroundColor(.skinLabText)
-            
+
             Spacer()
-            
+
             ProgressBarView(progress: CGFloat(score) / 10, color: color, width: 80)
-            
+                .accessibilityHidden(true)
+
             Text("\(score)")
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(color)
                 .frame(width: 24)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(name)，程度\(score)分，\(severityLabel)")
     }
 }
 

@@ -23,6 +23,7 @@ struct FlowerPetalView: View {
                     scale = 1.15
                 }
             }
+            .accessibilityHidden(true)
     }
 }
 
@@ -43,6 +44,7 @@ struct HeartFloatingView: View {
                     opacity = 0
                 }
             }
+            .accessibilityHidden(true)
     }
 }
 
@@ -64,6 +66,7 @@ struct RosePetalDecoration: View {
                 .rotationEffect(.degrees(Double.random(in: -30...30)))
             }
         }
+        .accessibilityHidden(true)
     }
 }
 
@@ -110,6 +113,7 @@ struct RomanticCornerDecoration: View {
                 .offset(x: corner.contains(.topLeft) ? -60 : (corner.contains(.topRight) ? 60 : 0),
                        y: corner.contains(.topLeft) ? -20 : (corner.contains(.bottomLeft) ? 20 : 0))
         }
+        .accessibilityHidden(true)
     }
 }
 
@@ -131,6 +135,7 @@ struct SparkleRomanticView: View {
                     scale = 1.4
                 }
             }
+            .accessibilityHidden(true)
     }
 }
 

@@ -13,6 +13,7 @@ struct CommunityView: View {
                 .blur(radius: 90)
                 .offset(x: -120, y: -220)
                 .opacity(0.3)
+                .accessibilityHidden(true)
 
             Circle()
                 .fill(LinearGradient.skinLabRoseGradient)
@@ -20,6 +21,7 @@ struct CommunityView: View {
                 .blur(radius: 90)
                 .offset(x: 140, y: 180)
                 .opacity(0.25)
+                .accessibilityHidden(true)
 
             ScrollView {
                 VStack(spacing: 20) {
@@ -38,6 +40,9 @@ struct CommunityView: View {
                         title: "今日话题", subtitle: "你最近改变了哪一步护肤？",
                         icon: "bubble.left.and.bubble.right.fill", gradient: .skinLabPrimaryGradient
                     )
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("今日话题：你最近改变了哪一步护肤？")
+                    .accessibilityHint("双击参与讨论")
 
                     // 肌肤双胞胎卡片 - 添加导航
                     NavigationLink(destination: SkinTwinMatchView()) {
@@ -46,6 +51,8 @@ struct CommunityView: View {
                             gradient: .skinLabLavenderGradient)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("肌肤双胞胎")
+                    .accessibilityHint("匹配相似肤质的有效产品")
 
                     Button {
                     } label: {
@@ -60,6 +67,8 @@ struct CommunityView: View {
                         .cornerRadius(26)
                         .shadow(color: .skinLabPrimary.opacity(0.3), radius: 10, y: 6)
                     }
+                    .accessibilityLabel("发布分享")
+                    .accessibilityHint("分享护肤心得和产品效果")
                     .padding(.top, 8)
                 }
                 .padding()

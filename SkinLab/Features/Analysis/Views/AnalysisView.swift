@@ -46,6 +46,8 @@ struct AnalysisView: View {
                             .font(.system(size: 24))
                             .foregroundStyle(.gray.opacity(0.5))
                     }
+                    .accessibilityLabel("关闭")
+                    .accessibilityHint("返回上一页面")
                 }
             }
         }
@@ -143,13 +145,17 @@ struct AnalysisView: View {
                     Text("Take Photo")
                 }
                 .buttonStyle(FreshGlassButton(color: .freshPrimary))
-                
+                .accessibilityLabel("拍摄照片")
+                .accessibilityHint("打开相机拍摄皮肤照片")
+
                 Button {
                     showPhotoPicker = true
                 } label: {
                     Text("Select from Library")
                 }
                 .buttonStyle(FreshSecondaryButton())
+                .accessibilityLabel("从相册选择")
+                .accessibilityHint("从照片库选择皮肤照片")
             }
             .padding(.horizontal)
             .padding(.bottom, 32)
@@ -259,18 +265,21 @@ struct TipRow: View {
     let icon: String
     let text: String
     var color: Color = .skinLabSecondary
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 18))
                 .foregroundColor(color)
                 .frame(width: 24)
-            
+                .accessibilityHidden(true)
+
             Text(text)
                 .font(.skinLabSubheadline)
                 .foregroundColor(.skinLabText)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(text)
     }
 }
 
@@ -279,17 +288,20 @@ struct AnalysisStep: View {
     let icon: String
     let text: String
     let isActive: Bool
-    
+
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
                 .font(.system(size: 22))
                 .foregroundColor(isActive ? .freshPrimary : .skinLabSubtext.opacity(0.5))
-            
+                .accessibilityHidden(true)
+
             Text(text)
                 .font(.skinLabCaption)
                 .foregroundColor(isActive ? .skinLabText : .skinLabSubtext.opacity(0.5))
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(text)，\(isActive ? "进行中" : "等待中")")
     }
 }
 

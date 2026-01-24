@@ -84,6 +84,7 @@ struct HomeView: View {
                 .foregroundColor(.romanticGold.opacity(0.25))
                 .offset(x: 120, y: -240)
         }
+        .accessibilityHidden(true)
     }
 
     private var heroSection: some View {
@@ -171,6 +172,8 @@ struct HomeView: View {
                 }
                 .font(.skinLabCaption)
                 .foregroundColor(.skinLabPrimary)
+                .accessibilityLabel("查看全部成就")
+                .accessibilityHint("打开成就中心查看所有成就")
             }
 
             // Show top 3 in-progress badges
@@ -250,9 +253,12 @@ struct HomeView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(Color.skinLabPrimary.opacity(0.7))
+                        .accessibilityHidden(true)
                 }
             }
             .buttonStyle(SkinLabSecondaryButtonStyle())
+            .accessibilityLabel("进入社群")
+            .accessibilityHint("打开社群页面，分享效果和找到肌肤双胞胎")
         }
     }
 
@@ -322,6 +328,8 @@ struct HomeView: View {
                         .background(LinearGradient.skinLabPrimaryGradient)
                         .cornerRadius(14)
                     }
+                    .accessibilityLabel("查看追踪详情")
+                    .accessibilityHint("打开28天追踪详情页面")
                 }
             } else {
                 // Show start button for new users
@@ -349,6 +357,8 @@ struct HomeView: View {
                         .background(LinearGradient.skinLabPrimaryGradient)
                         .cornerRadius(14)
                     }
+                    .accessibilityLabel("开始28天效果验证")
+                    .accessibilityHint("创建新的28天追踪周期")
                 }
             }
         }
@@ -360,6 +370,8 @@ struct HomeView: View {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(LinearGradient.skinLabPrimaryGradient.opacity(0.3), lineWidth: 1.5)
         )
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("28天效果验证")
     }
     
     private var activeSessionPrompt: String {
@@ -377,6 +389,7 @@ struct HomeView: View {
             HStack(spacing: 8) {
                 Image(systemName: "lightbulb")
                     .foregroundColor(.skinLabPrimary)
+                    .accessibilityHidden(true)
                 Text("今日小贴士")
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
@@ -391,6 +404,8 @@ struct HomeView: View {
         .background(Color.skinLabCardBackground)
         .cornerRadius(20)
         .skinLabSoftShadow(radius: 10, y: 5)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("今日小贴士：早晚洁面后，在皮肤微湿时涂抹精华液，可以更好地锁住水分")
     }
 
     private var recentSection: some View {
@@ -463,6 +478,7 @@ struct RecentAnalysisCard: View {
                         )
                     )
             }
+            .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(analysis.skinType.displayName)
@@ -490,6 +506,7 @@ struct RecentAnalysisCard: View {
                         endPoint: .trailing
                     )
                 )
+                .accessibilityHidden(true)
         }
         .padding()
         .background(Color.romanticWhite)
@@ -506,6 +523,9 @@ struct RecentAnalysisCard: View {
                     lineWidth: 1
                 )
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(analysis.skinType.displayName)，评分\(analysis.overallScore)分，\(analysis.analyzedAt.formatted(date: .abbreviated, time: .shortened))")
+        .accessibilityHint("双击查看详情")
     }
 }
 
@@ -526,6 +546,7 @@ struct FeatureCard: View {
                     .font(.system(size: 24))
                     .foregroundStyle(gradient)
             }
+            .accessibilityHidden(true)
             Text(title)
                 .font(.skinLabHeadline)
                 .foregroundStyle(
@@ -549,6 +570,8 @@ struct FeatureCard: View {
                 .stroke(gradient, lineWidth: 1)
                 .opacity(0.2)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title)：\(description)")
     }
 }
 

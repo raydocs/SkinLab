@@ -96,6 +96,8 @@ struct WeatherCardView: View {
                 .font(.system(size: 9, weight: .medium))
                 .foregroundColor(.skinLabSubtext)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("肌肤指数\(weather.skinFriendlinessScore)分")
     }
 
     private var friendlinessColor: Color {
@@ -199,6 +201,7 @@ struct WeatherCardView: View {
                 Image(systemName: "lightbulb.fill")
                     .font(.system(size: 12))
                     .foregroundColor(.skinLabAccent)
+                    .accessibilityHidden(true)
                 Text("今日护肤提醒")
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
@@ -214,6 +217,8 @@ struct WeatherCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.skinLabAccent.opacity(0.1))
         .cornerRadius(12)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("今日护肤提醒：\(weather.overallSkincareTip)")
     }
 }
 
@@ -234,6 +239,7 @@ private struct WeatherMetricCard: View {
                 Image(systemName: icon)
                     .font(.system(size: 14))
                     .foregroundColor(iconColor)
+                    .accessibilityHidden(true)
                 Text(title)
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
@@ -251,6 +257,8 @@ private struct WeatherMetricCard: View {
         .padding(12)
         .background(Color.gray.opacity(0.05))
         .cornerRadius(12)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title)：\(value)，\(subtitle)")
     }
 }
 
@@ -385,6 +393,7 @@ struct WeatherErrorCardView: View {
             Image(systemName: "cloud.sun")
                 .font(.system(size: 40))
                 .foregroundColor(.gray)
+                .accessibilityHidden(true)
 
             Text("无法获取天气")
                 .font(.skinLabHeadline)
@@ -410,11 +419,15 @@ struct WeatherErrorCardView: View {
                     .background(LinearGradient.skinLabPrimaryGradient)
                     .cornerRadius(20)
                 }
+                .accessibilityLabel("重试")
+                .accessibilityHint("重新获取天气信息")
             }
         }
         .frame(maxWidth: .infinity)
         .padding()
         .freshGlassCard()
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("无法获取天气，\(message)")
     }
 }
 

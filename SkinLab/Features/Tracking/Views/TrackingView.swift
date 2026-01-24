@@ -44,6 +44,7 @@ struct TrackingView: View {
                     FloatingBubble(size: 70, color: .skinLabAccent)
                         .position(x: geometry.size.width * 0.7, y: geometry.size.height * 0.5)
                 }
+                .accessibilityHidden(true)
                 
                 ScrollView {
                     LazyVStack(spacing: 24) {
@@ -222,11 +223,15 @@ struct TrackingView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.skinLabPrimary)
+                        .accessibilityHidden(true)
                 }
                 .padding(.top, 4)
             }
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("28天追踪进行中，第\(session.duration)天，已打卡\(session.checkIns.count)次")
+        .accessibilityHint("双击查看详情")
     }
     
     // MARK: - Past Sessions
@@ -483,6 +488,8 @@ struct NewTrackingSessionView: View {
                                         .foregroundColor(.skinLabPrimary)
                                 }
                             }
+                            .accessibilityLabel("添加产品")
+                            .accessibilityHint("选择要追踪的护肤产品")
                         }
                         .padding(20)
                         .background(
@@ -529,6 +536,8 @@ struct NewTrackingSessionView: View {
                             .cornerRadius(28)
                             .shadow(color: .skinLabPrimary.opacity(0.35), radius: 12, y: 6)
                         }
+                        .accessibilityLabel("开始追踪")
+                        .accessibilityHint("创建28天皮肤追踪周期")
                     }
                     .padding()
                 }
@@ -539,6 +548,8 @@ struct NewTrackingSessionView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") { dismiss() }
                         .foregroundColor(.skinLabPrimary)
+                        .accessibilityLabel("取消")
+                        .accessibilityHint("返回上一页面")
                 }
             }
             .sheet(isPresented: $showProductPicker) {
@@ -586,18 +597,18 @@ struct TrackingFeatureRow: View {
 struct BeautifulCheckInNode: View {
     let day: Int
     let status: CheckInStatus
-    
+
     enum CheckInStatus {
         case completed, upcoming, missed
     }
-    
+
     var body: some View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
                     .fill(statusBackground)
                     .frame(width: 36, height: 36)
-                
+
                 if status == .completed {
                     Image(systemName: "checkmark")
                         .font(.system(size: 14, weight: .bold))
@@ -612,13 +623,23 @@ struct BeautifulCheckInNode: View {
                         .foregroundColor(.skinLabSubtext)
                 }
             }
-            
+
             Text("Day \(day)")
                 .font(.system(size: 10, weight: .medium))
                 .foregroundColor(status == .completed ? .skinLabPrimary : .skinLabSubtext)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("第\(day)天，\(statusLabel)")
     }
-    
+
+    private var statusLabel: String {
+        switch status {
+        case .completed: return "已完成"
+        case .upcoming: return "待打卡"
+        case .missed: return "已错过"
+        }
+    }
+
     var statusBackground: LinearGradient {
         switch status {
         case .completed:

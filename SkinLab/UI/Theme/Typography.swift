@@ -185,6 +185,7 @@ struct SparkleView: View {
                     scale = 1.4
                 }
             }
+            .accessibilityHidden(true)
     }
 }
 
@@ -206,6 +207,7 @@ struct FloatingBubble: View {
                     horizontalOffset = 18
                 }
             }
+            .accessibilityHidden(true)
     }
 }
 
