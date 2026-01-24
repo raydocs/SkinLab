@@ -298,6 +298,11 @@ extension GeminiService {
     }()
 
     func generateRoutine(prompt: String) async throws -> String {
+        // Fail fast on missing API key
+        guard !GeminiConfig.apiKey.isEmpty else {
+            throw GeminiError.invalidAPIKey
+        }
+
         // Reuse existing Gemini infrastructure
         guard let url = URL(string: AppConfiguration.API.chatCompletionsEndpoint) else {
             throw GeminiError.apiError("Invalid URL")
