@@ -46,19 +46,20 @@ struct CachedImageView: View {
 
     private func loadImage() async {
         guard let path = path else {
+            currentLoadingPath = nil
             loadedImage = nil
             return
         }
 
         // Track which path we're loading to detect if it changed
         currentLoadingPath = path
+        // Clear immediately to show placeholder while loading new path
+        loadedImage = nil
 
         // Load from cache (memory or disk)
-        if let cached = await ImageCache.shared.loadImage(fromPath: path) {
-            // Only update if we're still loading this path
-            if currentLoadingPath == path {
-                loadedImage = cached
-            }
+        if let cached = await ImageCache.shared.loadImage(fromPath: path),
+           currentLoadingPath == path {
+            loadedImage = cached
         }
     }
 }
@@ -104,28 +105,29 @@ struct CachedThumbnailView: View {
 
     private func loadThumbnail() async {
         guard let path = path else {
+            currentLoadingPath = nil
             loadedImage = nil
             return
         }
 
         // Track which path we're loading
         currentLoadingPath = path
+        // Clear immediately to show placeholder while loading new path
+        loadedImage = nil
 
         // Try loading thumbnail first using extension-safe path helper
         let thumbnailPath = ImageCache.thumbnailPath(for: path)
 
-        if let cached = await ImageCache.shared.loadImage(fromPath: thumbnailPath) {
-            if currentLoadingPath == path {
-                loadedImage = cached
-            }
+        if let cached = await ImageCache.shared.loadImage(fromPath: thumbnailPath),
+           currentLoadingPath == path {
+            loadedImage = cached
             return
         }
 
         // Fall back to full image if thumbnail doesn't exist
-        if let cached = await ImageCache.shared.loadImage(fromPath: path) {
-            if currentLoadingPath == path {
-                loadedImage = cached
-            }
+        if let cached = await ImageCache.shared.loadImage(fromPath: path),
+           currentLoadingPath == path {
+            loadedImage = cached
         }
     }
 }
