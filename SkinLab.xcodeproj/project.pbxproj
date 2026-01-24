@@ -108,6 +108,7 @@
 		C3B3646598B6F3B8052A1F6B /* SkinMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F4507420FA9D2341FF3B1D /* SkinMatcher.swift */; };
 		C6E53A5BE0DABFFC57A351A7 /* ProductModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE694A9EC5F6F030CDF4F89 /* ProductModelTests.swift */; };
 		D80C48F787313223CDD43E10 /* TrackingDetailComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A0BC5E7D5FA1FE060BE735 /* TrackingDetailComponents.swift */; };
+		D8F53C8C53BD040E9A24F7E5 /* ScenarioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E980A6FCDB798763A00307CB /* ScenarioModels.swift */; };
 		DA2439B12D92CF51502570EB /* AchievementDefinitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D7C37FB894280706B27128 /* AchievementDefinitions.swift */; };
 		DDA2EBE4528D99A2B612502F /* ConsentLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC08BD0191DA4A7A255C5F82 /* ConsentLevel.swift */; };
 		E0CE5D174CD6909351DA2AF7 /* FeedbackExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFCC64509F81AAA74D193AE3 /* FeedbackExporter.swift */; };
@@ -201,6 +202,7 @@
 		9A5E121DD7AE09146D2E6CC9 /* FeedbackAnalyticsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedbackAnalyticsService.swift; sourceTree = "<group>"; };
 		9A635EA3C39E9DD8654262A3 /* RoutineService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RoutineService.swift; path = ../../SkinLab/Core/Network/RoutineService.swift; sourceTree = "<group>"; };
 		9A7B8E871536EE6F08D08030 /* AnomalyDetector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnomalyDetector.swift; sourceTree = "<group>"; };
+		9C2B4D6E8F1A3057C4D89A12 /* PredictiveAlertTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PredictiveAlertTests.swift; sourceTree = "<group>"; };
 		9DFB1033AB474D7ACEE79DF3 /* SkinTwinViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinViewModelTests.swift; sourceTree = "<group>"; };
 		A06B8226FA6F257A587D6D1B /* RoutineView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RoutineView.swift; path = ../../../SkinLab/Features/Analysis/Views/RoutineView.swift; sourceTree = "<group>"; };
 		A5E2775EF6D0F3ED4872DB5A /* MatchPoolRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchPoolRepository.swift; sourceTree = "<group>"; };
@@ -239,7 +241,6 @@
 		B1000091 /* RomanticDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomanticDecorations.swift; sourceTree = "<group>"; };
 		B1000092 /* FreshThemeModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshThemeModifiers.swift; sourceTree = "<group>"; };
 		B49424533B2007108AD154BB /* TwinMatchCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TwinMatchCard.swift; sourceTree = "<group>"; };
-		9C2B4D6E8F1A3057C4D89A12 /* PredictiveAlertTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PredictiveAlertTests.swift; sourceTree = "<group>"; };
 		B73C2A64FBC2E667D6933AC8 /* TrackingModelsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingModelsTests.swift; sourceTree = "<group>"; };
 		B81B66FC81B1E6D024AF70B4 /* LifestyleInsightRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifestyleInsightRow.swift; sourceTree = "<group>"; };
 		C0693584B4125C0D8E8E7B9E /* StreakCelebrationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakCelebrationView.swift; sourceTree = "<group>"; };
@@ -258,6 +259,7 @@
 		E07CD05159EC0DA35DFBF371 /* UserFeedbackRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserFeedbackRecord.swift; sourceTree = "<group>"; };
 		E8E3C69A912A089C3C055662 /* IngredientAIInsightView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientAIInsightView.swift; sourceTree = "<group>"; };
 		E97C8AFE89FBEA292CA488AB /* TrendAnalyticsModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrendAnalyticsModels.swift; sourceTree = "<group>"; };
+		E980A6FCDB798763A00307CB /* ScenarioModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScenarioModels.swift; sourceTree = "<group>"; };
 		ED5440E2EE340E9375719CE6 /* ProductEffectAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductEffectAnalyzer.swift; sourceTree = "<group>"; };
 		EFA9B25CDF279BF4751FC0C3 /* AnalyticsEvents+Engagement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "AnalyticsEvents+Engagement.swift"; sourceTree = "<group>"; };
 		EFBAB226955E3CA24C059B2F /* ForecastEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ForecastEngine.swift; sourceTree = "<group>"; };
@@ -372,6 +374,15 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		184E989FE81C16285EA951FD /* Scenario */ = {
+			isa = PBXGroup;
+			children = (
+				35720BEB5970E2C7EFF36049 /* Models */,
+			);
+			name = Scenario;
+			path = Scenario;
+			sourceTree = "<group>";
+		};
 		1A848D6FF5E71E3601138F1B /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -409,6 +420,15 @@
 			);
 			name = Community;
 			path = Community;
+			sourceTree = "<group>";
+		};
+		35720BEB5970E2C7EFF36049 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E980A6FCDB798763A00307CB /* ScenarioModels.swift */,
+			);
+			name = Models;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		35B50A3E97A5D1416D7198B0 /* Services */ = {
@@ -743,6 +763,7 @@
 				945EA22B33CDFAA818644F11 /* Celebration */,
 				47937D71839712BEE26FC311 /* Sharing */,
 				34775FC70ED096A46BFA9333 /* Celebration */,
+				184E989FE81C16285EA951FD /* Scenario */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -1212,6 +1233,7 @@
 				1331548EC341FAF539AC392F /* TrackingConstants.swift in Sources */,
 				48B9B88C27CA298A33E3C9E5 /* CheckInView.swift in Sources */,
 				D80C48F787313223CDD43E10 /* TrackingDetailComponents.swift in Sources */,
+				D8F53C8C53BD040E9A24F7E5 /* ScenarioModels.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
