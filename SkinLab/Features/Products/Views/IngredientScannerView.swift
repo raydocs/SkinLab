@@ -687,14 +687,24 @@ class IngredientScannerViewModel: ObservableObject {
             currentPreferences = preferences
 
             state = .result(baseResult, enhancedResult)
-            
+
+            // Track successful ingredient scan for analytics
+            AnalyticsEvents.productScanned(success: true)
+            // Track first product scanned for activation funnel (product feature usage)
+            FunnelTracker.shared.trackFirstProductAdded(
+                productName: "ingredient_scan",
+                source: "scan"
+            )
+
             // Start AI analysis in background
             await runAIAnalysis()
         } catch {
             state = .error(error)
+            // Track failed scan for analytics
+            AnalyticsEvents.productScanned(success: false)
         }
     }
-    
+
     func runAIAnalysis() async {
         guard let baseResult = currentBaseResult else { return }
         

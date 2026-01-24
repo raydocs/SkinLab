@@ -287,12 +287,23 @@ struct AnalyticsEvents {
 
     // MARK: - Navigation Events
 
+    /// Lock for thread-safe feature discovered tracking
+    private static let featureDiscoveredLock = NSLock()
+
     /// Log feature discovered event (first time user interacts with a feature)
-    /// Uses UserDefaults to ensure it only fires once per feature
+    /// Uses atomic check+set with lock to prevent race conditions
     static func featureDiscovered(featureName: String) {
         let key = "analytics.feature_discovered.\(featureName)"
-        guard !UserDefaults.standard.bool(forKey: key) else { return }
-        UserDefaults.standard.set(true, forKey: key)
+        var shouldLog = false
+
+        featureDiscoveredLock.lock()
+        if !UserDefaults.standard.bool(forKey: key) {
+            UserDefaults.standard.set(true, forKey: key)
+            shouldLog = true
+        }
+        featureDiscoveredLock.unlock()
+
+        guard shouldLog else { return }
 
         logEvent(
             name: "feature_discovered",
