@@ -165,4 +165,146 @@ struct AnalyticsEvents {
     static func setUserId(_ userId: String?) {
         AnalyticsService.shared.setUserId(userId)
     }
+
+    // MARK: - Core Feature Events
+
+    /// Source of skin analysis
+    enum AnalysisSource: String {
+        case camera = "camera"
+        case library = "library"
+        case homeButton = "home_button"
+    }
+
+    /// Log analysis started event
+    static func analysisStarted(source: AnalysisSource) {
+        logEvent(
+            name: "analysis_started",
+            parameters: [
+                "source": source.rawValue
+            ]
+        )
+    }
+
+    /// Log analysis completed event
+    static func analysisCompleted(skinType: String, score: Int, durationSeconds: Double) {
+        logEvent(
+            name: "analysis_completed",
+            parameters: [
+                "skin_type": skinType,
+                "score": score,
+                "duration_seconds": durationSeconds
+            ]
+        )
+    }
+
+    /// Log check-in completed event
+    static func checkInCompleted(day: Int, sessionId: String, streakCount: Int) {
+        logEvent(
+            name: "check_in_completed",
+            parameters: [
+                "check_in_day": day,
+                "session_id": sessionId,
+                "streak_count": streakCount
+            ]
+        )
+    }
+
+    // MARK: - Feature Usage Events
+
+    /// Source of product addition
+    enum ProductAddSource: String {
+        case manual = "manual"
+        case scan = "scan"
+        case search = "search"
+    }
+
+    /// Log product added event
+    static func productAdded(name: String, brand: String? = nil, source: ProductAddSource = .manual) {
+        var params: [String: Any] = [
+            "product_name": name,
+            "source": source.rawValue
+        ]
+        if let brand = brand {
+            params["product_brand"] = brand
+        }
+        logEvent(name: "product_added", parameters: params)
+    }
+
+    /// Log product scanned event
+    static func productScanned(success: Bool) {
+        logEvent(
+            name: "product_scanned",
+            parameters: [
+                "success": success
+            ]
+        )
+    }
+
+    /// Log report viewed event
+    static func reportViewed(analysisId: String, score: Int) {
+        logEvent(
+            name: "report_viewed",
+            parameters: [
+                "analysis_id": analysisId,
+                "score": score
+            ]
+        )
+    }
+
+    /// Log scenario selected event
+    static func scenarioSelected(scenario: String) {
+        logEvent(
+            name: "scenario_selected",
+            parameters: [
+                "scenario": scenario
+            ]
+        )
+    }
+
+    // MARK: - Engagement Events
+
+    /// Log streak milestone event
+    static func streakMilestoneReached(milestone: Int, currentStreak: Int) {
+        logEvent(
+            name: "streak_milestone",
+            parameters: [
+                "milestone": milestone,
+                "streak_count": currentStreak
+            ]
+        )
+    }
+
+    /// Log badge earned event
+    static func badgeEarned(achievementId: String, badgeName: String) {
+        logEvent(
+            name: "badge_earned",
+            parameters: [
+                "achievement_id": achievementId,
+                "badge_name": badgeName
+            ]
+        )
+    }
+
+    /// Log freeze used event
+    static func freezeUsed(streakCount: Int, freezesRemaining: Int) {
+        logEvent(
+            name: "freeze_used",
+            parameters: [
+                "streak_count": streakCount,
+                "freezes_remaining": freezesRemaining
+            ]
+        )
+    }
+
+    // MARK: - Navigation Events
+
+    /// Log feature discovered event (first time user interacts with a feature)
+    static func featureDiscovered(featureName: String) {
+        logEvent(
+            name: "feature_discovered",
+            parameters: [
+                "feature_name": featureName
+            ]
+        )
+    }
 }

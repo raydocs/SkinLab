@@ -569,6 +569,10 @@ struct NewTrackingSessionView: View {
             session.notes = notes
         }
         modelContext.insert(session)
+
+        // Track feature discovery - first tracking session
+        AnalyticsEvents.featureDiscovered(featureName: "28_day_tracking")
+
         dismiss()
     }
 }

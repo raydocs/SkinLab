@@ -183,6 +183,9 @@ struct ScenarioSelectionView: View {
     private func selectScenario(_ scenario: SkinScenario) {
         selectedScenario = scenario
 
+        // Track scenario selection
+        AnalyticsEvents.scenarioSelected(scenario: scenario.rawValue)
+
         // Generate recommendation
         let defaultProfile = UserProfile(
             skinType: .combination,

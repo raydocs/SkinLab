@@ -533,6 +533,15 @@ struct CheckInView: View {
                 session.addCheckIn(checkIn)
                 try modelContext.save()  // Ensure check-in is persisted
 
+                // 9. Track check-in completion for analytics
+                let streakService = StreakTrackingService(modelContext: modelContext)
+                let streakStatus = streakService.getStreakStatus()
+                AnalyticsEvents.checkInCompleted(
+                    day: scheduledDay,
+                    sessionId: session.id.uuidString,
+                    streakCount: streakStatus.currentStreak
+                )
+
                 isAnalyzing = false
                 dismiss()
             } catch {

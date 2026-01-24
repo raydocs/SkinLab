@@ -101,6 +101,15 @@ final class StreakTrackingService {
             metrics.longestStreak = metrics.streakCount
         }
 
+        // Track streak milestones (7, 14, 21, 28, 30, 60, 90, etc.)
+        let milestones = [7, 14, 21, 28, 30, 60, 90, 180, 365]
+        if milestones.contains(metrics.streakCount) {
+            AnalyticsEvents.streakMilestoneReached(
+                milestone: metrics.streakCount,
+                currentStreak: metrics.streakCount
+            )
+        }
+
         // Update check-in metadata
         metrics.lastCheckInDate = checkInDate
         metrics.totalCheckIns += 1

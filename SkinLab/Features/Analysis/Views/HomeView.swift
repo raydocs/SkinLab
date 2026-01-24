@@ -89,6 +89,7 @@ struct HomeView: View {
 
     private var heroSection: some View {
         Button {
+            AnalyticsEvents.analysisStarted(source: .homeButton)
             showAnalysis = true
         } label: {
             VStack(spacing: 24) {
@@ -224,10 +225,16 @@ struct HomeView: View {
     // MARK: - Freeze Methods
 
     private func useFreeze() {
+        let currentStreak = engagementMetrics.first?.streakCount ?? 0
+        let currentFreezes = engagementMetrics.first?.streakFreezesAvailable ?? 0
         let streakService = StreakTrackingService(modelContext: modelContext)
         let success = streakService.useStreakFreeze()
         if success {
             freezeUsedSuccessfully = true
+            AnalyticsEvents.freezeUsed(
+                streakCount: currentStreak,
+                freezesRemaining: currentFreezes - 1
+            )
         }
     }
 
@@ -423,6 +430,12 @@ struct HomeView: View {
                             photoPath: record.photoPath,
                             standardization: nil
                         ))
+                        .onAppear {
+                            AnalyticsEvents.reportViewed(
+                                analysisId: record.id.uuidString,
+                                score: analysis.overallScore
+                            )
+                        }
                     } label: {
                         RecentAnalysisCard(analysis: analysis)
                     }

@@ -193,6 +193,12 @@ struct ProductPickerView: View {
             selectedProducts.remove(at: index)
         } else {
             selectedProducts.append(name)
+            // Track product added
+            AnalyticsEvents.productAdded(
+                name: product.name,
+                brand: product.brand,
+                source: .manual
+            )
         }
     }
 }

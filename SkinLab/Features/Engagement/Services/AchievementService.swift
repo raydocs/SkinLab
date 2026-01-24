@@ -52,6 +52,12 @@ final class AchievementService {
                 if !metrics.unlockedAchievementIDs.contains(badge.id) {
                     metrics.unlockedAchievementIDs.append(badge.id)
                 }
+
+                // Track badge earned for analytics
+                AnalyticsEvents.badgeEarned(
+                    achievementId: badge.id,
+                    badgeName: badge.title
+                )
             }
 
             progressUpdates.append((badge, progress))

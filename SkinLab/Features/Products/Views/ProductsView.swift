@@ -49,6 +49,7 @@ struct ProductsView: View {
                         // Quick Actions with glass effect
                         HStack(spacing: 14) {
                             Button {
+                                AnalyticsEvents.productScanned(success: true)
                                 showScanner = true
                             } label: {
                                 BeautifulQuickActionCard(

@@ -46,6 +46,9 @@ class AnalysisViewModel: ObservableObject {
     private var lastCapturedImage: UIImage?
     private var lastStandardization: PhotoStandardizationMetadata?
 
+    // Track analysis timing for analytics
+    private var analysisStartTime: Date?
+
     // MARK: - Dependency Injection
     init(
         analysisService: SkinAnalysisServiceProtocol = GeminiService.shared,
@@ -88,6 +91,7 @@ class AnalysisViewModel: ObservableObject {
         selectedImage = image
         state = .analyzing
         analysisProgress = "正在优化图片..."
+        analysisStartTime = Date()
 
         do {
             analysisProgress = "AI正在分析你的皮肤..."
@@ -116,6 +120,14 @@ class AnalysisViewModel: ObservableObject {
 
             state = .result(result)
             lastError = nil
+
+            // Track analysis completion
+            let duration = analysisStartTime.map { Date().timeIntervalSince($0) } ?? 0
+            AnalyticsEvents.analysisCompleted(
+                skinType: analysis.skinType.rawValue,
+                score: analysis.overallScore,
+                durationSeconds: duration
+            )
         } catch let error as GeminiError {
             lastError = error
             state = .error(error.localizedDescription)

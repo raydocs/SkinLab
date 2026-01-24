@@ -140,6 +140,7 @@ struct AnalysisView: View {
             // Action Buttons
             VStack(spacing: 14) {
                 Button {
+                    AnalyticsEvents.analysisStarted(source: .camera)
                     showCamera = true
                 } label: {
                     Text("Take Photo")
@@ -149,6 +150,7 @@ struct AnalysisView: View {
                 .accessibilityHint("打开相机拍摄皮肤照片")
 
                 Button {
+                    AnalyticsEvents.analysisStarted(source: .library)
                     showPhotoPicker = true
                 } label: {
                     Text("Select from Library")
