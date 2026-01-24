@@ -193,16 +193,14 @@ struct ProductPickerView: View {
             selectedProducts.remove(at: index)
         } else {
             selectedProducts.append(name)
-            // Track product added
-            AnalyticsEvents.productAdded(
-                name: product.name,
-                brand: product.brand,
-                source: .manual
-            )
-            // Track first product added for activation funnel
-            FunnelTracker.shared.trackFirstProductAdded(
-                productName: product.name,
-                source: "manual"
+            // Track product selected for check-in (not "added" - different semantics)
+            // "product_added" should be used when a product is created/imported, not selected
+            AnalyticsEvents.logEvent(
+                name: "product_selected_for_checkin",
+                parameters: [
+                    "product_name": product.name,
+                    "product_brand": product.brand ?? "unknown"
+                ]
             )
         }
     }

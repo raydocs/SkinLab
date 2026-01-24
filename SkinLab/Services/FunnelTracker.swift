@@ -12,6 +12,12 @@ final class FunnelTracker: @unchecked Sendable {
     /// Lock for thread-safe access
     private let lock = NSLock()
 
+    /// Static date formatter for session timestamps (avoid allocation per call)
+    private static let iso8601Formatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        return formatter
+    }()
+
     /// Keys for tracking first-time events
     private enum FirstTimeKey: String {
         case firstOpen = "analytics.funnel.first_open"
@@ -194,31 +200,34 @@ final class FunnelTracker: @unchecked Sendable {
     // MARK: - DAU/WAU Session Tracking
 
     /// Track daily active session start
-    /// Call this when app becomes active
+    /// Call this when app becomes active (including returning from background)
     func trackSessionStart() {
         let today = Calendar.current.startOfDay(for: Date())
         let lastSessionKey = "analytics.funnel.last_session_date"
+        let now = Date()
 
+        // Atomic check+set to prevent race conditions
+        var shouldLog = false
         lock.lock()
         let lastSessionTimestamp = UserDefaults.standard.double(forKey: lastSessionKey)
-        lock.unlock()
-
         let lastSessionDate = Date(timeIntervalSince1970: lastSessionTimestamp)
         let lastSessionDay = Calendar.current.startOfDay(for: lastSessionDate)
 
-        // Only log if this is the first session of the day
         if lastSessionTimestamp == 0 || lastSessionDay < today {
+            UserDefaults.standard.set(now.timeIntervalSince1970, forKey: lastSessionKey)
+            shouldLog = true
+        }
+        lock.unlock()
+
+        // Only log if this is the first session of the day
+        if shouldLog {
             AnalyticsEvents.logEvent(
                 name: "session_start",
                 parameters: [
                     "is_new_day": true,
-                    "timestamp": ISO8601DateFormatter().string(from: Date())
+                    "timestamp": Self.iso8601Formatter.string(from: now)
                 ]
             )
-
-            lock.lock()
-            UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastSessionKey)
-            lock.unlock()
 
             // Update days active count
             incrementDaysActive()
@@ -248,28 +257,29 @@ final class FunnelTracker: @unchecked Sendable {
     // MARK: - Private Helpers
 
     /// Track a first-time event (only fires once per user)
+    /// Uses atomic check+set to prevent race conditions
     private func trackFirstTimeEvent(
         key: FirstTimeKey,
         eventName: String,
         parameters: [String: Any]?
     ) {
+        // Atomic check+set under one lock to prevent race conditions
+        var shouldLog = false
         lock.lock()
-        let alreadyTracked = UserDefaults.standard.bool(forKey: key.rawValue)
+        if !UserDefaults.standard.bool(forKey: key.rawValue) {
+            UserDefaults.standard.set(true, forKey: key.rawValue)
+            shouldLog = true
+        }
         lock.unlock()
 
-        guard !alreadyTracked else {
+        guard shouldLog else {
             #if DEBUG
             print("[FunnelTracker] Event '\(eventName)' already tracked, skipping")
             #endif
             return
         }
 
-        // Mark as tracked before logging to prevent race conditions
-        lock.lock()
-        UserDefaults.standard.set(true, forKey: key.rawValue)
-        lock.unlock()
-
-        // Log the event
+        // Log the event (outside lock to avoid blocking)
         AnalyticsEvents.logEvent(name: eventName, parameters: parameters)
 
         #if DEBUG
@@ -316,14 +326,9 @@ struct FunnelTrackingModifier: ViewModifier {
 }
 
 extension View {
-    /// Track first open when this view appears
-    func trackFirstOpen() -> some View {
-        modifier(FunnelTrackingModifier {
-            FunnelTracker.shared.trackFirstOpen()
-        })
-    }
-
     /// Track profile started when this view appears
+    /// Note: trackFirstOpen is intentionally not exposed as a view modifier
+    /// because it should only be called once at app init (in SkinLabApp.swift)
     func trackProfileStarted() -> some View {
         modifier(FunnelTrackingModifier {
             FunnelTracker.shared.trackProfileStarted()

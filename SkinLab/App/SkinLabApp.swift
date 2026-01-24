@@ -15,6 +15,9 @@ struct SkinLabApp: App {
     /// Initialization state for the app
     @State private var initializationState: InitializationState
 
+    /// Scene phase for tracking app activation (DAU/WAU)
+    @Environment(\.scenePhase) private var scenePhase
+
     /// The model container for SwiftData
     private let modelContainer: ModelContainer?
 
@@ -178,6 +181,13 @@ struct SkinLabApp: App {
     var body: some Scene {
         WindowGroup {
             contentView
+                .onChange(of: scenePhase) { _, newPhase in
+                    if newPhase == .active {
+                        // Track session start when app becomes active (including from background)
+                        // This is deduplicated per-day in trackSessionStart()
+                        FunnelTracker.shared.trackSessionStart()
+                    }
+                }
                 .alert(
                     resetError == nil ? "重置完成" : "重置失败",
                     isPresented: $showResetCompleteAlert
