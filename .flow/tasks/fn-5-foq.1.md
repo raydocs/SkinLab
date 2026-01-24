@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Added conflict data models (ConflictSeverity enum, IngredientConflict struct) and static knowledge base with 15 conflict pairs. Extended EnhancedIngredientScanResult with conflicts field.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 678d54019585cb608009a535813c6e8b6b72e1de
+- Tests: xcodebuild build -scheme SkinLab
 - PRs:

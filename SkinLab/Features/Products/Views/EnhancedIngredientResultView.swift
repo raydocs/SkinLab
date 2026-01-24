@@ -180,7 +180,12 @@ struct EnhancedIngredientResultView: View {
             if let aiResult = aiResult, !aiResult.evidence.isEmpty {
                 evidenceSection(aiResult: aiResult)
             }
-            
+
+            // Conflict Warnings Section
+            if !enhancedResult.conflicts.isEmpty {
+                conflictWarningSection
+            }
+
             // Highlights
             if !enhancedResult.baseResult.highlights.isEmpty {
                 highlightSection(
@@ -190,7 +195,7 @@ struct EnhancedIngredientResultView: View {
                     color: .skinLabSuccess
                 )
             }
-            
+
             // Warnings
             if !enhancedResult.baseResult.warnings.isEmpty {
                 highlightSection(
@@ -200,13 +205,13 @@ struct EnhancedIngredientResultView: View {
                     color: .skinLabWarning
                 )
             }
-            
+
             // All Ingredients
             VStack(alignment: .leading, spacing: 12) {
                 Text("全部成分 (\(enhancedResult.baseResult.ingredients.count))")
                     .font(.skinLabTitle3)
                     .foregroundColor(.skinLabText)
-                
+
                 FlowLayout(spacing: 8) {
                     ForEach(enhancedResult.baseResult.ingredients) { ingredient in
                         IngredientChip(ingredient: ingredient, isHighlighted: false)
@@ -317,17 +322,17 @@ struct EnhancedIngredientResultView: View {
                     .font(.skinLabTitle3)
                     .foregroundColor(.skinLabError)
             }
-            
+
             Text("检测到以下可能导致过敏的成分：")
                 .font(.skinLabSubheadline)
                 .foregroundColor(.skinLabText)
-            
+
             ForEach(enhancedResult.allergyMatches, id: \.self) { ingredient in
                 HStack {
                     Image(systemName: "circle.fill")
                         .font(.caption2)
                         .foregroundColor(.skinLabError)
-                    
+
                     Text(ingredient)
                         .font(.skinLabBody)
                         .fontWeight(.semibold)
@@ -342,6 +347,43 @@ struct EnhancedIngredientResultView: View {
                 .stroke(Color.skinLabError.opacity(0.3), lineWidth: 2)
         )
         .cornerRadius(16)
+    }
+
+    // MARK: - Conflict Warning Section
+    private var conflictWarningSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "bolt.trianglebadge.exclamationmark.fill")
+                    .foregroundColor(.skinLabError)
+                Text("成分冲突警告")
+                    .font(.skinLabTitle3)
+                    .foregroundColor(.skinLabText)
+            }
+
+            Text("检测到以下成分组合可能产生不良反应：")
+                .font(.skinLabSubheadline)
+                .foregroundColor(.skinLabSubtext)
+
+            // Danger conflicts first (red)
+            ForEach(enhancedResult.dangerConflicts) { conflict in
+                ConflictCard(conflict: conflict)
+            }
+
+            // Warning conflicts (orange)
+            ForEach(enhancedResult.warningConflicts) { conflict in
+                ConflictCard(conflict: conflict)
+            }
+        }
+        .padding()
+        .background(Color.skinLabCardBackground)
+        .cornerRadius(16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    enhancedResult.hasDangerConflicts ? Color.red.opacity(0.4) : Color.orange.opacity(0.4),
+                    lineWidth: 2
+                )
+        )
     }
     
     // MARK: - Concern Matches Section
@@ -618,5 +660,98 @@ struct IngredientChip: View {
         } else {
             return .skinLabText
         }
+    }
+}
+
+// MARK: - Conflict Card
+struct ConflictCard: View {
+    let conflict: IngredientConflict
+    @State private var isExpanded = false
+
+    private var severityColor: Color {
+        conflict.severity == .danger ? .red : .orange
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header with ingredient pair and severity
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    isExpanded.toggle()
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    // Severity icon
+                    Image(systemName: conflict.severity.icon)
+                        .foregroundColor(severityColor)
+                        .font(.title3)
+
+                    // Ingredient pair
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 6) {
+                            Text(conflict.ingredient1.capitalized)
+                                .font(.skinLabSubheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.skinLabText)
+
+                            Image(systemName: "plus")
+                                .font(.caption)
+                                .foregroundColor(.skinLabSubtext)
+
+                            Text(conflict.ingredient2.capitalized)
+                                .font(.skinLabSubheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.skinLabText)
+                        }
+
+                        Text(conflict.severity.rawValue)
+                            .font(.skinLabCaption)
+                            .foregroundColor(severityColor)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.skinLabSubtext)
+                        .font(.caption)
+                }
+            }
+
+            // Expanded details
+            if isExpanded {
+                Divider()
+
+                // Description
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "info.circle.fill")
+                            .foregroundColor(severityColor.opacity(0.8))
+                            .font(.caption)
+
+                        Text(conflict.description)
+                            .font(.skinLabBody)
+                            .foregroundColor(.skinLabText)
+                    }
+
+                    // Recommendation
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "lightbulb.fill")
+                            .foregroundColor(.skinLabAccent)
+                            .font(.caption)
+
+                        Text(conflict.recommendation)
+                            .font(.skinLabBody)
+                            .foregroundColor(.skinLabSubtext)
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(severityColor.opacity(0.08))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(severityColor.opacity(0.3), lineWidth: 1)
+        )
+        .cornerRadius(12)
     }
 }

@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Integration already completed in fn-5-foq.2
 ## Evidence
 - Commits:
-- Tests:
+- Tests: Code inspection verified
 - PRs:

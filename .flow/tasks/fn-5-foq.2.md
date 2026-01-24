@@ -7,9 +7,8 @@ TBD
 - [ ] TBD
 
 ## Done summary
-TBD
-
+Implemented detectConflicts method that matches parsed ingredients against ConflictKnowledgeBase with case-insensitive matching and alias support (e.g., Ascorbic Acid -> vitamin c).
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 9c5324e15e8b7e2f7025038cb15e37c4a4a5f418
+- Tests: xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17' - BUILD SUCCEEDED
 - PRs:
