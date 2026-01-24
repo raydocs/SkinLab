@@ -94,8 +94,19 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
+## Summary
+Created AppConfiguration for centralized configuration management with environment support (dev/staging/prod).
 
+## Key Changes
+- Created `/SkinLab/Core/Config/AppConfiguration.swift` with Environment enum and API/Limits/Features namespaces
+- Updated `GeminiService.swift` to use `AppConfiguration.API.baseURL` and `.referer`
+- Updated `RoutineService.swift` to use centralized configuration
+- Added `SKINLAB_ENV` to Info.plist for runtime environment detection
+
+## Commits
+- e7d6f47: feat(config): Centralize configuration management with AppConfiguration
+- 20083b4: fix(config): Address review feedback for centralized configuration
+- 092ad0b: fix(config): Add SKINLAB_ENV to Info.plist and API key guard
 ## Evidence
 - Commits:
 - Tests:
