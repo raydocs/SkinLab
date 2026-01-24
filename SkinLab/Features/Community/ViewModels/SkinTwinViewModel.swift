@@ -149,9 +149,15 @@ final class SkinTwinViewModel {
             }
 
             // 3. 检查 SwiftData 缓存
-            if !forceRefresh,
-               let cachedRecords = try? await repository?.getCachedMatches(for: profile.id),
-               !cachedRecords.isEmpty {
+            var cachedRecords: [MatchResultRecord] = []
+            if !forceRefresh {
+                do {
+                    cachedRecords = try await repository?.getCachedMatches(for: profile.id) ?? []
+                } catch {
+                    AppLogger.data(operation: .fetch, entity: "MatchResultRecord", success: false, error: error)
+                }
+            }
+            if !forceRefresh, !cachedRecords.isEmpty {
                 let cachedTwins = cachedRecords.compactMap { $0.toSkinTwin() }
                 if !cachedTwins.isEmpty {
                     matches = cachedTwins
@@ -297,7 +303,12 @@ final class SkinTwinViewModel {
         consentLevel = level
 
         if let modelContext = modelContext {
-            try? modelContext.save()
+            do {
+                try modelContext.save()
+                AppLogger.data(operation: .save, entity: "UserProfile", success: true)
+            } catch {
+                AppLogger.data(operation: .save, entity: "UserProfile", success: false, error: error)
+            }
         }
 
         showConsentSettings = false
@@ -312,7 +323,12 @@ final class SkinTwinViewModel {
             matchCache.clearAll()
 
             if let userId = currentUserProfile?.id {
-                try? await repository?.invalidateCache(for: userId)
+                do {
+                    try await repository?.invalidateCache(for: userId)
+                    AppLogger.data(operation: .delete, entity: "MatchResultRecord cache", success: true)
+                } catch {
+                    AppLogger.data(operation: .delete, entity: "MatchResultRecord cache", success: false, error: error)
+                }
             }
         }
     }
@@ -337,10 +353,15 @@ final class SkinTwinViewModel {
             sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
         )
 
-        if let profiles = try? modelContext.fetch(descriptor),
-           let profile = profiles.first {
-            currentUserProfile = profile
-            consentLevel = profile.consentLevel
+        do {
+            let profiles = try modelContext.fetch(descriptor)
+            if let profile = profiles.first {
+                currentUserProfile = profile
+                consentLevel = profile.consentLevel
+                AppLogger.data(operation: .fetch, entity: "UserProfile", success: true)
+            }
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "UserProfile", success: false, error: error)
         }
     }
 
@@ -370,10 +391,13 @@ final class SkinTwinViewModel {
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
 
-        if let records = try? modelContext.fetch(descriptor) {
+        do {
+            let records = try modelContext.fetch(descriptor)
             return records.first?.effectiveProducts ?? []
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "MatchResultRecord", success: false, error: error)
+            return []
         }
-        return []
     }
 
     /// 更新匹配统计

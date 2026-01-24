@@ -134,7 +134,15 @@ final class AchievementService {
     /// - Returns: Dictionary mapping achievement IDs to progress records
     func getAllProgress() -> [String: AchievementProgress] {
         let descriptor = FetchDescriptor<AchievementProgress>()
-        let records = (try? modelContext.fetch(descriptor)) ?? []
+        let records: [AchievementProgress]
+
+        do {
+            records = try modelContext.fetch(descriptor)
+            AppLogger.data(operation: .fetch, entity: "AchievementProgress", success: true, count: records.count)
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "AchievementProgress", success: false, error: error)
+            records = []
+        }
 
         var dict: [String: AchievementProgress] = [:]
         for record in records {
@@ -173,15 +181,24 @@ final class AchievementService {
             }
         )
 
-        return try? modelContext.fetch(descriptor).first
+        do {
+            return try modelContext.fetch(descriptor).first
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "AchievementProgress", success: false, error: error)
+            return nil
+        }
     }
 
     /// Get or create UserEngagementMetrics
     private func getOrCreateMetrics() -> UserEngagementMetrics {
         let descriptor = FetchDescriptor<UserEngagementMetrics>()
 
-        if let metrics = try? modelContext.fetch(descriptor).first {
-            return metrics
+        do {
+            if let metrics = try modelContext.fetch(descriptor).first {
+                return metrics
+            }
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "UserEngagementMetrics", success: false, error: error)
         }
 
         // Create new metrics
@@ -194,15 +211,27 @@ final class AchievementService {
     private func getSkinTwinMatchCount() -> Int {
         // Query MatchResultRecord
         let descriptor = FetchDescriptor<MatchResultRecord>()
-        let records = (try? modelContext.fetch(descriptor)) ?? []
-        return records.count
+        do {
+            let records = try modelContext.fetch(descriptor)
+            return records.count
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "MatchResultRecord", success: false, error: error)
+            return 0
+        }
     }
 
     /// Get count of product analyses completed
     private func getProductAnalysisCount() -> Int {
         // Query skin analysis records
         let descriptor = FetchDescriptor<SkinAnalysisRecord>()
-        let records = (try? modelContext.fetch(descriptor)) ?? []
+        let records: [SkinAnalysisRecord]
+
+        do {
+            records = try modelContext.fetch(descriptor)
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "SkinAnalysisRecord", success: false, error: error)
+            return 0
+        }
 
         // Count unique products analyzed
         var productIDs = Set<String>()

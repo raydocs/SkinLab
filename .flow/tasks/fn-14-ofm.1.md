@@ -65,9 +65,8 @@ xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhon
 ```
 
 ## Done summary
-TBD
-
+Replaced fatalError with graceful degradation for SwiftData initialization. On failure, the app now attempts to reset store files and retry before showing a recovery UI with "Reset Data" and "Contact Support" options. All errors are logged via os.log.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: a3f6c0f, 7ca4622, 4db09e6, 656407d
+- Tests: xcodebuild build -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17'
 - PRs:

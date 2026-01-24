@@ -133,6 +133,9 @@
 		WS00000001 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = WS00000002 /* WeatherService.swift */; };
 		PQC0000001 /* PhotoQualityCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PQC0000002 /* PhotoQualityCheckerTests.swift */; };
 		PDF0000001 /* PhotoDataFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDF0000002 /* PhotoDataFlowTests.swift */; };
+		C0ACDEE8C5ACB09CBF956804 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8339588DC76582E8946C61D2 /* Logger.swift */; };
+		9A173C29F89D0EFF269816F5 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72371672A252B7B8E05C861 /* AppError.swift */; };
+		34FD77791A382AE52770F9E4 /* ErrorHandlingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B94F96CB181E794F7D649CF /* ErrorHandlingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -205,6 +208,9 @@
 		7144358F4B6B8D70DA122923 /* EngagementMigrationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EngagementMigrationService.swift; sourceTree = "<group>"; };
 		7551BCDBC96ED5FBA80E1DDA /* SkinTwinDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinDetailView.swift; sourceTree = "<group>"; };
 		7A5B3AE2E986F636B26C6316 /* MatchResultRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchResultRecord.swift; sourceTree = "<group>"; };
+				8339588DC76582E8946C61D2 /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = ../../SkinLab/Core/Utils/Logger.swift; sourceTree = "<group>"; };
+		C72371672A252B7B8E05C861 /* AppError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppError.swift; path = ../../SkinLab/Core/Utils/AppError.swift; sourceTree = "<group>"; };
+		3B94F96CB181E794F7D649CF /* ErrorHandlingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ErrorHandlingTests.swift; path = ../../SkinLabTests/Core/ErrorHandlingTests.swift; sourceTree = "<group>"; };
 		7CCFAD1851E0FB2F410EE993 /* UserHistoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserHistoryStore.swift; path = ../../SkinLab/Core/Utils/UserHistoryStore.swift; sourceTree = "<group>"; };
 		83088D4EEFA516F79EB25EE1 /* ProductRecommendationEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductRecommendationEngineTests.swift; sourceTree = "<group>"; };
 		91D0A2DDF7F1AF8A06273616 /* TrackingReportView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrackingReportView.swift; path = ../../../SkinLab/Features/Tracking/Views/TrackingReportView.swift; sourceTree = "<group>"; };
@@ -341,6 +347,9 @@
 				3FC24F5570D8E1F73373DA94 /* IngredientRiskAnalyzer.swift */,
 				CC09663356DE55C0E82B5381 /* ShareCardRenderer.swift */,
 				7CCFAD1851E0FB2F410EE993 /* UserHistoryStore.swift */,
+				8339588DC76582E8946C61D2 /* Logger.swift */,
+				C72371672A252B7B8E05C861 /* AppError.swift */,
+
 			);
 			name = Utils;
 			path = Utils;
@@ -556,6 +565,8 @@
 			isa = PBXGroup;
 			children = (
 				3D7E956BED795ED4617FDB9C /* GeminiServiceTests.swift */,
+				3B94F96CB181E794F7D649CF /* ErrorHandlingTests.swift */,
+
 			);
 			name = Core;
 			path = Core;
@@ -1242,6 +1253,8 @@
 				402AA3369BA5B7C3753B65CD /* TrackingReportExtensions.swift in Sources */,
 				48BF644CB2E8C4A53053E21C /* TrackingReportView.swift in Sources */,
 				EF7E0C9D4EFDD24537C9EE60 /* EnhancedIngredientResultView.swift in Sources */,
+								C0ACDEE8C5ACB09CBF956804 /* Logger.swift in Sources */,
+				9A173C29F89D0EFF269816F5 /* AppError.swift in Sources */,
 				7E704BF8034C838F0F952D24 /* UserHistoryStore.swift in Sources */,
 				9834A1C1D237F9C8F07CFAAC /* IngredientExposureRecord.swift in Sources */,
 				84CA17418FF3F194C2A509CC /* UserIngredientPreference.swift in Sources */,
@@ -1329,6 +1342,7 @@
 				2BF1731243556DB802617922 /* ProductRecommendationEngineTests.swift in Sources */,
 				44F72831C0C423B5F4F7EF87 /* SkinTwinViewModelTests.swift in Sources */,
 				20903C0BB33AEC2CD089E94B /* ReliabilityScorerTests.swift in Sources */,
+								34FD77791A382AE52770F9E4 /* ErrorHandlingTests.swift in Sources */,
 				F1BDFF1FB6440651F8E89B71 /* GeminiServiceTests.swift in Sources */,
 				F45568C91977D609E538B5C8 /* MockURLProtocol.swift in Sources */,
 				3F822D76DFB5991E34253B08 /* ProductAttributionTests.swift in Sources */,

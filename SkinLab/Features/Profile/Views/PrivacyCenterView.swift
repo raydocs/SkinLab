@@ -107,15 +107,24 @@ struct PrivacyCenterView: View {
         deleteAll(UserIngredientPreference.self)
         deleteAll(MatchResultRecord.self)
         deleteAll(UserFeedbackRecord.self)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+            AppLogger.data(operation: .delete, entity: "All user data", success: true)
+        } catch {
+            AppLogger.data(operation: .delete, entity: "All user data", success: false, error: error)
+        }
     }
 
     private func deleteAll<T: PersistentModel>(_ type: T.Type) {
         let descriptor = FetchDescriptor<T>()
-        if let items = try? modelContext.fetch(descriptor) {
+        do {
+            let items = try modelContext.fetch(descriptor)
             for item in items {
                 modelContext.delete(item)
             }
+            AppLogger.data(operation: .delete, entity: String(describing: T.self), success: true, count: items.count)
+        } catch {
+            AppLogger.data(operation: .delete, entity: String(describing: T.self), success: false, error: error)
         }
     }
 

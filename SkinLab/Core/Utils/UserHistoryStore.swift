@@ -6,31 +6,34 @@ import SwiftData
 /// 提供快速访问最近的分析记录和成分效果统计
 final class UserHistoryStore {
     private let modelContext: ModelContext
-    
+
     /// 缓存的最近分析记录数量
     private let maxRecentAnalyses = 10
-    
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
-    
+
     // MARK: - Skin Analysis History
-    
+
     /// 获取最近的皮肤分析记录
     func getRecentAnalyses(limit: Int? = nil) -> [SkinAnalysis] {
         let fetchLimit = limit ?? maxRecentAnalyses
-        
+
         let descriptor = FetchDescriptor<SkinAnalysisRecord>(
             sortBy: [SortDescriptor(\SkinAnalysisRecord.analyzedAt, order: .reverse)]
         )
-        
-        guard let records = try? modelContext.fetch(descriptor) else {
+
+        do {
+            let records = try modelContext.fetch(descriptor)
+            AppLogger.data(operation: .fetch, entity: "SkinAnalysisRecord", success: true, count: records.count)
+            return records
+                .prefix(fetchLimit)
+                .compactMap { $0.toAnalysis() }
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "SkinAnalysisRecord", success: false, error: error)
             return []
         }
-        
-        return records
-            .prefix(fetchLimit)
-            .compactMap { $0.toAnalysis() }
     }
     
     /// 获取用户的基线数据（最近N次分析的平均值）
@@ -89,8 +92,15 @@ final class UserHistoryStore {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
         descriptor.fetchLimit = limit
-        
-        return (try? modelContext.fetch(descriptor)) ?? []
+
+        do {
+            let records = try modelContext.fetch(descriptor)
+            AppLogger.data(operation: .fetch, entity: "IngredientExposureRecord", success: true, count: records.count)
+            return records
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "IngredientExposureRecord", success: false, error: error)
+            return []
+        }
     }
     
     /// 计算特定成分的效果统计
@@ -116,7 +126,12 @@ final class UserHistoryStore {
     /// 获取所有成分的效果统计（用于批量分析）
     func getAllIngredientStats() -> [String: IngredientEffectStats] {
         let descriptor = FetchDescriptor<IngredientExposureRecord>()
-        guard let allExposures = try? modelContext.fetch(descriptor) else {
+        let allExposures: [IngredientExposureRecord]
+        do {
+            allExposures = try modelContext.fetch(descriptor)
+            AppLogger.data(operation: .fetch, entity: "IngredientExposureRecord", success: true, count: allExposures.count)
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "IngredientExposureRecord", success: false, error: error)
             return [:]
         }
         
@@ -150,8 +165,14 @@ final class UserHistoryStore {
         let descriptor = FetchDescriptor<UserIngredientPreference>(
             predicate: #Predicate { $0.ingredientName == ingredientName }
         )
-        
-        return try? modelContext.fetch(descriptor).first
+
+        do {
+            let preferences = try modelContext.fetch(descriptor)
+            return preferences.first
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "UserIngredientPreference", success: false, error: error)
+            return nil
+        }
     }
     
     /// 获取所有成分偏好
@@ -159,8 +180,15 @@ final class UserHistoryStore {
         let descriptor = FetchDescriptor<UserIngredientPreference>(
             sortBy: [SortDescriptor(\.lastUpdated, order: .reverse)]
         )
-        
-        return (try? modelContext.fetch(descriptor)) ?? []
+
+        do {
+            let preferences = try modelContext.fetch(descriptor)
+            AppLogger.data(operation: .fetch, entity: "UserIngredientPreference", success: true, count: preferences.count)
+            return preferences
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "UserIngredientPreference", success: false, error: error)
+            return []
+        }
     }
     
     /// 保存或更新成分偏好
@@ -184,8 +212,13 @@ final class UserHistoryStore {
             )
             modelContext.insert(preference)
         }
-        
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+            AppLogger.data(operation: .save, entity: "UserIngredientPreference", success: true)
+        } catch {
+            AppLogger.data(operation: .save, entity: "UserIngredientPreference", success: false, error: error)
+        }
     }
     
     // MARK: - Auto Learning

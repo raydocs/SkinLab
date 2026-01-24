@@ -63,7 +63,12 @@ final class PredictiveAlertNotificationService {
                 trigger: trigger
             )
 
-            try? await UNUserNotificationCenter.current().add(request)
+            do {
+                try await UNUserNotificationCenter.current().add(request)
+                AppLogger.info("Scheduled predictive alert notification: \(alert.title)")
+            } catch {
+                AppLogger.error("Failed to schedule predictive alert notification", error: error)
+            }
         }
     }
 

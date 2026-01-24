@@ -347,8 +347,12 @@ final class StreakTrackingService {
     private func getOrCreateMetrics() -> UserEngagementMetrics {
         let descriptor = FetchDescriptor<UserEngagementMetrics>()
 
-        if let metrics = try? modelContext.fetch(descriptor).first {
-            return metrics
+        do {
+            if let metrics = try modelContext.fetch(descriptor).first {
+                return metrics
+            }
+        } catch {
+            AppLogger.data(operation: .fetch, entity: "UserEngagementMetrics", success: false, error: error)
         }
 
         // Create new metrics

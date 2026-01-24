@@ -80,7 +80,12 @@ final class StreakNotificationService {
                 trigger: trigger
             )
 
-            try? await UNUserNotificationCenter.current().add(request)
+            do {
+                try await UNUserNotificationCenter.current().add(request)
+                AppLogger.info("Scheduled streak notification for day \(day)")
+            } catch {
+                AppLogger.error("Failed to schedule streak notification", error: error)
+            }
         }
     }
 
