@@ -319,7 +319,10 @@ final class TrendAnalyticsModelsTests: XCTestCase {
             confidence: ConfidenceScore(value: 0.8, sampleCount: 15, method: "analysis"),
             contributingFactors: ["高保湿"],
             usageCount: 20,
-            avgDayInterval: 1.5
+            avgDayInterval: 1.5,
+            attributionWeight: nil,
+            soloUsageDays: nil,
+            coUsedProductIds: nil
         )
 
         XCTAssertEqual(insight.effectLevel, .highlyEffective)
@@ -333,7 +336,10 @@ final class TrendAnalyticsModelsTests: XCTestCase {
             confidence: ConfidenceScore(value: 0.7, sampleCount: 10, method: "analysis"),
             contributingFactors: [],
             usageCount: 15,
-            avgDayInterval: 2.0
+            avgDayInterval: 2.0,
+            attributionWeight: nil,
+            soloUsageDays: nil,
+            coUsedProductIds: nil
         )
 
         XCTAssertEqual(insight.effectLevel, .effective)
@@ -347,7 +353,10 @@ final class TrendAnalyticsModelsTests: XCTestCase {
             confidence: ConfidenceScore(value: 0.6, sampleCount: 8, method: "analysis"),
             contributingFactors: [],
             usageCount: 10,
-            avgDayInterval: 3.0
+            avgDayInterval: 3.0,
+            attributionWeight: nil,
+            soloUsageDays: nil,
+            coUsedProductIds: nil
         )
 
         XCTAssertEqual(insight.effectLevel, .neutral)
@@ -361,7 +370,10 @@ final class TrendAnalyticsModelsTests: XCTestCase {
             confidence: ConfidenceScore(value: 0.5, sampleCount: 5, method: "analysis"),
             contributingFactors: [],
             usageCount: 5,
-            avgDayInterval: 5.0
+            avgDayInterval: 5.0,
+            attributionWeight: nil,
+            soloUsageDays: nil,
+            coUsedProductIds: nil
         )
 
         XCTAssertEqual(insight.effectLevel, .ineffective)
@@ -375,7 +387,10 @@ final class TrendAnalyticsModelsTests: XCTestCase {
             confidence: ConfidenceScore(value: 0.5, sampleCount: 5, method: "analysis"),
             contributingFactors: [],
             usageCount: 5,
-            avgDayInterval: 5.0
+            avgDayInterval: 5.0,
+            attributionWeight: nil,
+            soloUsageDays: nil,
+            coUsedProductIds: nil
         )
 
         XCTAssertEqual(insight.effectLevel, .harmful)
