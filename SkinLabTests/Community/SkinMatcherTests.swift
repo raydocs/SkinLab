@@ -142,21 +142,21 @@ final class SkinMatcherTests: XCTestCase {
 
     func testBatchProcessing_emptyFingerprints_returnsEmpty() async {
         let fingerprints: [SkinFingerprint] = []
-        let pool: [UserProfile] = []
+        let candidates: [MatchCandidate] = []
 
-        let results = await matcher.findMatchesBatch(for: fingerprints, in: pool)
+        let results = await matcher.findMatchesBatch(for: fingerprints, candidates: candidates)
 
         XCTAssertEqual(results.count, 0)
     }
 
-    func testBatchProcessing_emptyPool_returnsEmptyArrays() async {
+    func testBatchProcessing_emptyCandidates_returnsEmptyArrays() async {
         let fingerprints = [
             createTestFingerprint(skinType: .oily),
             createTestFingerprint(skinType: .dry)
         ]
-        let pool: [UserProfile] = []
+        let candidates: [MatchCandidate] = []
 
-        let results = await matcher.findMatchesBatch(for: fingerprints, in: pool)
+        let results = await matcher.findMatchesBatch(for: fingerprints, candidates: candidates)
 
         XCTAssertEqual(results.count, 2)
         XCTAssertTrue(results[0].isEmpty)
@@ -170,9 +170,9 @@ final class SkinMatcherTests: XCTestCase {
             createTestFingerprint(skinType: .dry, ageRange: .age30to35),
             createTestFingerprint(skinType: .combination, ageRange: .age25to30)
         ]
-        let pool: [UserProfile] = []
+        let candidates: [MatchCandidate] = []
 
-        let results = await matcher.findMatchesBatch(for: fingerprints, in: pool)
+        let results = await matcher.findMatchesBatch(for: fingerprints, candidates: candidates)
 
         // Should return same number of result arrays as input fingerprints
         XCTAssertEqual(results.count, fingerprints.count)
