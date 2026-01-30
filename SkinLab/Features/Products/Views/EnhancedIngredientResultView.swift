@@ -10,6 +10,7 @@ struct EnhancedIngredientResultView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedTab: ResultTab = .overview
+    @State private var selectedEvidenceEntry: EvidenceEntry?
 
     enum ResultTab: String, CaseIterable {
         case overview = "总览"
@@ -44,6 +45,9 @@ struct EnhancedIngredientResultView: View {
         .background(Color.skinLabBackground)
         .navigationTitle("成分分析")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $selectedEvidenceEntry) { entry in
+            EvidenceSourcesSheet(entry: entry)
+        }
     }
 
     // MARK: - Header
@@ -471,17 +475,7 @@ struct EnhancedIngredientResultView: View {
                 Spacer()
 
                 if let overallLevel = aiResult.overallEvidenceLevel {
-                    HStack(spacing: 4) {
-                        Image(systemName: overallLevel.icon)
-                            .font(.caption)
-                        Text(overallLevel.displayName)
-                            .font(.skinLabCaption)
-                    }
-                    .foregroundColor(evidenceLevelColor(overallLevel))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(evidenceLevelColor(overallLevel).opacity(0.15))
-                    .cornerRadius(10)
+                    EvidenceBadgeView(level: overallLevel, isCompact: true)
                 }
             }
 
@@ -497,17 +491,15 @@ struct EnhancedIngredientResultView: View {
 
                                 Spacer()
 
-                                HStack(spacing: 4) {
-                                    Image(systemName: evidence.level.icon)
-                                        .font(.caption2)
-                                    Text(evidence.level.displayName)
-                                        .font(.skinLabCaption)
+                                EvidenceBadgeView(level: evidence.level, isCompact: true) {
+                                    selectedEvidenceEntry = EvidenceEntry(
+                                        ingredientName: evidence.ingredientName,
+                                        level: evidence.level,
+                                        sources: evidence.sources,
+                                        studyCount: evidence.studyCount,
+                                        description: evidence.description
+                                    )
                                 }
-                                .foregroundColor(evidenceLevelColor(evidence.level))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(evidenceLevelColor(evidence.level).opacity(0.15))
-                                .cornerRadius(8)
                             }
 
                             if !evidence.sources.isEmpty {
@@ -559,14 +551,6 @@ struct EnhancedIngredientResultView: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(LinearGradient.skinLabPrimaryGradient.opacity(0.2), lineWidth: 1)
         )
-    }
-
-    private func evidenceLevelColor(_ level: EvidenceLevel) -> Color {
-        switch level {
-        case .limited: .gray
-        case .moderate: .orange
-        case .strong: .skinLabSuccess
-        }
     }
 
     // MARK: - Helpers

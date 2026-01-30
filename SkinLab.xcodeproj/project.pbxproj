@@ -59,6 +59,7 @@
 		7A869E10823B5851FD6F928C /* AchievementUnlockAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C639974907E7B54590EC13 /* AchievementUnlockAnimationView.swift */; };
 		7BCBF3A344692ADF2781885F /* IngredientAIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98D02551ADBF9AEBDF16E24B /* IngredientAIModels.swift */; };
 		7F5D33C2B2A4B6A1F0C1E1A1 /* EvidenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F5D33C1B2A4B6A1F0C1E1A1 /* EvidenceModels.swift */; };
+		7F5D33C4B2A4B6A1F0C1E1A1 /* EvidenceBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F5D33C3B2A4B6A1F0C1E1A1 /* EvidenceBadgeView.swift */; };
 		7E704BF8034C838F0F952D24 /* UserHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFAD1851E0FB2F410EE993 /* UserHistoryStore.swift */; };
 		7ECD6D2604E0FD727BA245FB /* ReliabilityScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23EEF448B75E8CDAD8A2F68 /* ReliabilityScorer.swift */; };
 		7F2A8FC155C0FD73533E4085 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F3B0D89FD0428597A7C0516 /* Foundation.framework */; };
@@ -294,6 +295,7 @@
 		B1000083 /* evidence.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = evidence.json; sourceTree = "<group>"; };
 		B1000084 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7F5D33C1B2A4B6A1F0C1E1A1 /* EvidenceModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EvidenceModels.swift; sourceTree = "<group>"; };
+		7F5D33C3B2A4B6A1F0C1E1A1 /* EvidenceBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EvidenceBadgeView.swift; sourceTree = "<group>"; };
 		B1000090 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
 		B1000091 /* RomanticDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomanticDecorations.swift; sourceTree = "<group>"; };
 		B1000092 /* FreshThemeModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshThemeModifiers.swift; sourceTree = "<group>"; };
@@ -1104,6 +1106,7 @@
 				BE409C5ACEBDB17926A688A7 /* CachedImageView.swift */,
 				COLLSEC00002 /* CollapsibleSection.swift */,
 				8343AB33751B3ACA51F162E8 /* ConfidenceScoreCardView.swift */,
+				7F5D33C3B2A4B6A1F0C1E1A1 /* EvidenceBadgeView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1407,6 +1410,7 @@
 				2A212E8F0C8D464A335DD3EE /* RoutineView.swift in Sources */,
 				402AA3369BA5B7C3753B65CD /* TrackingReportExtensions.swift in Sources */,
 				48BF644CB2E8C4A53053E21C /* TrackingReportView.swift in Sources */,
+				7F5D33C4B2A4B6A1F0C1E1A1 /* EvidenceBadgeView.swift in Sources */,
 				EF7E0C9D4EFDD24537C9EE60 /* EnhancedIngredientResultView.swift in Sources */,
 				C0ACDEE8C5ACB09CBF956804 /* Logger.swift in Sources */,
 				9A173C29F89D0EFF269816F5 /* AppError.swift in Sources */,
