@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "xcodebuild build",
+      "command": "xcodebuild -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.2' build",
+      "result": "passed"
+    }
+  ],
+  "files": [
+    "SkinLab/UI/Components/EvidenceBadgeView.swift",
+    "SkinLab/Features/Products/Views/EnhancedIngredientResultView.swift",
+    "SkinLab.xcodeproj/project.pbxproj"
+  ]
+}
