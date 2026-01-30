@@ -1,5 +1,6 @@
 import AVFoundation
 import CoreImage
+import ImageIO
 import Metal
 import SwiftUI
 import Vision
@@ -19,6 +20,9 @@ class CameraService: NSObject, ObservableObject {
     private var videoInput: AVCaptureDeviceInput?
     private var currentPosition: AVCaptureDevice.Position = .front
     private var photoContinuation: CheckedContinuation<UIImage, Error>?
+    private var conditionWindow: [PhotoCondition] = []
+    private let smoothingWindowSize = 5
+    private let requiredStableFrames = 3
 
     private let videoQueue = DispatchQueue(label: "camera.video.queue")
     private let faceDetector = FaceDetector()
@@ -31,7 +35,7 @@ class CameraService: NSObject, ObservableObject {
     }
 
     /// Reuse CIContext for better performance
-    private static let sharedCIContext: CIContext = {
+    private nonisolated static let sharedCIContext: CIContext = {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
             return CIContext(mtlDevice: metalDevice, options: [.cacheIntermediates: false])
         }
@@ -185,6 +189,17 @@ class CameraService: NSObject, ObservableObject {
         }
     }
 
+    func validateCapturedImage(_ image: UIImage) async -> PhotoCondition? {
+        guard let cgImage = image.cgImage else { return nil }
+        let ciImage = CIImage(cgImage: cgImage)
+        let orientation = CameraService.visionOrientation(from: image.imageOrientation)
+        return await faceDetector.analyze(
+            cgImage: cgImage,
+            ciImage: ciImage,
+            orientation: orientation
+        )
+    }
+
     // MARK: - Stop
 
     func stop() {
@@ -199,6 +214,60 @@ class CameraService: NSObject, ObservableObject {
             for output in self.captureSession.outputs {
                 self.captureSession.removeOutput(output)
             }
+        }
+    }
+
+    private func updatePhotoCondition(with condition: PhotoCondition) {
+        conditionWindow.append(condition)
+        if conditionWindow.count > smoothingWindowSize {
+            conditionWindow.removeFirst(conditionWindow.count - smoothingWindowSize)
+        }
+
+        let smoothed = PhotoCondition.smoothed(
+            from: conditionWindow,
+            requiredStableFrames: requiredStableFrames
+        )
+        photoCondition = smoothed
+    }
+
+    private nonisolated static func visionOrientation(
+        rotationAngle: Double,
+        isMirrored: Bool
+    ) -> CGImagePropertyOrientation {
+        switch rotationAngle {
+        case 90:
+            isMirrored ? .leftMirrored : .right
+        case 270:
+            isMirrored ? .rightMirrored : .left
+        case 180:
+            isMirrored ? .downMirrored : .down
+        default:
+            isMirrored ? .upMirrored : .up
+        }
+    }
+
+    private nonisolated static func visionOrientation(
+        from imageOrientation: UIImage.Orientation
+    ) -> CGImagePropertyOrientation {
+        switch imageOrientation {
+        case .up:
+            return .up
+        case .upMirrored:
+            return .upMirrored
+        case .down:
+            return .down
+        case .downMirrored:
+            return .downMirrored
+        case .left:
+            return .left
+        case .leftMirrored:
+            return .leftMirrored
+        case .right:
+            return .right
+        case .rightMirrored:
+            return .rightMirrored
+        @unknown default:
+            return .right
         }
     }
 }
@@ -216,6 +285,10 @@ extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
         // Create CGImage for preview using shared context
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
         guard let cgImage = CameraService.sharedCIContext.createCGImage(ciImage, from: ciImage.extent) else { return }
+        let orientation = CameraService.visionOrientation(
+            rotationAngle: connection.videoRotationAngle,
+            isMirrored: connection.isVideoMirrored
+        )
 
         // Throttle face detection to improve performance
         let currentTime = CFAbsoluteTimeGetCurrent()
@@ -228,8 +301,12 @@ extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
             // Only run face detection at throttled interval
             if currentTime - self.lastFaceDetectionTime >= self.faceDetectionInterval {
                 self.lastFaceDetectionTime = currentTime
-                if let condition = await self.faceDetector.analyze(cgImage: cgImage, ciImage: ciImage) {
-                    self.photoCondition = condition
+                if let condition = await self.faceDetector.analyze(
+                    cgImage: cgImage,
+                    ciImage: ciImage,
+                    orientation: orientation
+                ) {
+                    self.updatePhotoCondition(with: condition)
                 }
             }
         }
@@ -274,14 +351,19 @@ struct PhotoCondition {
     var faceDistance: DistanceCondition = .unknown
     var faceCentering: CenteringCondition = .unknown
     var sharpness: SharpnessCondition = .unknown
+    var stableReady: Bool = true
 
-    var isReady: Bool {
+    var baseReady: Bool {
         faceDetected &&
             lighting.isAcceptable &&
             faceAngle.isOptimal &&
             faceDistance.isAcceptable &&
             faceCentering.isAcceptable &&
             sharpness.isAcceptable
+    }
+
+    var isReady: Bool {
+        baseReady && stableReady
     }
 
     var suggestions: [String] {
@@ -311,7 +393,66 @@ struct PhotoCondition {
             result.append(suggestion)
         }
 
+        if baseReady, !stableReady {
+            result.append("请保持稳定")
+        }
+
         return result
+    }
+
+    static func smoothed(from conditions: [PhotoCondition], requiredStableFrames: Int) -> PhotoCondition {
+        guard let latest = conditions.last else { return PhotoCondition() }
+
+        let faceDetectedValues = conditions.map(\.faceDetected)
+        let faceDetectedCount = faceDetectedValues.filter { $0 }.count
+        let faceDetected: Bool = if faceDetectedCount == conditions.count - faceDetectedCount {
+            latest.faceDetected
+        } else {
+            faceDetectedCount > conditions.count - faceDetectedCount
+        }
+
+        let lighting = mode(conditions.map(\.lighting), fallback: latest.lighting)
+        let faceDistance = mode(conditions.map(\.faceDistance), fallback: latest.faceDistance)
+        let faceCentering = mode(conditions.map(\.faceCentering), fallback: latest.faceCentering)
+        let sharpness = mode(conditions.map(\.sharpness), fallback: latest.sharpness)
+
+        let yaw = average(conditions.map(\.faceAngle.yaw))
+        let pitch = average(conditions.map(\.faceAngle.pitch))
+        let roll = average(conditions.map(\.faceAngle.roll))
+
+        let stableFrameCount = max(requiredStableFrames, 1)
+        let stableWindow = conditions.suffix(stableFrameCount)
+        let stableReady = conditions.count >= stableFrameCount && stableWindow.allSatisfy(\.baseReady)
+
+        return PhotoCondition(
+            lighting: lighting,
+            faceDetected: faceDetected,
+            faceAngle: FaceAngle(yaw: yaw, pitch: pitch, roll: roll),
+            faceDistance: faceDistance,
+            faceCentering: faceCentering,
+            sharpness: sharpness,
+            stableReady: stableReady
+        )
+    }
+
+    private static func mode<T: Hashable>(_ values: [T], fallback: T) -> T {
+        guard !values.isEmpty else { return fallback }
+        var counts: [T: Int] = [:]
+        for value in values {
+            counts[value, default: 0] += 1
+        }
+        let maxCount = counts.values.max() ?? 0
+        let modes = counts.filter { $0.value == maxCount }.map(\.key)
+        if modes.count == 1, let mode = modes.first {
+            return mode
+        }
+        return fallback
+    }
+
+    private static func average(_ values: [Double]) -> Double {
+        guard !values.isEmpty else { return 0 }
+        let total = values.reduce(0, +)
+        return total / Double(values.count)
     }
 }
 
@@ -337,6 +478,21 @@ enum LightingCondition {
         case .tooDark: "光线不足，请移到更亮的地方"
         case .tooBright: "光线过强，请避开直射光"
         default: nil
+        }
+    }
+
+    static func from(averageBrightness: Double) -> LightingCondition {
+        switch averageBrightness {
+        case ..<0.15:
+            .tooDark
+        case 0.15 ..< 0.30:
+            .slightlyDark
+        case 0.30 ..< 0.70:
+            .optimal
+        case 0.70 ..< 0.85:
+            .slightlyBright
+        default:
+            .tooBright
         }
     }
 }
@@ -476,6 +632,17 @@ enum SharpnessCondition {
             .sharp
         }
     }
+
+    static func from(faceCaptureQuality: Float) -> SharpnessCondition {
+        switch faceCaptureQuality {
+        case ..<0.2:
+            .blurry
+        case 0.2 ..< 0.45:
+            .slightlyBlurry
+        default:
+            .sharp
+        }
+    }
 }
 
 // MARK: - Face Detector
@@ -488,13 +655,18 @@ actor FaceDetector {
         return CIContext()
     }()
 
-    func analyze(cgImage: CGImage, ciImage: CIImage? = nil) async -> PhotoCondition? {
+    func analyze(
+        cgImage: CGImage,
+        ciImage: CIImage? = nil,
+        orientation: CGImagePropertyOrientation = .right
+    ) async -> PhotoCondition? {
         // Use VNDetectFaceLandmarksRequest for more accurate detection
         let request = VNDetectFaceLandmarksRequest()
-        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        let captureQualityRequest = VNDetectFaceCaptureQualityRequest()
+        let handler = VNImageRequestHandler(cgImage: cgImage, orientation: orientation, options: [:])
 
         do {
-            try handler.perform([request])
+            try handler.perform([captureQualityRequest, request])
         } catch {
             return nil
         }
@@ -535,15 +707,23 @@ actor FaceDetector {
         condition.faceCentering = CenteringCondition.from(faceCenter: faceCenter)
 
         // Analyze lighting based on image brightness
-        condition.lighting = analyzeLighting(cgImage: cgImage)
+        condition.lighting = analyzeLighting(cgImage: cgImage, ciImage: ciImage)
 
         // Analyze sharpness using Laplacian variance
-        condition.sharpness = analyzeSharpness(cgImage: cgImage)
+        if let quality = captureQualityRequest.results?.first?.faceCaptureQuality {
+            condition.sharpness = SharpnessCondition.from(faceCaptureQuality: quality)
+        } else {
+            condition.sharpness = analyzeSharpness(cgImage: cgImage)
+        }
 
         return condition
     }
 
-    private func analyzeLighting(cgImage: CGImage) -> LightingCondition {
+    private func analyzeLighting(cgImage: CGImage, ciImage: CIImage?) -> LightingCondition {
+        if let ciImage, let brightness = averageBrightness(ciImage: ciImage) {
+            return LightingCondition.from(averageBrightness: brightness)
+        }
+
         let width = cgImage.width
         let height = cgImage.height
         let bytesPerPixel = 4
@@ -579,18 +759,32 @@ actor FaceDetector {
         guard sampleCount > 0 else { return .unknown }
         let avgBrightness = totalBrightness / sampleCount
 
-        switch avgBrightness {
-        case ..<0.15:
-            return .tooDark
-        case 0.15 ..< 0.30:
-            return .slightlyDark
-        case 0.30 ..< 0.70:
-            return .optimal
-        case 0.70 ..< 0.85:
-            return .slightlyBright
-        default:
-            return .tooBright
-        }
+        return LightingCondition.from(averageBrightness: avgBrightness)
+    }
+
+    private func averageBrightness(ciImage: CIImage) -> Double? {
+        let extent = ciImage.extent
+        guard extent.width > 0, extent.height > 0 else { return nil }
+        let filter = CIFilter(name: "CIAreaAverage")
+        filter?.setValue(ciImage, forKey: kCIInputImageKey)
+        filter?.setValue(CIVector(cgRect: extent), forKey: kCIInputExtentKey)
+
+        guard let outputImage = filter?.outputImage else { return nil }
+
+        var pixel = [UInt8](repeating: 0, count: 4)
+        FaceDetector.sharedCIContext.render(
+            outputImage,
+            toBitmap: &pixel,
+            rowBytes: 4,
+            bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+            format: .RGBA8,
+            colorSpace: CGColorSpaceCreateDeviceRGB()
+        )
+
+        let r = Double(pixel[0])
+        let g = Double(pixel[1])
+        let b = Double(pixel[2])
+        return (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
     }
 
     /// Analyze image sharpness using Laplacian variance method

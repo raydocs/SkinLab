@@ -12,6 +12,9 @@ struct CameraPreviewView: View {
     @State private var showPhotoPicker = false
     @State private var isCapturing = false
     @State private var showError = false
+    @State private var showRetakeAlert = false
+    @State private var pendingCapture: UIImage?
+    @State private var pendingCondition: PhotoCondition?
 
     var body: some View {
         ZStack {
@@ -87,6 +90,24 @@ struct CameraPreviewView: View {
             }
         } message: {
             Text(camera.error?.localizedDescription ?? "")
+        }
+        .alert("拍摄质量提示", isPresented: $showRetakeAlert) {
+            Button("重拍", role: .cancel) {
+                pendingCapture = nil
+                pendingCondition = nil
+            }
+            Button("仍然使用") {
+                guard let image = pendingCapture, let condition = pendingCondition else { return }
+                finalizeCapture(
+                    image: image,
+                    condition: condition,
+                    userOverride: .userConfirmedGood
+                )
+                pendingCapture = nil
+                pendingCondition = nil
+            }
+        } message: {
+            Text(pendingCondition?.suggestions.joined(separator: "，") ?? "当前照片条件不佳，建议重拍")
         }
     }
 
@@ -232,33 +253,48 @@ struct CameraPreviewView: View {
         Task {
             do {
                 let image = try await camera.capturePhoto()
-                capturedImage = image
-
-                // Capture standardization metadata
-                let condition = camera.photoCondition
-                let position = PhotoStandardizationMetadata.CameraPosition(from: camera.activeCameraPosition)
-
-                capturedStandardization = PhotoStandardizationMetadata(
-                    capturedAt: Date(),
-                    cameraPosition: position,
-                    captureSource: .camera,
-                    lighting: PhotoStandardizationMetadata.LightingRating(from: condition.lighting),
-                    faceDetected: condition.faceDetected,
-                    yawDegrees: condition.faceAngle.yaw,
-                    pitchDegrees: condition.faceAngle.pitch,
-                    rollDegrees: condition.faceAngle.roll,
-                    distance: PhotoStandardizationMetadata.DistanceRating(from: condition.faceDistance),
-                    centering: PhotoStandardizationMetadata.CenteringRating(from: condition.faceCentering),
-                    sharpness: PhotoStandardizationMetadata.SharpnessRating(from: condition.sharpness),
-                    isReady: condition.isReady,
-                    suggestions: condition.suggestions,
-                    userOverride: nil
-                )
+                if let validatedCondition = await camera.validateCapturedImage(image) {
+                    if validatedCondition.isReady {
+                        finalizeCapture(image: image, condition: validatedCondition)
+                    } else {
+                        pendingCapture = image
+                        pendingCondition = validatedCondition
+                        showRetakeAlert = true
+                    }
+                } else {
+                    finalizeCapture(image: image, condition: camera.photoCondition)
+                }
             } catch {
                 AppLogger.error("Capture failed", error: error)
             }
             isCapturing = false
         }
+    }
+
+    private func finalizeCapture(
+        image: UIImage,
+        condition: PhotoCondition,
+        userOverride: PhotoStandardizationMetadata.UserOverride? = nil
+    ) {
+        capturedImage = image
+        let position = PhotoStandardizationMetadata.CameraPosition(from: camera.activeCameraPosition)
+
+        capturedStandardization = PhotoStandardizationMetadata(
+            capturedAt: Date(),
+            cameraPosition: position,
+            captureSource: .camera,
+            lighting: PhotoStandardizationMetadata.LightingRating(from: condition.lighting),
+            faceDetected: condition.faceDetected,
+            yawDegrees: condition.faceAngle.yaw,
+            pitchDegrees: condition.faceAngle.pitch,
+            rollDegrees: condition.faceAngle.roll,
+            distance: PhotoStandardizationMetadata.DistanceRating(from: condition.faceDistance),
+            centering: PhotoStandardizationMetadata.CenteringRating(from: condition.faceCentering),
+            sharpness: PhotoStandardizationMetadata.SharpnessRating(from: condition.sharpness),
+            isReady: condition.isReady,
+            suggestions: condition.suggestions,
+            userOverride: userOverride
+        )
     }
 }
 

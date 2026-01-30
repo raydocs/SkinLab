@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-30T11:39:27.691507Z",
+  "depends_on": [],
+  "epic": "fn-16-7jn",
+  "id": "fn-16-7jn.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-16-7jn.2.md",
+  "status": "todo",
+  "title": "Stabilize live guidance with multi-frame smoothing",
+  "updated_at": "2026-01-30T11:40:15.751272Z"
+}

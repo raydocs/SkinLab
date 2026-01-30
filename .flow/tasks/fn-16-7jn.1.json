@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-30T11:39:27.557346Z",
+  "depends_on": [],
+  "epic": "fn-16-7jn",
+  "id": "fn-16-7jn.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-16-7jn.1.md",
+  "status": "todo",
+  "title": "Add orientation-aware Vision analysis and capture quality scoring",
+  "updated_at": "2026-01-30T11:40:05.919920Z"
+}
