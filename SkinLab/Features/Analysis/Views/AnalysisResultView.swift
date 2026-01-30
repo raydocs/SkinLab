@@ -266,114 +266,12 @@ struct AnalysisResultView: View {
 
     // MARK: - Confidence Card
 
-    @ViewBuilder
     private var confidenceCard: some View {
-        if analysis.confidenceScore < 80 || analysis.imageQuality != nil {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 8) {
-                    ZStack {
-                        Circle()
-                            .fill(confidenceColor.opacity(0.2))
-                            .frame(width: 32, height: 32)
-
-                        Image(systemName: confidenceIcon)
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(confidenceColor)
-                    }
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("分析可信度")
-                            .font(.skinLabCaption)
-                            .foregroundColor(.skinLabSubtext)
-
-                        Text("\(analysis.confidenceScore)%")
-                            .font(.skinLabHeadline)
-                            .foregroundColor(.skinLabText)
-                    }
-
-                    Spacer()
-
-                    // Quality indicator
-                    if let quality = analysis.imageQuality {
-                        let avgQuality = (quality.lighting + quality.sharpness + quality.angle + quality
-                            .occlusion + quality.faceCoverage) / 5
-                        Text(avgQuality >= 80 ? "照片质量良好" : "照片质量一般")
-                            .font(.skinLabCaption)
-                            .foregroundColor(avgQuality >= 80 ? .skinLabSuccess : .skinLabWarning)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background((avgQuality >= 80 ? Color.skinLabSuccess : Color.skinLabWarning).opacity(0.1))
-                            .cornerRadius(12)
-                    }
-                }
-
-                // Quality notes if available
-                if let quality = analysis.imageQuality, !quality.notes.isEmpty {
-                    Divider()
-                        .background(Color.skinLabSubtext.opacity(0.2))
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("拍照建议")
-                            .font(.skinLabCaption)
-                            .foregroundColor(.skinLabSubtext)
-
-                        ForEach(quality.notes, id: \.self) { note in
-                            HStack(spacing: 8) {
-                                Image(systemName: "lightbulb.fill")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.skinLabWarning)
-
-                                Text(note)
-                                    .font(.skinLabCaption)
-                                    .foregroundColor(.skinLabText)
-                            }
-                        }
-
-                        // Suggest retake if confidence is low
-                        if analysis.confidenceScore < 70 {
-                            Button {
-                                onRetake()
-                            } label: {
-                                HStack {
-                                    Image(systemName: "camera.fill")
-                                    Text("重新拍照")
-                                }
-                                .font(.skinLabSubheadline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 10)
-                                .background(LinearGradient.skinLabPrimaryGradient)
-                                .cornerRadius(12)
-                            }
-                        }
-                    }
-                }
-            }
-            .padding()
-            .background(Color.skinLabCardBackground)
-            .cornerRadius(16)
-            .skinLabSoftShadow()
-        }
-    }
-
-    private var confidenceColor: Color {
-        if analysis.confidenceScore >= 80 {
-            .skinLabSuccess
-        } else if analysis.confidenceScore >= 60 {
-            .skinLabWarning
-        } else {
-            .skinLabError
-        }
-    }
-
-    private var confidenceIcon: String {
-        if analysis.confidenceScore >= 80 {
-            "checkmark.shield.fill"
-        } else if analysis.confidenceScore >= 60 {
-            "exclamationmark.shield.fill"
-        } else {
-            "xmark.shield.fill"
-        }
+        ConfidenceScoreCardView(
+            photoQualityReport: result.photoQualityReport ?? analysis.photoQualityReport,
+            aiConfidenceScore: analysis.confidenceScore,
+            onRetake: onRetake
+        )
     }
 
     // MARK: - Tracking Entry Card
@@ -983,7 +881,14 @@ struct ProgressBarView: View {
             analysis: .mock,
             analysisId: UUID(),
             photoPath: nil,
-            standardization: nil
+            standardization: nil,
+            photoQualityReport: PhotoQualityReport(
+                overallScore: 75,
+                blurScore: 80,
+                brightnessScore: 70,
+                faceDetectionScore: 75,
+                issues: [.slightlyBlurry]
+            )
         ))
     }
 }

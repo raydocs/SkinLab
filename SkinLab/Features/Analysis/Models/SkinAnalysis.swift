@@ -88,6 +88,7 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
     let analyzedAt: Date
     let confidenceScore: Int
     let imageQuality: ImageQuality?
+    let photoQualityReport: PhotoQualityReport?
 
     init(
         id: UUID = UUID(),
@@ -99,7 +100,8 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
         recommendations: [String],
         analyzedAt: Date = Date(),
         confidenceScore: Int = 70,
-        imageQuality: ImageQuality? = nil
+        imageQuality: ImageQuality? = nil,
+        photoQualityReport: PhotoQualityReport? = nil
     ) {
         self.id = id
         self.skinType = skinType
@@ -111,6 +113,7 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
         self.analyzedAt = analyzedAt
         self.confidenceScore = confidenceScore
         self.imageQuality = imageQuality
+        self.photoQualityReport = photoQualityReport
     }
 
     /// Mock for previews
@@ -157,19 +160,23 @@ final class SkinAnalysisRecord {
     var photoPath: String?
     var confidenceScore: Int
     var qualityData: Data?
+    var photoQualityScore: Int
+    var photoQualityReportData: Data?
 
     init(from analysis: SkinAnalysis, photoPath: String? = nil) {
-        self.id = analysis.id
-        self.skinType = analysis.skinType.rawValue
-        self.skinAge = analysis.skinAge
-        self.overallScore = analysis.overallScore
-        self.issuesData = try? JSONEncoder().encode(analysis.issues)
-        self.regionsData = try? JSONEncoder().encode(analysis.regions)
-        self.recommendations = analysis.recommendations
-        self.analyzedAt = analysis.analyzedAt
+        id = analysis.id
+        skinType = analysis.skinType.rawValue
+        skinAge = analysis.skinAge
+        overallScore = analysis.overallScore
+        issuesData = try? JSONEncoder().encode(analysis.issues)
+        regionsData = try? JSONEncoder().encode(analysis.regions)
+        recommendations = analysis.recommendations
+        analyzedAt = analysis.analyzedAt
         self.photoPath = photoPath
-        self.confidenceScore = analysis.confidenceScore
-        self.qualityData = try? JSONEncoder().encode(analysis.imageQuality)
+        confidenceScore = analysis.confidenceScore
+        qualityData = try? JSONEncoder().encode(analysis.imageQuality)
+        photoQualityScore = analysis.photoQualityReport?.overallScore ?? 0
+        photoQualityReportData = try? JSONEncoder().encode(analysis.photoQualityReport)
     }
 
     func toAnalysis() -> SkinAnalysis? {
@@ -178,6 +185,9 @@ final class SkinAnalysisRecord {
         let issues = issuesData.flatMap { try? JSONDecoder().decode(IssueScores.self, from: $0) } ?? .empty
         let regions = regionsData.flatMap { try? JSONDecoder().decode(RegionScores.self, from: $0) } ?? .empty
         let quality = qualityData.flatMap { try? JSONDecoder().decode(ImageQuality.self, from: $0) }
+        let photoQuality = photoQualityReportData.flatMap {
+            try? JSONDecoder().decode(PhotoQualityReport.self, from: $0)
+        }
 
         return SkinAnalysis(
             id: id,
@@ -189,7 +199,8 @@ final class SkinAnalysisRecord {
             recommendations: recommendations,
             analyzedAt: analyzedAt,
             confidenceScore: confidenceScore,
-            imageQuality: quality
+            imageQuality: quality,
+            photoQualityReport: photoQuality
         )
     }
 }
