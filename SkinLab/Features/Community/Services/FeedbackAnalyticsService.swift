@@ -44,8 +44,8 @@ final class FeedbackAnalyticsService {
         let recentCount = recentFeedback.count
         let recentAvgAccuracy =
             recentFeedback.isEmpty
-            ? 0
-            : Double(recentFeedback.map(\.accuracyScore).reduce(0, +))
+                ? 0
+                : Double(recentFeedback.map(\.accuracyScore).reduce(0, +))
                 / Double(recentFeedback.count)
 
         return FeedbackStatsSummary(
@@ -66,7 +66,7 @@ final class FeedbackAnalyticsService {
         var trends: [AccuracyTrendPoint] = []
         let calendar = Calendar.current
 
-        for weekOffset in 0..<weeks {
+        for weekOffset in 0 ..< weeks {
             let weekEnd = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: Date())!
             let weekStart = calendar.date(byAdding: .weekOfYear, value: -1, to: weekEnd)!
 
@@ -77,7 +77,7 @@ final class FeedbackAnalyticsService {
             if !weekFeedback.isEmpty {
                 let avgScore =
                     Double(weekFeedback.map(\.accuracyScore).reduce(0, +))
-                    / Double(weekFeedback.count)
+                        / Double(weekFeedback.count)
                 let helpfulRate =
                     Double(weekFeedback.filter(\.isHelpful).count) / Double(weekFeedback.count)
 
@@ -88,11 +88,12 @@ final class FeedbackAnalyticsService {
                         averageAccuracy: avgScore,
                         helpfulRate: helpfulRate,
                         sampleCount: weekFeedback.count
-                    ))
+                    )
+                )
             }
         }
 
-        return trends.reversed()  // 按时间正序
+        return trends.reversed() // 按时间正序
     }
 
     /// 识别低评分匹配 (用于算法优化)
@@ -120,7 +121,7 @@ final class FeedbackAnalyticsService {
     func getTextFeedbackAnalysis() async throws -> TextFeedbackAnalysis {
         let allFeedback = try await fetchAllFeedback()
 
-        let textsWithFeedback = allFeedback.compactMap { $0.productFeedbackText }
+        let textsWithFeedback = allFeedback.compactMap(\.productFeedbackText)
 
         guard !textsWithFeedback.isEmpty else {
             return TextFeedbackAnalysis(
@@ -133,12 +134,12 @@ final class FeedbackAnalyticsService {
         // 关键词统计 (简单实现)
         let allWords =
             textsWithFeedback
-            .flatMap { $0.components(separatedBy: CharacterSet.alphanumerics.inverted) }
-            .filter { $0.count > 1 }
+                .flatMap { $0.components(separatedBy: CharacterSet.alphanumerics.inverted) }
+                .filter { $0.count > 1 }
 
         let wordCounts = Dictionary(grouping: allWords, by: { $0.lowercased() })
             .mapValues { $0.count }
-            .filter { $0.value >= 2 }  // 至少出现2次
+            .filter { $0.value >= 2 } // 至少出现2次
             .sorted { $0.value > $1.value }
             .prefix(20)
 
@@ -164,7 +165,8 @@ final class FeedbackAnalyticsService {
                     suggestion: "考虑提高最低相似度阈值 (当前0.6 → 建议0.7)",
                     priority: .high,
                     basedOn: "平均准确度评分 \(String(format: "%.1f", stats.averageAccuracyScore)) < 3.0"
-                ))
+                )
+            )
         }
 
         if stats.helpfulRate < 0.5 {
@@ -174,21 +176,22 @@ final class FeedbackAnalyticsService {
                     suggestion: "优化产品推荐算法，增加成分匹配权重",
                     priority: .high,
                     basedOn: "有帮助率 \(String(format: "%.0f%%", stats.helpfulRate * 100)) < 50%"
-                ))
+                )
+            )
         }
 
         // 检查评分分布
         if let lowScoreCount = stats.scoreDistribution[1],
-            let highScoreCount = stats.scoreDistribution[5],
-            lowScoreCount > highScoreCount
-        {
+           let highScoreCount = stats.scoreDistribution[5],
+           lowScoreCount > highScoreCount {
             recommendations.append(
                 AlgorithmTuningRecommendation(
                     area: .skinTypeMatching,
                     suggestion: "增强肤质类型匹配权重，减少不匹配情况",
                     priority: .medium,
                     basedOn: "1分评价 (\(lowScoreCount)) > 5分评价 (\(highScoreCount))"
-                ))
+                )
+            )
         }
 
         if recommendations.isEmpty {
@@ -198,7 +201,8 @@ final class FeedbackAnalyticsService {
                     suggestion: "当前算法表现良好，继续收集数据",
                     priority: .low,
                     basedOn: "各项指标正常"
-                ))
+                )
+            )
         }
 
         return recommendations
@@ -249,7 +253,10 @@ struct FeedbackStatsSummary: Codable {
 
 /// 准确度趋势点
 struct AccuracyTrendPoint: Codable, Identifiable {
-    var id: Date { weekStart }
+    var id: Date {
+        weekStart
+    }
+
     let weekStart: Date
     let weekEnd: Date
     let averageAccuracy: Double
@@ -265,7 +272,10 @@ struct AccuracyTrendPoint: Codable, Identifiable {
 
 /// 低评分匹配信息
 struct LowRatedMatchInfo: Codable, Identifiable {
-    var id: UUID { feedbackId }
+    var id: UUID {
+        feedbackId
+    }
+
     let feedbackId: UUID
     let matchId: UUID
     let accuracyScore: Int
@@ -282,14 +292,20 @@ struct TextFeedbackAnalysis: Codable {
 }
 
 struct KeywordCount: Codable, Identifiable {
-    var id: String { word }
+    var id: String {
+        word
+    }
+
     let word: String
     let count: Int
 }
 
 /// 算法调优建议
 struct AlgorithmTuningRecommendation: Codable, Identifiable {
-    var id: String { area.rawValue }
+    var id: String {
+        area.rawValue
+    }
+
     let area: TuningArea
     let suggestion: String
     let priority: Priority
@@ -311,9 +327,9 @@ struct AlgorithmTuningRecommendation: Codable, Identifiable {
 
         var color: String {
             switch self {
-            case .high: return "red"
-            case .medium: return "orange"
-            case .low: return "green"
+            case .high: "red"
+            case .medium: "orange"
+            case .low: "green"
             }
         }
     }

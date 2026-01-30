@@ -1,39 +1,43 @@
-import SwiftUI
 import AVFoundation
-import Vision
 import CoreImage
 import Metal
+import SwiftUI
+import Vision
 
 // MARK: - Camera Service
+
 @MainActor
 class CameraService: NSObject, ObservableObject {
     @Published var frame: CGImage?
     @Published var error: CameraError?
     @Published var photoCondition: PhotoCondition = .init()
     @Published var isReady = false
-    
+
     private let captureSession = AVCaptureSession()
     private var photoOutput = AVCapturePhotoOutput()
     private var videoOutput = AVCaptureVideoDataOutput()
     private var videoInput: AVCaptureDeviceInput?
     private var currentPosition: AVCaptureDevice.Position = .front
     private var photoContinuation: CheckedContinuation<UIImage, Error>?
-    
+
     private let videoQueue = DispatchQueue(label: "camera.video.queue")
     private let faceDetector = FaceDetector()
     private var lastFaceDetectionTime: CFAbsoluteTime = 0
-    private let faceDetectionInterval: CFAbsoluteTime = 0.2  // 5fps throttle
+    private let faceDetectionInterval: CFAbsoluteTime = 0.2 // 5fps throttle
 
     /// Read-only access to current camera position
-    var activeCameraPosition: AVCaptureDevice.Position { currentPosition }
-    // Reuse CIContext for better performance
+    var activeCameraPosition: AVCaptureDevice.Position {
+        currentPosition
+    }
+
+    /// Reuse CIContext for better performance
     private static let sharedCIContext: CIContext = {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
             return CIContext(mtlDevice: metalDevice, options: [.cacheIntermediates: false])
         }
         return CIContext(options: [.useSoftwareRenderer: false, .cacheIntermediates: false])
     }()
-    
+
     enum CameraError: LocalizedError, Equatable {
         case denied
         case unavailable
@@ -43,29 +47,30 @@ class CameraService: NSObject, ObservableObject {
         static func == (lhs: CameraError, rhs: CameraError) -> Bool {
             switch (lhs, rhs) {
             case (.denied, .denied), (.unavailable, .unavailable), (.captureInProgress, .captureInProgress):
-                return true
+                true
             case (.setupFailed, .setupFailed):
-                return true
+                true
             default:
-                return false
+                false
             }
         }
 
         var errorDescription: String? {
             switch self {
-            case .denied: return "相机权限被拒绝,请在设置中开启"
-            case .unavailable: return "相机不可用"
-            case .setupFailed(let error): return "相机初始化失败: \(error.localizedDescription)"
-            case .captureInProgress: return "正在拍照中,请稍候"
+            case .denied: "相机权限被拒绝,请在设置中开启"
+            case .unavailable: "相机不可用"
+            case let .setupFailed(error): "相机初始化失败: \(error.localizedDescription)"
+            case .captureInProgress: "正在拍照中,请稍候"
             }
         }
     }
-    
+
     override init() {
         super.init()
     }
-    
+
     // MARK: - Setup
+
     func checkPermission() async {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -83,41 +88,41 @@ class CameraService: NSObject, ObservableObject {
             error = .unavailable
         }
     }
-    
+
     private func setupCamera() async {
         do {
             captureSession.beginConfiguration()
             captureSession.sessionPreset = .photo
-            
+
             // Add video input
             try configureInput(position: currentPosition)
-            
+
             // Add photo output
             if !captureSession.outputs.contains(where: { $0 === photoOutput }),
                captureSession.canAddOutput(photoOutput) {
                 captureSession.addOutput(photoOutput)
             }
-            
+
             // Add video output for preview and face detection
             videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
             if !captureSession.outputs.contains(where: { $0 === videoOutput }),
                captureSession.canAddOutput(videoOutput) {
                 captureSession.addOutput(videoOutput)
             }
-            
+
             // Set video orientation
             if let connection = videoOutput.connection(with: .video) {
                 connection.videoRotationAngle = 90
                 connection.isVideoMirrored = currentPosition == .front
             }
-            
+
             captureSession.commitConfiguration()
-            
+
             // Start session on background thread
             Task.detached { [weak self] in
                 self?.captureSession.startRunning()
             }
-            
+
             isReady = true
         } catch {
             self.error = .setupFailed(error)
@@ -125,6 +130,7 @@ class CameraService: NSObject, ObservableObject {
     }
 
     // MARK: - Camera Toggle
+
     func toggleCamera() {
         guard isReady else { return }
         let newPosition: AVCaptureDevice.Position = currentPosition == .front ? .back : .front
@@ -160,8 +166,9 @@ class CameraService: NSObject, ObservableObject {
             throw CameraError.unavailable
         }
     }
-    
+
     // MARK: - Capture Photo
+
     func capturePhoto() async throws -> UIImage {
         // Prevent concurrent capture requests
         guard photoContinuation == nil else {
@@ -177,11 +184,12 @@ class CameraService: NSObject, ObservableObject {
             photoOutput.capturePhoto(with: settings, delegate: self)
         }
     }
-    
+
     // MARK: - Stop
+
     func stop() {
         Task.detached { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.captureSession.stopRunning()
 
             // Remove all inputs and outputs
@@ -196,8 +204,13 @@ class CameraService: NSObject, ObservableObject {
 }
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
+
 extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
-    nonisolated func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    nonisolated func captureOutput(
+        _ output: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from connection: AVCaptureConnection
+    ) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
         // Create CGImage for preview using shared context
@@ -224,11 +237,16 @@ extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 // MARK: - AVCapturePhotoCaptureDelegate
+
 extension CameraService: AVCapturePhotoCaptureDelegate {
-    nonisolated func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+    nonisolated func photoOutput(
+        _ output: AVCapturePhotoOutput,
+        didFinishProcessingPhoto photo: AVCapturePhoto,
+        error: Error?
+    ) {
         Task { @MainActor [weak self] in
             guard let self else { return }
-            if let error = error {
+            if let error {
                 photoContinuation?.resume(throwing: error)
                 photoContinuation = nil
                 return
@@ -248,6 +266,7 @@ extension CameraService: AVCapturePhotoCaptureDelegate {
 }
 
 // MARK: - Photo Condition
+
 struct PhotoCondition {
     var lighting: LightingCondition = .unknown
     var faceDetected: Bool = false
@@ -258,11 +277,11 @@ struct PhotoCondition {
 
     var isReady: Bool {
         faceDetected &&
-        lighting.isAcceptable &&
-        faceAngle.isOptimal &&
-        faceDistance.isAcceptable &&
-        faceCentering.isAcceptable &&
-        sharpness.isAcceptable
+            lighting.isAcceptable &&
+            faceAngle.isOptimal &&
+            faceDistance.isAcceptable &&
+            faceCentering.isAcceptable &&
+            sharpness.isAcceptable
     }
 
     var suggestions: [String] {
@@ -303,34 +322,34 @@ enum LightingCondition {
     case optimal
     case slightlyBright
     case tooBright
-    
+
     var isAcceptable: Bool {
         switch self {
         case .optimal, .slightlyDark, .slightlyBright:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
-    
+
     var suggestion: String? {
         switch self {
-        case .tooDark: return "光线不足，请移到更亮的地方"
-        case .tooBright: return "光线过强，请避开直射光"
-        default: return nil
+        case .tooDark: "光线不足，请移到更亮的地方"
+        case .tooBright: "光线过强，请避开直射光"
+        default: nil
         }
     }
 }
 
 struct FaceAngle {
-    var yaw: Double = 0      // 左右转头
-    var pitch: Double = 0    // 上下点头
-    var roll: Double = 0     // 歪头
-    
+    var yaw: Double = 0 // 左右转头
+    var pitch: Double = 0 // 上下点头
+    var roll: Double = 0 // 歪头
+
     var isOptimal: Bool {
         abs(yaw) < 15 && abs(pitch) < 15 && abs(roll) < 10
     }
-    
+
     var suggestion: String? {
         if abs(yaw) >= 15 {
             return yaw > 0 ? "请稍微向左转" : "请稍微向右转"
@@ -356,22 +375,23 @@ enum DistanceCondition {
     var isAcceptable: Bool {
         switch self {
         case .optimal, .slightlyFar, .slightlyClose:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
     var suggestion: String? {
         switch self {
-        case .tooFar: return "请靠近一些"
-        case .tooClose: return "请稍微远一点"
-        default: return nil
+        case .tooFar: "请靠近一些"
+        case .tooClose: "请稍微远一点"
+        default: nil
         }
     }
 }
 
 // MARK: - Centering Condition
+
 enum CenteringCondition {
     case unknown
     case tooLeft
@@ -386,11 +406,11 @@ enum CenteringCondition {
 
     var suggestion: String? {
         switch self {
-        case .tooLeft: return "请稍微向右移动"
-        case .tooRight: return "请稍微向左移动"
-        case .tooHigh: return "请稍微向下移动"
-        case .tooLow: return "请稍微向上移动"
-        default: return nil
+        case .tooLeft: "请稍微向右移动"
+        case .tooRight: "请稍微向左移动"
+        case .tooHigh: "请稍微向下移动"
+        case .tooLow: "请稍微向上移动"
+        default: nil
         }
     }
 
@@ -420,6 +440,7 @@ enum CenteringCondition {
 }
 
 // MARK: - Sharpness Condition
+
 enum SharpnessCondition {
     case unknown
     case blurry
@@ -429,16 +450,16 @@ enum SharpnessCondition {
     var isAcceptable: Bool {
         switch self {
         case .sharp, .slightlyBlurry:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
     var suggestion: String? {
         switch self {
-        case .blurry: return "图像模糊，请保持稳定"
-        default: return nil
+        case .blurry: "图像模糊，请保持稳定"
+        default: nil
         }
     }
 
@@ -448,16 +469,17 @@ enum SharpnessCondition {
         // Thresholds determined empirically for mobile camera
         switch laplacianVariance {
         case ..<50:
-            return .blurry
-        case 50..<100:
-            return .slightlyBlurry
+            .blurry
+        case 50 ..< 100:
+            .slightlyBlurry
         default:
-            return .sharp
+            .sharp
         }
     }
 }
 
 // MARK: - Face Detector
+
 actor FaceDetector {
     private static let sharedCIContext: CIContext = {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
@@ -495,11 +517,11 @@ actor FaceDetector {
         switch faceArea {
         case ..<0.05:
             condition.faceDistance = .tooFar
-        case 0.05..<0.10:
+        case 0.05 ..< 0.10:
             condition.faceDistance = .slightlyFar
-        case 0.10..<0.30:
+        case 0.10 ..< 0.30:
             condition.faceDistance = .optimal
-        case 0.30..<0.40:
+        case 0.30 ..< 0.40:
             condition.faceDistance = .slightlyClose
         default:
             condition.faceDistance = .tooClose
@@ -560,11 +582,11 @@ actor FaceDetector {
         switch avgBrightness {
         case ..<0.15:
             return .tooDark
-        case 0.15..<0.30:
+        case 0.15 ..< 0.30:
             return .slightlyDark
-        case 0.30..<0.70:
+        case 0.30 ..< 0.70:
             return .optimal
-        case 0.70..<0.85:
+        case 0.70 ..< 0.85:
             return .slightlyBright
         default:
             return .tooBright
@@ -578,7 +600,7 @@ actor FaceDetector {
         let height = cgImage.height
 
         // Skip for very small images
-        guard width > 10 && height > 10 else { return .unknown }
+        guard width > 10, height > 10 else { return .unknown }
 
         guard let data = cgImage.dataProvider?.data,
               let bytes = CFDataGetBytePtr(data) else {

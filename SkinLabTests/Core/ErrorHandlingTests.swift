@@ -1,9 +1,8 @@
-import XCTest
 @testable import SkinLab
+import XCTest
 
 /// Unit tests for unified error handling
 final class ErrorHandlingTests: XCTestCase {
-
     // MARK: - AppError Tests
 
     func testAppErrorDescriptions() {
@@ -19,7 +18,10 @@ final class ErrorHandlingTests: XCTestCase {
         XCTAssertTrue(saveError.failureReason?.contains("SkinAnalysis") == true)
 
         // Test network error
-        let networkError = AppError.networkRequest(operation: "Gemini API", underlying: NSError(domain: "test", code: 3))
+        let networkError = AppError.networkRequest(
+            operation: "Gemini API",
+            underlying: NSError(domain: "test", code: 3)
+        )
         XCTAssertEqual(networkError.errorDescription, "网络请求失败")
         XCTAssertTrue(networkError.failureReason?.contains("Gemini API") == true)
 
@@ -66,7 +68,12 @@ final class ErrorHandlingTests: XCTestCase {
         AppLogger.data(operation: .save, entity: "TestEntity", success: false, error: NSError(domain: "test", code: 1))
 
         AppLogger.network(operation: "GET", url: "https://api.example.com/test", success: true, statusCode: 200)
-        AppLogger.network(operation: "POST", url: "https://api.example.com/test?key=secret", success: false, error: NSError(domain: "test", code: 1))
+        AppLogger.network(
+            operation: "POST",
+            url: "https://api.example.com/test?key=secret",
+            success: false,
+            error: NSError(domain: "test", code: 1)
+        )
 
         // If we reach here without crashing, the test passes
         XCTAssertTrue(true)
@@ -199,7 +206,10 @@ final class ErrorHandlingTests: XCTestCase {
         XCTAssertEqual(ErrorCategory(from: offlineAppError), .offline)
 
         // Test network request error wrapping connection lost - should be categorized as offline
-        let connectionLostAppError = AppError.networkRequest(operation: "test", underlying: URLError(.networkConnectionLost))
+        let connectionLostAppError = AppError.networkRequest(
+            operation: "test",
+            underlying: URLError(.networkConnectionLost)
+        )
         XCTAssertEqual(ErrorCategory(from: connectionLostAppError), .offline)
 
         // Test other AppError types default to unknown
@@ -218,7 +228,15 @@ final class ErrorHandlingTests: XCTestCase {
 
     func testErrorCategoryIconNames() {
         // Verify all categories have valid SF Symbol names
-        let categories: [ErrorCategory] = [.network, .offline, .serverError, .rateLimited, .invalidInput, .unauthorized, .unknown]
+        let categories: [ErrorCategory] = [
+            .network,
+            .offline,
+            .serverError,
+            .rateLimited,
+            .invalidInput,
+            .unauthorized,
+            .unknown
+        ]
 
         for category in categories {
             XCTAssertFalse(category.iconName.isEmpty, "Icon name should not be empty for \(category)")

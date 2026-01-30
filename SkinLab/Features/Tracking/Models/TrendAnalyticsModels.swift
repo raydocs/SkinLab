@@ -1,11 +1,3 @@
-//
-//  TrendAnalyticsModels.swift
-//  SkinLab
-//
-//  AI-Enhanced Trend Analytics Models
-//  支持时间序列分析、异常检测、预测模型、热力图和季节性分析
-//
-
 import Foundation
 
 // MARK: - Confidence Score
@@ -14,23 +6,23 @@ import Foundation
 struct ConfidenceScore: Codable, Sendable {
     /// 置信度值 (0-1)
     let value: Double
-    
+
     /// 样本数量
     let sampleCount: Int
-    
+
     /// 计算方法 ("mad", "regression", "bayes-lite")
     let method: String
-    
+
     /// 置信度等级
     var level: ConfidenceLevel {
         switch value {
-        case 0.8...1.0: return .high
-        case 0.6..<0.8: return .medium
-        case 0.4..<0.6: return .low
-        default: return .veryLow
+        case 0.8 ... 1.0: .high
+        case 0.6 ..< 0.8: .medium
+        case 0.4 ..< 0.6: .low
+        default: .veryLow
         }
     }
-    
+
     enum ConfidenceLevel: String, Codable, Sendable {
         case high = "高"
         case medium = "中等"
@@ -44,34 +36,34 @@ struct ConfidenceScore: Codable, Sendable {
 /// 异常检测结果,标识数据中的异常点
 struct AnomalyDetectionResult: Codable, Identifiable, Sendable {
     let id: UUID
-    
+
     /// 指标名称 ("acne", "redness", "overallScore")
     let metric: String
-    
+
     /// 异常发生的天数
     let day: Int
-    
+
     /// 异常发生的日期
     let date: Date
-    
+
     /// 异常值
     let value: Double
-    
+
     /// Z-score (标准分数)
     let zScore: Double
-    
+
     /// 异常严重程度
     let severity: Severity
-    
+
     /// 异常原因说明
     let reason: String
-    
+
     enum Severity: String, Codable, Sendable {
         case mild = "轻度"
         case moderate = "中度"
         case severe = "严重"
     }
-    
+
     /// 异常标签
     var label: String {
         "(metric) (severity.rawValue)异常"
@@ -83,22 +75,22 @@ struct AnomalyDetectionResult: Codable, Identifiable, Sendable {
 /// 预测点数据
 struct ForecastPoint: Codable, Identifiable, Sendable {
     let id: UUID
-    
+
     /// 预测的天数
     let day: Int
-    
+
     /// 预测的日期
     let date: Date
-    
+
     /// 预测值
     let predictedValue: Double
-    
+
     /// 预测下界 (置信区间)
     let lowerBound: Double
-    
+
     /// 预测上界 (置信区间)
     let upperBound: Double
-    
+
     init(day: Int, date: Date, predictedValue: Double, lowerBound: Double, upperBound: Double) {
         self.id = UUID()
         self.day = day
@@ -113,16 +105,16 @@ struct ForecastPoint: Codable, Identifiable, Sendable {
 struct TrendForecast: Codable, Sendable {
     /// 预测的指标
     let metric: String
-    
+
     /// 预测时间跨度(天)
     let horizonDays: Int
-    
+
     /// 预测点列表
     let points: [ForecastPoint]
-    
+
     /// 预测置信度
     let confidence: ConfidenceScore
-    
+
     /// 预测趋势方向
     var trendDirection: String {
         guard let first = points.first, let last = points.last else { return "未知" }
@@ -130,7 +122,7 @@ struct TrendForecast: Codable, Sendable {
         if abs(change) < 0.5 { return "稳定" }
         return change > 0 ? "上升" : "下降"
     }
-    
+
     /// 风险预警 - 基于预测结果生成预测性护肤预警
     var riskAlert: PredictiveAlert? {
         guard let last = points.last, let first = points.first else { return nil }
@@ -185,7 +177,7 @@ struct TrendForecast: Codable, Sendable {
         // 中等风险: 预测值 >= 5 且上升 >= 1
         // 低风险: 预测值 >= 4 且上升
 
-        if predictedValue >= 7 && change >= 2 {
+        if predictedValue >= 7, change >= 2 {
             return PredictiveAlert(
                 metric: "痘痘",
                 severity: .high,
@@ -194,7 +186,7 @@ struct TrendForecast: Codable, Sendable {
                 predictedDate: predictedDate,
                 confidence: confidence
             )
-        } else if predictedValue >= 5 && change >= 1 {
+        } else if predictedValue >= 5, change >= 1 {
             return PredictiveAlert(
                 metric: "痘痘",
                 severity: .medium,
@@ -203,7 +195,7 @@ struct TrendForecast: Codable, Sendable {
                 predictedDate: predictedDate,
                 confidence: confidence
             )
-        } else if predictedValue >= 4 && change > 0 {
+        } else if predictedValue >= 4, change > 0 {
             return PredictiveAlert(
                 metric: "痘痘",
                 severity: .low,
@@ -228,7 +220,7 @@ struct TrendForecast: Codable, Sendable {
         // 中等风险: 预测值 >= 5 且上升 >= 1
         // 低风险: 预测值 >= 4 且上升
 
-        if predictedValue >= 7 && change >= 2 {
+        if predictedValue >= 7, change >= 2 {
             return PredictiveAlert(
                 metric: "泛红",
                 severity: .high,
@@ -237,7 +229,7 @@ struct TrendForecast: Codable, Sendable {
                 predictedDate: predictedDate,
                 confidence: confidence
             )
-        } else if predictedValue >= 5 && change >= 1 {
+        } else if predictedValue >= 5, change >= 1 {
             return PredictiveAlert(
                 metric: "泛红",
                 severity: .medium,
@@ -246,7 +238,7 @@ struct TrendForecast: Codable, Sendable {
                 predictedDate: predictedDate,
                 confidence: confidence
             )
-        } else if predictedValue >= 4 && change > 0 {
+        } else if predictedValue >= 4, change > 0 {
             return PredictiveAlert(
                 metric: "泛红",
                 severity: .low,
@@ -271,7 +263,7 @@ struct TrendForecast: Codable, Sendable {
         // 中等风险: 预测值 < 50 且下降 >= 10
         // 低风险: 预测值 < 60 且下降 >= 5
 
-        if predictedValue < 40 && change <= -15 {
+        if predictedValue < 40, change <= -15 {
             return PredictiveAlert(
                 metric: "综合评分",
                 severity: .high,
@@ -280,7 +272,7 @@ struct TrendForecast: Codable, Sendable {
                 predictedDate: predictedDate,
                 confidence: confidence
             )
-        } else if predictedValue < 50 && change <= -10 {
+        } else if predictedValue < 50, change <= -10 {
             return PredictiveAlert(
                 metric: "综合评分",
                 severity: .medium,
@@ -289,7 +281,7 @@ struct TrendForecast: Codable, Sendable {
                 predictedDate: predictedDate,
                 confidence: confidence
             )
-        } else if predictedValue < 60 && change <= -5 {
+        } else if predictedValue < 60, change <= -5 {
             return PredictiveAlert(
                 metric: "综合评分",
                 severity: .low,
@@ -314,7 +306,7 @@ struct TrendForecast: Codable, Sendable {
         // 中等风险: 预测值 >= 5 且上升 >= 1
         // 低风险: 预测值 >= 4 且上升
 
-        if predictedValue >= 7 && change >= 2 {
+        if predictedValue >= 7, change >= 2 {
             return PredictiveAlert(
                 metric: "敏感度",
                 severity: .high,
@@ -323,7 +315,7 @@ struct TrendForecast: Codable, Sendable {
                 predictedDate: predictedDate,
                 confidence: confidence
             )
-        } else if predictedValue >= 5 && change >= 1 {
+        } else if predictedValue >= 5, change >= 1 {
             return PredictiveAlert(
                 metric: "敏感度",
                 severity: .medium,
@@ -332,7 +324,7 @@ struct TrendForecast: Codable, Sendable {
                 predictedDate: predictedDate,
                 confidence: confidence
             )
-        } else if predictedValue >= 4 && change > 0 {
+        } else if predictedValue >= 4, change > 0 {
             return PredictiveAlert(
                 metric: "敏感度",
                 severity: .low,
@@ -358,18 +350,18 @@ enum AlertSeverity: String, Codable, Sendable {
     /// 显示图标
     var icon: String {
         switch self {
-        case .low: return "info.circle.fill"
-        case .medium: return "exclamationmark.triangle.fill"
-        case .high: return "exclamationmark.octagon.fill"
+        case .low: "info.circle.fill"
+        case .medium: "exclamationmark.triangle.fill"
+        case .high: "exclamationmark.octagon.fill"
         }
     }
 
     /// 主题颜色名称 (用于 Color(colorName))
     var colorName: String {
         switch self {
-        case .low: return "blue"
-        case .medium: return "orange"
-        case .high: return "red"
+        case .low: "blue"
+        case .medium: "orange"
+        case .high: "red"
         }
     }
 }
@@ -455,16 +447,16 @@ struct PredictiveAlert: Codable, Identifiable, Sendable {
 /// 热力图单元格数据
 struct HeatmapCell: Codable, Identifiable, Sendable {
     let id: UUID
-    
+
     /// 天数
     let day: Int
-    
+
     /// 维度名称 ("T区", "痘痘", "泛红" 等)
     let dimension: String
-    
+
     /// 数值 (0-1标准化)
     let value: Double
-    
+
     init(day: Int, dimension: String, value: Double) {
         self.id = UUID()
         self.day = day
@@ -477,21 +469,21 @@ struct HeatmapCell: Codable, Identifiable, Sendable {
 struct HeatmapData: Codable, Sendable {
     /// 热力图标题
     let title: String
-    
+
     /// 热力图单元格列表
     let cells: [HeatmapCell]
-    
+
     /// 数值范围
     let valueRange: ClosedRange<Double>
-    
+
     /// 维度列表(去重后)
     var dimensions: [String] {
-        Array(Set(cells.map { $0.dimension })).sorted()
+        Array(Set(cells.map(\.dimension))).sorted()
     }
-    
+
     /// 天数列表(去重后)
     var days: [Int] {
-        Array(Set(cells.map { $0.day })).sorted()
+        Array(Set(cells.map(\.day))).sorted()
     }
 }
 
@@ -501,24 +493,24 @@ struct HeatmapData: Codable, Sendable {
 struct SeasonalPattern: Codable, Sendable {
     /// 季节名称
     let season: String
-    
+
     /// 平均泛红指数
     let avgRedness: Double
-    
+
     /// 平均敏感度
     let avgSensitivity: Double
-    
+
     /// 样本数量
     let sampleCount: Int
-    
+
     /// 置信度
     let confidence: ConfidenceScore
-    
+
     /// 季节建议
     var recommendation: String {
         let rednessLevel = avgRedness >= 6 ? "较高" : avgRedness >= 4 ? "中等" : "较低"
         let sensitivityLevel = avgSensitivity >= 6 ? "较高" : avgSensitivity >= 4 ? "中等" : "较低"
-        
+
         return "\(season)季节泛红\(rednessLevel),敏感度\(sensitivityLevel)。"
     }
 }
@@ -549,11 +541,11 @@ struct ProductCombinationInsight: Codable, Sendable {
     /// 协同效果等级
     var synergyLevel: SynergyLevel {
         switch synergyScore {
-        case 0.3...1.0: return .highSynergy
-        case 0.1..<0.3: return .mildSynergy
-        case -0.1..<0.1: return .neutral
-        case -0.3..<(-0.1): return .mildAntagonism
-        default: return .highAntagonism
+        case 0.3 ... 1.0: .highSynergy
+        case 0.1 ..< 0.3: .mildSynergy
+        case -0.1 ..< 0.1: .neutral
+        case -0.3 ..< -0.1: .mildAntagonism
+        default: .highAntagonism
         }
     }
 
@@ -609,18 +601,18 @@ struct ProductEffectInsight: Codable, Sendable {
 
     /// 经常一起使用的产品ID列表 (按共同使用次数排序)
     let coUsedProductIds: [String]?
-    
+
     /// 效果等级
     var effectLevel: EffectLevel {
         switch effectivenessScore {
-        case 0.5...1.0: return .highlyEffective
-        case 0.2..<0.5: return .effective
-        case -0.2..<0.2: return .neutral
-        case -0.5..<(-0.2): return .ineffective
-        default: return .harmful
+        case 0.5 ... 1.0: .highlyEffective
+        case 0.2 ..< 0.5: .effective
+        case -0.2 ..< 0.2: .neutral
+        case -0.5 ..< -0.2: .ineffective
+        default: .harmful
         }
     }
-    
+
     enum EffectLevel: String, Codable, Sendable {
         case highlyEffective = "非常有效"
         case effective = "有效"
@@ -628,7 +620,7 @@ struct ProductEffectInsight: Codable, Sendable {
         case ineffective = "效果不明显"
         case harmful = "可能有害"
     }
-    
+
     /// 详细说明
     var detailedDescription: String {
         let factorsText = contributingFactors.prefix(3).joined(separator: ", ")
@@ -668,24 +660,24 @@ struct ProductEffectInsight: Codable, Sendable {
 struct StatisticalMetrics: Codable, Sendable {
     /// 均值
     let mean: Double
-    
+
     /// 标准差
     let standardDeviation: Double
-    
+
     /// 中位数
     let median: Double
-    
+
     /// 最小值
     let min: Double
-    
+
     /// 最大值
     let max: Double
-    
+
     /// 变异系数 (CV)
     var coefficientOfVariation: Double {
         mean != 0 ? (standardDeviation / abs(mean)) : 0
     }
-    
+
     /// 数据稳定性评级
     var stability: String {
         let cv = coefficientOfVariation

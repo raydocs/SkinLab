@@ -1,10 +1,8 @@
 // SkinLabTests/Community/SkinTwinViewModelTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class SkinTwinViewModelTests: XCTestCase {
-
     // MARK: - MatchStats Tests
 
     func testMatchStats_summary_withTwin() {
@@ -183,7 +181,7 @@ final class SkinTwinViewModelTests: XCTestCase {
             totalEntries: 5,
             validEntries: 5,
             expiredEntries: 0,
-            avgAge: 5400,  // 1.5 hours
+            avgAge: 5400, // 1.5 hours
             totalMatches: 25,
             totalRecommendations: 15,
             memoryUsageEstimate: 10000
@@ -196,7 +194,6 @@ final class SkinTwinViewModelTests: XCTestCase {
 // MARK: - AnonymousProfile Tests
 
 final class AnonymousProfileTests: XCTestCase {
-
     func testAnonymousProfile_mock() {
         let profile = AnonymousProfile.mock
 
@@ -243,7 +240,6 @@ final class AnonymousProfileTests: XCTestCase {
 // MARK: - MatchLevel Tests
 
 final class MatchLevelTests: XCTestCase {
-
     func testMatchLevel_allCases() {
         XCTAssertEqual(MatchLevel.allCases.count, 4)
     }

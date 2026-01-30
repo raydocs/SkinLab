@@ -1,33 +1,35 @@
 import Foundation
 
 // MARK: - Conflict Severity
+
 enum ConflictSeverity: String, Codable, Sendable {
-    case warning = "警告"   // 建议分开使用
-    case danger = "危险"    // 不建议同时使用
+    case warning = "警告" // 建议分开使用
+    case danger = "危险" // 不建议同时使用
 
     var displayColor: String {
         switch self {
-        case .warning: return "orange"
-        case .danger: return "red"
+        case .warning: "orange"
+        case .danger: "red"
         }
     }
 
     var icon: String {
         switch self {
-        case .warning: return "exclamationmark.triangle.fill"
-        case .danger: return "xmark.octagon.fill"
+        case .warning: "exclamationmark.triangle.fill"
+        case .danger: "xmark.octagon.fill"
         }
     }
 }
 
 // MARK: - Ingredient Conflict
+
 struct IngredientConflict: Codable, Identifiable, Sendable {
     let id: UUID
-    let ingredient1: String  // normalized ingredient name
+    let ingredient1: String // normalized ingredient name
     let ingredient2: String
     let severity: ConflictSeverity
-    let description: String  // Chinese description
-    let recommendation: String  // Usage recommendation like "间隔12小时"
+    let description: String // Chinese description
+    let recommendation: String // Usage recommendation like "间隔12小时"
 
     init(
         id: UUID = UUID(),
@@ -47,7 +49,8 @@ struct IngredientConflict: Codable, Identifiable, Sendable {
 }
 
 // MARK: - Conflict Knowledge Base
-struct ConflictKnowledgeBase {
+
+enum ConflictKnowledgeBase {
     /// Static knowledge base of known ingredient conflicts (at least 15 pairs)
     static let conflicts: [IngredientConflict] = [
         // Retinol conflicts (6 pairs)
@@ -173,6 +176,7 @@ struct ConflictKnowledgeBase {
 }
 
 // MARK: - Enhanced Ingredient Scan Result
+
 struct EnhancedIngredientScanResult {
     let baseResult: IngredientScanResult
     let groupedByFunction: [IngredientFunction: [IngredientScanResult.ParsedIngredient]]
@@ -186,7 +190,8 @@ struct EnhancedIngredientScanResult {
     let conflicts: [IngredientConflict] // 成分冲突检测结果
 
     var hasPersonalizedInfo: Bool {
-        !personalizedWarnings.isEmpty || !personalizedRecommendations.isEmpty || !allergyMatches.isEmpty || !userReactions.isEmpty || !conflicts.isEmpty
+        !personalizedWarnings.isEmpty || !personalizedRecommendations.isEmpty || !allergyMatches
+            .isEmpty || !userReactions.isEmpty || !conflicts.isEmpty
     }
 
     /// Convenience computed properties for conflict summary
@@ -207,7 +212,8 @@ struct EnhancedIngredientScanResult {
     }
 }
 
-/// MARK: - User Reaction Summary
+// MARK: - User Reaction Summary
+
 struct IngredientUserReaction {
     let ingredientName: String
     let totalUses: Int
@@ -219,18 +225,19 @@ struct IngredientUserReaction {
     var displaySummary: String {
         switch effectivenessRating {
         case .insufficient:
-            return "使用次数较少（\(totalUses)次）"
+            "使用次数较少（\(totalUses)次）"
         case .positive:
-            return "你的反应：\(totalUses)次使用中\(betterCount)次变好 ✓"
+            "你的反应：\(totalUses)次使用中\(betterCount)次变好 ✓"
         case .neutral:
-            return "你的反应：\(totalUses)次使用效果平平"
+            "你的反应：\(totalUses)次使用效果平平"
         case .negative:
-            return "你的反应：\(totalUses)次使用中\(worseCount)次变差 ⚠️"
+            "你的反应：\(totalUses)次使用中\(worseCount)次变差 ⚠️"
         }
     }
 }
 
 // MARK: - Function Group
+
 struct FunctionGroup: Identifiable {
     let id = UUID()
     let function: IngredientFunction
@@ -244,9 +251,9 @@ struct FunctionGroup: Identifiable {
 }
 
 // MARK: - Risk Analyzer
+
 @MainActor
 final class IngredientRiskAnalyzer {
-
     /// 增强版分析，整合历史数据
     func analyze(
         scanResult: IngredientScanResult,
@@ -290,6 +297,7 @@ final class IngredientRiskAnalyzer {
     }
 
     // MARK: - Detect Conflicts
+
     /// Detects ingredient conflicts by matching parsed ingredients against the knowledge base
     /// - Parameter ingredients: List of parsed ingredients from the scan
     /// - Returns: Array of detected conflicts between ingredient pairs
@@ -312,7 +320,7 @@ final class IngredientRiskAnalyzer {
             let hasIngredient1 = matchesIngredient(ing1, in: normalizedNames, keywords: ingredientKeywords)
             let hasIngredient2 = matchesIngredient(ing2, in: normalizedNames, keywords: ingredientKeywords)
 
-            if hasIngredient1 && hasIngredient2 {
+            if hasIngredient1, hasIngredient2 {
                 detectedConflicts.append(conflict)
             }
         }
@@ -335,7 +343,8 @@ final class IngredientRiskAnalyzer {
             if name.contains("ascorbic") || name.contains("vitamin c") || name.contains("vc") {
                 keywords.insert("vitamin c")
             }
-            if name.contains("retinol") || name.contains("retinal") || name.contains("retinoid") || name.contains("retin") {
+            if name.contains("retinol") || name.contains("retinal") || name.contains("retinoid") || name
+                .contains("retin") {
                 keywords.insert("retinol")
                 keywords.insert("retinoid")
             }
@@ -372,7 +381,11 @@ final class IngredientRiskAnalyzer {
     ///   - normalizedNames: Set of normalized ingredient names from the scan
     ///   - keywords: Additional keyword mappings for flexible matching
     /// - Returns: True if the ingredient is present in the scanned list
-    private func matchesIngredient(_ conflictIngredient: String, in normalizedNames: Set<String>, keywords: Set<String>) -> Bool {
+    private func matchesIngredient(
+        _ conflictIngredient: String,
+        in normalizedNames: Set<String>,
+        keywords: Set<String>
+    ) -> Bool {
         // Direct match in keywords (which includes mapped terms)
         if keywords.contains(conflictIngredient) {
             return true
@@ -389,11 +402,12 @@ final class IngredientRiskAnalyzer {
     }
 
     // MARK: - User Reactions
+
     private func getUserReactions(
         for ingredients: [IngredientScanResult.ParsedIngredient],
         historyStore: UserHistoryStore?
     ) -> [String: IngredientUserReaction] {
-        guard let historyStore = historyStore else { return [:] }
+        guard let historyStore else { return [:] }
 
         var reactions: [String: IngredientUserReaction] = [:]
 
@@ -414,7 +428,9 @@ final class IngredientRiskAnalyzer {
     }
 
     // MARK: - Group by Function
-    private func groupByFunction(_ ingredients: [IngredientScanResult.ParsedIngredient]) -> [IngredientFunction: [IngredientScanResult.ParsedIngredient]] {
+
+    private func groupByFunction(_ ingredients: [IngredientScanResult.ParsedIngredient])
+        -> [IngredientFunction: [IngredientScanResult.ParsedIngredient]] {
         var groups: [IngredientFunction: [IngredientScanResult.ParsedIngredient]] = [:]
 
         for ingredient in ingredients {
@@ -427,20 +443,28 @@ final class IngredientRiskAnalyzer {
     }
 
     // MARK: - Enhanced Analysis for User
+
     private func analyzeForUser(
         ingredients: [IngredientScanResult.ParsedIngredient],
         profile: UserProfile?,
         historyStore: UserHistoryStore?,
         userReactions: [String: IngredientUserReaction],
         userPreferences: [UserIngredientPreference]
-    ) -> (warnings: [String], recommendations: [String], suitability: Int, allergies: [String], concerns: [SkinConcern: [String]]) {
+    )
+        -> (
+            warnings: [String],
+            recommendations: [String],
+            suitability: Int,
+            allergies: [String],
+            concerns: [SkinConcern: [String]]
+        ) {
         var warnings: [String] = []
         var recommendations: [String] = []
         var suitability = 70 // Base score
         var allergyMatches: [String] = []
         var concernMatches: [SkinConcern: [String]] = [:]
 
-        guard let profile = profile else {
+        guard let profile else {
             return (warnings, recommendations, suitability, allergyMatches, concernMatches)
         }
 
@@ -449,7 +473,7 @@ final class IngredientRiskAnalyzer {
             let allergyLower = allergy.lowercased()
             for ingredient in ingredients {
                 if ingredient.normalizedName.lowercased().contains(allergyLower) ||
-                   ingredient.name.lowercased().contains(allergyLower) {
+                    ingredient.name.lowercased().contains(allergyLower) {
                     allergyMatches.append(ingredient.name)
                     warnings.append("⚠️ 含有过敏成分：\(ingredient.name)")
                     suitability -= 30
@@ -462,14 +486,15 @@ final class IngredientRiskAnalyzer {
             if reaction.effectivenessRating == .negative {
                 warnings.append("⚠️ \(ingredientName)：你曾\(reaction.totalUses)次使用中\(reaction.worseCount)次反应不佳")
                 suitability -= 20
-            } else if reaction.effectivenessRating == .positive && reaction.totalUses >= 3 {
+            } else if reaction.effectivenessRating == .positive, reaction.totalUses >= 3 {
                 recommendations.append("✓ \(ingredientName)：你曾使用效果良好")
                 suitability += 5
             }
         }
 
         // 3. Check manual preferences
-        let preferenceMap = Dictionary(uniqueKeysWithValues: userPreferences.map { ($0.ingredientName.lowercased(), $0) })
+        let preferenceMap = Dictionary(uniqueKeysWithValues: userPreferences
+            .map { ($0.ingredientName.lowercased(), $0) })
         for ingredient in ingredients {
             if let pref = preferenceMap[ingredient.normalizedName.lowercased()] {
                 if pref.preferenceScore < -30 {
@@ -500,8 +525,8 @@ final class IngredientRiskAnalyzer {
         if profile.fragranceTolerance == .avoid || profile.fragranceTolerance == .sensitive {
             let hasFragrance = ingredients.contains { ing in
                 ing.normalizedName.lowercased().contains("fragrance") ||
-                ing.normalizedName.lowercased().contains("parfum") ||
-                ing.function == .fragrance
+                    ing.normalizedName.lowercased().contains("parfum") ||
+                    ing.function == .fragrance
             }
             if hasFragrance {
                 let severity = profile.fragranceTolerance == .avoid ? "必须" : "建议"
@@ -511,16 +536,16 @@ final class IngredientRiskAnalyzer {
         }
 
         // 6. Historical skin issues (adjust warnings based on past problems)
-        if let historyStore = historyStore {
+        if let historyStore {
             // If user has history of severe redness, warn about alcohol/fragrance more strongly
             if historyStore.hasSevereIssue(.redness, threshold: 7) {
                 let irritants = ingredients.filter { ing in
                     ing.normalizedName.lowercased().contains("alcohol") ||
-                    ing.normalizedName.lowercased().contains("fragrance") ||
-                    ing.normalizedName.lowercased().contains("menthol")
+                        ing.normalizedName.lowercased().contains("fragrance") ||
+                        ing.normalizedName.lowercased().contains("menthol")
                 }
                 if !irritants.isEmpty {
-                    warnings.append("🔴 历史数据显示你容易泛红，需特别注意：\(irritants.map { $0.name }.joined(separator: "、"))")
+                    warnings.append("🔴 历史数据显示你容易泛红，需特别注意：\(irritants.map(\.name).joined(separator: "、"))")
                     suitability -= 15
                 }
             }
@@ -529,11 +554,11 @@ final class IngredientRiskAnalyzer {
             if historyStore.hasSevereIssue(.acne, threshold: 7) {
                 let comedogenic = ingredients.filter { ing in
                     ing.normalizedName.lowercased().contains("coconut oil") ||
-                    ing.normalizedName.lowercased().contains("cocoa butter") ||
-                    ing.normalizedName.lowercased().contains("isopropyl")
+                        ing.normalizedName.lowercased().contains("cocoa butter") ||
+                        ing.normalizedName.lowercased().contains("isopropyl")
                 }
                 if !comedogenic.isEmpty {
-                    warnings.append("💊 历史数据显示你易长痘，注意：\(comedogenic.map { $0.name }.joined(separator: "、"))")
+                    warnings.append("💊 历史数据显示你易长痘，注意：\(comedogenic.map(\.name).joined(separator: "、"))")
                     suitability -= 10
                 }
             }
@@ -569,6 +594,7 @@ final class IngredientRiskAnalyzer {
     }
 
     // MARK: - Skin Type Compatibility
+
     private func checkSkinTypeCompatibility(
         ingredients: [IngredientScanResult.ParsedIngredient],
         skinType: SkinType,
@@ -605,7 +631,7 @@ final class IngredientRiskAnalyzer {
             // Balance is key
             let hasHydration = ingredients.contains { $0.function == .moisturizing }
             let hasExfoliation = ingredients.contains { $0.function == .exfoliating }
-            if hasHydration && hasExfoliation {
+            if hasHydration, hasExfoliation {
                 score += 10
             }
 
@@ -619,14 +645,14 @@ final class IngredientRiskAnalyzer {
             let hasFragrance = ingredients.contains { ing in
                 ing.normalizedName.contains("fragrance") || ing.normalizedName.contains("parfum")
             }
-            if hasFragrance && profile.fragranceTolerance != .love {
+            if hasFragrance, profile.fragranceTolerance != .love {
                 score -= 15
             }
 
             // Avoid alcohol for sensitive skin
             let hasAlcohol = ingredients.contains { ing in
                 ing.normalizedName.lowercased().contains("alcohol denat") ||
-                ing.normalizedName.lowercased().contains("sd alcohol")
+                    ing.normalizedName.lowercased().contains("sd alcohol")
             }
             if hasAlcohol {
                 score -= 10
@@ -637,7 +663,11 @@ final class IngredientRiskAnalyzer {
     }
 
     // MARK: - Concern Matches
-    private func checkConcernMatches(ingredients: [IngredientScanResult.ParsedIngredient], concern: SkinConcern) -> [String] {
+
+    private func checkConcernMatches(
+        ingredients: [IngredientScanResult.ParsedIngredient],
+        concern: SkinConcern
+    ) -> [String] {
         var matches: [String] = []
 
         switch concern {
@@ -734,10 +764,11 @@ final class IngredientRiskAnalyzer {
     }
 
     // MARK: - Get Function Groups
+
     func getFunctionGroups(from ingredients: [IngredientScanResult.ParsedIngredient]) -> [FunctionGroup] {
         let grouped = groupByFunction(ingredients)
 
-        return grouped.map { (function, ingredients) in
+        return grouped.map { function, ingredients in
             FunctionGroup(
                 function: function,
                 ingredients: ingredients,
@@ -749,34 +780,35 @@ final class IngredientRiskAnalyzer {
 }
 
 // MARK: - IngredientFunction Extensions
+
 extension IngredientFunction {
     var description: String {
         switch self {
-        case .moisturizing: return "提供水分和锁水功效"
-        case .brightening: return "淡化色斑，提亮肤色"
-        case .antiAging: return "减少细纹，紧致肌肤"
-        case .acneFighting: return "控痘祛痘，清洁毛孔"
-        case .exfoliating: return "去除老化角质"
-        case .soothing: return "舒缓敏感，减少刺激"
-        case .sunProtection: return "防护紫外线伤害"
-        case .fragrance: return "增加产品香味"
-        case .preservative: return "延长产品保质期"
-        case .other: return "其他功效成分"
+        case .moisturizing: "提供水分和锁水功效"
+        case .brightening: "淡化色斑，提亮肤色"
+        case .antiAging: "减少细纹，紧致肌肤"
+        case .acneFighting: "控痘祛痘，清洁毛孔"
+        case .exfoliating: "去除老化角质"
+        case .soothing: "舒缓敏感，减少刺激"
+        case .sunProtection: "防护紫外线伤害"
+        case .fragrance: "增加产品香味"
+        case .preservative: "延长产品保质期"
+        case .other: "其他功效成分"
         }
     }
 
     var icon: String {
         switch self {
-        case .moisturizing: return "drop.fill"
-        case .brightening: return "sun.max.fill"
-        case .antiAging: return "sparkles"
-        case .acneFighting: return "bubbles.and.sparkles.fill"
-        case .exfoliating: return "wind"
-        case .soothing: return "leaf.fill"
-        case .sunProtection: return "sun.min.fill"
-        case .fragrance: return "sparkle"
-        case .preservative: return "lock.fill"
-        case .other: return "circle.fill"
+        case .moisturizing: "drop.fill"
+        case .brightening: "sun.max.fill"
+        case .antiAging: "sparkles"
+        case .acneFighting: "bubbles.and.sparkles.fill"
+        case .exfoliating: "wind"
+        case .soothing: "leaf.fill"
+        case .sunProtection: "sun.min.fill"
+        case .fragrance: "sparkle"
+        case .preservative: "lock.fill"
+        case .other: "circle.fill"
         }
     }
 }

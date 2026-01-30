@@ -1,5 +1,5 @@
-import SwiftUI
 import Network
+import SwiftUI
 
 // MARK: - Error Category
 
@@ -17,7 +17,7 @@ enum ErrorCategory {
         // Check for GeminiError types
         if let geminiError = error as? GeminiError {
             switch geminiError {
-            case .networkError(let underlying):
+            case let .networkError(underlying):
                 // Check if the underlying error is an offline condition
                 if let category = Self.categorizeURLErrorLike(underlying) {
                     self = category
@@ -49,7 +49,7 @@ enum ErrorCategory {
         // Check for AppError types
         if let appError = error as? AppError {
             switch appError {
-            case .networkRequest(_, let underlying):
+            case let .networkRequest(_, underlying):
                 // Check if the underlying error is an offline condition
                 if let category = Self.categorizeURLErrorLike(underlying) {
                     self = category
@@ -102,19 +102,19 @@ enum ErrorCategory {
     var title: String {
         switch self {
         case .network:
-            return "网络连接失败"
+            "网络连接失败"
         case .offline:
-            return "无网络连接"
+            "无网络连接"
         case .serverError:
-            return "服务暂时不可用"
+            "服务暂时不可用"
         case .rateLimited:
-            return "请求过于频繁"
+            "请求过于频繁"
         case .invalidInput:
-            return "输入无效"
+            "输入无效"
         case .unauthorized:
-            return "认证失败"
+            "认证失败"
         case .unknown:
-            return "出错了"
+            "出错了"
         }
     }
 
@@ -122,19 +122,19 @@ enum ErrorCategory {
     var description: String {
         switch self {
         case .network:
-            return "请检查网络连接后重试"
+            "请检查网络连接后重试"
         case .offline:
-            return "请连接网络后再试"
+            "请连接网络后再试"
         case .serverError:
-            return "服务器繁忙，请稍后重试"
+            "服务器繁忙，请稍后重试"
         case .rateLimited:
-            return "请等待片刻后再次尝试"
+            "请等待片刻后再次尝试"
         case .invalidInput:
-            return "请检查输入内容后重试"
+            "请检查输入内容后重试"
         case .unauthorized:
-            return "请检查登录状态或API配置"
+            "请检查登录状态或API配置"
         case .unknown:
-            return "请稍后重试"
+            "请稍后重试"
         }
     }
 
@@ -142,19 +142,19 @@ enum ErrorCategory {
     var iconName: String {
         switch self {
         case .network:
-            return "wifi.exclamationmark"
+            "wifi.exclamationmark"
         case .offline:
-            return "wifi.slash"
+            "wifi.slash"
         case .serverError:
-            return "server.rack"
+            "server.rack"
         case .rateLimited:
-            return "clock.badge.exclamationmark"
+            "clock.badge.exclamationmark"
         case .invalidInput:
-            return "doc.questionmark"
+            "doc.questionmark"
         case .unauthorized:
-            return "lock.trianglebadge.exclamationmark"
+            "lock.trianglebadge.exclamationmark"
         case .unknown:
-            return "exclamationmark.triangle"
+            "exclamationmark.triangle"
         }
     }
 
@@ -162,15 +162,15 @@ enum ErrorCategory {
     var iconColor: Color {
         switch self {
         case .network, .offline:
-            return .skinLabWarning
+            .skinLabWarning
         case .serverError, .rateLimited:
-            return .orange
+            .orange
         case .invalidInput:
-            return .skinLabSecondary
+            .skinLabSecondary
         case .unauthorized:
-            return .skinLabError
+            .skinLabError
         case .unknown:
-            return .skinLabWarning
+            .skinLabWarning
         }
     }
 
@@ -178,9 +178,9 @@ enum ErrorCategory {
     var isRetryable: Bool {
         switch self {
         case .network, .offline, .serverError, .rateLimited:
-            return true
+            true
         case .invalidInput, .unauthorized, .unknown:
-            return false
+            false
         }
     }
 
@@ -188,13 +188,13 @@ enum ErrorCategory {
     var suggestedRetryDelay: TimeInterval {
         switch self {
         case .rateLimited:
-            return 30
+            30
         case .serverError:
-            return 5
+            5
         case .network, .offline:
-            return 2
+            2
         default:
-            return 0
+            0
         }
     }
 }
@@ -302,13 +302,13 @@ struct ErrorRecoveryView: View {
 
             // Show detailed error for debugging in non-release builds
             #if DEBUG
-            if !error.localizedDescription.isEmpty {
-                Text(error.localizedDescription)
-                    .font(.skinLabCaption)
-                    .foregroundColor(.skinLabSubtext.opacity(0.7))
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 4)
-            }
+                if !error.localizedDescription.isEmpty {
+                    Text(error.localizedDescription)
+                        .font(.skinLabCaption)
+                        .foregroundColor(.skinLabSubtext.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                        .padding(.top, 4)
+                }
             #endif
         }
     }
@@ -358,7 +358,7 @@ struct ErrorRecoveryView: View {
             }
 
             // Dismiss button (always show if provided, or as fallback for non-retryable errors)
-            if let dismissAction = dismissAction {
+            if let dismissAction {
                 Button(action: dismissAction) {
                     Text("返回")
                         .font(.skinLabHeadline)
@@ -387,7 +387,7 @@ struct ErrorRecoveryView: View {
         guard category.isRetryable else { return }
 
         // Start countdown if rate limited and not already counting
-        if category == .rateLimited && retryCountdown == 0 && !isRetrying {
+        if category == .rateLimited, retryCountdown == 0, !isRetrying {
             startCountdown(Int(category.suggestedRetryDelay))
             return
         }

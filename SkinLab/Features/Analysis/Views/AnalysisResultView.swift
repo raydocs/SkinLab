@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct AnalysisResultView: View {
     let result: AnalysisRunResult
@@ -31,7 +31,7 @@ struct AnalysisResultView: View {
     private var negativeIngredients: [String] {
         ingredientPreferences
             .filter { $0.preferenceType == .disliked || $0.preferenceType == .avoided }
-            .map { $0.ingredientName }
+            .map(\.ingredientName)
     }
 
     init(result: AnalysisRunResult, onRetake: @escaping () -> Void = {}) {
@@ -40,8 +40,9 @@ struct AnalysisResultView: View {
     }
 
     // MARK: - Actions
+
     private func startTrackingFromAnalysis() {
-        guard let viewModel = viewModel else {
+        guard let viewModel else {
             // Initialize viewModel if needed
             return
         }
@@ -67,7 +68,7 @@ struct AnalysisResultView: View {
         ZStack {
             // 背景渐变
             FreshBackgroundMesh()
-            
+
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
                     scoreHeader
@@ -139,8 +140,9 @@ struct AnalysisResultView: View {
             }
         }
     }
-    
+
     // MARK: - Tab Selector
+
     private var tabSelector: some View {
         HStack(spacing: 0) {
             ForEach(["问题", "区域", "建议"].indices, id: \.self) { index in
@@ -168,8 +170,9 @@ struct AnalysisResultView: View {
         .cornerRadius(16)
         .skinLabSoftShadow()
     }
-    
+
     // MARK: - Selected Content
+
     @ViewBuilder
     private var selectedContent: some View {
         switch selectedTab {
@@ -183,14 +186,15 @@ struct AnalysisResultView: View {
             EmptyView()
         }
     }
-    
+
     // MARK: - Score Header
+
     private var scoreHeader: some View {
         VStack(spacing: 16) {
             ZStack {
                 ScoreRing(score: animateScore ? analysis.overallScore : 0, size: 150)
             }
-            
+
             // 分数评语
             Text(scoreComment)
                 .font(.skinLabSubheadline)
@@ -199,55 +203,60 @@ struct AnalysisResultView: View {
                 .padding(.vertical, 8)
                 .background(Color.freshPrimary.opacity(0.1))
                 .cornerRadius(20)
-            
+
             HStack(spacing: 32) {
                 StatItem(label: "皮肤年龄", value: "\(analysis.skinAge)岁", icon: "clock.fill")
-                
+
                 Divider()
                     .frame(height: 30)
-                
-                StatItem(label: "分析时间", value: analysis.analyzedAt.formatted(date: .abbreviated, time: .omitted), icon: "calendar")
+
+                StatItem(
+                    label: "分析时间",
+                    value: analysis.analyzedAt.formatted(date: .abbreviated, time: .omitted),
+                    icon: "calendar"
+                )
             }
         }
         .padding(.vertical, 20)
         .padding(.horizontal)
         .freshGlassCard()
     }
-    
+
     private var scoreComment: String {
         switch analysis.overallScore {
-        case 80...100: return "肌肤状态很棒！继续保持～"
-        case 60..<80: return "肌肤状态良好，还有提升空间"
-        case 40..<60: return "需要更多关注和护理"
-        default: return "建议认真对待护肤问题"
+        case 80 ... 100: "肌肤状态很棒！继续保持～"
+        case 60 ..< 80: "肌肤状态良好，还有提升空间"
+        case 40 ..< 60: "需要更多关注和护理"
+        default: "建议认真对待护肤问题"
         }
     }
 
     // MARK: - Skin Type Badge
+
     private var skinTypeBadge: some View {
         HStack(spacing: 10) {
             ZStack {
                 Circle()
                     .fill(Color.freshPrimary.opacity(0.1))
                     .frame(width: 40, height: 40)
-                
+
                 Image(systemName: analysis.skinType.icon)
                     .font(.system(size: 16))
                     .foregroundStyle(Color.freshPrimary)
             }
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text("你的肤质")
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
-                
+
                 Text(analysis.skinType.displayName)
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
             }
-            
+
             Spacer()
-            
+
             Image(systemName: "info.circle")
                 .foregroundColor(.skinLabSubtext)
         }
@@ -256,6 +265,7 @@ struct AnalysisResultView: View {
     }
 
     // MARK: - Confidence Card
+
     @ViewBuilder
     private var confidenceCard: some View {
         if analysis.confidenceScore < 80 || analysis.imageQuality != nil {
@@ -265,27 +275,28 @@ struct AnalysisResultView: View {
                         Circle()
                             .fill(confidenceColor.opacity(0.2))
                             .frame(width: 32, height: 32)
-                        
+
                         Image(systemName: confidenceIcon)
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(confidenceColor)
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 2) {
                         Text("分析可信度")
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
-                        
+
                         Text("\(analysis.confidenceScore)%")
                             .font(.skinLabHeadline)
                             .foregroundColor(.skinLabText)
                     }
-                    
+
                     Spacer()
-                    
+
                     // Quality indicator
                     if let quality = analysis.imageQuality {
-                        let avgQuality = (quality.lighting + quality.sharpness + quality.angle + quality.occlusion + quality.faceCoverage) / 5
+                        let avgQuality = (quality.lighting + quality.sharpness + quality.angle + quality
+                            .occlusion + quality.faceCoverage) / 5
                         Text(avgQuality >= 80 ? "照片质量良好" : "照片质量一般")
                             .font(.skinLabCaption)
                             .foregroundColor(avgQuality >= 80 ? .skinLabSuccess : .skinLabWarning)
@@ -295,29 +306,29 @@ struct AnalysisResultView: View {
                             .cornerRadius(12)
                     }
                 }
-                
+
                 // Quality notes if available
                 if let quality = analysis.imageQuality, !quality.notes.isEmpty {
                     Divider()
                         .background(Color.skinLabSubtext.opacity(0.2))
-                    
+
                     VStack(alignment: .leading, spacing: 6) {
                         Text("拍照建议")
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
-                        
+
                         ForEach(quality.notes, id: \.self) { note in
                             HStack(spacing: 8) {
                                 Image(systemName: "lightbulb.fill")
                                     .font(.system(size: 10))
                                     .foregroundColor(.skinLabWarning)
-                                
+
                                 Text(note)
                                     .font(.skinLabCaption)
                                     .foregroundColor(.skinLabText)
                             }
                         }
-                        
+
                         // Suggest retake if confidence is low
                         if analysis.confidenceScore < 70 {
                             Button {
@@ -344,32 +355,33 @@ struct AnalysisResultView: View {
             .skinLabSoftShadow()
         }
     }
-    
+
     private var confidenceColor: Color {
         if analysis.confidenceScore >= 80 {
-            return .skinLabSuccess
+            .skinLabSuccess
         } else if analysis.confidenceScore >= 60 {
-            return .skinLabWarning
+            .skinLabWarning
         } else {
-            return .skinLabError
+            .skinLabError
         }
     }
-    
+
     private var confidenceIcon: String {
         if analysis.confidenceScore >= 80 {
-            return "checkmark.shield.fill"
+            "checkmark.shield.fill"
         } else if analysis.confidenceScore >= 60 {
-            return "exclamationmark.shield.fill"
+            "exclamationmark.shield.fill"
         } else {
-            return "xmark.shield.fill"
+            "xmark.shield.fill"
         }
     }
 
     // MARK: - Tracking Entry Card
+
     @ViewBuilder
     private var trackingEntryCard: some View {
         let activeSession = trackingSessions.first { $0.status == .active }
-        
+
         if activeSession == nil {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 12) {
@@ -377,28 +389,28 @@ struct AnalysisResultView: View {
                         Circle()
                             .fill(Color.freshSecondary.opacity(0.1))
                             .frame(width: 44, height: 44)
-                        
+
                         Image(systemName: "chart.line.uptrend.xyaxis")
                             .font(.system(size: 20))
                             .foregroundStyle(Color.freshSecondary)
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 3) {
                         Text("开始28天效果验证")
                             .font(.skinLabHeadline)
                             .foregroundColor(.skinLabText)
-                        
+
                         Text("用数据证明护肤效果")
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
                     }
-                    
+
                     Spacer()
                 }
-                
+
                 Divider()
                     .background(Color.skinLabSubtext.opacity(0.2))
-                
+
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(spacing: 8) {
                         Image(systemName: "checkmark.circle.fill")
@@ -408,7 +420,7 @@ struct AnalysisResultView: View {
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabText)
                     }
-                    
+
                     HStack(spacing: 8) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 14))
@@ -417,7 +429,7 @@ struct AnalysisResultView: View {
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabText)
                     }
-                    
+
                     HStack(spacing: 8) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 14))
@@ -427,7 +439,7 @@ struct AnalysisResultView: View {
                             .foregroundColor(.skinLabText)
                     }
                 }
-                
+
                 Button {
                     startTrackingFromAnalysis()
                 } label: {
@@ -449,11 +461,12 @@ struct AnalysisResultView: View {
     }
 
     // MARK: - Primary Actions
+
     private var primaryActions: some View {
         VStack(spacing: 12) {
             // Generate Routine Button
             Button {
-                guard let viewModel = viewModel else { return }
+                guard let viewModel else { return }
                 Task {
                     await viewModel.generateRoutine(
                         analysis: analysis,
@@ -481,7 +494,7 @@ struct AnalysisResultView: View {
             }
             .buttonStyle(FreshGlassButton(color: .freshPrimary))
             .disabled(viewModel?.isGeneratingRoutine == true)
-            
+
             NavigationLink {
                 TrackingView()
             } label: {
@@ -539,6 +552,7 @@ struct AnalysisResultView: View {
     }
 
     // MARK: - Issues Section
+
     private var issuesSection: some View {
         VStack(spacing: 16) {
             // Primary issues (top 3 most severe) - always visible
@@ -605,8 +619,9 @@ struct AnalysisResultView: View {
             ("纹理", analysis.issues.texture, "square.grid.3x3")
         ].sorted { $0.score > $1.score }
     }
-    
+
     // MARK: - Regions Section
+
     private var regionsSection: some View {
         VStack(spacing: 16) {
             // Primary regions (lowest scores first - needs most attention)
@@ -696,8 +711,9 @@ struct AnalysisResultView: View {
             ("下巴", analysis.regions.chin)
         ].sorted { $0.score < $1.score }
     }
-    
+
     // MARK: - Recommendations Section
+
     private var recommendationsSection: some View {
         VStack(spacing: 16) {
             let recommendations = analysis.recommendations
@@ -791,6 +807,7 @@ struct RecommendationRow: View {
 }
 
 // MARK: - Score Ring
+
 struct ScoreRing: View {
     let score: Int
     let size: CGFloat
@@ -831,6 +848,7 @@ struct ScoreRing: View {
 }
 
 // MARK: - Stat Item
+
 struct StatItem: View {
     let label: String
     let value: String
@@ -859,6 +877,7 @@ struct StatItem: View {
 }
 
 // MARK: - Issue Row
+
 struct IssueRow: View {
     let name: String
     let score: Int
@@ -866,17 +885,17 @@ struct IssueRow: View {
 
     private var color: Color {
         switch score {
-        case 0...3: return .skinLabSuccess
-        case 4...6: return .skinLabWarning
-        default: return .skinLabError
+        case 0 ... 3: .skinLabSuccess
+        case 4 ... 6: .skinLabWarning
+        default: .skinLabError
         }
     }
 
     private var severityLabel: String {
         switch score {
-        case 0...3: return "轻微"
-        case 4...6: return "中等"
-        default: return "明显"
+        case 0 ... 3: "轻微"
+        case 4 ... 6: "中等"
+        default: "明显"
         }
     }
 
@@ -913,21 +932,22 @@ struct IssueRow: View {
 }
 
 // MARK: - Region Row
+
 struct RegionRow: View {
     let name: String
     let score: Int
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Text(name)
                 .font(.skinLabBody)
                 .foregroundColor(.skinLabText)
                 .frame(width: 50, alignment: .leading)
-            
+
             Spacer()
-            
+
             ProgressBarView(progress: CGFloat(score) / 100, color: Color.scoreColor(for: score), width: 140)
-            
+
             Text("\(score)")
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(Color.scoreColor(for: score))
@@ -937,17 +957,18 @@ struct RegionRow: View {
 }
 
 // MARK: - Progress Bar View
+
 struct ProgressBarView: View {
     let progress: CGFloat
     let color: Color
     let width: CGFloat
-    
+
     var body: some View {
         ZStack(alignment: .leading) {
             Capsule()
                 .fill(color.opacity(0.15))
                 .frame(width: width, height: 8)
-            
+
             Capsule()
                 .fill(LinearGradient(colors: [color, color.opacity(0.7)], startPoint: .leading, endPoint: .trailing))
                 .frame(width: width * min(progress, 1.0), height: 8)

@@ -19,7 +19,7 @@ extension AnalyticsEvents {
             "achievement_id": achievementId
         ]
 
-        if let platform = platform {
+        if let platform {
             parameters["platform"] = platform
         }
 
@@ -49,7 +49,7 @@ extension AnalyticsEvents {
     }
 
     enum MilestoneType: String {
-        case streak = "streak"
+        case streak
         case totalCheckIns = "total_check_ins"
         case longestStreak = "longest_streak"
     }

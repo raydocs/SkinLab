@@ -6,12 +6,14 @@ import SwiftData
 @MainActor
 final class EngagementOrchestrator {
     // MARK: - Dependencies
+
     private let streakService: StreakTrackingService
     private let achievementService: AchievementService
     private let notificationService: StreakNotificationService
     private let migrationService: EngagementMigrationService
 
     // MARK: - Initialization
+
     init(
         modelContext: ModelContext,
         calendar: Calendar = .current

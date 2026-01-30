@@ -1,5 +1,5 @@
-import SwiftData
 import Foundation
+import SwiftData
 
 /// User engagement metrics for streak tracking and achievement system
 @Model

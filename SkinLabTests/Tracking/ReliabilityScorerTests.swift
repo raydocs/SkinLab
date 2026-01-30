@@ -1,9 +1,8 @@
 // SkinLabTests/Tracking/ReliabilityScorerTests.swift
-import XCTest
 @testable import SkinLab
+import XCTest
 
 final class ReliabilityScorerTests: XCTestCase {
-
     var scorer: ReliabilityScorer!
 
     override func setUp() {
@@ -29,7 +28,7 @@ final class ReliabilityScorerTests: XCTestCase {
         captureSource: PhotoStandardizationMetadata.CaptureSource = .camera,
         userOverride: PhotoStandardizationMetadata.UserOverride? = nil
     ) -> PhotoStandardizationMetadata {
-        return PhotoStandardizationMetadata(
+        PhotoStandardizationMetadata(
             capturedAt: Date(),
             cameraPosition: .front,
             captureSource: captureSource,
@@ -54,7 +53,7 @@ final class ReliabilityScorerTests: XCTestCase {
         analysisId: UUID? = nil,
         photoStandardization: PhotoStandardizationMetadata? = nil
     ) -> CheckIn {
-        return CheckIn(
+        CheckIn(
             id: id,
             sessionId: sessionId,
             day: day,
@@ -85,7 +84,7 @@ final class ReliabilityScorerTests: XCTestCase {
         id: UUID = UUID(),
         confidenceScore: Int = 85
     ) -> SkinAnalysis {
-        return SkinAnalysis(
+        SkinAnalysis(
             id: id,
             skinType: .combination,
             skinAge: 25,
@@ -194,7 +193,7 @@ final class ReliabilityScorerTests: XCTestCase {
         let session = makeSession(id: sessionId, startDate: Date())
 
         let photoMeta = makePhotoMeta(
-            lighting: .tooBright,  // CRITICAL: Test the tooBright -> highLight mapping
+            lighting: .tooBright, // CRITICAL: Test the tooBright -> highLight mapping
             faceDetected: true,
             yawDegrees: 0,
             pitchDegrees: 0,
@@ -235,7 +234,7 @@ final class ReliabilityScorerTests: XCTestCase {
         let photoMeta = makePhotoMeta(
             lighting: .optimal,
             faceDetected: true,
-            yawDegrees: 25,  // > 20 threshold
+            yawDegrees: 25, // > 20 threshold
             pitchDegrees: 0,
             rollDegrees: 0,
             distance: .optimal
@@ -275,7 +274,7 @@ final class ReliabilityScorerTests: XCTestCase {
             pitchDegrees: 0,
             rollDegrees: 0,
             distance: .optimal,
-            captureSource: .library  // From photo library, not live camera
+            captureSource: .library // From photo library, not live camera
         )
 
         let checkIn = makeCheckIn(
@@ -340,7 +339,7 @@ final class ReliabilityScorerTests: XCTestCase {
     }
 
     /// Test 7: Timing penalty for late check-in (captureDate > 3 days after expected)
-    func testTimingPenalty() {
+    func testTimingPenalty() throws {
         // Given: A check-in captured 5 days after expected
         let sessionId = UUID()
         let sessionStartDate = Date()
@@ -349,7 +348,7 @@ final class ReliabilityScorerTests: XCTestCase {
         // Expected day 7 would be sessionStartDate + 7 days
         // Capture 5 days late (12 days from start)
         let expectedDay = 7
-        let captureDate = Calendar.current.date(byAdding: .day, value: 12, to: sessionStartDate)!
+        let captureDate = try XCTUnwrap(Calendar.current.date(byAdding: .day, value: 12, to: sessionStartDate))
 
         let photoMeta = makePhotoMeta(
             lighting: .optimal,
@@ -363,7 +362,7 @@ final class ReliabilityScorerTests: XCTestCase {
         let checkIn = makeCheckIn(
             sessionId: sessionId,
             day: 7,
-            captureDate: captureDate,  // 5 days late
+            captureDate: captureDate, // 5 days late
             photoStandardization: photoMeta
         )
 
@@ -389,7 +388,7 @@ final class ReliabilityScorerTests: XCTestCase {
 
         let photoMeta = makePhotoMeta(
             lighting: .optimal,
-            faceDetected: false,  // No face detected
+            faceDetected: false, // No face detected
             yawDegrees: 0,
             pitchDegrees: 0,
             rollDegrees: 0,
@@ -429,7 +428,7 @@ final class ReliabilityScorerTests: XCTestCase {
             yawDegrees: 0,
             pitchDegrees: 0,
             rollDegrees: 0,
-            distance: .tooFar  // Distance off
+            distance: .tooFar // Distance off
         )
 
         let checkIn = makeCheckIn(
@@ -470,7 +469,7 @@ final class ReliabilityScorerTests: XCTestCase {
             photoStandardization: photoMeta
         )
 
-        let analysis = makeAnalysis(id: analysisId, confidenceScore: 40)  // < 50 threshold
+        let analysis = makeAnalysis(id: analysisId, confidenceScore: 40) // < 50 threshold
 
         // When
         let result = scorer.score(
@@ -482,7 +481,12 @@ final class ReliabilityScorerTests: XCTestCase {
         )
 
         // Then: Score should be reduced by 0.20 for confidence < 50
-        XCTAssertEqual(result.score, 0.80, accuracy: 0.001, "Low analysis confidence (< 50) should reduce score by 0.20")
+        XCTAssertEqual(
+            result.score,
+            0.80,
+            accuracy: 0.001,
+            "Low analysis confidence (< 50) should reduce score by 0.20"
+        )
         XCTAssertTrue(result.reasons.contains(.lowAnalysisConfidence), "Should contain lowAnalysisConfidence reason")
     }
 
@@ -496,7 +500,7 @@ final class ReliabilityScorerTests: XCTestCase {
             sessionId: sessionId,
             day: 0,
             captureDate: session.startDate,
-            photoStandardization: nil  // No photo metadata
+            photoStandardization: nil // No photo metadata
         )
 
         // When
@@ -521,12 +525,12 @@ final class ReliabilityScorerTests: XCTestCase {
         let session = makeSession(id: sessionId, startDate: Date())
 
         let photoMeta = makePhotoMeta(
-            lighting: .tooDark,     // -0.25
+            lighting: .tooDark, // -0.25
             faceDetected: true,
-            yawDegrees: 25,         // -0.20 (> 20 threshold)
+            yawDegrees: 25, // -0.20 (> 20 threshold)
             pitchDegrees: 0,
             rollDegrees: 0,
-            distance: .tooFar       // -0.15
+            distance: .tooFar // -0.15
         )
 
         let checkIn = makeCheckIn(
@@ -546,7 +550,12 @@ final class ReliabilityScorerTests: XCTestCase {
         )
 
         // Then: Score should be 1.0 - 0.25 - 0.20 - 0.15 = 0.40
-        XCTAssertEqual(result.score, 0.40, accuracy: 0.001, "Multiple issues should accumulate: 1.0 - 0.25 - 0.20 - 0.15 = 0.40")
+        XCTAssertEqual(
+            result.score,
+            0.40,
+            accuracy: 0.001,
+            "Multiple issues should accumulate: 1.0 - 0.25 - 0.20 - 0.15 = 0.40"
+        )
         XCTAssertEqual(result.level, .medium, "Score of 0.40 should be medium level (>= 0.4, < 0.7)")
         XCTAssertTrue(result.reasons.contains(.lowLight), "Should contain lowLight reason")
         XCTAssertTrue(result.reasons.contains(.angleOff), "Should contain angleOff reason")
@@ -554,36 +563,36 @@ final class ReliabilityScorerTests: XCTestCase {
     }
 
     /// Test 13: Extreme penalties should floor at 0
-    func testScoreFloorAtZero() {
+    func testScoreFloorAtZero() throws {
         // Given: A check-in with many issues that would result in negative score
         let sessionId = UUID()
         let sessionStartDate = Date()
         let session = makeSession(id: sessionId, startDate: sessionStartDate)
 
         // Calculate capture date 10 days late (> 3 days threshold)
-        let captureDate = Calendar.current.date(byAdding: .day, value: 17, to: sessionStartDate)!
+        let captureDate = try XCTUnwrap(Calendar.current.date(byAdding: .day, value: 17, to: sessionStartDate))
 
         let photoMeta = makePhotoMeta(
-            lighting: .tooDark,          // -0.25
-            faceDetected: false,         // -0.20
-            yawDegrees: 25,              // -0.20
+            lighting: .tooDark, // -0.25
+            faceDetected: false, // -0.20
+            yawDegrees: 25, // -0.20
             pitchDegrees: 0,
             rollDegrees: 0,
-            distance: .tooFar,           // -0.15
-            captureSource: .library,     // -0.15
-            userOverride: .userFlaggedIssue  // -0.10
+            distance: .tooFar, // -0.15
+            captureSource: .library, // -0.15
+            userOverride: .userFlaggedIssue // -0.10
         )
 
         let analysisId = UUID()
         let checkIn = makeCheckIn(
             sessionId: sessionId,
             day: 7,
-            captureDate: captureDate,    // -0.10 (> 3 days off)
+            captureDate: captureDate, // -0.10 (> 3 days off)
             analysisId: analysisId,
             photoStandardization: photoMeta
         )
 
-        let analysis = makeAnalysis(id: analysisId, confidenceScore: 30)  // -0.20 (< 50)
+        let analysis = makeAnalysis(id: analysisId, confidenceScore: 30) // -0.20 (< 50)
 
         // When
         let result = scorer.score(
@@ -591,7 +600,7 @@ final class ReliabilityScorerTests: XCTestCase {
             analysis: analysis,
             session: session,
             expectedDay: 7,
-            cameraPositionConsistency: false  // -0.10
+            cameraPositionConsistency: false // -0.10
         )
 
         // Then: Score should floor at 0
@@ -609,35 +618,50 @@ final class ReliabilityScorerTests: XCTestCase {
 
         // Test high level boundary (>= 0.7)
         let highPhotoMeta = makePhotoMeta(lighting: .optimal)
-        let highCheckIn = makeCheckIn(sessionId: sessionId, day: 0, captureDate: session.startDate, photoStandardization: highPhotoMeta)
+        let highCheckIn = makeCheckIn(
+            sessionId: sessionId,
+            day: 0,
+            captureDate: session.startDate,
+            photoStandardization: highPhotoMeta
+        )
         let highResult = scorer.score(checkIn: highCheckIn, analysis: nil, session: session, expectedDay: 0)
         XCTAssertEqual(highResult.level, .high, "Score >= 0.7 should be high level")
 
         // Test medium level boundary (>= 0.4, < 0.7)
         // Need penalties totaling 0.35-0.55 to get score between 0.45-0.65
         let mediumPhotoMeta = makePhotoMeta(
-            lighting: .tooDark,          // -0.25
+            lighting: .tooDark, // -0.25
             faceDetected: true,
-            yawDegrees: 25,              // -0.20
+            yawDegrees: 25, // -0.20
             pitchDegrees: 0,
             rollDegrees: 0,
             distance: .optimal
         )
-        let mediumCheckIn = makeCheckIn(sessionId: sessionId, day: 0, captureDate: session.startDate, photoStandardization: mediumPhotoMeta)
+        let mediumCheckIn = makeCheckIn(
+            sessionId: sessionId,
+            day: 0,
+            captureDate: session.startDate,
+            photoStandardization: mediumPhotoMeta
+        )
         let mediumResult = scorer.score(checkIn: mediumCheckIn, analysis: nil, session: session, expectedDay: 0)
         XCTAssertEqual(mediumResult.score, 0.55, accuracy: 0.001)
         XCTAssertEqual(mediumResult.level, .medium, "Score 0.55 should be medium level")
 
         // Test low level boundary (< 0.4)
         let lowPhotoMeta = makePhotoMeta(
-            lighting: .tooDark,          // -0.25
-            faceDetected: false,         // -0.20
-            yawDegrees: 25,              // -0.20
+            lighting: .tooDark, // -0.25
+            faceDetected: false, // -0.20
+            yawDegrees: 25, // -0.20
             pitchDegrees: 0,
             rollDegrees: 0,
             distance: .optimal
         )
-        let lowCheckIn = makeCheckIn(sessionId: sessionId, day: 0, captureDate: session.startDate, photoStandardization: lowPhotoMeta)
+        let lowCheckIn = makeCheckIn(
+            sessionId: sessionId,
+            day: 0,
+            captureDate: session.startDate,
+            photoStandardization: lowPhotoMeta
+        )
         let lowResult = scorer.score(checkIn: lowCheckIn, analysis: nil, session: session, expectedDay: 0)
         XCTAssertEqual(lowResult.score, 0.35, accuracy: 0.001)
         XCTAssertEqual(lowResult.level, .low, "Score 0.35 should be low level")
@@ -664,12 +688,15 @@ final class ReliabilityScorerTests: XCTestCase {
             analysis: nil,
             session: session,
             expectedDay: 0,
-            cameraPositionConsistency: false  // Inconsistent
+            cameraPositionConsistency: false // Inconsistent
         )
 
         // Then: Score should be reduced by 0.10
         XCTAssertEqual(result.score, 0.90, accuracy: 0.001, "Inconsistent camera position should reduce score by 0.10")
-        XCTAssertTrue(result.reasons.contains(.inconsistentCameraPosition), "Should contain inconsistentCameraPosition reason")
+        XCTAssertTrue(
+            result.reasons.contains(.inconsistentCameraPosition),
+            "Should contain inconsistentCameraPosition reason"
+        )
     }
 
     /// Test 16: Slight lighting issues should have smaller penalty
@@ -679,7 +706,7 @@ final class ReliabilityScorerTests: XCTestCase {
         let session = makeSession(id: sessionId, startDate: Date())
 
         let photoMeta = makePhotoMeta(
-            lighting: .slightlyDark  // Slight issue, not severe
+            lighting: .slightlyDark // Slight issue, not severe
         )
 
         let checkIn = makeCheckIn(
@@ -705,14 +732,14 @@ final class ReliabilityScorerTests: XCTestCase {
     }
 
     /// Test 17: Moderate timing offset (1-3 days) should have smaller penalty
-    func testScoreWithModerateTimingOffset() {
+    func testScoreWithModerateTimingOffset() throws {
         // Given: A check-in captured 2 days after expected
         let sessionId = UUID()
         let sessionStartDate = Date()
         let session = makeSession(id: sessionId, startDate: sessionStartDate)
 
         // Expected day 7, capture 2 days late (9 days from start)
-        let captureDate = Calendar.current.date(byAdding: .day, value: 9, to: sessionStartDate)!
+        let captureDate = try XCTUnwrap(Calendar.current.date(byAdding: .day, value: 9, to: sessionStartDate))
 
         let photoMeta = makePhotoMeta()
 
@@ -739,7 +766,7 @@ final class ReliabilityScorerTests: XCTestCase {
     }
 
     /// Test 18: ScoreAll should correctly score multiple check-ins
-    func testScoreAll() {
+    func testScoreAll() throws {
         // Given: A session with multiple check-ins
         let sessionId = UUID()
         let sessionStartDate = Date()
@@ -752,7 +779,7 @@ final class ReliabilityScorerTests: XCTestCase {
         let goodPhotoMeta = makePhotoMeta(lighting: .optimal)
         let badPhotoMeta = makePhotoMeta(lighting: .tooDark)
 
-        let checkIns = [
+        let checkIns = try [
             makeCheckIn(
                 id: checkIn0Id,
                 sessionId: sessionId,
@@ -765,7 +792,7 @@ final class ReliabilityScorerTests: XCTestCase {
                 id: checkIn1Id,
                 sessionId: sessionId,
                 day: 7,
-                captureDate: Calendar.current.date(byAdding: .day, value: 7, to: sessionStartDate)!,
+                captureDate: XCTUnwrap(Calendar.current.date(byAdding: .day, value: 7, to: sessionStartDate)),
                 photoStandardization: badPhotoMeta
             )
         ]

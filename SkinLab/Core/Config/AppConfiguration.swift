@@ -1,12 +1,13 @@
-import Foundation
 import CoreGraphics
+import Foundation
 
 // MARK: - App Configuration
+
 /// Centralized configuration management for the SkinLab app.
 /// All hardcoded URLs, API settings, and magic numbers should be defined here.
 enum AppConfiguration {
-
     // MARK: - Environment
+
     enum Environment: String {
         case development
         case staging
@@ -15,20 +16,20 @@ enum AppConfiguration {
         var apiBaseURL: String {
             switch self {
             case .development:
-                return "https://openrouter.ai/api/v1"
+                "https://openrouter.ai/api/v1"
             case .staging:
-                return "https://staging-api.skinlab.app/v1"
+                "https://staging-api.skinlab.app/v1"
             case .production:
-                return "https://openrouter.ai/api/v1"
+                "https://openrouter.ai/api/v1"
             }
         }
 
         var isDebug: Bool {
             switch self {
             case .development, .staging:
-                return true
+                true
             case .production:
-                return false
+                false
             }
         }
     }
@@ -37,11 +38,11 @@ enum AppConfiguration {
     /// Priority: 1) Environment variable (DEBUG only), 2) Info.plist, 3) Build configuration
     static var current: Environment {
         #if DEBUG
-        // Allow environment override via env var in debug builds
-        if let override = ProcessInfo.processInfo.environment["SKINLAB_ENV"],
-           let env = Environment(rawValue: override) {
-            return env
-        }
+            // Allow environment override via env var in debug builds
+            if let override = ProcessInfo.processInfo.environment["SKINLAB_ENV"],
+               let env = Environment(rawValue: override) {
+                return env
+            }
         #endif
 
         // Check Info.plist for environment setting (for staging builds)
@@ -52,19 +53,24 @@ enum AppConfiguration {
 
         // Fall back to build configuration
         #if DEBUG
-        return .development
+            return .development
         #else
-        return .production
+            return .production
         #endif
     }
 
     // MARK: - API Configuration
+
     enum API {
         /// Base URL for OpenRouter API
-        static var baseURL: String { current.apiBaseURL }
+        static var baseURL: String {
+            current.apiBaseURL
+        }
 
         /// Full URL for chat completions endpoint
-        static var chatCompletionsEndpoint: String { "\(baseURL)/chat/completions" }
+        static var chatCompletionsEndpoint: String {
+            "\(baseURL)/chat/completions"
+        }
 
         /// HTTP Referer header value for API requests
         static let referer = "https://skinlab.app"
@@ -101,6 +107,7 @@ enum AppConfiguration {
     }
 
     // MARK: - Support Configuration
+
     enum Support {
         /// Support email address
         static let email = "support@skinlab.app"
@@ -110,6 +117,7 @@ enum AppConfiguration {
     }
 
     // MARK: - Image Processing
+
     enum ImageProcessing {
         /// Maximum dimension for optimized images
         static let maxImageDimension: CGFloat = 1024
@@ -119,6 +127,7 @@ enum AppConfiguration {
     }
 
     // MARK: - Limits
+
     enum Limits {
         /// Maximum photos per day
         static let maxPhotosPerDay = 5
@@ -140,14 +149,21 @@ enum AppConfiguration {
     }
 
     // MARK: - Feature Flags
+
     enum Features {
         /// Weather feature enabled
-        static var weatherEnabled: Bool { true }
+        static var weatherEnabled: Bool {
+            true
+        }
 
         /// Analytics enabled (disabled in debug)
-        static var analyticsEnabled: Bool { !current.isDebug }
+        static var analyticsEnabled: Bool {
+            !current.isDebug
+        }
 
         /// Verbose logging enabled
-        static var verboseLoggingEnabled: Bool { current.isDebug }
+        static var verboseLoggingEnabled: Bool {
+            current.isDebug
+        }
     }
 }

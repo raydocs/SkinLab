@@ -1,10 +1,8 @@
 // SkinLabTests/Analysis/PhotoQualityCheckerTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class PhotoQualityCheckerTests: XCTestCase {
-
     // MARK: - LightingCondition Tests
 
     func testLightingCondition_isAcceptable() {
@@ -319,7 +317,7 @@ final class PhotoQualityCheckerTests: XCTestCase {
         let descriptions = metadata.reasonDescriptions()
         XCTAssertEqual(descriptions.count, 2)
 
-        let reasonStrings = descriptions.map { $0.description }
+        let reasonStrings = descriptions.map(\.description)
         XCTAssertTrue(reasonStrings.contains("面部偏离中心"))
         XCTAssertTrue(reasonStrings.contains("图像模糊"))
     }

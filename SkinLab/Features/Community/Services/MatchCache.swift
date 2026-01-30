@@ -9,7 +9,6 @@ import Foundation
 /// - L3: 实时计算 - 缓存未命中时触发
 @MainActor
 final class MatchCache {
-
     // MARK: - Configuration
 
     /// 缓存过期时间 (24小时)
@@ -156,7 +155,7 @@ final class MatchCache {
 
     /// 清除所有过期缓存
     func clearExpired() {
-        let expiredKeys = cache.filter { $0.value.isExpired }.map { $0.key }
+        let expiredKeys = cache.filter(\.value.isExpired).map(\.key)
         for key in expiredKeys {
             invalidate(for: key)
         }
@@ -171,13 +170,13 @@ final class MatchCache {
     /// 获取缓存统计信息
     func getStats() -> CacheStats {
         let validEntries = cache.filter { !$0.value.isExpired }
-        let expiredEntries = cache.filter { $0.value.isExpired }
+        let expiredEntries = cache.filter(\.value.isExpired)
 
         let avgAge = validEntries.isEmpty ? 0 :
             validEntries.values.map(\.age).reduce(0, +) / Double(validEntries.count)
 
-        let totalMatches = validEntries.values.map { $0.matches.count }.reduce(0, +)
-        let totalRecommendations = validEntries.values.map { $0.recommendations.count }.reduce(0, +)
+        let totalMatches = validEntries.values.map(\.matches.count).reduce(0, +)
+        let totalRecommendations = validEntries.values.map(\.recommendations.count).reduce(0, +)
 
         return CacheStats(
             totalEntries: cache.count,
@@ -240,11 +239,11 @@ struct CacheStats {
     /// 格式化的内存使用
     var formattedMemoryUsage: String {
         if memoryUsageEstimate < 1024 {
-            return "\(memoryUsageEstimate) B"
+            "\(memoryUsageEstimate) B"
         } else if memoryUsageEstimate < 1024 * 1024 {
-            return String(format: "%.1f KB", Double(memoryUsageEstimate) / 1024)
+            String(format: "%.1f KB", Double(memoryUsageEstimate) / 1024)
         } else {
-            return String(format: "%.1f MB", Double(memoryUsageEstimate) / 1024 / 1024)
+            String(format: "%.1f MB", Double(memoryUsageEstimate) / 1024 / 1024)
         }
     }
 }

@@ -1,10 +1,11 @@
-import SwiftUI
 import Charts
+import SwiftUI
 
 // MARK: - Share Card Renderer
+
 @MainActor
 final class ShareCardRenderer {
-    func render<V: View>(_ view: V) -> UIImage? {
+    func render(_ view: some View) -> UIImage? {
         let renderer = ImageRenderer(content: view)
         renderer.scale = UIScreen.main.scale
         return renderer.uiImage
@@ -12,20 +13,21 @@ final class ShareCardRenderer {
 }
 
 // MARK: - Share Card View
+
 struct ShareCardView: View {
     let report: EnhancedTrackingReport
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Header
             headerSection
-            
+
             // Main Stats
             statsSection
-            
+
             // Chart Preview
             chartSection
-            
+
             // Footer
             footerSection
         }
@@ -42,38 +44,40 @@ struct ShareCardView: View {
             )
         )
     }
-    
+
     // MARK: - Header
+
     private var headerSection: some View {
         ZStack {
             // Background
             LinearGradient.skinLabRoseGradient
                 .frame(height: 120)
-            
+
             VStack(spacing: 8) {
                 // App Icon
                 ZStack {
                     Circle()
                         .fill(Color.white)
                         .frame(width: 50, height: 50)
-                    
+
                     Image(systemName: "sparkles")
                         .font(.title2)
                         .foregroundStyle(LinearGradient.skinLabRoseGradient)
                 }
-                
+
                 Text("SkinLab 追踪报告")
                     .font(.system(size: 20, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
-                
+
                 Text("\(report.duration) 天护肤追踪")
                     .font(.system(size: 14, weight: .medium, design: .rounded))
                     .foregroundColor(.white.opacity(0.9))
             }
         }
     }
-    
+
     // MARK: - Stats
+
     private var statsSection: some View {
         HStack(spacing: 20) {
             ShareStatCard(
@@ -81,13 +85,13 @@ struct ShareCardView: View {
                 label: "评分变化",
                 color: report.scoreChange > 0 ? Color.skinLabSuccess : Color.skinLabError
             )
-            
+
             ShareStatCard(
                 value: report.skinAgeChange > 0 ? "+\(report.skinAgeChange)" : "\(report.skinAgeChange)",
                 label: "皮肤年龄",
                 color: report.skinAgeChange < 0 ? Color.skinLabSuccess : Color.skinLabError
             )
-            
+
             ShareStatCard(
                 value: "\(Int(report.completionRate * 100))%",
                 label: "完成度",
@@ -97,15 +101,16 @@ struct ShareCardView: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 30)
     }
-    
+
     // MARK: - Chart Preview
+
     private var chartSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("改善趋势")
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                 .foregroundColor(Color.skinLabText)
                 .padding(.horizontal, 20)
-            
+
             // Mini chart
             if !report.timeline.isEmpty {
                 Chart(report.timeline.prefix(5)) { point in
@@ -115,7 +120,7 @@ struct ShareCardView: View {
                     )
                     .foregroundStyle(LinearGradient.skinLabRoseGradient)
                     .interpolationMethod(.catmullRom)
-                    
+
                     AreaMark(
                         x: .value("Day", point.day),
                         y: .value("Score", point.overallScore)
@@ -128,7 +133,7 @@ struct ShareCardView: View {
                 .frame(height: 150)
                 .padding(.horizontal, 20)
             }
-            
+
             // Improvement Label
             HStack {
                 Spacer()
@@ -148,8 +153,9 @@ struct ShareCardView: View {
         .cornerRadius(20)
         .padding(.horizontal, 20)
     }
-    
+
     // MARK: - Footer
+
     private var footerSection: some View {
         VStack(spacing: 12) {
             // Top Improvements
@@ -166,9 +172,9 @@ struct ShareCardView: View {
                 .background(Color.skinLabAccent.opacity(0.1))
                 .cornerRadius(12)
             }
-            
+
             Spacer()
-            
+
             // QR or App Promotion
             VStack(spacing: 8) {
                 HStack(spacing: 6) {
@@ -178,7 +184,7 @@ struct ShareCardView: View {
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                 }
                 .foregroundColor(Color.skinLabSubtext)
-                
+
                 Text("科学护肤·效果可见")
                     .font(.system(size: 10, design: .rounded))
                     .foregroundColor(Color.skinLabSubtext.opacity(0.7))
@@ -191,17 +197,18 @@ struct ShareCardView: View {
 }
 
 // MARK: - Share Stat Card
+
 struct ShareStatCard: View {
     let value: String
     let label: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Text(value)
                 .font(.system(size: 28, weight: .bold, design: .rounded))
                 .foregroundColor(color)
-            
+
             Text(label)
                 .font(.system(size: 12, weight: .medium, design: .rounded))
                 .foregroundColor(Color.skinLabSubtext)
@@ -215,6 +222,7 @@ struct ShareStatCard: View {
 }
 
 // MARK: - Color Hex Extension
+
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -236,7 +244,7 @@ extension Color {
             .sRGB,
             red: Double(r) / 255,
             green: Double(g) / 255,
-            blue:  Double(b) / 255,
+            blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
     }

@@ -48,14 +48,14 @@ struct CommunityView: View {
                     NavigationLink(destination: SkinTwinMatchView()) {
                         communityCardContent(
                             title: "肌肤双胞胎", subtitle: "匹配相似肤质的有效产品", icon: "person.2.fill",
-                            gradient: .skinLabLavenderGradient)
+                            gradient: .skinLabLavenderGradient
+                        )
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("肌肤双胞胎")
                     .accessibilityHint("匹配相似肤质的有效产品")
 
-                    Button {
-                    } label: {
+                    Button {} label: {
                         HStack(spacing: 10) {
                             Image(systemName: "square.and.arrow.up")
                             Text("发布分享")

@@ -122,7 +122,7 @@ struct StreakCelebrationView: View {
         let steps = Double(to - from)
         let stepDuration = duration / steps
 
-        for i in from..<to {
+        for i in from ..< to {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * stepDuration) {
                 withAnimation(.easeOut(duration: stepDuration * 0.8)) {
                     counterValue = i + 1
@@ -147,13 +147,13 @@ struct StreakCelebrationView: View {
     private var milestoneMessage: String {
         switch milestone {
         case 7:
-            return "你已经坚持了一周！继续保持这个势头！"
+            "你已经坚持了一周！继续保持这个势头！"
         case 14:
-            return "两周了！你正在建立一个很好的习惯！"
+            "两周了！你正在建立一个很好的习惯！"
         case 28:
-            return "28天！你完成了整个护肤周期！太棒了！"
+            "28天！你完成了整个护肤周期！太棒了！"
         default:
-            return "太棒了！继续保持！"
+            "太棒了！继续保持！"
         }
     }
 }

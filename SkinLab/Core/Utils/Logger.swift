@@ -2,8 +2,9 @@ import Foundation
 import os.log
 
 // MARK: - App Logger
-/// Unified logging utility for SkinLab
-/// Uses os.log for system-level logging with structured categories
+
+// Unified logging utility for SkinLab
+// Uses os.log for system-level logging with structured categories
 
 enum AppLogger {
     // MARK: - Private Properties
@@ -37,16 +38,22 @@ enum AppLogger {
         let fileName = (file as NSString).lastPathComponent
         let location = "\(fileName):\(line) \(function)"
 
-        if let error = error {
-            os_log(.error, log: errorLog, "[%{public}@] %{public}@: %{public}@",
-                   location, message, error.localizedDescription)
+        if let error {
+            os_log(
+                .error,
+                log: errorLog,
+                "[%{public}@] %{public}@: %{public}@",
+                location,
+                message,
+                error.localizedDescription
+            )
             #if DEBUG
-            print("[ERROR] [\(location)] \(message): \(error.localizedDescription)")
+                print("[ERROR] [\(location)] \(message): \(error.localizedDescription)")
             #endif
         } else {
             os_log(.error, log: errorLog, "[%{public}@] %{public}@", location, message)
             #if DEBUG
-            print("[ERROR] [\(location)] \(message)")
+                print("[ERROR] [\(location)] \(message)")
             #endif
         }
     }
@@ -62,10 +69,16 @@ enum AppLogger {
         function: String = #function
     ) {
         let fileName = (file as NSString).lastPathComponent
-        os_log(.info, log: infoLog, "[%{public}@:%{public}@] %{public}@",
-               fileName, function, message)
+        os_log(
+            .info,
+            log: infoLog,
+            "[%{public}@:%{public}@] %{public}@",
+            fileName,
+            function,
+            message
+        )
         #if DEBUG
-        print("[INFO] [\(fileName):\(function)] \(message)")
+            print("[INFO] [\(fileName):\(function)] \(message)")
         #endif
     }
 
@@ -80,10 +93,16 @@ enum AppLogger {
         function: String = #function
     ) {
         #if DEBUG
-        let fileName = (file as NSString).lastPathComponent
-        os_log(.debug, log: debugLog, "[%{public}@:%{public}@] %{public}@",
-               fileName, function, message)
-        print("[DEBUG] [\(fileName):\(function)] \(message)")
+            let fileName = (file as NSString).lastPathComponent
+            os_log(
+                .debug,
+                log: debugLog,
+                "[%{public}@:%{public}@] %{public}@",
+                fileName,
+                function,
+                message
+            )
+            print("[DEBUG] [\(fileName):\(function)] \(message)")
         #endif
     }
 
@@ -103,7 +122,7 @@ enum AppLogger {
         let location = "\(fileName):\(line) \(function)"
         os_log(.fault, log: errorLog, "[WARNING] [%{public}@] %{public}@", location, message)
         #if DEBUG
-        print("[WARNING] [\(location)] \(message)")
+            print("[WARNING] [\(location)] \(message)")
         #endif
     }
 
@@ -124,17 +143,29 @@ enum AppLogger {
         let countStr = count.map { " (\($0) records)" } ?? ""
 
         if success {
-            os_log(.info, log: dataLog, "%{public}@ %{public}@ succeeded%{public}@",
-                   operation.rawValue, entity, countStr)
+            os_log(
+                .info,
+                log: dataLog,
+                "%{public}@ %{public}@ succeeded%{public}@",
+                operation.rawValue,
+                entity,
+                countStr
+            )
             #if DEBUG
-            print("[DATA] \(operation.rawValue) \(entity) succeeded\(countStr)")
+                print("[DATA] \(operation.rawValue) \(entity) succeeded\(countStr)")
             #endif
         } else {
             let errorStr = error?.localizedDescription ?? "Unknown error"
-            os_log(.error, log: dataLog, "%{public}@ %{public}@ failed: %{public}@",
-                   operation.rawValue, entity, errorStr)
+            os_log(
+                .error,
+                log: dataLog,
+                "%{public}@ %{public}@ failed: %{public}@",
+                operation.rawValue,
+                entity,
+                errorStr
+            )
             #if DEBUG
-            print("[DATA] \(operation.rawValue) \(entity) failed: \(errorStr)")
+                print("[DATA] \(operation.rawValue) \(entity) failed: \(errorStr)")
             #endif
         }
     }
@@ -157,12 +188,25 @@ enum AppLogger {
         let statusStr = statusCode.map { " (HTTP \($0))" } ?? ""
 
         if success {
-            os_log(.info, log: networkLog, "%{public}@ to %{public}@ succeeded%{public}@",
-                   operation, sanitizedURL, statusStr)
+            os_log(
+                .info,
+                log: networkLog,
+                "%{public}@ to %{public}@ succeeded%{public}@",
+                operation,
+                sanitizedURL,
+                statusStr
+            )
         } else {
             let errorStr = error?.localizedDescription ?? "Unknown error"
-            os_log(.error, log: networkLog, "%{public}@ to %{public}@ failed%{public}@: %{public}@",
-                   operation, sanitizedURL, statusStr, errorStr)
+            os_log(
+                .error,
+                log: networkLog,
+                "%{public}@ to %{public}@ failed%{public}@: %{public}@",
+                operation,
+                sanitizedURL,
+                statusStr,
+                errorStr
+            )
         }
     }
 
@@ -175,7 +219,7 @@ enum AppLogger {
         if let range = sanitized.range(of: "key=", options: .caseInsensitive) {
             let start = range.upperBound
             if let end = sanitized[start...].firstIndex(of: "&") {
-                sanitized.replaceSubrange(start..<end, with: "[REDACTED]")
+                sanitized.replaceSubrange(start ..< end, with: "[REDACTED]")
             } else {
                 sanitized.replaceSubrange(start..., with: "[REDACTED]")
             }

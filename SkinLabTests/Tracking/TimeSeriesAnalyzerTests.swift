@@ -1,9 +1,8 @@
 // SkinLabTests/Tracking/TimeSeriesAnalyzerTests.swift
-import XCTest
 @testable import SkinLab
+import XCTest
 
 final class TimeSeriesAnalyzerTests: XCTestCase {
-
     var analyzer: TimeSeriesAnalyzer!
 
     override func setUp() {
@@ -291,8 +290,8 @@ final class TimeSeriesAnalyzerTests: XCTestCase {
         let dates = [
             Date(),
             Date().addingTimeInterval(86400), // +1 day
-            Date().addingTimeInterval(172800), // +2 days
-            Date().addingTimeInterval(259200)  // +3 days
+            Date().addingTimeInterval(172_800), // +2 days
+            Date().addingTimeInterval(259_200) // +3 days
         ]
         let (avgInterval, stdInterval) = analyzer.analyzeIntervalConsistency(dates)
 
@@ -303,9 +302,9 @@ final class TimeSeriesAnalyzerTests: XCTestCase {
     func testAnalyzeIntervalConsistency_irregularIntervals() {
         let dates = [
             Date(),
-            Date().addingTimeInterval(86400),   // +1 day
-            Date().addingTimeInterval(259200),  // +3 days (2 day gap)
-            Date().addingTimeInterval(345600)   // +4 days (1 day gap)
+            Date().addingTimeInterval(86400), // +1 day
+            Date().addingTimeInterval(259_200), // +3 days (2 day gap)
+            Date().addingTimeInterval(345_600) // +4 days (1 day gap)
         ]
         let (avgInterval, stdInterval) = analyzer.analyzeIntervalConsistency(dates)
 
@@ -325,7 +324,6 @@ final class TimeSeriesAnalyzerTests: XCTestCase {
 // MARK: - StatisticalMetrics Tests
 
 final class StatisticalMetricsTests: XCTestCase {
-
     func testCoefficientOfVariation() {
         let metrics = StatisticalMetrics(
             mean: 100.0,

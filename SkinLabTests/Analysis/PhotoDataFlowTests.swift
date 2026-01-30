@@ -1,11 +1,9 @@
 // SkinLabTests/Analysis/PhotoDataFlowTests.swift
-import XCTest
-
 @testable import SkinLab
+import XCTest
 
 /// Tests for photo data flow from Analysis to CheckIn to Report
 final class PhotoDataFlowTests: XCTestCase {
-
     // MARK: - Photo Path Format Tests
 
     func testPhotoPath_trackingPhotos_includesSubdirectory() {

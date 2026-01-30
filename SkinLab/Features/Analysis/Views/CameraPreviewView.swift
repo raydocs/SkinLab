@@ -1,7 +1,8 @@
-import SwiftUI
 import AVFoundation
+import SwiftUI
 
 // MARK: - Camera Preview View
+
 struct CameraPreviewView: View {
     @StateObject private var camera = CameraService()
     @Binding var capturedImage: UIImage?
@@ -24,22 +25,22 @@ struct CameraPreviewView: View {
                 Color.black
                     .ignoresSafeArea()
             }
-            
+
             // Overlay
             VStack {
                 // Top Bar
                 topBar
-                
+
                 Spacer()
-                
+
                 // Face Guide
                 faceGuide
-                
+
                 Spacer()
-                
+
                 // Condition Indicators
                 conditionIndicators
-                
+
                 // Bottom Controls
                 bottomControls
             }
@@ -88,8 +89,9 @@ struct CameraPreviewView: View {
             Text(camera.error?.localizedDescription ?? "")
         }
     }
-    
+
     // MARK: - Top Bar
+
     private var topBar: some View {
         HStack {
             Button {
@@ -100,23 +102,24 @@ struct CameraPreviewView: View {
                     .foregroundColor(.white)
                     .padding()
             }
-            
+
             Spacer()
-            
+
             Text("皮肤分析")
                 .font(.skinLabHeadline)
                 .foregroundColor(.white)
-            
+
             Spacer()
-            
+
             // Placeholder for symmetry
             Color.clear
                 .frame(width: 44, height: 44)
         }
         .padding(.top, 8)
     }
-    
+
     // MARK: - Face Guide
+
     private var faceGuide: some View {
         ZStack {
             // Oval guide
@@ -126,10 +129,10 @@ struct CameraPreviewView: View {
                     style: StrokeStyle(lineWidth: 3, dash: camera.photoCondition.faceDetected ? [] : [10, 5])
                 )
                 .frame(width: 260, height: 340)
-            
+
             // Corner markers
             if camera.photoCondition.faceDetected {
-                ForEach(0..<4) { index in
+                ForEach(0 ..< 4) { index in
                     CornerMarker(isReady: camera.photoCondition.isReady)
                         .rotationEffect(.degrees(Double(index) * 90))
                         .offset(cornerOffset(for: index))
@@ -137,7 +140,7 @@ struct CameraPreviewView: View {
             }
         }
     }
-    
+
     private func cornerOffset(for index: Int) -> CGSize {
         let x: CGFloat = 130
         let y: CGFloat = 170
@@ -149,8 +152,9 @@ struct CameraPreviewView: View {
         default: return .zero
         }
     }
-    
+
     // MARK: - Condition Indicators
+
     private var conditionIndicators: some View {
         VStack(spacing: 8) {
             if !camera.photoCondition.suggestions.isEmpty {
@@ -175,8 +179,9 @@ struct CameraPreviewView: View {
         }
         .padding(.bottom, 20)
     }
-    
+
     // MARK: - Bottom Controls
+
     private var bottomControls: some View {
         HStack(spacing: 60) {
             // Photo Library
@@ -188,7 +193,7 @@ struct CameraPreviewView: View {
                     .foregroundColor(.white)
                     .frame(width: 50, height: 50)
             }
-            
+
             // Capture Button
             Button {
                 capturePhoto()
@@ -197,14 +202,14 @@ struct CameraPreviewView: View {
                     Circle()
                         .stroke(Color.white, lineWidth: 4)
                         .frame(width: 72, height: 72)
-                    
+
                     Circle()
                         .fill(isCapturing ? Color.gray : Color.white)
                         .frame(width: 60, height: 60)
                 }
             }
             .disabled(isCapturing)
-            
+
             // Flip Camera (placeholder)
             Button {
                 camera.toggleCamera()
@@ -217,8 +222,9 @@ struct CameraPreviewView: View {
         }
         .padding(.bottom, 40)
     }
-    
+
     // MARK: - Capture
+
     private func capturePhoto() {
         guard !isCapturing else { return }
         isCapturing = true
@@ -257,9 +263,10 @@ struct CameraPreviewView: View {
 }
 
 // MARK: - Corner Marker
+
 struct CornerMarker: View {
     let isReady: Bool
-    
+
     var body: some View {
         Path { path in
             path.move(to: CGPoint(x: 0, y: 20))

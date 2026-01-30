@@ -55,15 +55,15 @@ struct RosePetalDecoration: View {
 
     var body: some View {
         ZStack {
-            ForEach(0..<count, id: \.self) { index in
+            ForEach(0 ..< count, id: \.self) { index in
                 RosePetal(
-                    size: CGFloat.random(in: 30...70),
+                    size: CGFloat.random(in: 30 ... 70),
                     rotation: Double(index) * (360 / Double(count)),
-                    distance: CGFloat.random(in: 40...100),
+                    distance: CGFloat.random(in: 40 ... 100),
                     color: index % 2 == 0 ? primaryColor : secondaryColor
                 )
-                .opacity(Double.random(in: 0.15...0.4))
-                .rotationEffect(.degrees(Double.random(in: -30...30)))
+                .opacity(Double.random(in: 0.15 ... 0.4))
+                .rotationEffect(.degrees(Double.random(in: -30 ... 30)))
             }
         }
         .accessibilityHidden(true)
@@ -85,7 +85,7 @@ struct RosePetal: View {
             .offset(x: distance * cos(rotation * .pi / 180), y: distance * sin(rotation * .pi / 180))
             .rotationEffect(.degrees(currentRotation))
             .onAppear {
-                withAnimation(.easeInOut(duration: Double.random(in: 6...10)).repeatForever(autoreverses: true)) {
+                withAnimation(.easeInOut(duration: Double.random(in: 6 ... 10)).repeatForever(autoreverses: true)) {
                     currentRotation = 10
                 }
             }
@@ -102,16 +102,22 @@ struct RomanticCornerDecoration: View {
                 .fill(Color.freshPrimaryLight.opacity(0.2))
                 .frame(width: 200, height: 200)
                 .blur(radius: 60)
-                .offset(x: corner.contains(.topLeft) ? -50 : (corner.contains(.topRight) ? 50 : 0),
-                       y: corner.contains(.topLeft) ? -50 : (corner.contains(.bottomLeft) ? 50 : 0))
+                .offset(
+                    x: corner.contains(.topLeft) ? -50 : (corner.contains(.topRight) ? 50 : 0),
+                    y: corner.contains(.topLeft) ? -50 : (corner.contains(.bottomLeft) ? 50 : 0)
+                )
 
             FlowerPetalView(size: 50, color: .freshPrimary)
-                .offset(x: corner.contains(.topLeft) ? -40 : (corner.contains(.topRight) ? 40 : 0),
-                       y: corner.contains(.topLeft) ? -40 : (corner.contains(.bottomLeft) ? 40 : 0))
+                .offset(
+                    x: corner.contains(.topLeft) ? -40 : (corner.contains(.topRight) ? 40 : 0),
+                    y: corner.contains(.topLeft) ? -40 : (corner.contains(.bottomLeft) ? 40 : 0)
+                )
 
             HeartFloatingView(size: 30, color: .freshSecondary)
-                .offset(x: corner.contains(.topLeft) ? -60 : (corner.contains(.topRight) ? 60 : 0),
-                       y: corner.contains(.topLeft) ? -20 : (corner.contains(.bottomLeft) ? 20 : 0))
+                .offset(
+                    x: corner.contains(.topLeft) ? -60 : (corner.contains(.topRight) ? 60 : 0),
+                    y: corner.contains(.topLeft) ? -20 : (corner.contains(.bottomLeft) ? 20 : 0)
+                )
         }
         .accessibilityHidden(true)
     }
@@ -149,7 +155,11 @@ struct RomanticBorder: ViewModifier {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(
                         LinearGradient(
-                            colors: [.freshPrimary.opacity(0.4), .freshSecondary.opacity(0.4), .freshAccent.opacity(0.3)],
+                            colors: [
+                                .freshPrimary.opacity(0.4),
+                                .freshSecondary.opacity(0.4),
+                                .freshAccent.opacity(0.3)
+                            ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),

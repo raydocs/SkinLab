@@ -1,6 +1,6 @@
-import SwiftUI
 import Charts
 import SwiftData
+import SwiftUI
 
 struct TrackingReportView: View {
     let report: EnhancedTrackingReport
@@ -12,13 +12,13 @@ struct TrackingReportView: View {
 
     @State private var showComparisonViewer = false
 
-    // Timeline mode: all data vs reliable only
+    /// Timeline mode: all data vs reliable only
     @State private var timelineMode: TimelineDisplayPolicy.TimelineMode = .all
 
-    // Collapsible section manager with persistence
+    /// Collapsible section manager with persistence
     @StateObject private var sectionManager = CollapsibleSectionManager()
 
-    // Section IDs for expand/collapse all functionality
+    /// Section IDs for expand/collapse all functionality
     private var availableSectionIds: [String] {
         var ids: [String] = []
         if !report.forecasts.isEmpty { ids.append("forecast") }
@@ -31,19 +31,19 @@ struct TrackingReportView: View {
         if !report.reliabilityMap.isEmpty { ids.append("dataQuality") }
         return ids
     }
-    
+
     enum MetricType: String, CaseIterable {
         case overallScore = "综合评分"
         case skinAge = "皮肤年龄"
-        
+
         var yAxisLabel: String {
             switch self {
-            case .overallScore: return "评分"
-            case .skinAge: return "年龄"
+            case .overallScore: "评分"
+            case .skinAge: "年龄"
             }
         }
     }
-    
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 24) {
@@ -196,7 +196,7 @@ struct TrackingReportView: View {
             }
         }
     }
-    
+
     // MARK: - Section Summary Helpers
 
     /// Summary badge for dimension changes section
@@ -222,6 +222,7 @@ struct TrackingReportView: View {
     }
 
     // MARK: - Header Stats
+
     private var headerStatsSection: some View {
         VStack(spacing: 20) {
             // Duration Badge - auxiliary info (small, subtle)
@@ -316,7 +317,6 @@ struct TrackingReportView: View {
 
     // MARK: - Streak Indicator
 
-    @ViewBuilder
     private func streakIndicator(_ metrics: UserEngagementMetrics) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "flame.fill")
@@ -337,6 +337,7 @@ struct TrackingReportView: View {
     }
 
     // MARK: - Comparison Section
+
     private var comparisonSection: some View {
         VStack(spacing: 16) {
             HStack(spacing: 12) {
@@ -378,8 +379,9 @@ struct TrackingReportView: View {
         }
         .padding(.vertical, 4)
     }
-    
+
     // MARK: - Trend Chart
+
     private var trendChartSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -415,7 +417,7 @@ struct TrackingReportView: View {
                     )
                     .foregroundStyle(LinearGradient.skinLabRoseGradient)
                     .interpolationMethod(.catmullRom)
-                    
+
                     PointMark(
                         x: .value("天数", point.day),
                         y: .value(selectedMetric.yAxisLabel, getMetricValue(for: point))
@@ -451,8 +453,9 @@ struct TrackingReportView: View {
         .cornerRadius(20)
         .skinLabSoftShadow()
     }
-    
+
     // MARK: - Dimension Changes
+
     private var dimensionChangesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Top Improvements
@@ -461,27 +464,27 @@ struct TrackingReportView: View {
                     Label("改善最多", systemImage: "arrow.up.circle.fill")
                         .font(.skinLabSubheadline)
                         .foregroundColor(.skinLabSuccess)
-                    
+
                     ForEach(report.topImprovements, id: \.dimension) { change in
                         DimensionChangeRow(change: change, isPositive: true)
                     }
                 }
             }
-            
+
             // Issues Needing Attention
             if !report.issuesNeedingAttention.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("需要关注", systemImage: "exclamationmark.triangle.fill")
                         .font(.skinLabSubheadline)
                         .foregroundColor(.skinLabWarning)
-                    
+
                     ForEach(report.issuesNeedingAttention, id: \.dimension) { change in
                         DimensionChangeRow(change: change, isPositive: false)
                     }
                 }
                 .padding(.top, 8)
             }
-            
+
             // All Dimensions Chart
             Chart(report.dimensionChanges, id: \.dimension) { change in
                 BarMark(
@@ -495,8 +498,9 @@ struct TrackingReportView: View {
         }
         .padding(.top, 4)
     }
-    
+
     // MARK: - AI Summary
+
     private func aiSummarySection(_ summary: String) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -533,6 +537,7 @@ struct TrackingReportView: View {
     }
 
     // MARK: - Product Effectiveness
+
     private var productEffectivenessSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(report.usedProducts, id: \.productId) { product in
@@ -543,6 +548,7 @@ struct TrackingReportView: View {
     }
 
     // MARK: - Product Insights (Attribution Analysis)
+
     private var productInsightsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Section description
@@ -565,6 +571,7 @@ struct TrackingReportView: View {
     }
 
     // MARK: - Recommendations
+
     private var recommendationsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach(report.recommendations, id: \.self) { recommendation in
@@ -582,6 +589,7 @@ struct TrackingReportView: View {
     }
 
     // MARK: - Data Quality
+
     private var dataQualitySection: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Overall statistics
@@ -618,7 +626,7 @@ struct TrackingReportView: View {
                 // Get check-in IDs sorted by day (use full timeline to show all check-ins including low reliability)
                 let sortedCheckInIds = report.timeline
                     .sorted { $0.day < $1.day }
-                    .map { $0.checkInId }
+                    .map(\.checkInId)
 
                 ForEach(sortedCheckInIds, id: \.self) { checkInId in
                     if let reliability = report.reliabilityMap[checkInId] {
@@ -663,7 +671,7 @@ struct TrackingReportView: View {
 
             Spacer()
 
-            if reliability.level == .low && !reliability.reasons.isEmpty {
+            if reliability.level == .low, !reliability.reasons.isEmpty {
                 Image(systemName: "info.circle")
                     .font(.caption)
                     .foregroundColor(.orange)
@@ -673,6 +681,7 @@ struct TrackingReportView: View {
     }
 
     // MARK: - Forecast Section
+
     private var forecastSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Risk Alerts (prominently displayed if present)
@@ -721,14 +730,15 @@ struct TrackingReportView: View {
 
     private func confidenceColor(_ confidence: ConfidenceScore) -> Color {
         switch confidence.level {
-        case .high: return .green
-        case .medium: return .blue
-        case .low: return .orange
-        case .veryLow: return .red
+        case .high: .green
+        case .medium: .blue
+        case .low: .orange
+        case .veryLow: .red
         }
     }
 
     // MARK: - Share & Export
+
     private var shareAndExportSection: some View {
         VStack(spacing: 12) {
             // Image share button
@@ -785,12 +795,16 @@ struct TrackingReportView: View {
     }
 
     // MARK: - Export Methods
+
     private func exportCSV() {
         // Generate CSV content
         var csvLines: [String] = []
 
         // Header
-        csvLines.append("Day,Overall Score,Skin Age,Reliability,Lighting,Angle,Distance,Sleep Hours,Stress Level,Water Intake,Exercise Minutes,Sun Exposure")
+        csvLines
+            .append(
+                "Day,Overall Score,Skin Age,Reliability,Lighting,Angle,Distance,Sleep Hours,Stress Level,Water Intake,Exercise Minutes,Sun Exposure"
+            )
 
         // Data rows
         for point in report.timeline {
@@ -807,7 +821,10 @@ struct TrackingReportView: View {
             // Access check-in through session if available
             // Note: You may need to pass session or checkIns to get this data
             // For now, placeholder values
-            csvLines.append("\(point.day),\(point.overallScore),\(point.skinAge),\(Int(reliabilityScore * 100)),,\(sleepHours),\(stressLevel),\(waterIntake),\(exerciseMinutes),\(sunExposure)")
+            csvLines
+                .append(
+                    "\(point.day),\(point.overallScore),\(point.skinAge),\(Int(reliabilityScore * 100)),,\(sleepHours),\(stressLevel),\(waterIntake),\(exerciseMinutes),\(sunExposure)"
+                )
         }
 
         let csvContent = csvLines.joined(separator: "\n")
@@ -840,7 +857,7 @@ struct TrackingReportView: View {
                 [
                     "score": metadata.score,
                     "level": metadata.level.rawValue,
-                    "reasons": metadata.reasons.map { $0.rawValue }
+                    "reasons": metadata.reasons.map(\.rawValue)
                 ]
             },
             "lifestyleInsights": report.lifestyleInsights.map { insight in
@@ -886,21 +903,22 @@ struct TrackingReportView: View {
         // For now, placeholder
         AppLogger.debug("Sharing file: \(url)")
     }
-    
+
     // MARK: - Helper Methods
+
     private func getMetricValue(for point: ScorePoint) -> Int {
         switch selectedMetric {
-        case .overallScore: return point.overallScore
-        case .skinAge: return point.skinAge
+        case .overallScore: point.overallScore
+        case .skinAge: point.skinAge
         }
     }
-    
+
     private func loadImage(from path: String) -> UIImage? {
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let imagePath = documentsPath.appendingPathComponent(path)
         return UIImage(contentsOfFile: imagePath.path)
     }
-    
+
     private func generateShareCard() {
         let renderer = ShareCardRenderer()
         let card = ShareCardView(report: report)
@@ -926,32 +944,33 @@ struct TrackingReportView: View {
 }
 
 // MARK: - Dimension Change Row
+
 struct DimensionChangeRow: View {
     let change: TrackingReport.DimensionChange
     let isPositive: Bool
-    
+
     var body: some View {
         HStack {
             Text(change.dimension)
                 .font(.skinLabSubheadline)
                 .foregroundColor(.skinLabText)
-            
+
             Spacer()
-            
+
             HStack(spacing: 4) {
                 Text("\(change.beforeScore)")
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
-                
+
                 Image(systemName: "arrow.right")
                     .font(.caption2)
                     .foregroundColor(.skinLabSubtext)
-                
+
                 Text("\(change.afterScore)")
                     .font(.skinLabCaption)
                     .fontWeight(.semibold)
                     .foregroundColor(isPositive ? .skinLabSuccess : .skinLabError)
-                
+
                 Text("(\(change.improvement > 0 ? "+" : "")\(Int(change.improvement)))")
                     .font(.skinLabCaption)
                     .foregroundColor(isPositive ? .skinLabSuccess : .skinLabError)
@@ -962,6 +981,7 @@ struct DimensionChangeRow: View {
 }
 
 // MARK: - Product Effectiveness Row
+
 struct ProductEffectivenessRow: View {
     let product: TrackingReport.ProductUsage
 
@@ -1015,19 +1035,21 @@ struct ProductEffectivenessRow: View {
         .cornerRadius(8)
     }
 
-    private func effectivenessConfig(_ effectiveness: TrackingReport.ProductUsage.Effectiveness) -> (label: String, icon: String, color: Color) {
+    private func effectivenessConfig(_ effectiveness: TrackingReport.ProductUsage
+        .Effectiveness) -> (label: String, icon: String, color: Color) {
         switch effectiveness {
         case .effective:
-            return ("有效", "checkmark.circle.fill", .skinLabSuccess)
+            ("有效", "checkmark.circle.fill", .skinLabSuccess)
         case .neutral:
-            return ("一般", "minus.circle.fill", .skinLabWarning)
+            ("一般", "minus.circle.fill", .skinLabWarning)
         case .ineffective:
-            return ("无效", "xmark.circle.fill", .skinLabError)
+            ("无效", "xmark.circle.fill", .skinLabError)
         }
     }
 }
 
 // MARK: - Share Sheet
+
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
 
@@ -1039,6 +1061,7 @@ struct ShareSheet: UIViewControllerRepresentable {
 }
 
 // MARK: - Predictive Alert Card
+
 struct PredictiveAlertCard: View {
     let alert: PredictiveAlert
 
@@ -1109,9 +1132,9 @@ struct PredictiveAlertCard: View {
 
     private var alertColor: Color {
         switch alert.severity {
-        case .low: return .blue
-        case .medium: return .orange
-        case .high: return .red
+        case .low: .blue
+        case .medium: .orange
+        case .high: .red
         }
     }
 }

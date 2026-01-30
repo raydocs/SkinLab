@@ -1,10 +1,3 @@
-//
-//  PredictiveAlertNotificationService.swift
-//  SkinLab
-//
-//  Service for scheduling predictive skincare alert notifications
-//
-
 import Foundation
 import UserNotifications
 
@@ -78,10 +71,10 @@ final class PredictiveAlertNotificationService {
 
         // Get all pending notifications and remove those with our prefix
         center.getPendingNotificationRequests { [weak self] requests in
-            guard let self = self else { return }
+            guard let self else { return }
 
             let predictiveAlertIds = requests
-                .map { $0.identifier }
+                .map(\.identifier)
                 .filter { $0.hasPrefix(self.notificationIdentifierPrefix) }
 
             if !predictiveAlertIds.isEmpty {
@@ -133,8 +126,7 @@ final class PredictiveAlertNotificationService {
         }
 
         do {
-            let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
-            return granted
+            return try await center.requestAuthorization(options: [.alert, .sound, .badge])
         } catch {
             return false
         }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 // MARK: - Reliability Badge View
+
 /// Displays the reliability score for a check-in with visual indicator
 struct ReliabilityBadgeView: View {
     let reliability: ReliabilityMetadata
@@ -11,17 +12,17 @@ struct ReliabilityBadgeView: View {
 
         var iconSize: CGFloat {
             switch self {
-            case .small: return 12
-            case .medium: return 16
-            case .large: return 20
+            case .small: 12
+            case .medium: 16
+            case .large: 20
             }
         }
 
         var fontSize: CGFloat {
             switch self {
-            case .small: return 10
-            case .medium: return 12
-            case .large: return 14
+            case .small: 10
+            case .medium: 12
+            case .large: 14
             }
         }
     }
@@ -51,9 +52,9 @@ struct ReliabilityBadgeView: View {
 
     private var color: Color {
         switch reliability.level {
-        case .high: return .green
-        case .medium: return .orange
-        case .low: return .red
+        case .high: .green
+        case .medium: .orange
+        case .low: .red
         }
     }
 
@@ -64,30 +65,31 @@ struct ReliabilityBadgeView: View {
 
     private var horizontalPadding: CGFloat {
         switch size {
-        case .small: return 6
-        case .medium: return 8
-        case .large: return 10
+        case .small: 6
+        case .medium: 8
+        case .large: 10
         }
     }
 
     private var verticalPadding: CGFloat {
         switch size {
-        case .small: return 3
-        case .medium: return 4
-        case .large: return 5
+        case .small: 3
+        case .medium: 4
+        case .large: 5
         }
     }
 
     private var cornerRadius: CGFloat {
         switch size {
-        case .small: return 4
-        case .medium: return 6
-        case .large: return 8
+        case .small: 4
+        case .medium: 6
+        case .large: 8
         }
     }
 }
 
 // MARK: - Reliability Reasons View
+
 /// Displays the reasons for low reliability in a card
 struct ReliabilityReasonsView: View {
     let reliability: ReliabilityMetadata
@@ -126,12 +128,13 @@ struct ReliabilityReasonsView: View {
         case .lowLight, .highLight, .angleOff, .distanceOff, .centeringOff,
              .blurry, .noFaceDetected, .missingLiveConditions, .longInterval,
              .userFlaggedIssue, .lowAnalysisConfidence, .inconsistentCameraPosition:
-            return .orange
+            .orange
         }
     }
 }
 
 // MARK: - Timeline Mode Toggle
+
 /// Toggle between all data and reliable data
 struct TimelineModeToggle: View {
     @Binding var mode: TimelineDisplayPolicy.TimelineMode
@@ -167,6 +170,7 @@ struct TimelineModeToggle: View {
 }
 
 // MARK: - Preview
+
 #Preview {
     VStack(spacing: 20) {
         // High reliability

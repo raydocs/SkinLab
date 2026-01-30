@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 
 // MARK: - Product Category
+
 enum ProductCategory: String, Codable, CaseIterable, Sendable {
     case cleanser
     case toner
@@ -14,49 +15,51 @@ enum ProductCategory: String, Codable, CaseIterable, Sendable {
 
     var displayName: String {
         switch self {
-        case .cleanser: return "洁面"
-        case .toner: return "化妆水"
-        case .serum: return "精华"
-        case .moisturizer: return "面霜"
-        case .sunscreen: return "防晒"
-        case .mask: return "面膜"
-        case .exfoliant: return "去角质"
-        case .eyeCream: return "眼霜"
+        case .cleanser: "洁面"
+        case .toner: "化妆水"
+        case .serum: "精华"
+        case .moisturizer: "面霜"
+        case .sunscreen: "防晒"
+        case .mask: "面膜"
+        case .exfoliant: "去角质"
+        case .eyeCream: "眼霜"
         }
     }
 
     var icon: String {
         switch self {
-        case .cleanser: return "drop.circle"
-        case .toner: return "humidity"
-        case .serum: return "flask"
-        case .moisturizer: return "circle.fill"
-        case .sunscreen: return "sun.max"
-        case .mask: return "theatermask.and.paintbrush"
-        case .exfoliant: return "sparkles"
-        case .eyeCream: return "eye"
+        case .cleanser: "drop.circle"
+        case .toner: "humidity"
+        case .serum: "flask"
+        case .moisturizer: "circle.fill"
+        case .sunscreen: "sun.max"
+        case .mask: "theatermask.and.paintbrush"
+        case .exfoliant: "sparkles"
+        case .eyeCream: "eye"
         }
     }
 }
 
 // MARK: - Price Range
+
 enum PriceRange: String, Codable, CaseIterable, Sendable {
-    case budget  // < ¥100
-    case midRange  // ¥100-300
-    case premium  // ¥300-800
-    case luxury  // > ¥800
+    case budget // < ¥100
+    case midRange // ¥100-300
+    case premium // ¥300-800
+    case luxury // > ¥800
 
     var displayName: String {
         switch self {
-        case .budget: return "平价 (<¥100)"
-        case .midRange: return "中端 (¥100-300)"
-        case .premium: return "高端 (¥300-800)"
-        case .luxury: return "奢侈 (>¥800)"
+        case .budget: "平价 (<¥100)"
+        case .midRange: "中端 (¥100-300)"
+        case .premium: "高端 (¥300-800)"
+        case .luxury: "奢侈 (>¥800)"
         }
     }
 }
 
 // MARK: - Ingredient
+
 struct Ingredient: Codable, Identifiable, Equatable, Hashable, Sendable {
     let id: UUID
     let name: String
@@ -105,16 +108,16 @@ enum IngredientFunction: String, Codable, Sendable {
 
     var displayName: String {
         switch self {
-        case .moisturizing: return "保湿"
-        case .antiAging: return "抗老"
-        case .brightening: return "美白"
-        case .acneFighting: return "祛痘"
-        case .soothing: return "舒缓"
-        case .exfoliating: return "去角质"
-        case .sunProtection: return "防晒"
-        case .preservative: return "防腐剂"
-        case .fragrance: return "香精"
-        case .other: return "其他"
+        case .moisturizing: "保湿"
+        case .antiAging: "抗老"
+        case .brightening: "美白"
+        case .acneFighting: "祛痘"
+        case .soothing: "舒缓"
+        case .exfoliating: "去角质"
+        case .sunProtection: "防晒"
+        case .preservative: "防腐剂"
+        case .fragrance: "香精"
+        case .other: "其他"
         }
     }
 }
@@ -124,24 +127,25 @@ enum IrritationLevel: String, Codable, Sendable {
 
     var displayName: String {
         switch self {
-        case .none: return "无刺激"
-        case .low: return "低刺激"
-        case .medium: return "中等刺激"
-        case .high: return "高刺激"
+        case .none: "无刺激"
+        case .low: "低刺激"
+        case .medium: "中等刺激"
+        case .high: "高刺激"
         }
     }
 
     var color: String {
         switch self {
-        case .none: return "green"
-        case .low: return "blue"
-        case .medium: return "orange"
-        case .high: return "red"
+        case .none: "green"
+        case .low: "blue"
+        case .medium: "orange"
+        case .high: "red"
         }
     }
 }
 
 // MARK: - Product
+
 struct Product: Codable, Identifiable, Equatable, Hashable, Sendable {
     let id: UUID
     let name: String
@@ -209,6 +213,7 @@ struct PurchaseLink: Codable, Equatable, Hashable, Sendable {
 }
 
 // MARK: - SwiftData Model
+
 @Model
 final class ProductRecord {
     @Attribute(.unique) var id: UUID

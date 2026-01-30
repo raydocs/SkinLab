@@ -1,17 +1,8 @@
-//
-//  ScenarioAdvisor.swift
-//  SkinLab
-//
-//  场景化护肤建议服务
-//  基于用户选择的场景和个人资料生成针对性护肤建议
-//
-
 import Foundation
 
 /// 场景化护肤顾问
 /// 根据场景、用户肤质和当前皮肤状态生成个性化建议
 struct ScenarioAdvisor {
-
     // MARK: - Main Generation Method
 
     /// 生成场景化护肤建议
@@ -25,7 +16,6 @@ struct ScenarioAdvisor {
         profile: UserProfile,
         currentAnalysis: SkinAnalysis?
     ) -> ScenarioRecommendation {
-
         // 获取场景基础建议
         let baseDoList = generateDoList(for: scenario, profile: profile)
         let baseDontList = generateDontList(for: scenario, profile: profile)
@@ -62,7 +52,6 @@ struct ScenarioAdvisor {
         profile: UserProfile,
         currentAnalysis: SkinAnalysis?
     ) -> String {
-
         let skinTypeDesc = profile.skinType?.displayName ?? "您的"
         let scenarioName = scenario.rawValue
 
@@ -112,7 +101,6 @@ struct ScenarioAdvisor {
         for scenario: SkinScenario,
         profile: UserProfile
     ) -> [String] {
-
         var doList: [String] = []
 
         // 场景特定建议
@@ -204,7 +192,6 @@ struct ScenarioAdvisor {
         for scenario: SkinScenario,
         profile: UserProfile
     ) -> [String] {
-
         var dontList: [String] = []
 
         switch scenario {
@@ -283,7 +270,6 @@ struct ScenarioAdvisor {
         for scenario: SkinScenario,
         profile: UserProfile
     ) -> [String] {
-
         var tips: [String] = []
 
         switch scenario {
@@ -359,7 +345,6 @@ struct ScenarioAdvisor {
         profile: UserProfile,
         currentAnalysis: SkinAnalysis?
     ) -> (focus: [String], avoid: [String]) {
-
         var focus: [String] = []
         var avoid: [String] = []
 

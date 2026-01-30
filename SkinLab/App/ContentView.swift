@@ -8,10 +8,21 @@ struct ContentView: View {
         tabBarAppearance.configureWithOpaqueBackground()
         tabBarAppearance.backgroundColor = UIColor.systemBackground
         tabBarAppearance.stackedLayoutAppearance.normal.iconColor = UIColor.gray
-        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.gray, .font: UIFont.systemFont(ofSize: 10, weight: .medium)]
+        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.gray,
+            .font: UIFont.systemFont(ofSize: 10, weight: .medium)
+        ]
         // 浪漫粉色系选中状态
-        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(red: 1.0, green: 0.68, blue: 0.78, alpha: 1.0)
-        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(red: 1.0, green: 0.68, blue: 0.78, alpha: 1.0), .font: UIFont.systemFont(ofSize: 10, weight: .semibold)]
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(
+            red: 1.0,
+            green: 0.68,
+            blue: 0.78,
+            alpha: 1.0
+        )
+        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor(red: 1.0, green: 0.68, blue: 0.78, alpha: 1.0),
+            .font: UIFont.systemFont(ofSize: 10, weight: .semibold)
+        ]
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
     }

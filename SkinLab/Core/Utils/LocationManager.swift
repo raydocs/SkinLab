@@ -1,7 +1,8 @@
-import Foundation
 import CoreLocation
+import Foundation
 
 // MARK: - Location Errors
+
 enum LocationError: LocalizedError, Equatable {
     case permissionDenied
     case permissionRestricted
@@ -15,45 +16,48 @@ enum LocationError: LocalizedError, Equatable {
              (.permissionRestricted, .permissionRestricted),
              (.locationUnavailable, .locationUnavailable),
              (.timeout, .timeout):
-            return true
-        case (.unknown(let lhsMsg), .unknown(let rhsMsg)):
-            return lhsMsg == rhsMsg
+            true
+        case let (.unknown(lhsMsg), .unknown(rhsMsg)):
+            lhsMsg == rhsMsg
         default:
-            return false
+            false
         }
     }
 
     var errorDescription: String? {
         switch self {
         case .permissionDenied:
-            return "位置权限被拒绝，请在设置中开启"
+            "位置权限被拒绝，请在设置中开启"
         case .permissionRestricted:
-            return "位置服务受限制"
+            "位置服务受限制"
         case .locationUnavailable:
-            return "无法获取位置信息"
+            "无法获取位置信息"
         case .timeout:
-            return "获取位置超时"
-        case .unknown(let message):
-            return "位置错误: \(message)"
+            "获取位置超时"
+        case let .unknown(message):
+            "位置错误: \(message)"
         }
     }
 }
 
 // MARK: - Location Manager
+
 @MainActor
 final class LocationManager: NSObject, ObservableObject {
-
     // MARK: - Published Properties
+
     @Published private(set) var location: CLLocation?
     @Published private(set) var authorizationStatus: CLAuthorizationStatus
     @Published private(set) var isLoading = false
 
     // MARK: - Private Properties
+
     private let locationManager: CLLocationManager
     private var locationContinuation: CheckedContinuation<CLLocation, Error>?
     private var permissionContinuation: CheckedContinuation<Bool, Never>?
 
     // MARK: - Computed Properties
+
     var isAuthorized: Bool {
         authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways
     }
@@ -63,6 +67,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     // MARK: - Initialization
+
     override init() {
         self.locationManager = CLLocationManager()
         self.authorizationStatus = locationManager.authorizationStatus
@@ -106,7 +111,7 @@ final class LocationManager: NSObject, ObservableObject {
                 if !granted {
                     throw LocationError.permissionDenied
                 }
-                // Permission granted, continue to location request
+            // Permission granted, continue to location request
             default:
                 throw LocationError.locationUnavailable
             }
@@ -129,8 +134,8 @@ final class LocationManager: NSObject, ObservableObject {
 }
 
 // MARK: - CLLocationManagerDelegate
-extension LocationManager: CLLocationManagerDelegate {
 
+extension LocationManager: CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
 
@@ -145,21 +150,19 @@ extension LocationManager: CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         Task { @MainActor [weak self] in
             guard let self else { return }
-            let locationError: LocationError
-
-            if let clError = error as? CLError {
+            let locationError: LocationError = if let clError = error as? CLError {
                 switch clError.code {
                 case .denied:
-                    locationError = .permissionDenied
+                    .permissionDenied
                 case .locationUnknown:
-                    locationError = .locationUnavailable
+                    .locationUnavailable
                 case .network:
-                    locationError = .locationUnavailable
+                    .locationUnavailable
                 default:
-                    locationError = .unknown(clError.localizedDescription)
+                    .unknown(clError.localizedDescription)
                 }
             } else {
-                locationError = .unknown(error.localizedDescription)
+                .unknown(error.localizedDescription)
             }
 
             self.locationContinuation?.resume(throwing: locationError)

@@ -1,6 +1,7 @@
 import SwiftUI
 
 // MARK: - Fonts (Enhanced Hierarchy)
+
 extension Font {
     static let skinLabLargeTitle = Font.system(size: 36, weight: .heavy, design: .rounded)
     static let skinLabTitle = Font.system(size: 30, weight: .heavy, design: .rounded)
@@ -18,6 +19,7 @@ extension Font {
 }
 
 // MARK: - Card Styles
+
 struct SkinLabCardStyle: ViewModifier {
     var elevated: Bool = false
     func body(content: Content) -> some View {
@@ -25,7 +27,12 @@ struct SkinLabCardStyle: ViewModifier {
             .padding()
             .background(Color.skinLabCardBackground)
             .cornerRadius(24)
-            .shadow(color: Color.skinLabPrimary.opacity(elevated ? 0.12 : 0.06), radius: elevated ? 20 : 12, x: 0, y: elevated ? 10 : 6)
+            .shadow(
+                color: Color.skinLabPrimary.opacity(elevated ? 0.12 : 0.06),
+                radius: elevated ? 20 : 12,
+                x: 0,
+                y: elevated ? 10 : 6
+            )
     }
 }
 
@@ -38,7 +45,11 @@ struct SkinLabGlassCardStyle: ViewModifier {
             .overlay(
                 RoundedRectangle(cornerRadius: 24)
                     .stroke(
-                        LinearGradient(colors: [.white.opacity(0.4), .white.opacity(0.1)], startPoint: .topLeading, endPoint: .bottomTrailing),
+                        LinearGradient(
+                            colors: [.white.opacity(0.4), .white.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
                         lineWidth: 1
                     )
             )
@@ -53,7 +64,11 @@ struct SkinLabPremiumCardStyle: ViewModifier {
             .overlay(
                 RoundedRectangle(cornerRadius: 24)
                     .stroke(
-                        LinearGradient(colors: [Color.skinLabPrimary.opacity(0.2), Color.skinLabSecondary.opacity(0.1)], startPoint: .topLeading, endPoint: .bottomTrailing),
+                        LinearGradient(
+                            colors: [Color.skinLabPrimary.opacity(0.2), Color.skinLabSecondary.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
                         lineWidth: 1
                     )
             )
@@ -62,6 +77,7 @@ struct SkinLabPremiumCardStyle: ViewModifier {
 }
 
 // MARK: - Button Styles (浪漫风格)
+
 struct SkinLabPrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -78,7 +94,12 @@ struct SkinLabPrimaryButtonStyle: ButtonStyle {
                 .opacity(configuration.isPressed ? 0.85 : 1.0)
             )
             .cornerRadius(22)
-            .shadow(color: Color.freshPrimary.opacity(0.25), radius: configuration.isPressed ? 6 : 14, x: 0, y: configuration.isPressed ? 3 : 7)
+            .shadow(
+                color: Color.freshPrimary.opacity(0.25),
+                radius: configuration.isPressed ? 6 : 14,
+                x: 0,
+                y: configuration.isPressed ? 3 : 7
+            )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.65), value: configuration.isPressed)
     }
@@ -114,7 +135,12 @@ struct SkinLabGradientButtonStyle: ButtonStyle {
             .frame(height: 56)
             .background(gradient.opacity(configuration.isPressed ? 0.85 : 1.0))
             .cornerRadius(22)
-            .shadow(color: Color.freshPrimary.opacity(0.25), radius: configuration.isPressed ? 6 : 14, x: 0, y: configuration.isPressed ? 3 : 7)
+            .shadow(
+                color: Color.freshPrimary.opacity(0.25),
+                radius: configuration.isPressed ? 6 : 14,
+                x: 0,
+                y: configuration.isPressed ? 3 : 7
+            )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.65), value: configuration.isPressed)
     }
@@ -122,7 +148,7 @@ struct SkinLabGradientButtonStyle: ButtonStyle {
 
 struct SkinLabIconButtonStyle: ButtonStyle {
     var size: CGFloat = 52
-    var backgroundColor: Color = Color.freshPrimary.opacity(0.1)
+    var backgroundColor: Color = .freshPrimary.opacity(0.1)
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(size: 20, weight: .medium))
@@ -139,6 +165,7 @@ struct SkinLabIconButtonStyle: ButtonStyle {
 }
 
 // MARK: - View Extensions
+
 extension View {
     func skinLabCard(elevated: Bool = false) -> some View {
         modifier(SkinLabCardStyle(elevated: elevated))
@@ -168,6 +195,7 @@ extension View {
 }
 
 // MARK: - Decorative Elements (浪漫风格)
+
 struct SparkleView: View {
     let size: CGFloat
     @State private var opacity: Double = 0.3
@@ -212,6 +240,7 @@ struct FloatingBubble: View {
 }
 
 // MARK: - Animated Background (浪漫风格)
+
 struct AnimatedGradientBackground: View {
     @State private var animated = false
 
@@ -242,6 +271,7 @@ struct AnimatedGradientBackground: View {
 }
 
 // MARK: - Premium Score Ring (浪漫风格)
+
 struct PremiumScoreRing: View {
     let score: Int
     let size: CGFloat
@@ -280,6 +310,7 @@ struct PremiumScoreRing: View {
 }
 
 // MARK: - Staggered Animation (浪漫风格)
+
 struct StaggeredAnimationModifier: ViewModifier {
     let delay: Double
     @State private var visible = false

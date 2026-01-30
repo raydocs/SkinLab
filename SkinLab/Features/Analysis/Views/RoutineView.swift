@@ -4,19 +4,19 @@ struct RoutineView: View {
     let routine: SkincareRoutine
     @State private var selectedPhase: RoutinePhase = .am
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Header
                 headerSection
-                
+
                 // Phase Selector
                 phaseSelector
-                
+
                 // Steps
                 stepsSection
-                
+
                 // Notes
                 if !routine.notes.isEmpty {
                     notesSection
@@ -28,7 +28,7 @@ struct RoutineView: View {
         .navigationTitle("护肤方案")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
+
     private var headerSection: some View {
         VStack(spacing: 16) {
             // Duration
@@ -39,7 +39,7 @@ struct RoutineView: View {
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
             }
-            
+
             // Goals
             if !routine.goals.isEmpty {
                 FlowLayout(spacing: 8) {
@@ -54,7 +54,7 @@ struct RoutineView: View {
                     }
                 }
             }
-            
+
             // Skin Type
             if let skinType = routine.skinType {
                 Text("适合 \(skinType.displayName)")
@@ -65,7 +65,7 @@ struct RoutineView: View {
         .padding()
         .freshGlassCard()
     }
-    
+
     private var phaseSelector: some View {
         HStack(spacing: 12) {
             ForEach(RoutinePhase.allCases, id: \.self) { phase in
@@ -83,7 +83,7 @@ struct RoutineView: View {
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
                     .background(
-                        selectedPhase == phase ? 
+                        selectedPhase == phase ?
                             AnyView(Color.freshPrimary) :
                             AnyView(Color.freshWhite.opacity(0.4))
                     )
@@ -92,7 +92,7 @@ struct RoutineView: View {
             }
         }
     }
-    
+
     private var stepsSection: some View {
         VStack(spacing: 12) {
             let steps = selectedPhase == .am ? routine.amSteps : routine.pmSteps
@@ -101,7 +101,7 @@ struct RoutineView: View {
             }
         }
     }
-    
+
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -111,7 +111,7 @@ struct RoutineView: View {
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
             }
-            
+
             ForEach(routine.notes, id: \.self) { note in
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "checkmark.circle.fill")
@@ -130,11 +130,12 @@ struct RoutineView: View {
 }
 
 // MARK: - Routine Step Card
+
 struct RoutineStepCard: View {
     let step: RoutineStep
     let stepNumber: Int
     @State private var isExpanded = false
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -154,7 +155,7 @@ struct RoutineStepCard: View {
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text(step.title)
                             .font(.skinLabHeadline)
@@ -163,9 +164,9 @@ struct RoutineStepCard: View {
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
                     }
-                    
+
                     Spacer()
-                    
+
                     // Frequency Badge
                     Text(step.frequency)
                         .font(.skinLabCaption)
@@ -174,20 +175,20 @@ struct RoutineStepCard: View {
                         .background(Color.freshSecondary.opacity(0.2))
                         .foregroundColor(.freshSecondary)
                         .cornerRadius(8)
-                    
+
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .foregroundColor(.skinLabSubtext)
                 }
             }
-            
+
             // Expanded Content
             if isExpanded {
                 Divider()
-                
+
                 VStack(alignment: .leading, spacing: 12) {
                     // Instructions
                     DetailRow(icon: "hand.point.up.left.fill", title: "使用方法", content: step.instructions)
-                    
+
                     // Precautions
                     if !step.precautions.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
@@ -205,7 +206,7 @@ struct RoutineStepCard: View {
                             }
                         }
                     }
-                    
+
                     // Alternatives
                     if !step.alternatives.isEmpty {
                         VStack(alignment: .leading, spacing: 6) {
@@ -232,11 +233,12 @@ struct RoutineStepCard: View {
 }
 
 // MARK: - Detail Row
+
 struct DetailRow: View {
     let icon: String
     let title: String
     let content: String
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Label(title, systemImage: icon)
@@ -251,6 +253,7 @@ struct DetailRow: View {
 }
 
 // MARK: - Preview
+
 #Preview {
     NavigationStack {
         RoutineView(routine: SkincareRoutine(
@@ -258,9 +261,32 @@ struct DetailRow: View {
             concerns: [.acne, .pores],
             goals: [.acne, .pores],
             steps: [
-                RoutineStep(phase: .am, order: 1, title: "清洁", productType: "洗面奶", instructions: "温水打湿面部，取适量洗面奶打圈按摩1-2分钟，用清水洗净", frequency: "每天", precautions: ["避免用力过度"], alternatives: ["敏感肌可选氨基酸洗面奶"]),
-                RoutineStep(phase: .am, order: 2, title: "保湿", productType: "面霜", instructions: "取适量均匀涂抹全脸", frequency: "每天"),
-                RoutineStep(phase: .pm, order: 1, title: "卸妆", productType: "卸妆油", instructions: "干手干脸，取适量卸妆油按摩全脸", frequency: "每天")
+                RoutineStep(
+                    phase: .am,
+                    order: 1,
+                    title: "清洁",
+                    productType: "洗面奶",
+                    instructions: "温水打湿面部，取适量洗面奶打圈按摩1-2分钟，用清水洗净",
+                    frequency: "每天",
+                    precautions: ["避免用力过度"],
+                    alternatives: ["敏感肌可选氨基酸洗面奶"]
+                ),
+                RoutineStep(
+                    phase: .am,
+                    order: 2,
+                    title: "保湿",
+                    productType: "面霜",
+                    instructions: "取适量均匀涂抹全脸",
+                    frequency: "每天"
+                ),
+                RoutineStep(
+                    phase: .pm,
+                    order: 1,
+                    title: "卸妆",
+                    productType: "卸妆油",
+                    instructions: "干手干脸，取适量卸妆油按摩全脸",
+                    frequency: "每天"
+                )
             ],
             notes: ["坚持使用4周可见效", "如有不适请停用"],
             weeksDuration: 4

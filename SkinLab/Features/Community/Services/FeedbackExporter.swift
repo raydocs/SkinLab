@@ -185,15 +185,15 @@ enum ExportFormat: String, CaseIterable {
 
     var fileExtension: String {
         switch self {
-        case .csv: return "csv"
-        case .json, .analyticsReport: return "json"
+        case .csv: "csv"
+        case .json, .analyticsReport: "json"
         }
     }
 
     var mimeType: String {
         switch self {
-        case .csv: return "text/csv"
-        case .json, .analyticsReport: return "application/json"
+        case .csv: "text/csv"
+        case .json, .analyticsReport: "application/json"
         }
     }
 }

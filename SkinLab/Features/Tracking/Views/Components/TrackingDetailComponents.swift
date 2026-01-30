@@ -1,6 +1,7 @@
 import SwiftUI
 
 // MARK: - Check-In Row
+
 struct CheckInRow: View {
     let checkIn: CheckIn
 
@@ -50,14 +51,15 @@ struct CheckInRow: View {
 
     private func feelingColor(_ feeling: CheckIn.Feeling) -> Color {
         switch feeling {
-        case .better: return .skinLabSuccess
-        case .same: return .skinLabSubtext
-        case .worse: return .skinLabWarning
+        case .better: .skinLabSuccess
+        case .same: .skinLabSubtext
+        case .worse: .skinLabWarning
         }
     }
 }
 
 // MARK: - Feeling Button
+
 struct FeelingButton: View {
     let feeling: CheckIn.Feeling
     let isSelected: Bool
@@ -86,6 +88,7 @@ struct FeelingButton: View {
 }
 
 // MARK: - Lifestyle Draft
+
 /// Draft struct for lifestyle data collection with all optional fields
 struct LifestyleDraft {
     var sleepHours: Double?
@@ -98,12 +101,12 @@ struct LifestyleDraft {
 
     var hasAnyData: Bool {
         sleepHours != nil ||
-        stressLevel != nil ||
-        waterIntakeLevel != nil ||
-        alcoholConsumed != nil ||
-        exerciseMinutes != nil ||
-        sunExposureLevel != nil ||
-        (dietNotes != nil && !dietNotes!.isEmpty)
+            stressLevel != nil ||
+            waterIntakeLevel != nil ||
+            alcoholConsumed != nil ||
+            exerciseMinutes != nil ||
+            sunExposureLevel != nil ||
+            (dietNotes != nil && !dietNotes!.isEmpty)
     }
 
     var summary: String {

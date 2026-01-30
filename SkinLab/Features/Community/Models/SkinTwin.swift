@@ -4,12 +4,12 @@ import Foundation
 /// 皮肤双胞胎匹配结果
 struct SkinTwin: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
-    let userId: UUID  // 双胞胎用户ID
-    let similarity: Double  // 相似度 0-1
-    let matchLevel: MatchLevel  // 匹配等级
-    let anonymousProfile: AnonymousProfile  // 匿名化资料
-    var effectiveProducts: [EffectiveProduct]  // 有效产品列表
-    let matchedAt: Date  // 匹配时间
+    let userId: UUID // 双胞胎用户ID
+    let similarity: Double // 相似度 0-1
+    let matchLevel: MatchLevel // 匹配等级
+    let anonymousProfile: AnonymousProfile // 匿名化资料
+    var effectiveProducts: [EffectiveProduct] // 有效产品列表
+    let matchedAt: Date // 匹配时间
 
     init(
         id: UUID = UUID(),
@@ -55,10 +55,10 @@ struct SkinTwin: Identifiable, Codable, Equatable, Hashable, Sendable {
 /// 有效产品记录
 struct EffectiveProduct: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
-    let product: Product  // 产品信息
-    let usageDuration: Int  // 使用天数
-    let improvementPercent: Double  // 改善百分比 0-1
-    let verifiedAt: Date  // 验证时间
+    let product: Product // 产品信息
+    let usageDuration: Int // 使用天数
+    let improvementPercent: Double // 改善百分比 0-1
+    let verifiedAt: Date // 验证时间
 
     init(
         id: UUID = UUID(),
@@ -77,10 +77,10 @@ struct EffectiveProduct: Identifiable, Codable, Equatable, Hashable, Sendable {
     /// 有效性等级
     var effectiveness: Effectiveness {
         switch improvementPercent {
-        case 0.7...: return .veryEffective
-        case 0.4..<0.7: return .effective
-        case 0.1..<0.4: return .neutral
-        default: return .ineffective
+        case 0.7...: .veryEffective
+        case 0.4 ..< 0.7: .effective
+        case 0.1 ..< 0.4: .neutral
+        default: .ineffective
         }
     }
 
@@ -92,10 +92,10 @@ struct EffectiveProduct: Identifiable, Codable, Equatable, Hashable, Sendable {
 
         var icon: String {
             switch self {
-            case .veryEffective: return "checkmark.circle.fill"
-            case .effective: return "checkmark.circle"
-            case .neutral: return "minus.circle"
-            case .ineffective: return "xmark.circle"
+            case .veryEffective: "checkmark.circle.fill"
+            case .effective: "checkmark.circle"
+            case .neutral: "minus.circle"
+            case .ineffective: "xmark.circle"
             }
         }
     }

@@ -85,7 +85,7 @@ struct FeedbackView: View {
                 .foregroundColor(.skinLabText)
 
             HStack(spacing: 8) {
-                ForEach(1...5, id: \.self) { score in
+                ForEach(1 ... 5, id: \.self) { score in
                     Button {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                             accuracyScore = score
@@ -99,7 +99,8 @@ struct FeedbackView: View {
                                             ? LinearGradient.skinLabPrimaryGradient
                                             : LinearGradient(
                                                 colors: [Color.gray.opacity(0.15)],
-                                                startPoint: .top, endPoint: .bottom)
+                                                startPoint: .top, endPoint: .bottom
+                                            )
                                     )
                                     .frame(width: 50, height: 50)
 
@@ -112,7 +113,8 @@ struct FeedbackView: View {
                             Text(scoreLabel(for: score))
                                 .font(.system(size: 10))
                                 .foregroundColor(
-                                    score == accuracyScore ? .skinLabPrimary : .skinLabSubtext)
+                                    score == accuracyScore ? .skinLabPrimary : .skinLabSubtext
+                                )
                         }
                     }
                     .buttonStyle(.plain)
@@ -128,12 +130,12 @@ struct FeedbackView: View {
 
     private func scoreLabel(for score: Int) -> String {
         switch score {
-        case 1: return "很差"
-        case 2: return "较差"
-        case 3: return "一般"
-        case 4: return "较好"
-        case 5: return "很准"
-        default: return ""
+        case 1: "很差"
+        case 2: "较差"
+        case 3: "一般"
+        case 4: "较好"
+        case 5: "很准"
+        default: ""
         }
     }
 
@@ -167,8 +169,7 @@ struct FeedbackView: View {
         .skinLabSoftShadow(radius: 8, y: 4)
     }
 
-    private func helpfulButton(isYes: Bool, selected: Bool, icon: String, text: String) -> some View
-    {
+    private func helpfulButton(isYes: Bool, selected: Bool, icon: String, text: String) -> some View {
         Button {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                 isHelpful = isYes

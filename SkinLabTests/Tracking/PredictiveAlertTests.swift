@@ -1,10 +1,8 @@
 // SkinLabTests/Tracking/PredictiveAlertTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class PredictiveAlertTests: XCTestCase {
-
     // MARK: - AlertSeverity Tests
 
     func testAlertSeverity_rawValues() {
@@ -27,21 +25,21 @@ final class PredictiveAlertTests: XCTestCase {
 
     // MARK: - PredictiveAlert Computed Properties Tests
 
-    func testPredictiveAlert_daysFromNow_future() {
+    func testPredictiveAlert_daysFromNow_future() throws {
         // Use start of day to ensure consistent day counting
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        let futureDate = calendar.date(byAdding: .day, value: 5, to: today)!
+        let futureDate = try XCTUnwrap(calendar.date(byAdding: .day, value: 5, to: today))
         let alert = createTestAlert(predictedDate: futureDate)
 
         // daysFromNow should be around 5 (may vary by 1 due to timing)
         XCTAssertTrue(alert.daysFromNow >= 4 && alert.daysFromNow <= 5)
     }
 
-    func testPredictiveAlert_daysFromNow_past() {
+    func testPredictiveAlert_daysFromNow_past() throws {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        let pastDate = calendar.date(byAdding: .day, value: -3, to: today)!
+        let pastDate = try XCTUnwrap(calendar.date(byAdding: .day, value: -3, to: today))
         let alert = createTestAlert(predictedDate: pastDate)
 
         // daysFromNow should be around -3 (may vary by 1 due to timing)
@@ -99,30 +97,30 @@ final class PredictiveAlertTests: XCTestCase {
         XCTAssertEqual(alert.predictedDateText, "今天")
     }
 
-    func testPredictiveAlert_predictedDateText_tomorrow() {
+    func testPredictiveAlert_predictedDateText_tomorrow() throws {
         // Create a date that is definitely 1 calendar day from now
         let calendar = Calendar.current
-        let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date()))!
+        let tomorrow = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date())))
         // Add 12 hours to be in the middle of the day
-        let tomorrowNoon = calendar.date(byAdding: .hour, value: 12, to: tomorrow)!
+        let tomorrowNoon = try XCTUnwrap(calendar.date(byAdding: .hour, value: 12, to: tomorrow))
         let alert = createTestAlert(predictedDate: tomorrowNoon)
 
         // The result depends on when the test runs, accept either
         XCTAssertTrue(alert.predictedDateText == "明天" || alert.predictedDateText == "今天")
     }
 
-    func testPredictiveAlert_predictedDateText_future() {
+    func testPredictiveAlert_predictedDateText_future() throws {
         let calendar = Calendar.current
-        let futureStart = calendar.date(byAdding: .day, value: 5, to: calendar.startOfDay(for: Date()))!
-        let futureNoon = calendar.date(byAdding: .hour, value: 12, to: futureStart)!
+        let futureStart = try XCTUnwrap(calendar.date(byAdding: .day, value: 5, to: calendar.startOfDay(for: Date())))
+        let futureNoon = try XCTUnwrap(calendar.date(byAdding: .hour, value: 12, to: futureStart))
         let alert = createTestAlert(predictedDate: futureNoon)
 
         // Allow for day boundary timing (4 or 5 days)
         XCTAssertTrue(alert.predictedDateText == "5天后" || alert.predictedDateText == "4天后")
     }
 
-    func testPredictiveAlert_predictedDateText_past() {
-        let past = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+    func testPredictiveAlert_predictedDateText_past() throws {
+        let past = try XCTUnwrap(Calendar.current.date(byAdding: .day, value: -1, to: Date()))
         let alert = createTestAlert(predictedDate: past)
 
         XCTAssertEqual(alert.predictedDateText, "已过期")

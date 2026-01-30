@@ -1,5 +1,5 @@
-import SwiftData
 import Foundation
+import SwiftData
 
 /// Progress tracking for each achievement (persisted separately from badge definitions)
 @Model

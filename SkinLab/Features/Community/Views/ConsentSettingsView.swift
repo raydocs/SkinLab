@@ -234,7 +234,6 @@ struct ConsentOptionCard: View {
             .cornerRadius(6)
     }
 
-    @ViewBuilder
     private func dataShareInfo(for level: ConsentLevel) -> some View {
         HStack(spacing: 12) {
             switch level {

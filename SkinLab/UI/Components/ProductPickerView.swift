@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ProductPickerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -15,7 +15,7 @@ struct ProductPickerView: View {
         guard !query.isEmpty else { return products }
         return products.filter {
             $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.brand.localizedCaseInsensitiveContains(query)
+                $0.brand.localizedCaseInsensitiveContains(query)
         }
     }
 
@@ -86,7 +86,7 @@ struct ProductPickerView: View {
 
                         // Product list
                         Section {
-                            if filteredProducts.isEmpty && !searchText.isEmpty {
+                            if filteredProducts.isEmpty, !searchText.isEmpty {
                                 HStack {
                                     Spacer()
                                     VStack(spacing: 8) {
@@ -138,6 +138,7 @@ struct ProductPickerView: View {
     }
 
     // MARK: - Empty State View
+
     private var emptyStateView: some View {
         VStack(spacing: 20) {
             Spacer()
@@ -207,6 +208,7 @@ struct ProductPickerView: View {
 }
 
 // MARK: - Product Selection Row
+
 private struct ProductSelectionRow: View {
     let product: ProductRecord
     let isSelected: Bool
@@ -241,7 +243,7 @@ private struct ProductSelectionRow: View {
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
 
-                        if let category = category {
+                        if let category {
                             Text("·")
                                 .foregroundColor(.skinLabSubtext)
                             Text(category.displayName)

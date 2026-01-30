@@ -1,8 +1,9 @@
+import AVFoundation
 import Foundation
 import SwiftData
-import AVFoundation
 
 // MARK: - Photo Standardization Metadata
+
 struct PhotoStandardizationMetadata: Codable, Sendable {
     let capturedAt: Date
     let cameraPosition: CameraPosition
@@ -114,8 +115,8 @@ struct PhotoStandardizationMetadata: Codable, Sendable {
     }
 
     enum UserOverride: String, Codable, Sendable {
-        case userConfirmedGood  // User says "photo is fine despite conditions"
-        case userFlaggedIssue   // User says "photo is not standard"
+        case userConfirmedGood // User says "photo is fine despite conditions"
+        case userFlaggedIssue // User says "photo is not standard"
     }
 
     /// Create from CameraService.PhotoCondition
@@ -153,16 +154,17 @@ struct PhotoStandardizationMetadata: Codable, Sendable {
 }
 
 // MARK: - Lifestyle Factors
+
 struct LifestyleFactors: Codable, Sendable {
-    let sleepHours: Double?          // e.g., 6.5, 7.0, 8.5
-    let stressLevel: Int?            // 1-5 scale
-    let waterIntakeLevel: Int?       // 1-5 scale
+    let sleepHours: Double? // e.g., 6.5, 7.0, 8.5
+    let stressLevel: Int? // 1-5 scale
+    let waterIntakeLevel: Int? // 1-5 scale
     let alcoholConsumed: Bool?
-    let exerciseMinutes: Int?        // minutes of exercise
-    let sunExposureLevel: Int?       // 1-5 scale
-    let dietNotes: String?           // optional short notes
-    let cyclePhase: CyclePhase?      // menstrual cycle phase
-    let sceneContext: SkinScenario?  // current skincare scenario context
+    let exerciseMinutes: Int? // minutes of exercise
+    let sunExposureLevel: Int? // 1-5 scale
+    let dietNotes: String? // optional short notes
+    let cyclePhase: CyclePhase? // menstrual cycle phase
+    let sceneContext: SkinScenario? // current skincare scenario context
 
     enum StressLevel: Int, Codable, Sendable {
         case veryLow = 1
@@ -206,8 +208,9 @@ struct LifestyleFactors: Codable, Sendable {
 }
 
 // MARK: - Reliability Metadata
+
 struct ReliabilityMetadata: Codable, Sendable {
-    let score: Double                // 0-1
+    let score: Double // 0-1
     let level: ReliabilityLevel
     let reasons: [ReliabilityReason]
     let computedAt: Date
@@ -226,8 +229,8 @@ struct ReliabilityMetadata: Codable, Sendable {
         case centeringOff
         case blurry
         case noFaceDetected
-        case missingLiveConditions  // From library pick
-        case longInterval           // Check-in was late
+        case missingLiveConditions // From library pick
+        case longInterval // Check-in was late
         case userFlaggedIssue
         case lowAnalysisConfidence
         case inconsistentCameraPosition
@@ -247,33 +250,32 @@ struct ReliabilityMetadata: Codable, Sendable {
 
     /// Human-readable reason descriptions
     func reasonDescriptions() -> [(reason: ReliabilityReason, description: String)] {
-        return reasons.map { reason in
-            let description: String
-            switch reason {
+        reasons.map { reason in
+            let description = switch reason {
             case .lowLight:
-                description = "光线不足"
+                "光线不足"
             case .highLight:
-                description = "光线过强"
+                "光线过强"
             case .angleOff:
-                description = "角度偏差"
+                "角度偏差"
             case .distanceOff:
-                description = "距离不合适"
+                "距离不合适"
             case .centeringOff:
-                description = "面部偏离中心"
+                "面部偏离中心"
             case .blurry:
-                description = "图像模糊"
+                "图像模糊"
             case .noFaceDetected:
-                description = "未检测到面部"
+                "未检测到面部"
             case .missingLiveConditions:
-                description = "从相册选择"
+                "从相册选择"
             case .longInterval:
-                description = "打卡延迟"
+                "打卡延迟"
             case .userFlaggedIssue:
-                description = "用户标记"
+                "用户标记"
             case .lowAnalysisConfidence:
-                description = "AI分析置信度低"
+                "AI分析置信度低"
             case .inconsistentCameraPosition:
-                description = "摄像头位置不一致"
+                "摄像头位置不一致"
             }
             return (reason, description)
         }
@@ -281,6 +283,7 @@ struct ReliabilityMetadata: Codable, Sendable {
 }
 
 // MARK: - Timeline Display Policy
+
 struct TimelineDisplayPolicy: Codable, Sendable {
     let defaultMode: TimelineMode
     let excludedCount: Int
@@ -313,15 +316,16 @@ struct TimelineDisplayPolicy: Codable, Sendable {
 }
 
 // MARK: - Lifestyle Correlation Insight
+
 struct LifestyleCorrelationInsight: Codable, Identifiable, Sendable {
     let id: UUID
     let factor: LifestyleFactorKey
-    let targetMetric: String          // e.g., "痘痘", "泛红", "综合评分"
-    let correlation: Double           // -1 to 1
+    let targetMetric: String // e.g., "痘痘", "泛红", "综合评分"
+    let correlation: Double // -1 to 1
     let direction: CorrelationDirection
     let sampleCount: Int
     let confidence: ConfidenceScore
-    let interpretation: String        // Non-causal wording
+    let interpretation: String // Non-causal wording
 
     enum LifestyleFactorKey: String, Codable, Sendable {
         case sleepHours
@@ -338,37 +342,37 @@ struct LifestyleCorrelationInsight: Codable, Identifiable, Sendable {
         /// Display label for the factor
         var label: String {
             switch self {
-            case .sleepHours: return "睡眠时间"
-            case .stressLevel: return "压力水平"
-            case .waterIntakeLevel: return "饮水量"
-            case .alcohol: return "饮酒"
-            case .exerciseMinutes: return "运动"
-            case .sunExposureLevel: return "日晒"
-            case .humidity: return "湿度"
-            case .uvIndex: return "紫外线"
-            case .airQuality: return "空气质量"
+            case .sleepHours: "睡眠时间"
+            case .stressLevel: "压力水平"
+            case .waterIntakeLevel: "饮水量"
+            case .alcohol: "饮酒"
+            case .exerciseMinutes: "运动"
+            case .sunExposureLevel: "日晒"
+            case .humidity: "湿度"
+            case .uvIndex: "紫外线"
+            case .airQuality: "空气质量"
             }
         }
 
         /// SF Symbol icon for the factor
         var icon: String {
             switch self {
-            case .sleepHours: return "moon.zzz.fill"
-            case .stressLevel: return "brain.head.profile"
-            case .waterIntakeLevel: return "drop.fill"
-            case .alcohol: return "wineglass.fill"
-            case .exerciseMinutes: return "figure.run"
-            case .sunExposureLevel: return "sun.max.fill"
-            case .humidity: return "humidity.fill"
-            case .uvIndex: return "sun.max.trianglebadge.exclamationmark"
-            case .airQuality: return "aqi.medium"
+            case .sleepHours: "moon.zzz.fill"
+            case .stressLevel: "brain.head.profile"
+            case .waterIntakeLevel: "drop.fill"
+            case .alcohol: "wineglass.fill"
+            case .exerciseMinutes: "figure.run"
+            case .sunExposureLevel: "sun.max.fill"
+            case .humidity: "humidity.fill"
+            case .uvIndex: "sun.max.trianglebadge.exclamationmark"
+            case .airQuality: "aqi.medium"
             }
         }
     }
 
     enum CorrelationDirection: String, Codable, Sendable {
-        case positive    // More of factor → better metric
-        case negative    // More of factor → worse metric
+        case positive // More of factor → better metric
+        case negative // More of factor → worse metric
         case none
     }
 

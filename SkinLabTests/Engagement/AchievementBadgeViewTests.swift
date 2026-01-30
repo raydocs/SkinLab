@@ -1,14 +1,13 @@
-import XCTest
 @testable import SkinLab
 import SwiftUI
+import XCTest
 
 /// UI tests for AchievementBadgeView
 final class AchievementBadgeViewTests: XCTestCase {
-
     // MARK: - Badge Rendering Tests
 
-    func testBadgeRendersCorrectly() {
-        let badge = AchievementDefinitions.allBadges.first!
+    func testBadgeRendersCorrectly() throws {
+        let badge = try XCTUnwrap(AchievementDefinitions.allBadges.first)
         let progress = AchievementProgress(achievementID: badge.id)
 
         let view = AchievementBadgeView(
@@ -21,8 +20,8 @@ final class AchievementBadgeViewTests: XCTestCase {
         XCTAssertNotNil(view)
     }
 
-    func testLockedBadgeShowsProgress() {
-        let badge = AchievementDefinitions.allBadges.first!
+    func testLockedBadgeShowsProgress() throws {
+        let badge = try XCTUnwrap(AchievementDefinitions.allBadges.first)
         let progress = AchievementProgress(achievementID: badge.id)
         progress.progress = 0.5
         progress.isUnlocked = false
@@ -36,8 +35,8 @@ final class AchievementBadgeViewTests: XCTestCase {
         XCTAssertNotNil(view)
     }
 
-    func testUnlockedBadgeShowsDate() {
-        let badge = AchievementDefinitions.allBadges.first!
+    func testUnlockedBadgeShowsDate() throws {
+        let badge = try XCTUnwrap(AchievementDefinitions.allBadges.first)
         let progress = AchievementProgress(achievementID: badge.id)
         progress.isUnlocked = true
         progress.unlockedAt = Date()
@@ -53,8 +52,8 @@ final class AchievementBadgeViewTests: XCTestCase {
 
     // MARK: - Badge Size Tests
 
-    func testBadgeSmallSize() {
-        let badge = AchievementDefinitions.allBadges.first!
+    func testBadgeSmallSize() throws {
+        let badge = try XCTUnwrap(AchievementDefinitions.allBadges.first)
         let view = AchievementBadgeView(
             badge: badge,
             progress: nil,
@@ -64,8 +63,8 @@ final class AchievementBadgeViewTests: XCTestCase {
         XCTAssertNotNil(view)
     }
 
-    func testBadgeLargeSize() {
-        let badge = AchievementDefinitions.allBadges.first!
+    func testBadgeLargeSize() throws {
+        let badge = try XCTUnwrap(AchievementDefinitions.allBadges.first)
         let view = AchievementBadgeView(
             badge: badge,
             progress: nil,
@@ -101,7 +100,6 @@ final class AchievementBadgeViewTests: XCTestCase {
 // MARK: - AchievementDashboardView Tests
 
 final class AchievementDashboardViewTests: XCTestCase {
-
     func testDashboardRendersCorrectly() {
         let view = AchievementDashboardView()
         XCTAssertNotNil(view)

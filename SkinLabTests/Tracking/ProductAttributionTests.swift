@@ -1,9 +1,8 @@
 // SkinLabTests/Tracking/ProductAttributionTests.swift
-import XCTest
 @testable import SkinLab
+import XCTest
 
 final class ProductAttributionTests: XCTestCase {
-
     var analyzer: ProductEffectAnalyzer!
     let sessionId = UUID()
 
@@ -301,7 +300,7 @@ final class ProductAttributionTests: XCTestCase {
             contributingFactors: [],
             usageCount: 5,
             avgDayInterval: 2.0,
-            attributionWeight: 0.5,  // > 0.4
+            attributionWeight: 0.5, // > 0.4
             soloUsageDays: [1, 3, 5],
             coUsedProductIds: nil
         )
@@ -318,7 +317,7 @@ final class ProductAttributionTests: XCTestCase {
             contributingFactors: [],
             usageCount: 5,
             avgDayInterval: 2.0,
-            attributionWeight: 0.3,  // <= 0.4
+            attributionWeight: 0.3, // <= 0.4
             soloUsageDays: [1, 3, 5],
             coUsedProductIds: nil
         )
@@ -335,7 +334,7 @@ final class ProductAttributionTests: XCTestCase {
             contributingFactors: [],
             usageCount: 5,
             avgDayInterval: 2.0,
-            attributionWeight: nil,  // nil
+            attributionWeight: nil, // nil
             soloUsageDays: [1, 3, 5],
             coUsedProductIds: nil
         )
@@ -353,7 +352,7 @@ final class ProductAttributionTests: XCTestCase {
             contributingFactors: [],
             usageCount: 5,
             avgDayInterval: 2.0,
-            attributionWeight: 0.4,  // exactly 0.4
+            attributionWeight: 0.4, // exactly 0.4
             soloUsageDays: [1, 3, 5],
             coUsedProductIds: nil
         )
@@ -373,7 +372,7 @@ final class ProductAttributionTests: XCTestCase {
             usageCount: 5,
             avgDayInterval: 2.0,
             attributionWeight: 0.5,
-            soloUsageDays: nil,  // nil
+            soloUsageDays: nil, // nil
             coUsedProductIds: nil
         )
 
@@ -390,7 +389,7 @@ final class ProductAttributionTests: XCTestCase {
             usageCount: 5,
             avgDayInterval: 2.0,
             attributionWeight: 0.5,
-            soloUsageDays: [],  // empty
+            soloUsageDays: [], // empty
             coUsedProductIds: nil
         )
 
@@ -407,7 +406,7 @@ final class ProductAttributionTests: XCTestCase {
             usageCount: 5,
             avgDayInterval: 2.0,
             attributionWeight: 0.5,
-            soloUsageDays: [1, 3, 5],  // has data
+            soloUsageDays: [1, 3, 5], // has data
             coUsedProductIds: nil
         )
 
@@ -495,8 +494,8 @@ final class ProductAttributionTests: XCTestCase {
 
         let checkIns = [
             createCheckIn(day: 1, products: ["A", "B"], analysisId: analysisId1),
-            createCheckIn(day: 2, products: ["A"], analysisId: analysisId2),  // Missing B
-            createCheckIn(day: 3, products: ["B"], analysisId: analysisId3)   // Missing A
+            createCheckIn(day: 2, products: ["A"], analysisId: analysisId2), // Missing B
+            createCheckIn(day: 3, products: ["B"], analysisId: analysisId3) // Missing A
         ]
 
         let analyses: [UUID: SkinAnalysis] = [

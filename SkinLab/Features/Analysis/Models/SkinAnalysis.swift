@@ -2,32 +2,34 @@ import Foundation
 import SwiftData
 
 // MARK: - Skin Types
+
 enum SkinType: String, Codable, CaseIterable, Sendable {
-    case dry = "dry"
-    case oily = "oily"
-    case combination = "combination"
-    case sensitive = "sensitive"
-    
+    case dry
+    case oily
+    case combination
+    case sensitive
+
     var displayName: String {
         switch self {
-        case .dry: return "干性"
-        case .oily: return "油性"
-        case .combination: return "混合性"
-        case .sensitive: return "敏感性"
+        case .dry: "干性"
+        case .oily: "油性"
+        case .combination: "混合性"
+        case .sensitive: "敏感性"
         }
     }
-    
+
     var icon: String {
         switch self {
-        case .dry: return "drop"
-        case .oily: return "drop.fill"
-        case .combination: return "circle.lefthalf.filled"
-        case .sensitive: return "exclamationmark.triangle"
+        case .dry: "drop"
+        case .oily: "drop.fill"
+        case .combination: "circle.lefthalf.filled"
+        case .sensitive: "exclamationmark.triangle"
         }
     }
 }
 
 // MARK: - Issue Scores
+
 struct IssueScores: Codable, Equatable, Sendable {
     let spots: Int
     let acne: Int
@@ -36,7 +38,7 @@ struct IssueScores: Codable, Equatable, Sendable {
     let redness: Int
     let evenness: Int
     let texture: Int
-    
+
     static let empty = IssueScores(
         spots: 0, acne: 0, pores: 0, wrinkles: 0,
         redness: 0, evenness: 0, texture: 0
@@ -44,19 +46,21 @@ struct IssueScores: Codable, Equatable, Sendable {
 }
 
 // MARK: - Region Scores
+
 struct RegionScores: Codable, Equatable, Sendable {
     let tZone: Int
     let leftCheek: Int
     let rightCheek: Int
     let eyeArea: Int
     let chin: Int
-    
+
     static let empty = RegionScores(
         tZone: 0, leftCheek: 0, rightCheek: 0, eyeArea: 0, chin: 0
     )
 }
 
 // MARK: - Image Quality
+
 struct ImageQuality: Codable, Equatable, Sendable {
     let lighting: Int
     let sharpness: Int
@@ -64,7 +68,7 @@ struct ImageQuality: Codable, Equatable, Sendable {
     let occlusion: Int
     let faceCoverage: Int
     let notes: [String]
-    
+
     static let empty = ImageQuality(
         lighting: 0, sharpness: 0, angle: 0,
         occlusion: 0, faceCoverage: 0, notes: []
@@ -72,6 +76,7 @@ struct ImageQuality: Codable, Equatable, Sendable {
 }
 
 // MARK: - Skin Analysis Result
+
 struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
     let id: UUID
     let skinType: SkinType
@@ -83,7 +88,7 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
     let analyzedAt: Date
     let confidenceScore: Int
     let imageQuality: ImageQuality?
-    
+
     init(
         id: UUID = UUID(),
         skinType: SkinType,
@@ -107,8 +112,8 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
         self.confidenceScore = confidenceScore
         self.imageQuality = imageQuality
     }
-    
-    // Mock for previews
+
+    /// Mock for previews
     static let mock = SkinAnalysis(
         skinType: .combination,
         skinAge: 26,
@@ -138,6 +143,7 @@ struct SkinAnalysis: Codable, Identifiable, Equatable, Sendable {
 }
 
 // MARK: - SwiftData Model
+
 @Model
 final class SkinAnalysisRecord {
     @Attribute(.unique) var id: UUID
@@ -151,7 +157,7 @@ final class SkinAnalysisRecord {
     var photoPath: String?
     var confidenceScore: Int
     var qualityData: Data?
-    
+
     init(from analysis: SkinAnalysis, photoPath: String? = nil) {
         self.id = analysis.id
         self.skinType = analysis.skinType.rawValue
@@ -165,14 +171,14 @@ final class SkinAnalysisRecord {
         self.confidenceScore = analysis.confidenceScore
         self.qualityData = try? JSONEncoder().encode(analysis.imageQuality)
     }
-    
+
     func toAnalysis() -> SkinAnalysis? {
         guard let skinType = SkinType(rawValue: skinType) else { return nil }
-        
+
         let issues = issuesData.flatMap { try? JSONDecoder().decode(IssueScores.self, from: $0) } ?? .empty
         let regions = regionsData.flatMap { try? JSONDecoder().decode(RegionScores.self, from: $0) } ?? .empty
         let quality = qualityData.flatMap { try? JSONDecoder().decode(ImageQuality.self, from: $0) }
-        
+
         return SkinAnalysis(
             id: id,
             skinType: skinType,

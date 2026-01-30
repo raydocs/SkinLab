@@ -1,6 +1,6 @@
+import os.log
 import SwiftUI
 import UIKit
-import os.log
 
 /// View displayed when the app encounters a critical initialization error
 /// Provides recovery options for the user instead of crashing
@@ -38,7 +38,7 @@ struct AppRecoveryView: View {
                 .padding(.horizontal, 32)
 
             // Error details (collapsible)
-            if let error = error {
+            if let error {
                 DisclosureGroup("技术详情") {
                     Text(error.localizedDescription)
                         .font(.caption)

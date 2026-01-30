@@ -11,10 +11,12 @@ struct AchievementUnlockResult {
 @MainActor
 final class AchievementService {
     // MARK: - Dependencies
+
     private let modelContext: ModelContext
     private let streakService: StreakTrackingService
 
     // MARK: - Initialization
+
     init(modelContext: ModelContext, streakService: StreakTrackingService) {
         self.modelContext = modelContext
         self.streakService = streakService
@@ -42,7 +44,7 @@ final class AchievementService {
             progressRecord.lastUpdated = Date()
 
             // Check for unlock
-            if progress >= 1.0 && !progressRecord.isUnlocked {
+            if progress >= 1.0, !progressRecord.isUnlocked {
                 progressRecord.isUnlocked = true
                 progressRecord.unlockedAt = Date()
                 newlyUnlocked.append(badge)
@@ -79,19 +81,17 @@ final class AchievementService {
 
     /// Get progress for a specific achievement (internal)
     private func getProgress(for achievement: AchievementDefinition, streakStatus: StreakStatus) -> Double {
-        let currentValue: Int
-
-        switch achievement.requirementType {
+        let currentValue: Int = switch achievement.requirementType {
         case .streakDays:
-            currentValue = streakStatus.currentStreak
+            streakStatus.currentStreak
         case .totalCheckIns:
-            currentValue = streakStatus.totalCheckIns
+            streakStatus.totalCheckIns
         case .skinTwinMatches:
-            currentValue = getSkinTwinMatchCount()
+            getSkinTwinMatchCount()
         case .productAnalysisCompleted:
-            currentValue = getProductAnalysisCount()
+            getProductAnalysisCount()
         case .shares:
-            currentValue = getShareCount()
+            getShareCount()
         }
 
         return min(1.0, Double(currentValue) / Double(achievement.requirementValue))

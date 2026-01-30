@@ -70,7 +70,7 @@ struct StreakBadgeView: View {
                 }
 
                 // Freeze button
-                if currentStreak >= 3 && freezesAvailable > 0 {
+                if currentStreak >= 3, freezesAvailable > 0 {
                     Button(action: {
                         onFreezeTap?()
                     }) {
@@ -131,15 +131,15 @@ struct StreakBadgeView: View {
 
     private var streakColors: [Color] {
         if currentStreak >= 28 {
-            return [.purple, .pink] // Legendary
+            [.purple, .pink] // Legendary
         } else if currentStreak >= 14 {
-            return [.orange, .red] // Epic
+            [.orange, .red] // Epic
         } else if currentStreak >= 7 {
-            return [.yellow, .orange] // Great
+            [.yellow, .orange] // Great
         } else if currentStreak >= 3 {
-            return [.green, .mint] // Good
+            [.green, .mint] // Good
         } else {
-            return [.gray, .gray.opacity(0.7)] // Starting
+            [.gray, .gray.opacity(0.7)] // Starting
         }
     }
 

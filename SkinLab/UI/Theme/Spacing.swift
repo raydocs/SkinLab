@@ -1,17 +1,18 @@
 import SwiftUI
 
 // MARK: - 间距系统 - 8pt基础网格
-struct Spacing {
+
+enum Spacing {
     // 基础间距
-    static let xs: CGFloat = 4    // 极小间距
-    static let sm: CGFloat = 8    // 小间距
-    static let md: CGFloat = 12   // 中间距
-    static let lg: CGFloat = 16   // 标准间距
-    static let xl: CGFloat = 20   // 大间距
-    static let xl2: CGFloat = 24  // 超大间距
-    static let xl3: CGFloat = 32  // 特大间距
-    static let xl4: CGFloat = 48  // 巨大间距
-    static let xl5: CGFloat = 64  // 最大间距
+    static let xs: CGFloat = 4 // 极小间距
+    static let sm: CGFloat = 8 // 小间距
+    static let md: CGFloat = 12 // 中间距
+    static let lg: CGFloat = 16 // 标准间距
+    static let xl: CGFloat = 20 // 大间距
+    static let xl2: CGFloat = 24 // 超大间距
+    static let xl3: CGFloat = 32 // 特大间距
+    static let xl4: CGFloat = 48 // 巨大间距
+    static let xl5: CGFloat = 64 // 最大间距
 
     // 组件内边距
     static let cardPadding: CGFloat = lg
@@ -26,7 +27,7 @@ struct Spacing {
     static let sectionSpacing: CGFloat = xl3
     static let sectionTitleSpacing: CGFloat = md
 
-    // 列表项间距
+    /// 列表项间距
     static let listItemSpacing: CGFloat = md
 
     // 圆角
@@ -37,7 +38,8 @@ struct Spacing {
 }
 
 // MARK: - 字体排版系统 - 浪漫风格优化
-struct Typography {
+
+enum Typography {
     // 字体层级
     static let largeTitle = Font.system(size: 36, weight: .bold, design: .rounded)
     static let title = Font.system(size: 28, weight: .bold, design: .rounded)
@@ -62,6 +64,7 @@ struct Typography {
 }
 
 // MARK: - 间距扩展
+
 extension View {
     func paddingS() -> some View {
         padding(Spacing.sm)
@@ -93,6 +96,7 @@ extension View {
 }
 
 // MARK: - 快捷排版修饰符
+
 struct CompactSpacingModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -124,6 +128,7 @@ extension View {
 }
 
 // MARK: - 排版辅助工具
+
 extension Text {
     func romanticStyle() -> Text {
         self
@@ -151,7 +156,8 @@ extension Text {
 }
 
 // MARK: - 布局系统辅助
-struct LayoutMetrics {
+
+enum LayoutMetrics {
     // 屏幕尺寸相关
     static let cardAspectRatio: CGFloat = 1.2
     static let imageAspectRatio: CGFloat = 0.8

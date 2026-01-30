@@ -24,13 +24,16 @@ struct StreakStatus {
 @MainActor
 final class StreakTrackingService {
     // MARK: - Dependencies
+
     private let modelContext: ModelContext
     private let calendar: Calendar
 
     // MARK: - Constants
+
     private let freezeRefillDays = 30
 
     // MARK: - Initialization
+
     init(modelContext: ModelContext, calendar: Calendar = .current) {
         self.modelContext = modelContext
         self.calendar = calendar
@@ -68,22 +71,21 @@ final class StreakTrackingService {
         // Check if a freeze was used for the missed day (retroactive)
         let missedDay = lastCheckInDay.map { calendar.date(byAdding: .day, value: 1, to: $0)! }
         let freezeWasUsed = missedDay != nil && metrics.lastFreezeUsedForDay != nil &&
-                              calendar.isDate(metrics.lastFreezeUsedForDay!, inSameDayAs: missedDay!)
+            calendar.isDate(metrics.lastFreezeUsedForDay!, inSameDayAs: missedDay!)
 
         // Determine if streak is maintained (with freeze or consecutive)
-        let streakMaintained: Bool
-        if daysSince == 1 {
+        let streakMaintained = if daysSince == 1 {
             // Consecutive day - increment streak
-            streakMaintained = true
-        } else if daysSince == 2 && freezeWasUsed {
+            true
+        } else if daysSince == 2, freezeWasUsed {
             // Missed one day but freeze was used
-            streakMaintained = true
+            true
         } else if daysSince >= 2 {
             // Missed multiple days or no freeze - reset streak
-            streakMaintained = false
+            false
         } else {
             // Same day or first check-in
-            streakMaintained = true
+            true
         }
 
         // Update streak count
@@ -115,7 +117,7 @@ final class StreakTrackingService {
         metrics.totalCheckIns += 1
 
         // Clear freeze usage flag if it was consumed
-        if freezeWasUsed && daysSince == 2 {
+        if freezeWasUsed, daysSince == 2 {
             metrics.lastFreezeUsedForDay = nil
         }
 
@@ -140,7 +142,7 @@ final class StreakTrackingService {
         var daysUntilRefill: Int?
         if let lastRefill = metrics.lastFreezeRefillDate {
             let nextRefill = calendar.date(byAdding: .day, value: freezeRefillDays, to: lastRefill)
-            if let nextRefill = nextRefill {
+            if let nextRefill {
                 let components = calendar.dateComponents([.day], from: Date(), to: nextRefill)
                 daysUntilRefill = max(0, components.day ?? 0)
             }
@@ -294,7 +296,7 @@ final class StreakTrackingService {
 
         // Sort all check-in days
         let sortedDates = checkInDays.compactMap { dateFormatter.date(from: $0) }
-                                     .sorted()
+            .sorted()
 
         // Calculate streaks from consecutive days
         var currentStreak = 0
@@ -344,7 +346,7 @@ final class StreakTrackingService {
         let metrics = getOrCreateMetrics()
         metrics.streakCount = max(0, currentStreak)
         metrics.longestStreak = max(currentStreak, longestStreak)
-        metrics.totalCheckIns = checkInDays.count  // Unique check-in days
+        metrics.totalCheckIns = checkInDays.count // Unique check-in days
         if let lastSession = sessions.last {
             metrics.lastCheckInDate = lastSession.startDate
         }
@@ -378,7 +380,7 @@ final class StreakTrackingService {
 
     /// Calculate the number of calendar days between two dates
     private func deltaDays(from start: Date?, to end: Date) -> Int {
-        guard let start = start else {
+        guard let start else {
             return 1 // First check-in
         }
 

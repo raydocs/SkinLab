@@ -1,13 +1,5 @@
-//
-//  AnalyticsVisualizationViews.swift
-//  SkinLab
-//
-//  AI增强分析可视化组件
-//  包含预测图表、异常检测、热力图、置信度徽章和季节性分析等可视化
-//
-
-import SwiftUI
 import Charts
+import SwiftUI
 
 // MARK: - Forecast Chart View
 
@@ -16,7 +8,7 @@ struct ForecastChartView: View {
     let forecast: TrendForecast
     let historicalData: [ScorePoint]
     @State private var showDetails = false
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // 标题和风险预警
@@ -28,12 +20,12 @@ struct ForecastChartView: View {
                         .font(.skinLabCaption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 ConfidenceBadgeView(confidence: forecast.confidence)
             }
-            
+
             // 风险预警
             if let alert = forecast.riskAlert {
                 VStack(alignment: .leading, spacing: 4) {
@@ -52,7 +44,7 @@ struct ForecastChartView: View {
                 .background(Color(alert.colorName).opacity(0.1))
                 .cornerRadius(8)
             }
-            
+
             // 图表
             Chart {
                 // 历史数据
@@ -63,14 +55,14 @@ struct ForecastChartView: View {
                     )
                     .foregroundStyle(Color.blue.gradient)
                     .lineStyle(StrokeStyle(lineWidth: 2))
-                    
+
                     PointMark(
                         x: .value("天数", point.day),
                         y: .value("数值", point.overallScore)
                     )
                     .foregroundStyle(Color.blue)
                 }
-                
+
                 // 预测数据
                 ForEach(forecast.points) { point in
                     LineMark(
@@ -79,7 +71,7 @@ struct ForecastChartView: View {
                     )
                     .foregroundStyle(Color.purple.gradient)
                     .lineStyle(StrokeStyle(lineWidth: 2, dash: [6, 3]))
-                    
+
                     // 置信区间
                     AreaMark(
                         x: .value("天数", point.day),
@@ -90,14 +82,14 @@ struct ForecastChartView: View {
                 }
             }
             .frame(height: 200)
-            .chartYScale(domain: 0...100)
+            .chartYScale(domain: 0 ... 100)
             .chartXAxis {
                 AxisMarks(position: .bottom)
             }
             .chartYAxis {
                 AxisMarks(position: .leading)
             }
-            
+
             // 图例
             HStack(spacing: 20) {
                 HStack(spacing: 4) {
@@ -107,7 +99,7 @@ struct ForecastChartView: View {
                     Text("历史数据")
                         .font(.skinLabCaption)
                 }
-                
+
                 HStack(spacing: 4) {
                     Rectangle()
                         .fill(Color.purple)
@@ -115,7 +107,7 @@ struct ForecastChartView: View {
                     Text("预测趋势")
                         .font(.skinLabCaption)
                 }
-                
+
                 HStack(spacing: 4) {
                     Rectangle()
                         .fill(Color.purple.opacity(0.3))
@@ -138,7 +130,7 @@ struct ForecastChartView: View {
 /// 异常检测列表
 struct AnomalyListView: View {
     let anomalies: [AnomalyDetectionResult]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -151,7 +143,7 @@ struct AnomalyListView: View {
                     .font(.skinLabCaption)
                     .foregroundColor(.secondary)
             }
-            
+
             if anomalies.isEmpty {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
@@ -179,14 +171,14 @@ struct AnomalyListView: View {
 
 struct AnomalyRow: View {
     let anomaly: AnomalyDetectionResult
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             // 严重程度图标
             Image(systemName: severityIcon)
                 .foregroundColor(severityColor)
                 .font(.title3)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(anomaly.metric)
@@ -197,12 +189,12 @@ struct AnomalyRow: View {
                         .font(.skinLabCaption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Text(anomaly.reason)
                     .font(.skinLabCaption)
                     .foregroundColor(.secondary)
                     .lineLimit(2)
-                
+
                 HStack {
                     Text("\(anomaly.severity.rawValue)")
                         .font(.skinLabCaption)
@@ -211,7 +203,7 @@ struct AnomalyRow: View {
                         .background(severityColor.opacity(0.2))
                         .foregroundColor(severityColor)
                         .cornerRadius(4)
-                    
+
                     Text("Z-score: \(String(format: "%.2f", anomaly.zScore))")
                         .font(.skinLabCaption)
                         .foregroundColor(.secondary)
@@ -222,20 +214,20 @@ struct AnomalyRow: View {
         .background(Color(.secondarySystemBackground))
         .cornerRadius(12)
     }
-    
+
     private var severityIcon: String {
         switch anomaly.severity {
-        case .severe: return "exclamationmark.triangle.fill"
-        case .moderate: return "exclamationmark.circle.fill"
-        case .mild: return "info.circle.fill"
+        case .severe: "exclamationmark.triangle.fill"
+        case .moderate: "exclamationmark.circle.fill"
+        case .mild: "info.circle.fill"
         }
     }
-    
+
     private var severityColor: Color {
         switch anomaly.severity {
-        case .severe: return .red
-        case .moderate: return .orange
-        case .mild: return .yellow
+        case .severe: .red
+        case .moderate: .orange
+        case .mild: .yellow
         }
     }
 }
@@ -245,14 +237,14 @@ struct AnomalyRow: View {
 /// 多维热力图
 struct HeatmapGridView: View {
     let heatmap: HeatmapData
-    
+
     private let columns: [GridItem] = Array(repeating: GridItem(.flexible(), spacing: 4), count: 7)
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(heatmap.title)
                 .font(.skinLabHeadline)
-            
+
             // 热力图网格
             LazyVGrid(columns: columns, spacing: 4) {
                 // 表头(维度名称)
@@ -262,7 +254,7 @@ struct HeatmapGridView: View {
                         .lineLimit(1)
                         .frame(maxWidth: .infinity)
                 }
-                
+
                 // 数据行(按天)
                 ForEach(heatmap.days, id: \.self) { day in
                     ForEach(heatmap.dimensions, id: \.self) { dimension in
@@ -276,7 +268,7 @@ struct HeatmapGridView: View {
                     }
                 }
             }
-            
+
             // 颜色图例
             HStack {
                 Text("低")
@@ -305,7 +297,7 @@ struct HeatmapGridView: View {
 
 struct HeatmapCellView: View {
     let value: Double
-    
+
     var body: some View {
         Rectangle()
             .fill(heatColor)
@@ -317,7 +309,7 @@ struct HeatmapCellView: View {
                     .foregroundColor(.white.opacity(0.8))
             )
     }
-    
+
     private var heatColor: Color {
         if value < 0.3 { return .green }
         if value < 0.5 { return .yellow }
@@ -331,7 +323,7 @@ struct HeatmapCellView: View {
 /// 置信度徽章
 struct ConfidenceBadgeView: View {
     let confidence: ConfidenceScore
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: "checkmark.seal.fill")
@@ -346,13 +338,13 @@ struct ConfidenceBadgeView: View {
         .foregroundColor(levelColor)
         .cornerRadius(8)
     }
-    
+
     private var levelColor: Color {
         switch confidence.level {
-        case .high: return .green
-        case .medium: return .blue
-        case .low: return .orange
-        case .veryLow: return .red
+        case .high: .green
+        case .medium: .blue
+        case .low: .orange
+        case .veryLow: .red
         }
     }
 }
@@ -362,7 +354,7 @@ struct ConfidenceBadgeView: View {
 /// 季节性分析总结
 struct SeasonalitySummaryView: View {
     let patterns: [SeasonalPattern]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -371,7 +363,7 @@ struct SeasonalitySummaryView: View {
                 Text("季节性分析")
                     .font(.skinLabHeadline)
             }
-            
+
             if patterns.isEmpty {
                 Text("样本量不足,暂无季节性分析")
                     .font(.skinLabSubheadline)
@@ -392,7 +384,7 @@ struct SeasonalitySummaryView: View {
 
 struct SeasonalPatternRow: View {
     let pattern: SeasonalPattern
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -402,7 +394,7 @@ struct SeasonalPatternRow: View {
                 Spacer()
                 ConfidenceBadgeView(confidence: pattern.confidence)
             }
-            
+
             HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("泛红指数")
@@ -415,7 +407,7 @@ struct SeasonalPatternRow: View {
                             .fontWeight(.medium)
                     }
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("敏感度")
                         .font(.skinLabCaption)
@@ -428,7 +420,7 @@ struct SeasonalPatternRow: View {
                     }
                 }
             }
-            
+
             Text(pattern.recommendation)
                 .font(.skinLabCaption)
                 .foregroundColor(.secondary)
@@ -445,14 +437,14 @@ struct SeasonalPatternRow: View {
 struct ProgressBar: View {
     let value: Double
     let color: Color
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
                     .frame(height: 4)
-                
+
                 Rectangle()
                     .fill(color)
                     .frame(width: geometry.size.width * min(1, max(0, value)), height: 4)
@@ -468,7 +460,7 @@ struct ProgressBar: View {
 /// 产品效果详细分析
 struct ProductEffectDetailView: View {
     let insights: [ProductEffectInsight]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -477,7 +469,7 @@ struct ProductEffectDetailView: View {
                 Text("产品效果深度分析")
                     .font(.skinLabHeadline)
             }
-            
+
             if insights.isEmpty {
                 Text("暂无产品使用数据")
                     .font(.skinLabSubheadline)
@@ -558,11 +550,11 @@ struct ProductInsightRow: View {
 
     private var effectColor: Color {
         switch insight.effectLevel {
-        case .highlyEffective: return .green
-        case .effective: return .blue
-        case .neutral: return .gray
-        case .ineffective: return .orange
-        case .harmful: return .red
+        case .highlyEffective: .green
+        case .effective: .blue
+        case .neutral: .gray
+        case .ineffective: .orange
+        case .harmful: .red
         }
     }
 }
@@ -707,21 +699,21 @@ struct ProductCombinationSynergyView: View {
 
     private var synergyIcon: String {
         switch insight.synergyLevel {
-        case .highSynergy: return "arrow.up.right.circle.fill"
-        case .mildSynergy: return "arrow.up.right"
-        case .neutral: return "minus.circle"
-        case .mildAntagonism: return "arrow.down.right"
-        case .highAntagonism: return "arrow.down.right.circle.fill"
+        case .highSynergy: "arrow.up.right.circle.fill"
+        case .mildSynergy: "arrow.up.right"
+        case .neutral: "minus.circle"
+        case .mildAntagonism: "arrow.down.right"
+        case .highAntagonism: "arrow.down.right.circle.fill"
         }
     }
 
     private var synergyColor: Color {
         switch insight.synergyLevel {
-        case .highSynergy: return .green
-        case .mildSynergy: return .blue
-        case .neutral: return .gray
-        case .mildAntagonism: return .orange
-        case .highAntagonism: return .red
+        case .highSynergy: .green
+        case .mildSynergy: .blue
+        case .neutral: .gray
+        case .mildAntagonism: .orange
+        case .highAntagonism: .red
         }
     }
 }
@@ -730,7 +722,7 @@ struct ProductCombinationSynergyView: View {
 
 /// 协同效果指示条
 struct SynergyBar: View {
-    let score: Double  // -1 to 1
+    let score: Double // -1 to 1
 
     var body: some View {
         GeometryReader { geometry in
@@ -741,7 +733,7 @@ struct SynergyBar: View {
                     .frame(height: 6)
 
                 // Indicator
-                let normalizedScore = (score + 1) / 2  // Convert -1..1 to 0..1
+                let normalizedScore = (score + 1) / 2 // Convert -1..1 to 0..1
                 let width = geometry.size.width * normalizedScore
                 Rectangle()
                     .fill(barColor)

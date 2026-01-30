@@ -21,17 +21,18 @@ enum BadgeCategory: String, CaseIterable, Codable {
 
 /// Achievement requirement types
 enum AchievementRequirementType: String, Codable {
-    case streakDays = "streakDays"
-    case totalCheckIns = "totalCheckIns"
-    case skinTwinMatches = "skinTwinMatches"
-    case productAnalysisCompleted = "productAnalysisCompleted"
-    case shares = "shares"
+    case streakDays
+    case totalCheckIns
+    case skinTwinMatches
+    case productAnalysisCompleted
+    case shares
 }
 
 /// All achievement badge definitions
 enum AchievementDefinitions {
     static let allBadges: [AchievementDefinition] = [
         // MARK: - Streaks (3 badges)
+
         AchievementDefinition(
             id: "streak_3",
             title: "三日坚持",
@@ -61,6 +62,7 @@ enum AchievementDefinitions {
         ),
 
         // MARK: - Completeness (3 badges)
+
         AchievementDefinition(
             id: "first_analysis",
             title: "新手入门",
@@ -90,6 +92,7 @@ enum AchievementDefinitions {
         ),
 
         // MARK: - Social (3 badges)
+
         AchievementDefinition(
             id: "first_twin",
             title: "初次匹配",
@@ -119,6 +122,7 @@ enum AchievementDefinitions {
         ),
 
         // MARK: - Knowledge (3 badges)
+
         AchievementDefinition(
             id: "analyze_5_products",
             title: "产品分析家",

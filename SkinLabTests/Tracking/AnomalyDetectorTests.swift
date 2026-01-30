@@ -1,9 +1,8 @@
 // SkinLabTests/Tracking/AnomalyDetectorTests.swift
-import XCTest
 @testable import SkinLab
+import XCTest
 
 final class AnomalyDetectorTests: XCTestCase {
-
     var detector: AnomalyDetector!
 
     override func setUp() {
@@ -20,11 +19,11 @@ final class AnomalyDetectorTests: XCTestCase {
 
     private func createDates(count: Int) -> [Date] {
         let baseDate = Date()
-        return (0..<count).map { baseDate.addingTimeInterval(Double($0) * 86400) }
+        return (0 ..< count).map { baseDate.addingTimeInterval(Double($0) * 86400) }
     }
 
     private func createDays(count: Int) -> [Int] {
-        return Array(1...count)
+        Array(1 ... count)
     }
 
     // MARK: - Z-Score Detection Tests
@@ -97,7 +96,7 @@ final class AnomalyDetectorTests: XCTestCase {
             dates: dates,
             metric: "score",
             method: .mad,
-            threshold: 3.0  // Use higher threshold to ensure no false positives
+            threshold: 3.0 // Use higher threshold to ensure no false positives
         )
 
         XCTAssertTrue(anomalies.isEmpty)
@@ -290,7 +289,6 @@ final class AnomalyDetectorTests: XCTestCase {
 // MARK: - AnomalyDetectionResult Tests
 
 final class AnomalyDetectionResultTests: XCTestCase {
-
     func testAnomalyDetectionResult_initialization() {
         let result = AnomalyDetectionResult(
             id: UUID(),

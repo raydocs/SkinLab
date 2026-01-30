@@ -1,12 +1,10 @@
 // SkinLabTests/Scenario/ScenarioTests.swift
-import XCTest
-
 @testable import SkinLab
+import XCTest
 
 // MARK: - SkinScenario Tests
 
 final class SkinScenarioTests: XCTestCase {
-
     // MARK: - All Cases Tests
 
     func testSkinScenario_allCases_has10Cases() {
@@ -68,7 +66,7 @@ final class SkinScenarioTests: XCTestCase {
     func testSkinScenario_color_isNotNil() {
         for scenario in SkinScenario.allCases {
             // Color is a struct, so it's never nil, but we can verify it exists
-            let _ = scenario.color
+            _ = scenario.color
             // If we get here without crash, the color is valid
         }
     }
@@ -141,7 +139,6 @@ final class SkinScenarioTests: XCTestCase {
 // MARK: - ScenarioRecommendation Tests
 
 final class ScenarioRecommendationTests: XCTestCase {
-
     func testScenarioRecommendation_initialization() {
         let recommendation = ScenarioRecommendation(
             scenario: .office,
@@ -214,7 +211,6 @@ final class ScenarioRecommendationTests: XCTestCase {
 // MARK: - ScenarioAdvisor Tests
 
 final class ScenarioAdvisorTests: XCTestCase {
-
     private var advisor: ScenarioAdvisor!
 
     override func setUp() {
@@ -523,7 +519,6 @@ final class ScenarioAdvisorTests: XCTestCase {
 // MARK: - ScenarioCategory Tests
 
 final class ScenarioCategoryTests: XCTestCase {
-
     func testScenarioCategory_allCases_has4Categories() {
         XCTAssertEqual(ScenarioCategory.allCases.count, 4)
     }
@@ -587,7 +582,6 @@ final class ScenarioCategoryTests: XCTestCase {
 // MARK: - ScenarioSelection Tests
 
 final class ScenarioSelectionTests: XCTestCase {
-
     func testScenarioSelection_initialization() {
         let selection = ScenarioSelection(
             scenario: .office,

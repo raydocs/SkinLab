@@ -1,10 +1,8 @@
 // SkinLabTests/Tracking/ProductPickerTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class ProductPickerTests: XCTestCase {
-
     // MARK: - Selection Logic Tests
 
     func testToggleSelection_addsProductWhenNotSelected() {
@@ -73,7 +71,7 @@ final class ProductPickerTests: XCTestCase {
         let query = "Cream"
         let filtered = products.filter {
             $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.brand.localizedCaseInsensitiveContains(query)
+                $0.brand.localizedCaseInsensitiveContains(query)
         }
 
         XCTAssertEqual(filtered.count, 1)
@@ -90,7 +88,7 @@ final class ProductPickerTests: XCTestCase {
         let query = "CeraVe"
         let filtered = products.filter {
             $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.brand.localizedCaseInsensitiveContains(query)
+                $0.brand.localizedCaseInsensitiveContains(query)
         }
 
         XCTAssertEqual(filtered.count, 2)
@@ -104,7 +102,7 @@ final class ProductPickerTests: XCTestCase {
         let query = "repair cream"
         let filtered = products.filter {
             $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.brand.localizedCaseInsensitiveContains(query)
+                $0.brand.localizedCaseInsensitiveContains(query)
         }
 
         XCTAssertEqual(filtered.count, 1)
@@ -117,13 +115,12 @@ final class ProductPickerTests: XCTestCase {
         ]
 
         let query = ""
-        let filtered: [MockProduct]
-        if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            filtered = products
+        let filtered: [MockProduct] = if query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            products
         } else {
-            filtered = products.filter {
+            products.filter {
                 $0.name.localizedCaseInsensitiveContains(query) ||
-                $0.brand.localizedCaseInsensitiveContains(query)
+                    $0.brand.localizedCaseInsensitiveContains(query)
             }
         }
 
@@ -139,7 +136,7 @@ final class ProductPickerTests: XCTestCase {
         let query = "NonExistent"
         let filtered = products.filter {
             $0.name.localizedCaseInsensitiveContains(query) ||
-            $0.brand.localizedCaseInsensitiveContains(query)
+                $0.brand.localizedCaseInsensitiveContains(query)
         }
 
         XCTAssertTrue(filtered.isEmpty)
@@ -199,7 +196,7 @@ final class ProductPickerTests: XCTestCase {
     // MARK: - Duplicate Prevention Tests
 
     func testDuplicatePrevention_doesNotAddDuplicate() {
-        var selectedProducts: [String] = ["Product A"]
+        var selectedProducts = ["Product A"]
         let productName = "Product A"
 
         // Check if already selected before adding

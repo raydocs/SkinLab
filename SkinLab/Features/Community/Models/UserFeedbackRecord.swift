@@ -6,12 +6,12 @@ import SwiftData
 @Model
 final class UserFeedbackRecord {
     @Attribute(.unique) var id: UUID
-    var matchId: UUID                   // 关联的匹配记录ID
-    var accuracyScore: Int              // 匹配准确度评分 1-5
-    var productFeedbackText: String?    // 产品推荐反馈文本
-    var isHelpful: Bool                 // 推荐是否有帮助
-    var createdAt: Date                 // 创建时间
-    
+    var matchId: UUID // 关联的匹配记录ID
+    var accuracyScore: Int // 匹配准确度评分 1-5
+    var productFeedbackText: String? // 产品推荐反馈文本
+    var isHelpful: Bool // 推荐是否有帮助
+    var createdAt: Date // 创建时间
+
     init(
         matchId: UUID,
         accuracyScore: Int,

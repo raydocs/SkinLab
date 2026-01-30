@@ -1,10 +1,8 @@
 // SkinLabTests/Profile/UserProfileTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class UserProfileEnumsTests: XCTestCase {
-
     // MARK: - AgeRange Tests
 
     func testAgeRange_displayName() {
@@ -121,7 +119,6 @@ final class UserProfileEnumsTests: XCTestCase {
 // MARK: - RoutinePreferences Tests
 
 final class RoutinePreferencesTests: XCTestCase {
-
     func testRoutinePreferences_default() {
         let prefs = RoutinePreferences.default
 
@@ -182,7 +179,6 @@ final class RoutinePreferencesTests: XCTestCase {
 // MARK: - SkinFingerprint Tests
 
 final class SkinFingerprintTests: XCTestCase {
-
     func testSkinFingerprint_vectorGeneration() {
         let fingerprint = createTestFingerprint()
         let vector = fingerprint.vector
@@ -207,10 +203,10 @@ final class SkinFingerprintTests: XCTestCase {
 
         // SkinType order: dry, oily, combination, sensitive
         // Oily is index 1
-        XCTAssertEqual(vector[0], 0.0)  // dry
-        XCTAssertEqual(vector[1], 1.0)  // oily
-        XCTAssertEqual(vector[2], 0.0)  // combination
-        XCTAssertEqual(vector[3], 0.0)  // sensitive
+        XCTAssertEqual(vector[0], 0.0) // dry
+        XCTAssertEqual(vector[1], 1.0) // oily
+        XCTAssertEqual(vector[2], 0.0) // combination
+        XCTAssertEqual(vector[3], 0.0) // sensitive
     }
 
     func testSkinFingerprint_similarity_identical() {
@@ -247,7 +243,7 @@ final class SkinFingerprintTests: XCTestCase {
 
         let similarity = fp1.similarity(to: fp2)
 
-        XCTAssertLessThan(similarity, 0.5)  // Very different profiles
+        XCTAssertLessThan(similarity, 0.5) // Very different profiles
     }
 
     func testSkinFingerprint_similarity_partialMatch() {
@@ -275,7 +271,7 @@ final class SkinFingerprintTests: XCTestCase {
 
         let similarity = fp1.similarity(to: fp2)
 
-        XCTAssertGreaterThan(similarity, 0.7)  // Same skin type, similar concerns
+        XCTAssertGreaterThan(similarity, 0.7) // Same skin type, similar concerns
         XCTAssertLessThan(similarity, 1.0)
     }
 
@@ -313,7 +309,6 @@ final class SkinFingerprintTests: XCTestCase {
 // MARK: - ConsentLevel Tests
 
 final class ConsentLevelTests: XCTestCase {
-
     func testConsentLevel_canParticipate() {
         XCTAssertFalse(ConsentLevel.none.canParticipate)
         XCTAssertTrue(ConsentLevel.anonymous.canParticipate)
@@ -350,7 +345,6 @@ final class ConsentLevelTests: XCTestCase {
 // MARK: - PreferenceSource Tests
 
 final class PreferenceSourceTests: XCTestCase {
-
     func testPreferenceSource_priority() {
         XCTAssertEqual(PreferenceSource.manual.priority, 3)
         XCTAssertEqual(PreferenceSource.imported.priority, 2)
@@ -369,7 +363,6 @@ final class PreferenceSourceTests: XCTestCase {
 // MARK: - PreferenceType Tests
 
 final class PreferenceTypeTests: XCTestCase {
-
     func testPreferenceType_label() {
         XCTAssertEqual(PreferenceType.loved.label, "喜爱")
         XCTAssertEqual(PreferenceType.liked.label, "喜欢")

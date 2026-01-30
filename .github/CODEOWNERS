@@ -1,0 +1,40 @@
+# SkinLab Code Owners
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# These owners will be automatically requested for review on PRs.
+# Order matters - later patterns take precedence.
+
+# Default owner for everything
+* @raydocs
+
+# Core application architecture
+/SkinLab/App/ @raydocs
+/SkinLab/Core/ @raydocs
+
+# Feature modules
+/SkinLab/Features/Analysis/ @raydocs
+/SkinLab/Features/Tracking/ @raydocs
+/SkinLab/Features/Products/ @raydocs
+/SkinLab/Features/Profile/ @raydocs
+/SkinLab/Features/Community/ @raydocs
+
+# Network and API
+/SkinLab/Core/Network/ @raydocs
+
+# Security-sensitive files (require explicit review)
+/SkinLab/Core/Storage/KeychainManager.swift @raydocs
+Secrets.xcconfig.template @raydocs
+.github/workflows/ @raydocs
+
+# Tests
+/SkinLabTests/ @raydocs
+
+# Configuration and tooling
+/.swiftlint.yml @raydocs
+/.swiftformat @raydocs
+/.pre-commit-config.yaml @raydocs
+
+# Documentation
+/AGENTS.md @raydocs
+/README.md @raydocs
+/docs/ @raydocs

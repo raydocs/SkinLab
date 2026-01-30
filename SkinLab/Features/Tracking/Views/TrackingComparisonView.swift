@@ -5,26 +5,26 @@ struct TrackingComparisonView: View {
     let afterPath: String?
     let beforeAnalysisId: UUID?
     let afterAnalysisId: UUID?
-    
+
     @State private var sliderPosition: CGFloat = 0.5
     @State private var comparisonMode: ComparisonMode = .slider
     @Environment(\.dismiss) private var dismiss
-    
+
     enum ComparisonMode {
         case slider
         case sideBySide
         case toggle
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Mode Selector
             modeSelector
-            
+
             // Comparison View
             comparisonContent
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
+
             // Controls
             if comparisonMode == .slider {
                 sliderControl
@@ -36,8 +36,9 @@ struct TrackingComparisonView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(Color.skinLabBackground, for: .navigationBar)
     }
-    
+
     // MARK: - Mode Selector
+
     private var modeSelector: some View {
         HStack(spacing: 12) {
             ForEach([ComparisonMode.slider, .sideBySide, .toggle], id: \.self) { mode in
@@ -66,8 +67,9 @@ struct TrackingComparisonView: View {
         .padding()
         .background(Color.skinLabBackground)
     }
-    
+
     // MARK: - Comparison Content
+
     @ViewBuilder
     private var comparisonContent: some View {
         switch comparisonMode {
@@ -79,22 +81,23 @@ struct TrackingComparisonView: View {
             toggleView
         }
     }
-    
+
     // MARK: - Slider View
+
     private var sliderView: some View {
         GeometryReader { geometry in
             ZStack {
                 // After Image (Full)
-                if let afterPath = afterPath,
+                if let afterPath,
                    let afterImage = loadImage(from: afterPath) {
                     Image(uiImage: afterImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: geometry.size.width, height: geometry.size.height)
                 }
-                
+
                 // Before Image (Clipped)
-                if let beforePath = beforePath,
+                if let beforePath,
                    let beforeImage = loadImage(from: beforePath) {
                     Image(uiImage: beforeImage)
                         .resizable()
@@ -106,13 +109,13 @@ struct TrackingComparisonView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         )
                 }
-                
+
                 // Slider Line
                 Rectangle()
                     .fill(Color.white)
                     .frame(width: 3)
                     .position(x: geometry.size.width * sliderPosition, y: geometry.size.height / 2)
-                
+
                 // Slider Handle
                 Circle()
                     .fill(Color.white)
@@ -134,7 +137,7 @@ struct TrackingComparisonView: View {
                                 sliderPosition = min(max(value.location.x / geometry.size.width, 0), 1)
                             }
                     )
-                
+
                 // Labels
                 VStack {
                     HStack {
@@ -146,9 +149,9 @@ struct TrackingComparisonView: View {
                             .background(Color.black.opacity(0.6))
                             .cornerRadius(8)
                             .padding(.leading)
-                        
+
                         Spacer()
-                        
+
                         Text("AFTER")
                             .font(.skinLabCaption)
                             .fontWeight(.bold)
@@ -164,19 +167,20 @@ struct TrackingComparisonView: View {
             }
         }
     }
-    
+
     // MARK: - Side by Side View
+
     private var sideBySideView: some View {
         HStack(spacing: 2) {
             // Before
             VStack(spacing: 8) {
-                if let beforePath = beforePath,
+                if let beforePath,
                    let beforeImage = loadImage(from: beforePath) {
                     Image(uiImage: beforeImage)
                         .resizable()
                         .scaledToFit()
                 }
-                
+
                 Text("BEFORE")
                     .font(.skinLabCaption)
                     .fontWeight(.bold)
@@ -185,16 +189,16 @@ struct TrackingComparisonView: View {
                     .background(Color.black.opacity(0.6))
                     .cornerRadius(8)
             }
-            
+
             // After
             VStack(spacing: 8) {
-                if let afterPath = afterPath,
+                if let afterPath,
                    let afterImage = loadImage(from: afterPath) {
                     Image(uiImage: afterImage)
                         .resizable()
                         .scaledToFit()
                 }
-                
+
                 Text("AFTER")
                     .font(.skinLabCaption)
                     .fontWeight(.bold)
@@ -206,15 +210,16 @@ struct TrackingComparisonView: View {
         }
         .padding()
     }
-    
+
     // MARK: - Toggle View
+
     @State private var showBefore = true
-    
+
     private var toggleView: some View {
         GeometryReader { geometry in
             ZStack {
                 if showBefore {
-                    if let beforePath = beforePath,
+                    if let beforePath,
                        let beforeImage = loadImage(from: beforePath) {
                         Image(uiImage: beforeImage)
                             .resizable()
@@ -223,7 +228,7 @@ struct TrackingComparisonView: View {
                             .transition(.opacity)
                     }
                 } else {
-                    if let afterPath = afterPath,
+                    if let afterPath,
                        let afterImage = loadImage(from: afterPath) {
                         Image(uiImage: afterImage)
                             .resizable()
@@ -232,7 +237,7 @@ struct TrackingComparisonView: View {
                             .transition(.opacity)
                     }
                 }
-                
+
                 // Toggle Label
                 VStack {
                     Text(showBefore ? "BEFORE" : "AFTER")
@@ -243,9 +248,9 @@ struct TrackingComparisonView: View {
                         .background(Color.black.opacity(0.6))
                         .cornerRadius(12)
                         .padding()
-                    
+
                     Spacer()
-                    
+
                     // Tap to toggle hint
                     Text("点击切换")
                         .font(.skinLabCaption)
@@ -264,46 +269,48 @@ struct TrackingComparisonView: View {
             }
         }
     }
-    
+
     // MARK: - Slider Control
+
     private var sliderControl: some View {
         VStack(spacing: 8) {
             HStack {
                 Text("Before")
                     .font(.skinLabCaption)
                     .foregroundColor(.white.opacity(0.7))
-                
+
                 Spacer()
-                
+
                 Text("After")
                     .font(.skinLabCaption)
                     .foregroundColor(.white.opacity(0.7))
             }
-            
-            Slider(value: $sliderPosition, in: 0...1)
+
+            Slider(value: $sliderPosition, in: 0 ... 1)
                 .tint(.white)
         }
         .padding()
         .background(Color.black.opacity(0.8))
     }
-    
+
     // MARK: - Helper Methods
+
     private func icon(for mode: ComparisonMode) -> String {
         switch mode {
-        case .slider: return "slider.horizontal.3"
-        case .sideBySide: return "square.split.2x1"
-        case .toggle: return "arrow.left.arrow.right"
+        case .slider: "slider.horizontal.3"
+        case .sideBySide: "square.split.2x1"
+        case .toggle: "arrow.left.arrow.right"
         }
     }
-    
+
     private func label(for mode: ComparisonMode) -> String {
         switch mode {
-        case .slider: return "滑动"
-        case .sideBySide: return "并排"
-        case .toggle: return "切换"
+        case .slider: "滑动"
+        case .sideBySide: "并排"
+        case .toggle: "切换"
         }
     }
-    
+
     private func loadImage(from path: String) -> UIImage? {
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let imagePath = documentsPath.appendingPathComponent(path)

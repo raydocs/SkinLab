@@ -53,7 +53,7 @@ class ProductRecommendationEngine {
 
             var results: [ProductRecommendationScore] = []
             for await score in group {
-                if let score = score {
+                if let score {
                     results.append(score)
                 }
             }
@@ -63,9 +63,9 @@ class ProductRecommendationEngine {
         // 3. 排序并限制数量
         return
             scores
-            .sorted { $0.score > $1.score }
-            .prefix(limit)
-            .map { $0 }
+                .sorted { $0.score > $1.score }
+                .prefix(limit)
+                .map { $0 }
     }
 
     /// 获取特定双胞胎推荐的产品
@@ -139,7 +139,8 @@ class ProductRecommendationEngine {
         score += concernMatch * 0.2
         if concernMatch > 0.7 {
             let topConcerns = userFingerprint.concerns.prefix(2).map(\.displayName).joined(
-                separator: "、")
+                separator: "、"
+            )
             if !topConcerns.isEmpty {
                 reasons.append("针对\(topConcerns)问题")
             }
@@ -180,7 +181,7 @@ class ProductRecommendationEngine {
         // 加权计算有效性 (按相似度加权)
         var totalWeight: Double = 0
         var weightedImprovement: Double = 0
-        var totalUsageDuration: Int = 0
+        var totalUsageDuration = 0
 
         for twin in relevantTwins {
             guard
@@ -223,7 +224,7 @@ class ProductRecommendationEngine {
         _ product: Product,
         _ fingerprint: SkinFingerprint
     ) -> Double {
-        var matchScore: Double = 0.5  // 默认中等匹配
+        var matchScore = 0.5 // 默认中等匹配
         var factorCount: Double = 1
 
         // 检查产品适合的肤质
@@ -344,21 +345,21 @@ class ProductRecommendationEngine {
     private func concernToFunction(_ concern: SkinConcern) -> IngredientFunction {
         switch concern {
         case .acne:
-            return .acneFighting
+            .acneFighting
         case .aging:
-            return .antiAging
+            .antiAging
         case .dryness:
-            return .moisturizing
+            .moisturizing
         case .oiliness:
-            return .other  // 控油
+            .other // 控油
         case .sensitivity:
-            return .soothing
+            .soothing
         case .pigmentation:
-            return .brightening
+            .brightening
         case .pores:
-            return .exfoliating
+            .exfoliating
         case .redness:
-            return .soothing
+            .soothing
         }
     }
 }
@@ -367,18 +368,21 @@ class ProductRecommendationEngine {
 
 /// 产品推荐分数结构
 struct ProductRecommendationScore: Identifiable, Codable {
-    var id: UUID { product.id }
+    var id: UUID {
+        product.id
+    }
+
     let product: Product
-    let score: Double  // 0-1
-    let reasons: [String]  // 推荐理由
-    let evidence: Evidence  // 证据数据
+    let score: Double // 0-1
+    let reasons: [String] // 推荐理由
+    let evidence: Evidence // 证据数据
 
     /// 证据数据
     struct Evidence: Codable {
-        let effectiveUserCount: Int  // 有效用户数
-        let avgSimilarity: Double  // 平均相似度
-        let avgImprovement: Double  // 平均改善幅度
-        let usageDuration: Int  // 平均使用天数
+        let effectiveUserCount: Int // 有效用户数
+        let avgSimilarity: Double // 平均相似度
+        let avgImprovement: Double // 平均改善幅度
+        let usageDuration: Int // 平均使用天数
 
         static let empty = Evidence(
             effectiveUserCount: 0,
@@ -397,13 +401,13 @@ struct ProductRecommendationScore: Identifiable, Codable {
     var recommendationLevel: RecommendationLevel {
         switch score {
         case 0.8...:
-            return .highlyRecommended
-        case 0.6..<0.8:
-            return .recommended
-        case 0.4..<0.6:
-            return .maybeHelpful
+            .highlyRecommended
+        case 0.6 ..< 0.8:
+            .recommended
+        case 0.4 ..< 0.6:
+            .maybeHelpful
         default:
-            return .notRecommended
+            .notRecommended
         }
     }
 
@@ -415,19 +419,19 @@ struct ProductRecommendationScore: Identifiable, Codable {
 
         var icon: String {
             switch self {
-            case .highlyRecommended: return "star.fill"
-            case .recommended: return "hand.thumbsup.fill"
-            case .maybeHelpful: return "hand.thumbsup"
-            case .notRecommended: return "hand.thumbsdown"
+            case .highlyRecommended: "star.fill"
+            case .recommended: "hand.thumbsup.fill"
+            case .maybeHelpful: "hand.thumbsup"
+            case .notRecommended: "hand.thumbsdown"
             }
         }
 
         var color: String {
             switch self {
-            case .highlyRecommended: return "skinLabPrimary"
-            case .recommended: return "skinLabSecondary"
-            case .maybeHelpful: return "skinLabAccent"
-            case .notRecommended: return "gray"
+            case .highlyRecommended: "skinLabPrimary"
+            case .recommended: "skinLabSecondary"
+            case .maybeHelpful: "skinLabAccent"
+            case .notRecommended: "gray"
             }
         }
     }

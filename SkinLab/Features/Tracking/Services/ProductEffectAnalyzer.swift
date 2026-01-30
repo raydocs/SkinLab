@@ -1,16 +1,7 @@
-//
-//  ProductEffectAnalyzer.swift
-//  SkinLab
-//
-//  产品效果分析器
-//  使用统计方法和用户历史数据评估产品的真实效果
-//
-
 import Foundation
 
 /// 产品效果分析器
 struct ProductEffectAnalyzer {
-
     private let analyzer = TimeSeriesAnalyzer()
 
     // MARK: - Attribution Weight Calculation
@@ -70,8 +61,8 @@ struct ProductEffectAnalyzer {
             let frequency = calculateUsageFrequency(usageData: usageData, totalCheckIns: checkIns.count)
 
             // Factor 3: Ingredient history score (weight: 0.3)
-            var ingredientScore: Double = 0.5  // Default neutral score
-            if let historyStore = historyStore {
+            var ingredientScore = 0.5 // Default neutral score
+            if let historyStore {
                 ingredientScore = await calculateIngredientHistoryScore(
                     productId: product,
                     historyStore: historyStore
@@ -114,12 +105,12 @@ struct ProductEffectAnalyzer {
 
         // Calculate average improvement during solo usage
         var improvements: [Double] = []
-        for i in 1..<soloScores.count {
+        for i in 1 ..< soloScores.count {
             let change = Double(soloScores[i] - soloScores[i - 1])
             improvements.append(change)
         }
 
-        let avgImprovement = analyzer.mean(improvements) / 100.0  // Normalize to -1..1
+        let avgImprovement = analyzer.mean(improvements) / 100.0 // Normalize to -1..1
         let normalizedEffect = max(-1, min(1, avgImprovement))
 
         // Convert from -1..1 to 0..1 range
@@ -131,7 +122,7 @@ struct ProductEffectAnalyzer {
     private func calculateUsageFrequency(usageData: ProductUsageData, totalCheckIns: Int) -> Double {
         guard totalCheckIns > 0 else { return 0 }
         let frequency = Double(usageData.usageCount) / Double(totalCheckIns)
-        return min(1.0, frequency)  // Cap at 1.0
+        return min(1.0, frequency) // Cap at 1.0
     }
 
     /// 归一化权重使总和为1
@@ -225,7 +216,7 @@ struct ProductEffectAnalyzer {
         // Calculate combined effect score (average score change during combination usage)
         let sortedScores = combinationScores.sorted { $0.day < $1.day }
         var improvements: [Double] = []
-        for i in 1..<sortedScores.count {
+        for i in 1 ..< sortedScores.count {
             let change = Double(sortedScores[i].score - sortedScores[i - 1].score)
             improvements.append(change)
         }
@@ -246,19 +237,18 @@ struct ProductEffectAnalyzer {
         // synergyScore > 0 means 1+1 > 2 (synergistic)
         // synergyScore < 0 means 1+1 < 2 (antagonistic)
         let expectedIndividualSum = individualEffects.reduce(0, +)
-        let synergyScore: Double
-        if abs(expectedIndividualSum) < 0.001 {
+        let synergyScore: Double = if abs(expectedIndividualSum) < 0.001 {
             // Individual effects are negligible, synergy is just the combined effect
-            synergyScore = combinedEffectScore
+            combinedEffectScore
         } else {
             // Compare actual combined effect to expected sum
-            synergyScore = combinedEffectScore - expectedIndividualSum
+            combinedEffectScore - expectedIndividualSum
         }
 
         // Calculate confidence
         let confidence = calculateCombinationConfidence(
             usageCount: combinationScores.count,
-            scoreVariability: calculateVariability(sortedScores.map { $0.score })
+            scoreVariability: calculateVariability(sortedScores.map(\.score))
         )
 
         return ProductCombinationInsight(
@@ -291,7 +281,7 @@ struct ProductEffectAnalyzer {
 
         let sortedScores = soloScores.sorted { $0.day < $1.day }
         var improvements: [Double] = []
-        for i in 1..<sortedScores.count {
+        for i in 1 ..< sortedScores.count {
             let change = Double(sortedScores[i].score - sortedScores[i - 1].score)
             improvements.append(change)
         }
@@ -328,9 +318,9 @@ struct ProductEffectAnalyzer {
             method: "combination-analysis"
         )
     }
-    
+
     // MARK: - Product Effect Evaluation
-    
+
     /// 评估产品效果
     /// - Parameters:
     ///   - checkIns: 打卡记录列表
@@ -344,7 +334,6 @@ struct ProductEffectAnalyzer {
         productDatabase: [String: Product],
         historyStore: UserHistoryStore? = nil
     ) async -> [ProductEffectInsight] {
-
         // 收集所有使用过的产品
         var productUsageMap: [String: ProductUsageData] = [:]
 
@@ -399,9 +388,9 @@ struct ProductEffectAnalyzer {
 
         return insights.sorted { $0.effectivenessScore > $1.effectivenessScore }
     }
-    
+
     // MARK: - Single Product Analysis
-    
+
     /// 分析单个产品的效果
     private func analyzeProductEffect(
         productId: String,
@@ -411,7 +400,6 @@ struct ProductEffectAnalyzer {
         historyStore: UserHistoryStore?,
         attributionWeight: Double? = nil
     ) async -> ProductEffectInsight? {
-
         guard usageData.usageCount >= 2 else { return nil }
 
         // 计算效果评分
@@ -420,7 +408,7 @@ struct ProductEffectAnalyzer {
 
         // 成分历史效果 (如果有历史数据)
         var ingredientScore: Double = 0
-        if let historyStore = historyStore {
+        if let historyStore {
             ingredientScore = await calculateIngredientHistoryScore(
                 productId: productId,
                 historyStore: historyStore
@@ -448,7 +436,7 @@ struct ProductEffectAnalyzer {
         let sortedCoUsedProducts = usageData.coUsedProducts
             .sorted { $0.value > $1.value }
             .prefix(3)
-            .map { $0.key }
+            .map(\.key)
 
         return ProductEffectInsight(
             productId: productId,
@@ -463,32 +451,32 @@ struct ProductEffectAnalyzer {
             coUsedProductIds: sortedCoUsedProducts.isEmpty ? nil : Array(sortedCoUsedProducts)
         )
     }
-    
+
     // MARK: - Score Calculation
-    
+
     /// 计算皮肤评分变化
     private func calculateScoreChange(usageData: ProductUsageData) -> Double {
         guard usageData.scores.count >= 2 else { return 0 }
-        
+
         // 对比使用前后的评分变化
         let scores = usageData.scores
         var improvements: [Double] = []
-        
-        for i in 1..<scores.count {
+
+        for i in 1 ..< scores.count {
             let change = Double(scores[i] - scores[i - 1])
             improvements.append(change)
         }
-        
+
         // 平均改善幅度,归一化到-1到1
         let avgImprovement = analyzer.mean(improvements) / 100.0
         return max(-1, min(1, avgImprovement))
     }
-    
+
     /// 计算用户感受评分
     private func calculateFeelingScore(usageData: ProductUsageData) -> Double {
         let feelings = usageData.feelings
         guard !feelings.isEmpty else { return 0 }
-        
+
         // 感受转换为数值: better=1, same=0, worse=-1
         let scores = feelings.map { feeling -> Double in
             switch feeling {
@@ -497,24 +485,23 @@ struct ProductEffectAnalyzer {
             case .worse: return -1.0
             }
         }
-        
+
         return analyzer.mean(scores)
     }
-    
+
     /// 计算成分历史效果评分
     private func calculateIngredientHistoryScore(
         productId: String,
         historyStore: UserHistoryStore
     ) async -> Double {
-        
         // 获取成分统计数据
         let ingredientStats = await historyStore.getAllIngredientStats()
-        
+
         // 简化处理:假设我们能从productId提取关键成分
         // 实际应用中需要产品成分列表
         var totalScore: Double = 0
-        var count: Int = 0
-        
+        var count = 0
+
         for (_, stat) in ingredientStats {
             if productId.lowercased().contains(stat.ingredientName.lowercased()) {
                 let effectScore = (Double(stat.betterCount) - Double(stat.worseCount)) / Double(stat.totalUses)
@@ -522,82 +509,79 @@ struct ProductEffectAnalyzer {
                 count += 1
             }
         }
-        
+
         return count > 0 ? (totalScore / Double(count)) : 0
     }
-    
+
     /// 计算效果置信度
     private func calculateEffectConfidence(
         usageCount: Int,
         scoreVariability: Double,
         avgInterval: Double
     ) -> ConfidenceScore {
-        
         var confidenceValue: Double = 0
-        
+
         // 使用次数贡献 (最多0.4)
         confidenceValue += min(0.4, Double(usageCount) / 5.0 * 0.4)
-        
+
         // 稳定性贡献 (最多0.3)
         let stabilityScore = max(0, 1.0 - scoreVariability / 20.0)
         confidenceValue += stabilityScore * 0.3
-        
+
         // 间隔一致性贡献 (最多0.3)
         // 理想间隔是1-3天,太短或太长都会降低置信度
-        let intervalScore: Double
-        if avgInterval >= 1 && avgInterval <= 3 {
-            intervalScore = 1.0
+        let intervalScore: Double = if avgInterval >= 1, avgInterval <= 3 {
+            1.0
         } else if avgInterval < 1 {
-            intervalScore = 0.5
+            0.5
         } else {
-            intervalScore = max(0, 1.0 - (avgInterval - 3) / 7.0)
+            max(0, 1.0 - (avgInterval - 3) / 7.0)
         }
         confidenceValue += intervalScore * 0.3
-        
+
         return ConfidenceScore(
             value: max(0, min(1, confidenceValue)),
             sampleCount: usageCount,
             method: "bayes-lite"
         )
     }
-    
+
     /// 识别影响因素
     private func identifyContributingFactors(
         usageData: ProductUsageData,
         scoreChange: Double,
         feelingScore: Double
     ) -> [String] {
-        
         var factors: [String] = []
-        
+
         // 基于评分变化
         if scoreChange > 0.3 {
             factors.append("皮肤评分明显提升")
         } else if scoreChange < -0.3 {
             factors.append("皮肤评分下降")
         }
-        
+
         // 基于用户感受
         if feelingScore > 0.5 {
             factors.append("用户感受普遍良好")
         } else if feelingScore < -0.5 {
             factors.append("用户感受欠佳")
         }
-        
+
         // 基于使用频率
         if usageData.usageCount >= 5 {
             factors.append("使用次数充足")
         } else {
             factors.append("使用次数较少")
         }
-        
+
         // 基于稳定性
         if usageData.scoreVariability < 5 {
             factors.append("效果稳定")
         } else if usageData.scoreVariability > 15 {
             factors.append("效果波动较大")
         }
-        
+
         return factors.isEmpty ? ["数据不足"] : factors
     }
 }
@@ -612,22 +596,22 @@ private struct ProductUsageData {
     var scores: [Int] = []
     var feelings: [CheckIn.Feeling] = []
     var checkInIndices: [Int] = []
-    var coUsedProducts: [String: Int] = [:]  // 同日使用的其他产品 -> 次数
-    var soloUsageDays: [Int] = []  // 单独使用的日期
-    
+    var coUsedProducts: [String: Int] = [:] // 同日使用的其他产品 -> 次数
+    var soloUsageDays: [Int] = [] // 单独使用的日期
+
     var usageCount: Int {
         days.count
     }
-    
+
     var avgInterval: Double {
         guard days.count >= 2 else { return 0 }
         var intervals: [Double] = []
-        for i in 1..<days.count {
+        for i in 1 ..< days.count {
             intervals.append(Double(days[i] - days[i - 1]))
         }
         return intervals.reduce(0, +) / Double(intervals.count)
     }
-    
+
     var scoreVariability: Double {
         guard scores.count >= 2 else { return 0 }
         let doubleScores = scores.map { Double($0) }
@@ -635,11 +619,17 @@ private struct ProductUsageData {
         let variance = doubleScores.map { pow($0 - mean, 2) }.reduce(0, +) / Double(doubleScores.count)
         return sqrt(variance)
     }
-    
-    mutating func addUsage(day: Int, overallScore: Int, feeling: CheckIn.Feeling?, checkInIndex: Int, allProductsUsedThatDay: [String]) {
+
+    mutating func addUsage(
+        day: Int,
+        overallScore: Int,
+        feeling: CheckIn.Feeling?,
+        checkInIndex: Int,
+        allProductsUsedThatDay: [String]
+    ) {
         days.append(day)
         scores.append(overallScore)
-        if let feeling = feeling {
+        if let feeling {
             feelings.append(feeling)
         }
         checkInIndices.append(checkInIndex)

@@ -1,14 +1,18 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct TrackingView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(filter: #Predicate<TrackingSession> { $0.statusRaw == "active" },
-           sort: [SortDescriptor(\TrackingSession.startDate, order: .reverse)])
+    @Query(
+        filter: #Predicate<TrackingSession> { $0.statusRaw == "active" },
+        sort: [SortDescriptor(\TrackingSession.startDate, order: .reverse)]
+    )
     private var activeSessions: [TrackingSession]
 
-    @Query(filter: #Predicate<TrackingSession> { $0.statusRaw != "active" },
-           sort: [SortDescriptor(\TrackingSession.startDate, order: .reverse)])
+    @Query(
+        filter: #Predicate<TrackingSession> { $0.statusRaw != "active" },
+        sort: [SortDescriptor(\TrackingSession.startDate, order: .reverse)]
+    )
     private var pastSessions: [TrackingSession]
 
     @State private var showNewSession = false
@@ -19,7 +23,7 @@ struct TrackingView: View {
 
     /// Page size for loading more sessions
     private static let pageSize = 20
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -34,7 +38,7 @@ struct TrackingView: View {
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
-                
+
                 // Decorative floating elements
                 GeometryReader { geometry in
                     FloatingBubble(size: 90, color: .skinLabPrimary)
@@ -45,7 +49,7 @@ struct TrackingView: View {
                         .position(x: geometry.size.width * 0.7, y: geometry.size.height * 0.5)
                 }
                 .accessibilityHidden(true)
-                
+
                 ScrollView {
                     LazyVStack(spacing: 24) {
                         if let activeSession = activeSessions.first {
@@ -73,8 +77,9 @@ struct TrackingView: View {
             }
         }
     }
-    
+
     // MARK: - Empty State
+
     private var emptyStateView: some View {
         EmptyStateView(
             icon: "chart.line.uptrend.xyaxis",
@@ -83,7 +88,11 @@ struct TrackingView: View {
             actionTitle: "开始28天追踪",
             features: [
                 EmptyStateFeature(icon: "camera.fill", text: "标准化拍照，确保对比准确", gradient: .skinLabPrimaryGradient),
-                EmptyStateFeature(icon: "calendar.badge.clock", text: "第7/14/21/28天提醒打卡", gradient: .skinLabLavenderGradient),
+                EmptyStateFeature(
+                    icon: "calendar.badge.clock",
+                    text: "第7/14/21/28天提醒打卡",
+                    gradient: .skinLabLavenderGradient
+                ),
                 EmptyStateFeature(icon: "chart.bar.fill", text: "AI分析改善趋势", gradient: .skinLabGoldGradient),
                 EmptyStateFeature(icon: "square.and.arrow.up.fill", text: "生成可分享的对比图", gradient: .skinLabRoseGradient)
             ],
@@ -93,8 +102,9 @@ struct TrackingView: View {
         )
         .padding(.top, 32)
     }
-    
+
     // MARK: - Active Session
+
     private func activeSessionView(_ session: TrackingSession) -> some View {
         NavigationLink(destination: TrackingDetailView(session: session)) {
             VStack(spacing: 20) {
@@ -125,14 +135,14 @@ struct TrackingView: View {
                                     .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.12))
                             )
                     }
-                    
+
                     // Beautiful progress bar
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
                             Capsule()
                                 .fill(Color.gray.opacity(0.15))
                                 .frame(height: 10)
-                            
+
                             Capsule()
                                 .fill(LinearGradient.skinLabPrimaryGradient)
                                 .frame(width: geometry.size.width * session.progress, height: 10)
@@ -140,7 +150,7 @@ struct TrackingView: View {
                         }
                     }
                     .frame(height: 10)
-                    
+
                     HStack {
                         Text("开始于 \(session.startDate.formatted(date: .abbreviated, time: .omitted))")
                             .font(.skinLabCaption)
@@ -168,7 +178,7 @@ struct TrackingView: View {
                         )
                 )
                 .shadow(color: .skinLabPrimary.opacity(0.1), radius: 15, y: 5)
-                
+
                 // Check-in Status with beautiful nodes
                 VStack(spacing: 16) {
                     HStack {
@@ -180,27 +190,30 @@ struct TrackingView: View {
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
                     }
-                    
+
                     HStack(spacing: 0) {
                         ForEach(TrackingConstants.checkInDays, id: \.self) { day in
-                            let status: BeautifulCheckInNode.CheckInStatus = {
-                                if session.checkIns.contains(where: { $0.day == day }) {
-                                    return .completed
-                                } else if day <= session.duration {
-                                    return .missed
-                                } else {
-                                    return .upcoming
-                                }
-                            }()
+                            let status: BeautifulCheckInNode.CheckInStatus = if session.checkIns
+                                .contains(where: { $0.day == day }) {
+                                .completed
+                            } else if day <= session.duration {
+                                .missed
+                            } else {
+                                .upcoming
+                            }
                             BeautifulCheckInNode(day: day, status: status)
-                            
+
                             if day < 28 {
                                 // Connection line
                                 Rectangle()
                                     .fill(
-                                        session.checkIns.contains(where: { $0.day == day }) 
-                                            ? LinearGradient.skinLabPrimaryGradient 
-                                            : LinearGradient(colors: [Color.gray.opacity(0.2)], startPoint: .leading, endPoint: .trailing)
+                                        session.checkIns.contains(where: { $0.day == day })
+                                            ? LinearGradient.skinLabPrimaryGradient
+                                            : LinearGradient(
+                                                colors: [Color.gray.opacity(0.2)],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
                                     )
                                     .frame(height: 3)
                                     .frame(maxWidth: .infinity)
@@ -214,7 +227,7 @@ struct TrackingView: View {
                         .fill(Color.skinLabCardBackground)
                 )
                 .shadow(color: .black.opacity(0.05), radius: 10, y: 4)
-                
+
                 // View Details hint
                 HStack(spacing: 6) {
                     Text("点击查看详情")
@@ -233,13 +246,17 @@ struct TrackingView: View {
         .accessibilityLabel("28天追踪进行中，第\(session.duration)天，已打卡\(session.checkIns.count)次")
         .accessibilityHint("双击查看详情")
     }
-    
+
     // MARK: - Past Sessions
+
     private var pastSessionsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             DisclosureGroup(isExpanded: $showPastSessions) {
                 LazyVStack(spacing: 12) {
-                    ForEach(Array(pastSessions.prefix(displayedPastSessionsCount).enumerated()), id: \.element.id) { index, session in
+                    ForEach(
+                        Array(pastSessions.prefix(displayedPastSessionsCount).enumerated()),
+                        id: \.element.id
+                    ) { index, session in
                         PastSessionRow(session: session)
                             .onAppear {
                                 loadMorePastSessionsIfNeeded(currentIndex: index)
@@ -364,21 +381,24 @@ struct TrackingView: View {
             }
             .buttonStyle(.plain)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("历史追踪：\(session.startDate.formatted(date: .abbreviated, time: .omitted))，\(isCompleted ? "已完成" : "已放弃")，\(session.checkIns.count)次打卡")
+            .accessibilityLabel(
+                "历史追踪：\(session.startDate.formatted(date: .abbreviated, time: .omitted))，\(isCompleted ? "已完成" : "已放弃")，\(session.checkIns.count)次打卡"
+            )
             .accessibilityHint("双击查看详情")
         }
     }
 }
 
 // MARK: - New Tracking Session View
+
 struct NewTrackingSessionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    
+
     @State private var selectedProducts: [String] = []
     @State private var notes: String = ""
     @State private var showProductPicker = false
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -393,7 +413,7 @@ struct NewTrackingSessionView: View {
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
-                
+
                 ScrollView {
                     VStack(spacing: 28) {
                         // Hero section with icon
@@ -401,31 +421,31 @@ struct NewTrackingSessionView: View {
                             Circle()
                                 .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.12))
                                 .frame(width: 110, height: 110)
-                            
+
                             Circle()
                                 .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.2))
                                 .frame(width: 80, height: 80)
-                            
+
                             Image(systemName: "calendar.badge.clock")
                                 .font(.system(size: 38))
                                 .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
-                            
+
                             SparkleView(size: 14)
                                 .offset(x: 40, y: -35)
                         }
                         .padding(.top, 16)
-                        
+
                         VStack(spacing: 10) {
                             Text("28天皮肤追踪")
                                 .font(.skinLabTitle2)
                                 .foregroundColor(.skinLabText)
-                            
+
                             Text("记录你的护肤旅程\n见证皮肤的真实变化")
                                 .font(.skinLabBody)
                                 .foregroundColor(.skinLabSubtext)
                                 .multilineTextAlignment(.center)
                         }
-                        
+
                         VStack(alignment: .leading, spacing: 12) {
                             Text("默认28天追踪")
                                 .font(.skinLabHeadline)
@@ -440,7 +460,7 @@ struct NewTrackingSessionView: View {
                                 .fill(Color.skinLabCardBackground)
                         )
                         .shadow(color: .black.opacity(0.04), radius: 10, y: 4)
-                        
+
                         // Products section
                         VStack(alignment: .leading, spacing: 14) {
                             HStack {
@@ -457,11 +477,11 @@ struct NewTrackingSessionView: View {
                                             .fill(Color.skinLabPrimary.opacity(0.1))
                                     )
                             }
-                            
+
                             Text("可不填，稍后也能补充")
                                 .font(.skinLabCaption)
                                 .foregroundColor(.skinLabSubtext)
-                            
+
                             if !selectedProducts.isEmpty {
                                 VStack(alignment: .leading, spacing: 8) {
                                     ForEach(selectedProducts, id: \.self) { product in
@@ -521,7 +541,7 @@ struct NewTrackingSessionView: View {
                                 .fill(Color.skinLabCardBackground)
                         )
                         .shadow(color: .black.opacity(0.04), radius: 10, y: 4)
-                        
+
                         // Start Button
                         Button {
                             startSession()
@@ -562,7 +582,7 @@ struct NewTrackingSessionView: View {
             }
         }
     }
-    
+
     private func startSession() {
         let session = TrackingSession(targetProducts: selectedProducts)
         if !notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -578,23 +598,24 @@ struct NewTrackingSessionView: View {
 }
 
 // MARK: - Tracking Feature Row (Beautiful)
+
 struct TrackingFeatureRow: View {
     let icon: String
     let text: String
     var gradient: LinearGradient = .skinLabPrimaryGradient
-    
+
     var body: some View {
         HStack(spacing: 14) {
             ZStack {
                 Circle()
                     .fill(gradient.opacity(0.15))
                     .frame(width: 36, height: 36)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 15))
                     .foregroundStyle(gradient)
             }
-            
+
             Text(text)
                 .font(.skinLabSubheadline)
                 .foregroundColor(.skinLabText)
@@ -603,6 +624,7 @@ struct TrackingFeatureRow: View {
 }
 
 // MARK: - Beautiful Check In Node
+
 struct BeautifulCheckInNode: View {
     let day: Int
     let status: CheckInStatus
@@ -643,20 +665,20 @@ struct BeautifulCheckInNode: View {
 
     private var statusLabel: String {
         switch status {
-        case .completed: return "已完成"
-        case .upcoming: return "待打卡"
-        case .missed: return "已错过"
+        case .completed: "已完成"
+        case .upcoming: "待打卡"
+        case .missed: "已错过"
         }
     }
 
     var statusBackground: LinearGradient {
         switch status {
         case .completed:
-            return LinearGradient.skinLabPrimaryGradient
+            LinearGradient.skinLabPrimaryGradient
         case .upcoming:
-            return LinearGradient(colors: [Color.gray.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LinearGradient(colors: [Color.gray.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .missed:
-            return LinearGradient(colors: [Color.skinLabError], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LinearGradient(colors: [Color.skinLabError], startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
 }

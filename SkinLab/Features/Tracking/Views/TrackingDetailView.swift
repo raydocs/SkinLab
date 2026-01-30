@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct TrackingDetailView: View {
     @Environment(\.modelContext) private var modelContext
@@ -98,6 +98,7 @@ private struct TrackingDetailViewContent: View {
     }
 
     // MARK: - Progress Header
+
     private var progressHeader: some View {
         VStack(spacing: 16) {
             // Progress Ring
@@ -156,6 +157,7 @@ private struct TrackingDetailViewContent: View {
     }
 
     // MARK: - Timeline Section
+
     private var timelineSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("追踪时间线")
@@ -222,6 +224,7 @@ private struct TrackingDetailViewContent: View {
     }
 
     // MARK: - Products Section
+
     private var productsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -262,6 +265,7 @@ private struct TrackingDetailViewContent: View {
     }
 
     // MARK: - Actions Section
+
     private var actionsSection: some View {
         VStack(spacing: 12) {
             // Due checkpoint: actionable
@@ -283,7 +287,7 @@ private struct TrackingDetailViewContent: View {
                     .cornerRadius(8)
             }
 
-            if session.duration >= 28 && session.status == .active {
+            if session.duration >= 28, session.status == .active {
                 Button {
                     viewModel.completeSession(session)
                 } label: {

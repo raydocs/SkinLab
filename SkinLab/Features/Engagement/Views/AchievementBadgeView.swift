@@ -8,17 +8,17 @@ enum BadgeSize {
 
     var dimension: CGFloat {
         switch self {
-        case .small: return 60
-        case .medium: return 80
-        case .large: return 120
+        case .small: 60
+        case .medium: 80
+        case .large: 120
         }
     }
 
     var iconScale: CGFloat {
         switch self {
-        case .small: return 0.6
-        case .medium: return 0.8
-        case .large: return 1.0
+        case .small: 0.6
+        case .medium: 0.8
+        case .large: 1.0
         }
     }
 }
@@ -137,13 +137,13 @@ struct AchievementBadgeView: View {
     private var categoryColors: [Color] {
         switch badge.category {
         case .streaks:
-            return [.orange, .red]
+            [.orange, .red]
         case .completeness:
-            return [.blue, .purple]
+            [.blue, .purple]
         case .social:
-            return [.green, .mint]
+            [.green, .mint]
         case .knowledge:
-            return [.yellow, .orange]
+            [.yellow, .orange]
         }
     }
 

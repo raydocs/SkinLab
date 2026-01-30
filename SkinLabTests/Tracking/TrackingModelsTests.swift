@@ -1,10 +1,8 @@
 // SkinLabTests/Tracking/TrackingModelsTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class TrackingSessionTests: XCTestCase {
-
     // MARK: - TrackingStatus Tests
 
     func testTrackingStatus_rawValues() {
@@ -154,14 +152,14 @@ final class TrackingSessionTests: XCTestCase {
         XCTAssertEqual(TrackingReport.ProductUsage.Effectiveness.effective.rawValue, "effective")
         XCTAssertEqual(TrackingReport.ProductUsage.Effectiveness.neutral.rawValue, "neutral")
         XCTAssertEqual(
-            TrackingReport.ProductUsage.Effectiveness.ineffective.rawValue, "ineffective")
+            TrackingReport.ProductUsage.Effectiveness.ineffective.rawValue, "ineffective"
+        )
     }
 }
 
 // MARK: - TrendAnalyticsModels Tests
 
 final class TrendAnalyticsModelsTests: XCTestCase {
-
     // MARK: - ConfidenceScore Tests
 
     func testConfidenceScore_level_high() {
@@ -238,7 +236,8 @@ final class TrendAnalyticsModelsTests: XCTestCase {
         let points = [
             ForecastPoint(day: 1, date: Date(), predictedValue: 75, lowerBound: 70, upperBound: 80),
             ForecastPoint(
-                day: 2, date: Date(), predictedValue: 75.3, lowerBound: 70, upperBound: 80),
+                day: 2, date: Date(), predictedValue: 75.3, lowerBound: 70, upperBound: 80
+            ),
         ]
         let forecast = TrendForecast(
             metric: "overallScore",
@@ -261,7 +260,7 @@ final class TrendAnalyticsModelsTests: XCTestCase {
         let heatmap = HeatmapData(
             title: "Test Heatmap",
             cells: cells,
-            valueRange: 0.0...1.0
+            valueRange: 0.0 ... 1.0
         )
 
         let dimensions = heatmap.dimensions
@@ -278,7 +277,7 @@ final class TrendAnalyticsModelsTests: XCTestCase {
         let heatmap = HeatmapData(
             title: "Test Heatmap",
             cells: cells,
-            valueRange: 0.0...1.0
+            valueRange: 0.0 ... 1.0
         )
 
         let days = heatmap.days
@@ -450,7 +449,6 @@ final class TrendAnalyticsModelsTests: XCTestCase {
 // MARK: - IngredientExposureRecord Tests
 
 final class IngredientExposureRecordTests: XCTestCase {
-
     func testFeelingType_rawValues() {
         XCTAssertEqual(FeelingType.better.rawValue, "变好")
         XCTAssertEqual(FeelingType.same.rawValue, "相同")
@@ -535,7 +533,7 @@ final class IngredientExposureRecordTests: XCTestCase {
         // Implementation: < 2 = low, < 5 = medium, >= 5 = high
         let highConfidence = IngredientEffectStats(
             ingredientName: "Test",
-            totalUses: 5,  // >= 5 = high
+            totalUses: 5, // >= 5 = high
             betterCount: 3,
             sameCount: 1,
             worseCount: 1,
@@ -545,7 +543,7 @@ final class IngredientExposureRecordTests: XCTestCase {
 
         let mediumConfidence = IngredientEffectStats(
             ingredientName: "Test",
-            totalUses: 3,  // >= 2 and < 5 = medium
+            totalUses: 3, // >= 2 and < 5 = medium
             betterCount: 2,
             sameCount: 1,
             worseCount: 0,
@@ -555,7 +553,7 @@ final class IngredientExposureRecordTests: XCTestCase {
 
         let lowConfidence = IngredientEffectStats(
             ingredientName: "Test",
-            totalUses: 1,  // < 2 = low
+            totalUses: 1, // < 2 = low
             betterCount: 1,
             sameCount: 0,
             worseCount: 0,

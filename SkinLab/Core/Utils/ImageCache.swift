@@ -1,15 +1,8 @@
-//
-//  ImageCache.swift
-//  SkinLab
-//
-//  Thread-safe image cache with memory and disk layers.
-//  All disk I/O executes directly on a serial DispatchQueue (no spawned Tasks).
-//
-
-import UIKit
 import CryptoKit
+import UIKit
 
 // MARK: - Cache Configuration
+
 enum ImageCacheConfig {
     /// Maximum number of images in memory cache
     static let memoryCacheLimit = 50
@@ -25,6 +18,7 @@ enum ImageCacheConfig {
 }
 
 // MARK: - Pending Write Token
+
 /// Token to track and cancel pending disk writes
 private final class WriteToken: @unchecked Sendable {
     private let lock = NSLock()
@@ -44,6 +38,7 @@ private final class WriteToken: @unchecked Sendable {
 }
 
 // MARK: - Image Cache
+
 /// Thread-safe image cache with memory (NSCache) and disk layers.
 /// All disk I/O is serialized through a single dispatch queue with no spawned Tasks.
 actor ImageCache {
@@ -328,6 +323,7 @@ actor ImageCache {
 }
 
 // MARK: - Convenience Extensions
+
 extension ImageCache {
     /// Load image from path (file system or cache) - async
     /// - Parameter path: Relative path to image (e.g., "analysis_photos/uuid.jpg")
@@ -389,6 +385,7 @@ extension ImageCache {
 }
 
 // MARK: - Test Helpers
+
 extension ImageCache {
     /// Reset cache (for testing) - awaitable
     func reset() async {

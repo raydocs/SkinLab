@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
@@ -11,14 +11,16 @@ struct ProfileView: View {
     @State private var showNotificationSettings = false
     @State private var showAchievements = false
 
-    private var profile: UserProfile? { profiles.first }
-    
+    private var profile: UserProfile? {
+        profiles.first
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
                 // 渐变背景
                 Color.skinLabBackground.ignoresSafeArea()
-                
+
                 Circle()
                     .fill(LinearGradient.skinLabLavenderGradient)
                     .frame(width: 300, height: 300)
@@ -34,17 +36,17 @@ struct ProfileView: View {
                     .offset(x: -120, y: 300)
                     .opacity(0.3)
                     .accessibilityHidden(true)
-                
+
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 24) {
                         profileHeader
-                        
-                        if let profile = profile {
+
+                        if let profile {
                             skinProfileCard(profile)
                         } else {
                             createProfilePrompt
                         }
-                        
+
                         statsSection
                         settingsSection
                     }
@@ -78,8 +80,9 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     // MARK: - Profile Header
+
     private var profileHeader: some View {
         VStack(spacing: 16) {
             ZStack {
@@ -87,17 +90,17 @@ struct ProfileView: View {
                 Circle()
                     .stroke(LinearGradient.skinLabRoseGradient, lineWidth: 3)
                     .frame(width: 110, height: 110)
-                
+
                 // 内层渐变填充
                 Circle()
                     .fill(LinearGradient.skinLabRoseGradient)
                     .frame(width: 96, height: 96)
                     .shadow(color: .skinLabPrimary.opacity(0.3), radius: 15, x: 0, y: 8)
-                
+
                 Image(systemName: "person.fill")
                     .font(.system(size: 40))
                     .foregroundColor(.white)
-                
+
                 // 闪光装饰
                 SparkleView(size: 14)
                     .offset(x: 50, y: -40)
@@ -107,13 +110,13 @@ struct ProfileView: View {
                     .offset(x: -45, y: 35)
                     .accessibilityHidden(true)
             }
-            
+
             VStack(spacing: 6) {
-                if let profile = profile, let skinType = profile.skinType {
+                if let profile, let skinType = profile.skinType {
                     Text("\(skinType.displayName)肤质")
                         .font(.skinLabTitle3)
                         .foregroundColor(.skinLabText)
-                    
+
                     Text("护肤达人")
                         .font(.skinLabCaption)
                         .foregroundColor(.skinLabPrimary)
@@ -130,31 +133,32 @@ struct ProfileView: View {
         }
         .padding(.top, 10)
     }
-    
+
     // MARK: - Create Profile Prompt
+
     private var createProfilePrompt: some View {
         VStack(spacing: 20) {
             ZStack {
                 Circle()
                     .fill(LinearGradient.skinLabLavenderGradient.opacity(0.3))
                     .frame(width: 80, height: 80)
-                
+
                 Image(systemName: "person.badge.plus")
                     .font(.system(size: 36))
                     .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
             }
-            
+
             VStack(spacing: 8) {
                 Text("创建皮肤档案")
                     .font(.skinLabTitle3)
                     .foregroundColor(.skinLabText)
-                
+
                 Text("记录你的肤质、问题和目标\n获得更精准的个性化推荐")
                     .font(.skinLabSubheadline)
                     .foregroundColor(.skinLabSubtext)
                     .multilineTextAlignment(.center)
             }
-            
+
             Button {
                 showEditProfile = true
             } label: {
@@ -173,8 +177,9 @@ struct ProfileView: View {
         .cornerRadius(24)
         .skinLabSoftShadow(radius: 15, y: 8)
     }
-    
+
     // MARK: - Skin Profile Card
+
     private func skinProfileCard(_ profile: UserProfile) -> some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack {
@@ -185,9 +190,9 @@ struct ProfileView: View {
                         .font(.skinLabHeadline)
                         .foregroundColor(.skinLabText)
                 }
-                
+
                 Spacer()
-                
+
                 Button {
                     showEditProfile = true
                 } label: {
@@ -206,17 +211,17 @@ struct ProfileView: View {
                 .accessibilityLabel("编辑皮肤档案")
                 .accessibilityHint("修改你的皮肤类型和问题设置")
             }
-            
+
             Divider()
-            
+
             // Age Range
             ProfileRow(label: "年龄", value: profile.ageRange.displayName, icon: "calendar")
-            
+
             // Skin Type
             if let skinType = profile.skinType {
                 ProfileRow(label: "肤质", value: skinType.displayName, icon: skinType.icon)
             }
-            
+
             // Concerns
             if !profile.concerns.isEmpty {
                 VStack(alignment: .leading, spacing: 10) {
@@ -228,7 +233,7 @@ struct ProfileView: View {
                             .font(.skinLabSubheadline)
                             .foregroundColor(.skinLabSubtext)
                     }
-                    
+
                     FlowLayout(spacing: 8) {
                         ForEach(profile.concerns, id: \.self) { concern in
                             ConcernTag(concern: concern)
@@ -236,7 +241,7 @@ struct ProfileView: View {
                     }
                 }
             }
-            
+
             // Allergies
             if !profile.allergies.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
@@ -248,7 +253,7 @@ struct ProfileView: View {
                             .font(.skinLabSubheadline)
                             .foregroundColor(.skinLabSubtext)
                     }
-                    
+
                     Text(profile.allergies.joined(separator: "、"))
                         .font(.skinLabBody)
                         .foregroundColor(.skinLabText)
@@ -260,8 +265,9 @@ struct ProfileView: View {
         .cornerRadius(20)
         .skinLabSoftShadow()
     }
-    
+
     // MARK: - Stats Section
+
     private var statsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 6) {
@@ -271,16 +277,22 @@ struct ProfileView: View {
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
             }
-            
+
             HStack(spacing: 12) {
                 StatCard(value: "12", label: "分析次数", icon: "camera.fill", gradient: .skinLabPrimaryGradient)
-                StatCard(value: "1", label: "追踪周期", icon: "chart.line.uptrend.xyaxis", gradient: .skinLabLavenderGradient)
+                StatCard(
+                    value: "1",
+                    label: "追踪周期",
+                    icon: "chart.line.uptrend.xyaxis",
+                    gradient: .skinLabLavenderGradient
+                )
                 StatCard(value: "8", label: "收藏产品", icon: "heart.fill", gradient: .skinLabGoldGradient)
             }
         }
     }
-    
+
     // MARK: - Settings Section
+
     private var settingsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 6) {
@@ -294,7 +306,11 @@ struct ProfileView: View {
             VStack(spacing: 0) {
                 // Achievements row
                 NavigationLink(value: "achievements") {
-                    SettingsRow(icon: "trophy.fill", title: "成就 (\(unlockedCount)/\(totalAchievements))", iconColor: .orange)
+                    SettingsRow(
+                        icon: "trophy.fill",
+                        title: "成就 (\(unlockedCount)/\(totalAchievements))",
+                        iconColor: .orange
+                    )
                 }
 
                 Divider().padding(.leading, 52)
@@ -341,7 +357,7 @@ struct ProfileView: View {
     // MARK: - Computed Properties
 
     private var unlockedCount: Int {
-        achievementProgress.filter { $0.isUnlocked }.count
+        achievementProgress.filter(\.isUnlocked).count
     }
 
     private var totalAchievements: Int {
@@ -350,11 +366,12 @@ struct ProfileView: View {
 }
 
 // MARK: - Profile Row
+
 struct ProfileRow: View {
     let label: String
     let value: String
     var icon: String = ""
-    
+
     var body: some View {
         HStack {
             HStack(spacing: 6) {
@@ -376,9 +393,10 @@ struct ProfileRow: View {
 }
 
 // MARK: - Concern Tag
+
 struct ConcernTag: View {
     let concern: SkinConcern
-    
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: concern.icon)
@@ -397,6 +415,7 @@ struct ConcernTag: View {
 }
 
 // MARK: - Stat Card
+
 struct StatCard: View {
     let value: String
     let label: String
@@ -435,6 +454,7 @@ struct StatCard: View {
 }
 
 // MARK: - Settings Row
+
 struct SettingsRow: View {
     let icon: String
     let title: String
@@ -473,19 +493,22 @@ struct SettingsRow: View {
 }
 
 // MARK: - Edit Profile View
+
 struct EditProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [UserProfile]
-    
+
     @State private var skinType: SkinType?
     @State private var ageRange: AgeRange = .age25to30
     @State private var selectedConcerns: Set<SkinConcern> = []
     @State private var allergiesText: String = ""
     @State private var gender: Gender?
-    
-    private var existingProfile: UserProfile? { profiles.first }
-    
+
+    private var existingProfile: UserProfile? {
+        profiles.first
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -499,12 +522,12 @@ struct EditProfileView: View {
                                 Image(systemName: type.icon)
                                     .foregroundColor(.skinLabPrimary)
                                     .frame(width: 24)
-                                
+
                                 Text(type.displayName)
                                     .foregroundColor(.skinLabText)
-                                
+
                                 Spacer()
-                                
+
                                 if skinType == type {
                                     Image(systemName: "checkmark")
                                         .foregroundColor(.skinLabPrimary)
@@ -513,7 +536,7 @@ struct EditProfileView: View {
                         }
                     }
                 }
-                
+
                 // Age Range
                 Section("年龄段") {
                     Picker("年龄段", selection: $ageRange) {
@@ -523,7 +546,7 @@ struct EditProfileView: View {
                     }
                     .pickerStyle(.menu)
                 }
-                
+
                 // Concerns
                 Section("主要皮肤问题（可多选）") {
                     ForEach(SkinConcern.allCases, id: \.self) { concern in
@@ -538,12 +561,12 @@ struct EditProfileView: View {
                                 Image(systemName: concern.icon)
                                     .foregroundColor(.skinLabPrimary)
                                     .frame(width: 24)
-                                
+
                                 Text(concern.displayName)
                                     .foregroundColor(.skinLabText)
-                                
+
                                 Spacer()
-                                
+
                                 if selectedConcerns.contains(concern) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.skinLabPrimary)
@@ -555,12 +578,12 @@ struct EditProfileView: View {
                         }
                     }
                 }
-                
+
                 // Allergies
                 Section("已知过敏成分") {
                     TextField("例如：酒精、香精（逗号分隔）", text: $allergiesText)
                 }
-                
+
                 // Gender (Optional)
                 Section("性别（可选）") {
                     Picker("性别", selection: $gender) {
@@ -592,7 +615,7 @@ struct EditProfileView: View {
             }
         }
     }
-    
+
     private func loadExistingProfile() {
         guard let profile = existingProfile else { return }
         skinType = profile.skinType
@@ -601,7 +624,7 @@ struct EditProfileView: View {
         allergiesText = profile.allergies.joined(separator: ", ")
         gender = profile.gender.flatMap { Gender(rawValue: $0) }
     }
-    
+
     private func saveProfile() {
         let allergies = allergiesText
             .components(separatedBy: CharacterSet(charactersIn: ",，、"))
@@ -652,6 +675,7 @@ struct EditProfileView: View {
 }
 
 // MARK: - Flow Layout
+
 struct FlowLayout: Layout {
     var spacing: CGFloat = 8
 
@@ -675,7 +699,10 @@ struct FlowLayout: Layout {
         // Use cached frames if available, otherwise recalculate
         let frames = cache.frames.isEmpty ? layout(proposal: proposal, subviews: subviews).frames : cache.frames
         for (index, frame) in frames.enumerated() {
-            subviews[index].place(at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY), proposal: .init(frame.size))
+            subviews[index].place(
+                at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY),
+                proposal: .init(frame.size)
+            )
         }
     }
 

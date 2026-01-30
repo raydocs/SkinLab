@@ -6,22 +6,22 @@ import SwiftData
 @Model
 final class MatchResultRecord {
     @Attribute(.unique) var id: UUID
-    var userId: UUID                    // 当前用户ID
-    var twinUserId: UUID                // 匹配到的用户ID
-    var similarity: Double              // 相似度 0-1
-    var matchLevelRaw: String          // 匹配等级原始值
-    var createdAt: Date                 // 创建时间
-    var expiresAt: Date?                // 过期时间 (24小时缓存)
-    var anonymousProfileData: Data?     // 序列化的 AnonymousProfile
-    var effectiveProductsData: Data?    // 序列化的产品列表
-    
+    var userId: UUID // 当前用户ID
+    var twinUserId: UUID // 匹配到的用户ID
+    var similarity: Double // 相似度 0-1
+    var matchLevelRaw: String // 匹配等级原始值
+    var createdAt: Date // 创建时间
+    var expiresAt: Date? // 过期时间 (24小时缓存)
+    var anonymousProfileData: Data? // 序列化的 AnonymousProfile
+    var effectiveProductsData: Data? // 序列化的产品列表
+
     // MARK: - Computed Properties
-    
+
     var matchLevel: MatchLevel {
         get { MatchLevel(rawValue: matchLevelRaw) ?? .somewhatSimilar }
         set { matchLevelRaw = newValue.rawValue }
     }
-    
+
     var anonymousProfile: AnonymousProfile? {
         get {
             guard let data = anonymousProfileData else { return nil }
@@ -31,7 +31,7 @@ final class MatchResultRecord {
             anonymousProfileData = try? JSONEncoder().encode(newValue)
         }
     }
-    
+
     var effectiveProducts: [EffectiveProduct] {
         get {
             guard let data = effectiveProductsData else { return [] }
@@ -41,15 +41,15 @@ final class MatchResultRecord {
             effectiveProductsData = try? JSONEncoder().encode(newValue)
         }
     }
-    
+
     /// 是否已过期
     var isExpired: Bool {
         guard let expires = expiresAt else { return false }
         return Date() > expires
     }
-    
+
     // MARK: - Initialization
-    
+
     init(
         userId: UUID,
         twinUserId: UUID,
@@ -68,7 +68,7 @@ final class MatchResultRecord {
         self.anonymousProfile = anonymousProfile
         self.effectiveProducts = effectiveProducts
     }
-    
+
     /// 从 SkinTwin 创建
     convenience init(from twin: SkinTwin, userId: UUID) {
         self.init(
@@ -80,7 +80,7 @@ final class MatchResultRecord {
             effectiveProducts: twin.effectiveProducts
         )
     }
-    
+
     /// 转换为 SkinTwin
     func toSkinTwin() -> SkinTwin? {
         guard let profile = anonymousProfile else { return nil }

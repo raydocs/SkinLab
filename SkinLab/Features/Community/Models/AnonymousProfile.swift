@@ -7,11 +7,11 @@ import Foundation
 /// - ✅ 包含: 肤质、年龄段、主要问题、归一化向量、粗粒度地区
 /// - ❌ 不含: 姓名、照片、精确位置、处方信息、过敏清单
 struct AnonymousProfile: Codable, Sendable, Equatable, Hashable {
-    let skinType: SkinType  // 肤质类型
-    let ageRange: AgeRange  // 年龄段 (5年区间)
-    let mainConcerns: [SkinConcern]  // 主要皮肤问题 (最多3个)
-    let issueVector: [Double]  // 归一化问题向量 [0-1]
-    let region: String?  // 地区 (省份/国家级别)
+    let skinType: SkinType // 肤质类型
+    let ageRange: AgeRange // 年龄段 (5年区间)
+    let mainConcerns: [SkinConcern] // 主要皮肤问题 (最多3个)
+    let issueVector: [Double] // 归一化问题向量 [0-1]
+    let region: String? // 地区 (省份/国家级别)
 
     /// 从完整用户资料创建匿名版本
     init(from profile: UserProfile, historyStore: UserHistoryStore? = nil) {
@@ -42,17 +42,16 @@ struct AnonymousProfile: Codable, Sendable, Equatable, Hashable {
         from profile: UserProfile, historyStore: UserHistoryStore?
     ) -> [Double] {
         // 从用户历史数据计算平均问题严重程度
-        if let historyStore = historyStore,
-            let baseline = historyStore.getBaseline()
-        {
+        if let historyStore,
+           let baseline = historyStore.getBaseline() {
             return [
                 Double(baseline.avgSpots) / 10.0,
                 Double(baseline.avgAcne) / 10.0,
                 Double(baseline.avgPores) / 10.0,
                 Double(baseline.avgWrinkles) / 10.0,
                 Double(baseline.avgRedness) / 10.0,
-                0.5,  // evenness placeholder
-                0.5,  // texture placeholder
+                0.5, // evenness placeholder
+                0.5, // texture placeholder
             ]
         }
 
@@ -62,9 +61,9 @@ struct AnonymousProfile: Codable, Sendable, Equatable, Hashable {
 
     /// 提取粗粒度地区 (省份/国家级别)
     private static func extractCoarseRegion(from fullRegion: String?) -> String? {
-        guard let fullRegion = fullRegion else { return nil }
+        guard let fullRegion else { return nil }
         let components = fullRegion.components(separatedBy: " ")
-        return components.first  // "广东省" 而非 "深圳市南山区"
+        return components.first // "广东省" 而非 "深圳市南山区"
     }
 
     /// Mock数据 (用于预览和测试)
@@ -78,9 +77,10 @@ struct AnonymousProfile: Codable, Sendable, Equatable, Hashable {
 }
 
 // MARK: - UserProfile Extension
+
 extension UserProfile {
     /// 生成匿名化资料
     func toAnonymousProfile(historyStore: UserHistoryStore? = nil) -> AnonymousProfile {
-        return AnonymousProfile(from: self, historyStore: historyStore)
+        AnonymousProfile(from: self, historyStore: historyStore)
     }
 }

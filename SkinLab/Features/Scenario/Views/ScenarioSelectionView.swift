@@ -1,13 +1,5 @@
-//
-//  ScenarioSelectionView.swift
-//  SkinLab
-//
-//  场景选择视图
-//  用户可以选择当前护肤场景，获取针对性护肤建议
-//
-
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ScenarioSelectionView: View {
     @Query private var profiles: [UserProfile]
@@ -18,8 +10,13 @@ struct ScenarioSelectionView: View {
     @State private var showRecommendation = false
     @State private var currentRecommendation: ScenarioRecommendation?
 
-    private var profile: UserProfile? { profiles.first }
-    private var latestAnalysis: SkinAnalysis? { recentAnalyses.first?.toAnalysis() }
+    private var profile: UserProfile? {
+        profiles.first
+    }
+
+    private var latestAnalysis: SkinAnalysis? {
+        recentAnalyses.first?.toAnalysis()
+    }
 
     private let advisor = ScenarioAdvisor()
 

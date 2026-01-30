@@ -1,11 +1,3 @@
-//
-//  WeatherCardView.swift
-//  SkinLab
-//
-//  天气卡片视图
-//  显示当前天气信息和护肤建议
-//
-
 import SwiftUI
 
 // MARK: - Weather Card View
@@ -167,29 +159,29 @@ struct WeatherCardView: View {
 
     private var humidityColor: Color {
         switch weather.humidity {
-        case 0..<30: return .orange
-        case 30..<50: return .green
-        case 50..<70: return .blue
-        case 70..<85: return .cyan
-        default: return .purple
+        case 0 ..< 30: .orange
+        case 30 ..< 50: .green
+        case 50 ..< 70: .blue
+        case 70 ..< 85: .cyan
+        default: .purple
         }
     }
 
     private var temperatureIcon: String {
         switch weather.temperature {
-        case ..<10: return "thermometer.snowflake"
-        case 10..<26: return "thermometer.medium"
-        default: return "thermometer.sun.fill"
+        case ..<10: "thermometer.snowflake"
+        case 10 ..< 26: "thermometer.medium"
+        default: "thermometer.sun.fill"
         }
     }
 
     private var temperatureColor: Color {
         switch weather.temperature {
-        case ..<10: return .blue
-        case 10..<18: return .cyan
-        case 18..<26: return .green
-        case 26..<32: return .orange
-        default: return .red
+        case ..<10: .blue
+        case 10 ..< 18: .cyan
+        case 18 ..< 26: .green
+        case 26 ..< 32: .orange
+        default: .red
         }
     }
 
@@ -267,7 +259,7 @@ private struct WeatherMetricCard: View {
 /// 紧凑型天气卡片（用于首页等空间有限场景）
 struct CompactWeatherCardView: View {
     let weather: WeatherSnapshot
-    var onTap: (() -> Void)? = nil
+    var onTap: (() -> Void)?
 
     var body: some View {
         Button {
@@ -325,7 +317,9 @@ struct CompactWeatherCardView: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(weather.temperatureDisplay)，\(weather.condition.displayName)，UV指数\(weather.uvIndex)，湿度\(weather.humidityDisplay)，空气\(weather.airQuality.rawValue)")
+        .accessibilityLabel(
+            "\(weather.temperatureDisplay)，\(weather.condition.displayName)，UV指数\(weather.uvIndex)，湿度\(weather.humidityDisplay)，空气\(weather.airQuality.rawValue)"
+        )
         .accessibilityHint(onTap != nil ? "双击查看详情" : "")
     }
 
@@ -375,7 +369,7 @@ struct WeatherLoadingCardView: View {
                 GridItem(.flexible()),
                 GridItem(.flexible())
             ], spacing: 12) {
-                ForEach(0..<4, id: \.self) { _ in
+                ForEach(0 ..< 4, id: \.self) { _ in
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color.gray.opacity(0.1))
                         .frame(height: 80)
@@ -393,7 +387,7 @@ struct WeatherLoadingCardView: View {
 /// 天气获取失败卡片
 struct WeatherErrorCardView: View {
     let message: String
-    var onRetry: (() -> Void)? = nil
+    var onRetry: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 16) {
@@ -411,7 +405,7 @@ struct WeatherErrorCardView: View {
                 .foregroundColor(.skinLabSubtext)
                 .multilineTextAlignment(.center)
 
-            if let onRetry = onRetry {
+            if let onRetry {
                 Button {
                     onRetry()
                 } label: {
@@ -469,8 +463,8 @@ private struct ShimmerModifier: ViewModifier {
     }
 }
 
-private extension View {
-    func shimmer() -> some View {
+extension View {
+    fileprivate func shimmer() -> some View {
         modifier(ShimmerModifier())
     }
 }

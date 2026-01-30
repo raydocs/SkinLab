@@ -1,5 +1,5 @@
-import SwiftUI
 import AVFoundation
+import SwiftUI
 
 struct AnalysisView: View {
     @Environment(\.dismiss) private var dismiss
@@ -11,22 +11,22 @@ struct AnalysisView: View {
     @State private var capturedImage: UIImage?
     @State private var capturedStandardization: PhotoStandardizationMetadata?
     @State private var rotationAngle: Double = 0
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
                 FreshBackgroundMesh()
-                
+
                 switch viewModel.state {
                 case .camera:
                     cameraView
                 case .analyzing:
                     analyzingView
-                case .result(let result):
+                case let .result(result):
                     AnalysisResultView(result: result) {
                         viewModel.retry()
                     }
-                case .error(let message):
+                case let .error(message):
                     errorView(message)
                 }
             }
@@ -89,12 +89,13 @@ struct AnalysisView: View {
             }
         }
     }
-    
+
     // MARK: - Camera View
+
     private var cameraView: some View {
         VStack(spacing: 28) {
             Spacer()
-            
+
             // 面部轮廓引导
             ZStack {
                 // Fresh Guide Oval
@@ -104,28 +105,28 @@ struct AnalysisView: View {
                         style: StrokeStyle(lineWidth: 3, dash: [8, 6])
                     )
                     .frame(width: 260, height: 340)
-                
+
                 VStack(spacing: 16) {
                     ZStack {
                         Circle()
                             .fill(Color.freshPrimary.opacity(0.1))
                             .frame(width: 80, height: 80)
-                        
+
                         Image(systemName: "face.smiling")
                             .font(.system(size: 36))
                             .foregroundColor(.freshPrimary)
                     }
-                    
+
                     Text("AI皮肤分析")
                         .font(.skinLabTitle3)
                         .foregroundColor(.skinLabText)
-                    
+
                     Text("拍摄面部照片获取专业分析")
                         .font(.skinLabSubheadline)
                         .foregroundColor(.skinLabSubtext)
                 }
             }
-            
+
             // Tips 卡片
             VStack(alignment: .leading, spacing: 10) {
                 TipRow(icon: "sun.max.fill", text: "确保光线充足均匀", color: .freshAccent)
@@ -134,9 +135,9 @@ struct AnalysisView: View {
             }
             .padding()
             .freshGlassCard()
-            
+
             Spacer()
-            
+
             // Action Buttons
             VStack(spacing: 14) {
                 Button {
@@ -164,12 +165,13 @@ struct AnalysisView: View {
         }
         .padding()
     }
-    
+
     // MARK: - Analyzing View
+
     private var analyzingView: some View {
         VStack(spacing: 28) {
             Spacer()
-            
+
             // 分析动画
             ZStack {
                 // 外层脉冲圆
@@ -178,11 +180,11 @@ struct AnalysisView: View {
                     .frame(width: 160, height: 160)
                     .scaleEffect(1.2)
                     .opacity(0.6)
-                
+
                 Circle()
                     .stroke(Color.freshPrimary.opacity(0.3), lineWidth: 2)
                     .frame(width: 120, height: 120)
-                
+
                 // 图片预览
                 if let image = viewModel.selectedImage {
                     Image(uiImage: image)
@@ -198,12 +200,12 @@ struct AnalysisView: View {
                     Circle()
                         .fill(Color.freshPrimary.opacity(0.1))
                         .frame(width: 100, height: 100)
-                    
+
                     Image(systemName: "face.smiling")
                         .font(.system(size: 40))
                         .foregroundColor(.freshPrimary)
                 }
-                
+
                 // 旋转加载指示器
                 Circle()
                     .trim(from: 0, to: 0.3)
@@ -216,17 +218,17 @@ struct AnalysisView: View {
                         }
                     }
             }
-            
+
             VStack(spacing: 8) {
                 Text(viewModel.analysisProgress)
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
-                
+
                 Text("AI正在识别你的肌肤特征...")
                     .font(.skinLabSubheadline)
                     .foregroundColor(.skinLabSubtext)
             }
-            
+
             // 分析步骤指示
             HStack(spacing: 20) {
                 AnalysisStep(icon: "checkmark.circle.fill", text: "图片优化", isActive: true)
@@ -234,12 +236,13 @@ struct AnalysisView: View {
                 AnalysisStep(icon: "circle", text: "问题检测", isActive: false)
             }
             .padding(.top, 20)
-            
+
             Spacer()
         }
     }
-    
+
     // MARK: - Error View
+
     private func errorView(_ message: String) -> some View {
         // Use the preserved error for better categorization, fallback to message-based error
         let displayError: Error = viewModel.lastError ?? NSError(
@@ -263,6 +266,7 @@ struct AnalysisView: View {
 }
 
 // MARK: - Tip Row
+
 struct TipRow: View {
     let icon: String
     let text: String
@@ -286,6 +290,7 @@ struct TipRow: View {
 }
 
 // MARK: - Analysis Step Indicator
+
 struct AnalysisStep: View {
     let icon: String
     let text: String

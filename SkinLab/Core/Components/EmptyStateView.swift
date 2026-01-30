@@ -199,8 +199,16 @@ private struct EmptyStateFeatureRow: View {
         message: "Record your skincare journey\nWitness real skin changes",
         actionTitle: "Start Tracking",
         features: [
-            EmptyStateFeature(icon: "camera.fill", text: "Standardized photos for accurate comparison", gradient: .skinLabPrimaryGradient),
-            EmptyStateFeature(icon: "calendar.badge.clock", text: "Day 7/14/21/28 check-in reminders", gradient: .skinLabLavenderGradient),
+            EmptyStateFeature(
+                icon: "camera.fill",
+                text: "Standardized photos for accurate comparison",
+                gradient: .skinLabPrimaryGradient
+            ),
+            EmptyStateFeature(
+                icon: "calendar.badge.clock",
+                text: "Day 7/14/21/28 check-in reminders",
+                gradient: .skinLabLavenderGradient
+            ),
             EmptyStateFeature(icon: "chart.bar.fill", text: "AI-powered trend analysis", gradient: .skinLabGoldGradient)
         ],
         action: {

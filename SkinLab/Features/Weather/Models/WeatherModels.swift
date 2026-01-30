@@ -1,11 +1,3 @@
-//
-//  WeatherModels.swift
-//  SkinLab
-//
-//  天气数据模型
-//  定义天气快照、空气质量、UV等级等类型
-//
-
 import Foundation
 import SwiftUI
 
@@ -15,13 +7,13 @@ import SwiftUI
 /// 记录某一时刻的天气环境信息
 struct WeatherSnapshot: Codable, Sendable, Identifiable, Equatable {
     let id: UUID
-    let temperature: Double          // 摄氏度
-    let humidity: Double             // 百分比 0-100
-    let uvIndex: Int                 // 0-11+
+    let temperature: Double // 摄氏度
+    let humidity: Double // 百分比 0-100
+    let uvIndex: Int // 0-11+
     let airQuality: AQILevel
     let condition: WeatherCondition
     let recordedAt: Date
-    let location: String?            // 城市名
+    let location: String? // 城市名
 
     init(
         id: UUID = UUID(),
@@ -48,11 +40,11 @@ struct WeatherSnapshot: Codable, Sendable, Identifiable, Equatable {
     /// UV等级（基于UV指数计算）
     var uvLevel: UVLevel {
         switch uvIndex {
-        case 0...2: return .low
-        case 3...5: return .moderate
-        case 6...7: return .high
-        case 8...10: return .veryHigh
-        default: return .extreme
+        case 0 ... 2: .low
+        case 3 ... 5: .moderate
+        case 6 ... 7: .high
+        case 8 ... 10: .veryHigh
+        default: .extreme
         }
     }
 
@@ -69,22 +61,22 @@ struct WeatherSnapshot: Codable, Sendable, Identifiable, Equatable {
     /// 湿度等级描述
     var humidityLevel: String {
         switch humidity {
-        case 0..<30: return "干燥"
-        case 30..<50: return "舒适"
-        case 50..<70: return "适中"
-        case 70..<85: return "潮湿"
-        default: return "非常潮湿"
+        case 0 ..< 30: "干燥"
+        case 30 ..< 50: "舒适"
+        case 50 ..< 70: "适中"
+        case 70 ..< 85: "潮湿"
+        default: "非常潮湿"
         }
     }
 
     /// 温度舒适度描述
     var temperatureLevel: String {
         switch temperature {
-        case ..<10: return "寒冷"
-        case 10..<18: return "凉爽"
-        case 18..<26: return "舒适"
-        case 26..<32: return "温暖"
-        default: return "炎热"
+        case ..<10: "寒冷"
+        case 10 ..< 18: "凉爽"
+        case 18 ..< 26: "舒适"
+        case 26 ..< 32: "温暖"
+        default: "炎热"
         }
     }
 }
@@ -101,31 +93,33 @@ enum AQILevel: String, Codable, Sendable, CaseIterable, Identifiable {
     case veryUnhealthy = "重度污染"
     case hazardous = "严重污染"
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     // MARK: - Display Properties
 
     /// 图标名称 (SF Symbols)
     var icon: String {
         switch self {
-        case .good: return "leaf.fill"
-        case .moderate: return "leaf"
-        case .unhealthySensitive: return "aqi.low"
-        case .unhealthy: return "aqi.medium"
-        case .veryUnhealthy: return "aqi.high"
-        case .hazardous: return "exclamationmark.triangle.fill"
+        case .good: "leaf.fill"
+        case .moderate: "leaf"
+        case .unhealthySensitive: "aqi.low"
+        case .unhealthy: "aqi.medium"
+        case .veryUnhealthy: "aqi.high"
+        case .hazardous: "exclamationmark.triangle.fill"
         }
     }
 
     /// 主题颜色
     var color: Color {
         switch self {
-        case .good: return .green
-        case .moderate: return .yellow
-        case .unhealthySensitive: return .orange
-        case .unhealthy: return .red
-        case .veryUnhealthy: return .purple
-        case .hazardous: return .brown
+        case .good: .green
+        case .moderate: .yellow
+        case .unhealthySensitive: .orange
+        case .unhealthy: .red
+        case .veryUnhealthy: .purple
+        case .hazardous: .brown
         }
     }
 
@@ -133,17 +127,17 @@ enum AQILevel: String, Codable, Sendable, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .good:
-            return "空气质量令人满意，基本无空气污染"
+            "空气质量令人满意，基本无空气污染"
         case .moderate:
-            return "空气质量可接受，少数敏感人群可能有不适"
+            "空气质量可接受，少数敏感人群可能有不适"
         case .unhealthySensitive:
-            return "敏感人群可能出现健康影响"
+            "敏感人群可能出现健康影响"
         case .unhealthy:
-            return "可能对人体健康产生影响"
+            "可能对人体健康产生影响"
         case .veryUnhealthy:
-            return "健康风险增加，应减少户外活动"
+            "健康风险增加，应减少户外活动"
         case .hazardous:
-            return "健康警告，避免户外活动"
+            "健康警告，避免户外活动"
         }
     }
 
@@ -151,29 +145,29 @@ enum AQILevel: String, Codable, Sendable, CaseIterable, Identifiable {
     var skincareTip: String {
         switch self {
         case .good:
-            return "空气清新，正常护肤即可"
+            "空气清新，正常护肤即可"
         case .moderate:
-            return "可正常护肤，注意基础清洁"
+            "可正常护肤，注意基础清洁"
         case .unhealthySensitive:
-            return "加强清洁，使用抗氧化产品"
+            "加强清洁，使用抗氧化产品"
         case .unhealthy:
-            return "深层清洁，加强屏障修复"
+            "深层清洁，加强屏障修复"
         case .veryUnhealthy:
-            return "减少外出，回家后彻底清洁"
+            "减少外出，回家后彻底清洁"
         case .hazardous:
-            return "避免外出，使用物理防护"
+            "避免外出，使用物理防护"
         }
     }
 
     /// AQI数值范围参考
     var aqiRange: String {
         switch self {
-        case .good: return "0-50"
-        case .moderate: return "51-100"
-        case .unhealthySensitive: return "101-150"
-        case .unhealthy: return "151-200"
-        case .veryUnhealthy: return "201-300"
-        case .hazardous: return ">300"
+        case .good: "0-50"
+        case .moderate: "51-100"
+        case .unhealthySensitive: "101-150"
+        case .unhealthy: "151-200"
+        case .veryUnhealthy: "201-300"
+        case .hazardous: ">300"
         }
     }
 }
@@ -182,50 +176,52 @@ enum AQILevel: String, Codable, Sendable, CaseIterable, Identifiable {
 
 /// 天气状况
 enum WeatherCondition: String, Codable, Sendable, CaseIterable, Identifiable {
-    case sunny = "sunny"
-    case cloudy = "cloudy"
-    case rainy = "rainy"
-    case windy = "windy"
-    case snowy = "snowy"
-    case foggy = "foggy"
+    case sunny
+    case cloudy
+    case rainy
+    case windy
+    case snowy
+    case foggy
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     // MARK: - Display Properties
 
     /// 中文显示名称
     var displayName: String {
         switch self {
-        case .sunny: return "晴天"
-        case .cloudy: return "多云"
-        case .rainy: return "雨天"
-        case .windy: return "大风"
-        case .snowy: return "下雪"
-        case .foggy: return "雾天"
+        case .sunny: "晴天"
+        case .cloudy: "多云"
+        case .rainy: "雨天"
+        case .windy: "大风"
+        case .snowy: "下雪"
+        case .foggy: "雾天"
         }
     }
 
     /// 图标名称 (SF Symbols)
     var icon: String {
         switch self {
-        case .sunny: return "sun.max.fill"
-        case .cloudy: return "cloud.fill"
-        case .rainy: return "cloud.rain.fill"
-        case .windy: return "wind"
-        case .snowy: return "cloud.snow.fill"
-        case .foggy: return "cloud.fog.fill"
+        case .sunny: "sun.max.fill"
+        case .cloudy: "cloud.fill"
+        case .rainy: "cloud.rain.fill"
+        case .windy: "wind"
+        case .snowy: "cloud.snow.fill"
+        case .foggy: "cloud.fog.fill"
         }
     }
 
     /// 主题颜色
     var color: Color {
         switch self {
-        case .sunny: return .orange
-        case .cloudy: return .gray
-        case .rainy: return .blue
-        case .windy: return .teal
-        case .snowy: return .cyan
-        case .foggy: return .secondary
+        case .sunny: .orange
+        case .cloudy: .gray
+        case .rainy: .blue
+        case .windy: .teal
+        case .snowy: .cyan
+        case .foggy: .secondary
         }
     }
 
@@ -233,17 +229,17 @@ enum WeatherCondition: String, Codable, Sendable, CaseIterable, Identifiable {
     var skincareTip: String {
         switch self {
         case .sunny:
-            return "紫外线较强，注意防晒保护"
+            "紫外线较强，注意防晒保护"
         case .cloudy:
-            return "仍需防晒，紫外线可穿透云层"
+            "仍需防晒，紫外线可穿透云层"
         case .rainy:
-            return "湿度较高，注意控油和清洁"
+            "湿度较高，注意控油和清洁"
         case .windy:
-            return "皮肤易干燥，加强保湿"
+            "皮肤易干燥，加强保湿"
         case .snowy:
-            return "雪地反射紫外线，注意防晒"
+            "雪地反射紫外线，注意防晒"
         case .foggy:
-            return "空气污染物易滞留，加强清洁"
+            "空气污染物易滞留，加强清洁"
         }
     }
 }
@@ -259,40 +255,42 @@ enum UVLevel: String, Codable, Sendable, CaseIterable, Identifiable {
     case veryHigh = "很高"
     case extreme = "极高"
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     // MARK: - Display Properties
 
     /// 图标名称 (SF Symbols)
     var icon: String {
         switch self {
-        case .low: return "sun.min"
-        case .moderate: return "sun.max"
-        case .high: return "sun.max.fill"
-        case .veryHigh: return "sun.max.trianglebadge.exclamationmark"
-        case .extreme: return "exclamationmark.triangle.fill"
+        case .low: "sun.min"
+        case .moderate: "sun.max"
+        case .high: "sun.max.fill"
+        case .veryHigh: "sun.max.trianglebadge.exclamationmark"
+        case .extreme: "exclamationmark.triangle.fill"
         }
     }
 
     /// 主题颜色
     var color: Color {
         switch self {
-        case .low: return .green
-        case .moderate: return .yellow
-        case .high: return .orange
-        case .veryHigh: return .red
-        case .extreme: return .purple
+        case .low: .green
+        case .moderate: .yellow
+        case .high: .orange
+        case .veryHigh: .red
+        case .extreme: .purple
         }
     }
 
     /// UV指数范围
     var indexRange: String {
         switch self {
-        case .low: return "0-2"
-        case .moderate: return "3-5"
-        case .high: return "6-7"
-        case .veryHigh: return "8-10"
-        case .extreme: return "11+"
+        case .low: "0-2"
+        case .moderate: "3-5"
+        case .high: "6-7"
+        case .veryHigh: "8-10"
+        case .extreme: "11+"
         }
     }
 
@@ -300,15 +298,15 @@ enum UVLevel: String, Codable, Sendable, CaseIterable, Identifiable {
     var description: String {
         switch self {
         case .low:
-            return "紫外线较弱，可正常外出"
+            "紫外线较弱，可正常外出"
         case .moderate:
-            return "紫外线适中，建议使用防晒"
+            "紫外线适中，建议使用防晒"
         case .high:
-            return "紫外线较强，需做好防晒"
+            "紫外线较强，需做好防晒"
         case .veryHigh:
-            return "紫外线很强，避免长时间暴晒"
+            "紫外线很强，避免长时间暴晒"
         case .extreme:
-            return "紫外线极强，尽量避免外出"
+            "紫外线极强，尽量避免外出"
         }
     }
 
@@ -316,15 +314,15 @@ enum UVLevel: String, Codable, Sendable, CaseIterable, Identifiable {
     var sunscreenAdvice: String {
         switch self {
         case .low:
-            return "日常防晒即可，SPF15+"
+            "日常防晒即可，SPF15+"
         case .moderate:
-            return "建议SPF30+，每3小时补涂"
+            "建议SPF30+，每3小时补涂"
         case .high:
-            return "必须SPF30+，每2小时补涂"
+            "必须SPF30+，每2小时补涂"
         case .veryHigh:
-            return "SPF50+，配合物理防晒"
+            "SPF50+，配合物理防晒"
         case .extreme:
-            return "SPF50+ PA++++，全面物理遮挡"
+            "SPF50+ PA++++，全面物理遮挡"
         }
     }
 
@@ -332,15 +330,15 @@ enum UVLevel: String, Codable, Sendable, CaseIterable, Identifiable {
     var skincareTip: String {
         switch self {
         case .low:
-            return "正常护肤即可"
+            "正常护肤即可"
         case .moderate:
-            return "注意防晒，可使用抗氧化精华"
+            "注意防晒，可使用抗氧化精华"
         case .high:
-            return "加强防晒和抗氧化，晒后修复"
+            "加强防晒和抗氧化，晒后修复"
         case .veryHigh:
-            return "高倍防晒，晚间使用修复产品"
+            "高倍防晒，晚间使用修复产品"
         case .extreme:
-            return "避免外出，使用高强度修复产品"
+            "避免外出，使用高强度修复产品"
         }
     }
 }
@@ -375,22 +373,22 @@ extension WeatherSnapshot {
 
         // 湿度影响 (-15 max)
         if humidity < 30 {
-            score -= 15  // 太干燥
+            score -= 15 // 太干燥
         } else if humidity < 40 {
             score -= 10
         } else if humidity > 80 {
-            score -= 10  // 太潮湿
+            score -= 10 // 太潮湿
         } else if humidity > 70 {
             score -= 5
         }
 
         // 温度影响 (-15 max)
         if temperature < 5 {
-            score -= 15  // 太冷
+            score -= 15 // 太冷
         } else if temperature < 10 {
             score -= 10
         } else if temperature > 35 {
-            score -= 15  // 太热
+            score -= 15 // 太热
         } else if temperature > 30 {
             score -= 10
         }
@@ -425,7 +423,7 @@ extension WeatherSnapshot {
         }
 
         // 根据空气质量添加建议
-        if airQuality != .good && airQuality != .moderate {
+        if airQuality != .good, airQuality != .moderate {
             tips.append(airQuality.skincareTip)
         }
 

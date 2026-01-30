@@ -218,13 +218,13 @@ struct AchievementDetailView: View {
     private var categoryColors: [Color] {
         switch badge.category {
         case .streaks:
-            return [.orange, .red]
+            [.orange, .red]
         case .completeness:
-            return [.blue, .purple]
+            [.blue, .purple]
         case .social:
-            return [.green, .mint]
+            [.green, .mint]
         case .knowledge:
-            return [.yellow, .orange]
+            [.yellow, .orange]
         }
     }
 
@@ -239,45 +239,45 @@ struct AchievementDetailView: View {
     private var unlockHint: String {
         switch badge.requirementType {
         case .streakDays:
-            return "连续打卡\(badge.requirementValue)天"
+            "连续打卡\(badge.requirementValue)天"
         case .totalCheckIns:
-            return "完成\(badge.requirementValue)次打卡"
+            "完成\(badge.requirementValue)次打卡"
         case .skinTwinMatches:
-            return "匹配\(badge.requirementValue)位护肤双胞胎"
+            "匹配\(badge.requirementValue)位护肤双胞胎"
         case .productAnalysisCompleted:
-            return "分析\(badge.requirementValue)个护肤产品"
+            "分析\(badge.requirementValue)个护肤产品"
         case .shares:
-            return "分享\(badge.requirementValue)次成就"
+            "分享\(badge.requirementValue)次成就"
         }
     }
 
     private var requirementIcon: String {
         switch badge.requirementType {
         case .streakDays:
-            return "flame.fill"
+            "flame.fill"
         case .totalCheckIns:
-            return "checkmark.circle.fill"
+            "checkmark.circle.fill"
         case .skinTwinMatches:
-            return "person.2.fill"
+            "person.2.fill"
         case .productAnalysisCompleted:
-            return "chart.bar.doc.horizontal"
+            "chart.bar.doc.horizontal"
         case .shares:
-            return "square.and.arrow.up"
+            "square.and.arrow.up"
         }
     }
 
     private var requirementText: String {
         switch badge.requirementType {
         case .streakDays:
-            return "连续打卡 \(badge.requirementValue) 天"
+            "连续打卡 \(badge.requirementValue) 天"
         case .totalCheckIns:
-            return "完成 \(badge.requirementValue) 次打卡"
+            "完成 \(badge.requirementValue) 次打卡"
         case .skinTwinMatches:
-            return "匹配 \(badge.requirementValue) 位护肤双胞胎"
+            "匹配 \(badge.requirementValue) 位护肤双胞胎"
         case .productAnalysisCompleted:
-            return "分析 \(badge.requirementValue) 个护肤产品"
+            "分析 \(badge.requirementValue) 个护肤产品"
         case .shares:
-            return "分享 \(badge.requirementValue) 次成就"
+            "分享 \(badge.requirementValue) 次成就"
         }
     }
 

@@ -1,6 +1,7 @@
 import Foundation
 
 // MARK: - Protocol
+
 protocol RoutineServiceProtocol: Sendable {
     func generateRoutine(
         analysis: SkinAnalysis,
@@ -11,6 +12,7 @@ protocol RoutineServiceProtocol: Sendable {
 }
 
 // MARK: - Service Implementation
+
 @MainActor
 final class RoutineService: RoutineServiceProtocol {
     private let geminiService: GeminiService
@@ -54,12 +56,13 @@ final class RoutineService: RoutineServiceProtocol {
         - 肤质：\(analysis.skinType.displayName)
         - 综合评分：\(analysis.overallScore)/100
         - 皮肤年龄：\(analysis.skinAge)岁
-        - 主要问题：斑点(\(analysis.issues.spots)/10), 痘痘(\(analysis.issues.acne)/10), 毛孔(\(analysis.issues.pores)/10), 皱纹(\(analysis.issues.wrinkles)/10), 泛红(\(analysis.issues.redness)/10)
+        - 主要问题：斑点(\(analysis.issues.spots)/10), 痘痘(\(analysis.issues.acne)/10), 毛孔(\(analysis.issues
+            .pores)/10), 皱纹(\(analysis.issues.wrinkles)/10), 泛红(\(analysis.issues.redness)/10)
         """
         sections.append(skinState)
 
         // User profile
-        if let profile = profile {
+        if let profile {
             var profileSection = "\n## 用户档案"
             if let skinType = profile.skinType {
                 profileSection += "\n- 自述肤质：\(skinType.displayName)"
@@ -67,7 +70,7 @@ final class RoutineService: RoutineServiceProtocol {
             profileSection += "\n- 年龄段：\(profile.ageRange.displayName)"
 
             if !profile.concerns.isEmpty {
-                profileSection += "\n- 关注问题：\(profile.concerns.map { $0.displayName }.joined(separator: "、"))"
+                profileSection += "\n- 关注问题：\(profile.concerns.map(\.displayName).joined(separator: "、"))"
             }
 
             if !profile.allergies.isEmpty {
@@ -186,14 +189,18 @@ final class RoutineService: RoutineServiceProtocol {
         return "你是专业护肤顾问。根据以下信息生成个性化护肤方案。\n" + sections.joined(separator: "\n")
     }
 
-    private func parseRoutineResponse(_ response: String, analysis: SkinAnalysis, profile: UserProfile?) throws -> SkincareRoutine {
+    private func parseRoutineResponse(
+        _ response: String,
+        analysis: SkinAnalysis,
+        profile: UserProfile?
+    ) throws -> SkincareRoutine {
         // Extract JSON from response
         guard let jsonStart = response.range(of: "{"),
               let jsonEnd = response.range(of: "}", options: .backwards) else {
             throw RoutineError.invalidResponse
         }
 
-        let jsonString = String(response[jsonStart.lowerBound...jsonEnd.upperBound])
+        let jsonString = String(response[jsonStart.lowerBound ... jsonEnd.upperBound])
         guard let jsonData = jsonString.data(using: .utf8) else {
             throw RoutineError.invalidResponse
         }
@@ -255,6 +262,7 @@ final class RoutineService: RoutineServiceProtocol {
 }
 
 // MARK: - Helper Structures
+
 private struct RoutineData: Codable {
     let weeksDuration: Int
     let adjustmentReason: String?
@@ -275,19 +283,21 @@ private struct StepData: Codable {
 }
 
 // MARK: - Errors
+
 enum RoutineError: LocalizedError {
     case invalidResponse
     case parseError
 
     var errorDescription: String? {
         switch self {
-        case .invalidResponse: return "方案生成失败，请重试"
-        case .parseError: return "数据解析失败"
+        case .invalidResponse: "方案生成失败，请重试"
+        case .parseError: "数据解析失败"
         }
     }
 }
 
 // MARK: - GeminiService Extension
+
 extension GeminiService {
     /// Configured URLSession for routine generation with proper timeouts
     private static var routineSession: URLSession = {

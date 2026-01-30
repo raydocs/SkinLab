@@ -5,12 +5,15 @@ import UserNotifications
 @MainActor
 final class StreakNotificationService {
     // MARK: - Dependencies
+
     private let streakService: StreakTrackingService
 
     // MARK: - Notification Identifiers
+
     private let notificationIdentifierBase = "streak_at_risk_"
 
     // MARK: - Initialization
+
     init(streakService: StreakTrackingService) {
         self.streakService = streakService
     }
@@ -97,7 +100,7 @@ final class StreakNotificationService {
 
     /// Cancel all streak notifications
     private func cancelAllNotifications() async {
-        let allIdentifiers = (1...30).map { notificationIdentifierBase + "\($0)" }
+        let allIdentifiers = (1 ... 30).map { notificationIdentifierBase + "\($0)" }
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: allIdentifiers)
     }
 
@@ -113,8 +116,7 @@ final class StreakNotificationService {
         }
 
         do {
-            let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
-            return granted
+            return try await center.requestAuthorization(options: [.alert, .sound, .badge])
         } catch {
             return false
         }

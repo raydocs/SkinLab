@@ -49,7 +49,9 @@ struct TwinMatchCard: View {
             .skinLabSoftShadow(radius: 8, y: 4)
         }
         .buttonStyle(.plain)
+
         // MARK: - Accessibility
+
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
         .accessibilityHint("双击查看详情")
@@ -168,7 +170,9 @@ struct TwinMatchCardCompact: View {
         .padding(12)
         .background(Color.skinLabCardBackground)
         .cornerRadius(14)
+
         // MARK: - Accessibility
+
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             "\(twin.matchLevel.rawValue)，相似度\(twin.similarityPercent)%，\(twin.anonymousProfile.skinType.displayName)"
@@ -178,13 +182,13 @@ struct TwinMatchCardCompact: View {
     private var matchLevelColor: Color {
         switch twin.matchLevel {
         case .twin:
-            return .skinLabPrimary
+            .skinLabPrimary
         case .verySimilar:
-            return .skinLabSecondary
+            .skinLabSecondary
         case .similar:
-            return .skinLabAccent
+            .skinLabAccent
         case .somewhatSimilar:
-            return .skinLabSubtext
+            .skinLabSubtext
         }
     }
 }

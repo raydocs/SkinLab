@@ -1,6 +1,7 @@
 import SwiftUI
 
 // MARK: - Lifestyle Insight Row
+
 /// Displays a single lifestyle correlation insight
 struct LifestyleInsightRow: View {
     let insight: LifestyleCorrelationInsight
@@ -80,16 +81,16 @@ struct LifestyleInsightRow: View {
 
     private var iconColor: Color {
         switch insight.factor {
-        case .sleepHours: return .blue
-        case .stressLevel: return .purple
-        case .waterIntakeLevel: return .cyan
-        case .alcohol: return .red
-        case .exerciseMinutes: return .green
-        case .sunExposureLevel: return .orange
+        case .sleepHours: .blue
+        case .stressLevel: .purple
+        case .waterIntakeLevel: .cyan
+        case .alcohol: .red
+        case .exerciseMinutes: .green
+        case .sunExposureLevel: .orange
         // Weather factors
-        case .humidity: return .teal
-        case .uvIndex: return .orange
-        case .airQuality: return .gray
+        case .humidity: .teal
+        case .uvIndex: .orange
+        case .airQuality: .gray
         }
     }
 
@@ -100,17 +101,17 @@ struct LifestyleInsightRow: View {
 
     private var directionIcon: String {
         switch insight.direction {
-        case .positive: return "arrow.up.right"
-        case .negative: return "arrow.down.right"
-        case .none: return "minus"
+        case .positive: "arrow.up.right"
+        case .negative: "arrow.down.right"
+        case .none: "minus"
         }
     }
 
     private var correlationColor: Color {
         switch insight.direction {
-        case .positive: return .green
-        case .negative: return .red
-        case .none: return .gray
+        case .positive: .green
+        case .negative: .red
+        case .none: .gray
         }
     }
 
@@ -139,6 +140,7 @@ struct LifestyleInsightRow: View {
 }
 
 // MARK: - Lifestyle Insights Card
+
 /// Card displaying multiple lifestyle insights
 struct LifestyleInsightsCard: View {
     let insights: [LifestyleCorrelationInsight]
@@ -218,6 +220,7 @@ struct LifestyleInsightsCard: View {
 }
 
 // MARK: - Preview
+
 #Preview {
     LifestyleInsightsCard(
         insights: [

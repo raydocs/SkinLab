@@ -1,6 +1,6 @@
-import XCTest
-import SwiftData
 @testable import SkinLab
+import SwiftData
+import XCTest
 
 /// Unit tests for StreakTrackingService
 final class StreakTrackingServiceTests: XCTestCase {
@@ -25,7 +25,7 @@ final class StreakTrackingServiceTests: XCTestCase {
 
     // MARK: - Basic Streak Tests
 
-    func testCheckInIncrementsStreak() async throws {
+    func testCheckInIncrementsStreak() {
         let result = service.checkIn()
         XCTAssertEqual(result.currentStreak, 1)
         XCTAssertTrue(result.streakIncreased)
@@ -35,7 +35,7 @@ final class StreakTrackingServiceTests: XCTestCase {
         XCTAssertTrue(result2.streakIncreased)
     }
 
-    func testSameDayCheckInDoesNotIncrement() async throws {
+    func testSameDayCheckInDoesNotIncrement() {
         let now = Date()
         let result1 = service.checkIn(at: now)
         XCTAssertEqual(result1.currentStreak, 1)
@@ -45,7 +45,7 @@ final class StreakTrackingServiceTests: XCTestCase {
         XCTAssertFalse(result2.streakIncreased)
     }
 
-    func testMissedDayResetsStreak() async throws {
+    func testMissedDayResetsStreak() {
         let now = Date()
         service.checkIn(at: now)
 
@@ -57,7 +57,7 @@ final class StreakTrackingServiceTests: XCTestCase {
 
     // MARK: - Streak Freeze Tests
 
-    func testStreakFreezeMaintainsStreak() async throws {
+    func testStreakFreezeMaintainsStreak() {
         let now = Date()
         service.checkIn(at: now) // Day 1
 
@@ -71,7 +71,7 @@ final class StreakTrackingServiceTests: XCTestCase {
         XCTAssertEqual(result.currentStreak, 2)
     }
 
-    func testFreezeReplenishesAfter30Days() async throws {
+    func testFreezeReplenishesAfter30Days() {
         let now = Date()
         service.checkIn(at: now)
 
@@ -91,7 +91,7 @@ final class StreakTrackingServiceTests: XCTestCase {
 
     // MARK: - Backfill Tests
 
-    func testBackfillFromHistoricalData() async throws {
+    func testBackfillFromHistoricalData() async {
         // This test would require setting up historical TrackingSession data
         // For now, we'll verify the method exists and doesn't crash
         await service.backfillStreaks()
@@ -102,7 +102,7 @@ final class StreakTrackingServiceTests: XCTestCase {
 
     // MARK: - Timezone Tests
 
-    func testTimezoneChangeBehavior() async throws {
+    func testTimezoneChangeBehavior() {
         // Test that timezone changes don't break streak calculation
         let now = Date()
         service.checkIn(at: now)
@@ -110,7 +110,7 @@ final class StreakTrackingServiceTests: XCTestCase {
         // Simulate timezone change by manually creating dates
         let calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day], from: now)
-        components.day! += 1
+        components.day += 1
 
         if let tomorrow = calendar.date(from: components) {
             let result = service.checkIn(at: tomorrow)
@@ -118,7 +118,7 @@ final class StreakTrackingServiceTests: XCTestCase {
         }
     }
 
-    func testDSTBoundaryBehavior() async throws {
+    func testDSTBoundaryBehavior() {
         // Test DST boundary (23 or 25 hour days)
         // This is a simplified test; real DST testing requires specific dates
         let calendar = Calendar.current
@@ -135,7 +135,7 @@ final class StreakTrackingServiceTests: XCTestCase {
 
     // MARK: - Streak Status Tests
 
-    func testGetStreakStatus() async throws {
+    func testGetStreakStatus() {
         service.checkIn()
 
         let status = service.getStreakStatus()
@@ -144,11 +144,11 @@ final class StreakTrackingServiceTests: XCTestCase {
         XCTAssertNotNil(status.lastCheckInDate)
     }
 
-    func testLongestStreakTracking() async throws {
+    func testLongestStreakTracking() {
         let now = Date()
 
         // Build a 7-day streak
-        for i in 0..<7 {
+        for i in 0 ..< 7 {
             service.checkIn(at: now.addingTimeInterval(86400 * Double(i)))
         }
 
@@ -164,41 +164,41 @@ final class StreakTrackingServiceTests: XCTestCase {
 
     // MARK: - Freeze Suggestion Tests
 
-    func testShouldSuggestFreezeWhenMissedYesterday() async throws {
+    func testShouldSuggestFreezeWhenMissedYesterday() throws {
         let calendar = Calendar.current
         let now = Date()
 
         // Check in 2 days ago (yesterday was missed)
-        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: now)!
+        let twoDaysAgo = try XCTUnwrap(calendar.date(byAdding: .day, value: -2, to: now))
         service.checkIn(at: twoDaysAgo)
 
         // Should suggest freeze since yesterday was missed
         XCTAssertTrue(service.shouldSuggestFreeze(now: now))
     }
 
-    func testShouldNotSuggestFreezeWhenCheckedInYesterday() async throws {
+    func testShouldNotSuggestFreezeWhenCheckedInYesterday() throws {
         let calendar = Calendar.current
         let now = Date()
 
         // Check in yesterday
-        let yesterday = calendar.date(byAdding: .day, value: -1, to: now)!
+        let yesterday = try XCTUnwrap(calendar.date(byAdding: .day, value: -1, to: now))
         service.checkIn(at: yesterday)
 
         // Should not suggest freeze since we checked in yesterday
         XCTAssertFalse(service.shouldSuggestFreeze(now: now))
     }
 
-    func testShouldNotSuggestFreezeWhenNoStreak() async throws {
+    func testShouldNotSuggestFreezeWhenNoStreak() {
         // No check-ins at all
         XCTAssertFalse(service.shouldSuggestFreeze())
     }
 
-    func testShouldNotSuggestFreezeWhenNoFreezeAvailable() async throws {
+    func testShouldNotSuggestFreezeWhenNoFreezeAvailable() throws {
         let calendar = Calendar.current
         let now = Date()
 
         // Check in 2 days ago
-        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: now)!
+        let twoDaysAgo = try XCTUnwrap(calendar.date(byAdding: .day, value: -2, to: now))
         service.checkIn(at: twoDaysAgo)
 
         // Use the freeze
@@ -208,12 +208,12 @@ final class StreakTrackingServiceTests: XCTestCase {
         XCTAssertFalse(service.shouldSuggestFreeze(now: now))
     }
 
-    func testShouldNotSuggestFreezeWhenAlreadyUsedForYesterday() async throws {
+    func testShouldNotSuggestFreezeWhenAlreadyUsedForYesterday() throws {
         let calendar = Calendar.current
         let now = Date()
 
         // Check in 2 days ago
-        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: now)!
+        let twoDaysAgo = try XCTUnwrap(calendar.date(byAdding: .day, value: -2, to: now))
         service.checkIn(at: twoDaysAgo)
 
         // Use freeze (protects yesterday)
@@ -223,12 +223,12 @@ final class StreakTrackingServiceTests: XCTestCase {
         XCTAssertFalse(service.shouldSuggestFreeze(now: now))
     }
 
-    func testShouldNotSuggestFreezeWhenMissedMultipleDays() async throws {
+    func testShouldNotSuggestFreezeWhenMissedMultipleDays() throws {
         let calendar = Calendar.current
         let now = Date()
 
         // Check in 3 days ago (missed 2 days)
-        let threeDaysAgo = calendar.date(byAdding: .day, value: -3, to: now)!
+        let threeDaysAgo = try XCTUnwrap(calendar.date(byAdding: .day, value: -3, to: now))
         service.checkIn(at: threeDaysAgo)
 
         // Should not suggest freeze since streak is already broken

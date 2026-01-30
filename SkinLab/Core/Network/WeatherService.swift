@@ -1,16 +1,8 @@
-//
-//  WeatherService.swift
-//  SkinLab
-//
-//  Weather data service using WeatherKit
-//  Provides current weather and forecast with 1-hour caching
-//
-
-import Foundation
 import CoreLocation
+import Foundation
 
 #if canImport(WeatherKit)
-import WeatherKit
+    import WeatherKit
 #endif
 
 // MARK: - Weather Service Protocol
@@ -34,24 +26,24 @@ enum WeatherError: LocalizedError, Equatable {
         case (.locationUnavailable, .locationUnavailable),
              (.weatherUnavailable, .weatherUnavailable),
              (.notAuthorized, .notAuthorized):
-            return true
-        case (.networkError(let lhsMsg), .networkError(let rhsMsg)):
-            return lhsMsg == rhsMsg
+            true
+        case let (.networkError(lhsMsg), .networkError(rhsMsg)):
+            lhsMsg == rhsMsg
         default:
-            return false
+            false
         }
     }
 
     var errorDescription: String? {
         switch self {
         case .locationUnavailable:
-            return "无法获取位置信息"
+            "无法获取位置信息"
         case .weatherUnavailable:
-            return "无法获取天气数据"
+            "无法获取天气数据"
         case .notAuthorized:
-            return "天气服务未授权"
-        case .networkError(let message):
-            return "网络错误: \(message)"
+            "天气服务未授权"
+        case let .networkError(message):
+            "网络错误: \(message)"
         }
     }
 }
@@ -61,7 +53,6 @@ enum WeatherError: LocalizedError, Equatable {
 /// Actor-based weather service with caching
 /// Uses WeatherKit when available, falls back to mock data for development
 actor WeatherService: WeatherServiceProtocol {
-
     // MARK: - Singleton
 
     static let shared = WeatherService()
@@ -79,15 +70,15 @@ actor WeatherService: WeatherServiceProtocol {
 
     private var cache: CachedWeather?
     private var forecastCache: (data: [WeatherSnapshot], expiry: Date)?
-    private let cacheInterval: TimeInterval = 3600  // 1 hour
+    private let cacheInterval: TimeInterval = 3600 // 1 hour
 
     // MARK: - Dependencies
 
     #if canImport(WeatherKit)
-    @available(iOS 16.0, *)
-    private var weatherKitService: WeatherKit.WeatherService {
-        WeatherKit.WeatherService.shared
-    }
+        @available(iOS 16.0, *)
+        private var weatherKitService: WeatherKit.WeatherService {
+            WeatherKit.WeatherService.shared
+        }
     #endif
 
     // MARK: - Initialization
@@ -189,9 +180,9 @@ actor WeatherService: WeatherServiceProtocol {
 
     private func fetchCurrentWeather(for location: CLLocation) async throws -> WeatherSnapshot {
         #if canImport(WeatherKit) && !targetEnvironment(simulator)
-        if #available(iOS 16.0, *) {
-            return try await fetchWeatherKitData(for: location)
-        }
+            if #available(iOS 16.0, *) {
+                return try await fetchWeatherKitData(for: location)
+            }
         #endif
 
         // Fallback to mock data for development/simulator
@@ -200,9 +191,9 @@ actor WeatherService: WeatherServiceProtocol {
 
     private func fetchForecast(for location: CLLocation, days: Int) async throws -> [WeatherSnapshot] {
         #if canImport(WeatherKit) && !targetEnvironment(simulator)
-        if #available(iOS 16.0, *) {
-            return try await fetchWeatherKitForecast(for: location, days: days)
-        }
+            if #available(iOS 16.0, *) {
+                return try await fetchWeatherKitForecast(for: location, days: days)
+            }
         #endif
 
         // Fallback to mock data for development/simulator
@@ -212,71 +203,71 @@ actor WeatherService: WeatherServiceProtocol {
     // MARK: - WeatherKit Integration
 
     #if canImport(WeatherKit)
-    @available(iOS 16.0, *)
-    private func fetchWeatherKitData(for location: CLLocation) async throws -> WeatherSnapshot {
-        do {
-            let weather = try await weatherKitService.weather(for: location)
-            let current = weather.currentWeather
+        @available(iOS 16.0, *)
+        private func fetchWeatherKitData(for location: CLLocation) async throws -> WeatherSnapshot {
+            do {
+                let weather = try await weatherKitService.weather(for: location)
+                let current = weather.currentWeather
 
-            return WeatherSnapshot(
-                temperature: current.temperature.value,
-                humidity: current.humidity * 100,
-                uvIndex: current.uvIndex.value,
-                airQuality: .good,  // WeatherKit doesn't provide AQI directly
-                condition: mapWeatherKitCondition(current.condition),
-                recordedAt: current.date,
-                location: await getLocationName(for: location)
-            )
-        } catch {
-            throw WeatherError.weatherUnavailable
-        }
-    }
-
-    @available(iOS 16.0, *)
-    private func fetchWeatherKitForecast(for location: CLLocation, days: Int) async throws -> [WeatherSnapshot] {
-        do {
-            let weather = try await weatherKitService.weather(for: location)
-            let dailyForecast = weather.dailyForecast
-
-            let locationName = await getLocationName(for: location)
-
-            return dailyForecast.prefix(days).map { day in
-                WeatherSnapshot(
-                    temperature: day.highTemperature.value,
-                    humidity: 50,  // Daily forecast doesn't include hourly humidity
-                    uvIndex: day.uvIndex.value,
-                    airQuality: .good,
-                    condition: mapWeatherKitCondition(day.condition),
-                    recordedAt: day.date,
-                    location: locationName
+                return await WeatherSnapshot(
+                    temperature: current.temperature.value,
+                    humidity: current.humidity * 100,
+                    uvIndex: current.uvIndex.value,
+                    airQuality: .good, // WeatherKit doesn't provide AQI directly
+                    condition: mapWeatherKitCondition(current.condition),
+                    recordedAt: current.date,
+                    location: getLocationName(for: location)
                 )
+            } catch {
+                throw WeatherError.weatherUnavailable
             }
-        } catch {
-            throw WeatherError.weatherUnavailable
         }
-    }
 
-    @available(iOS 16.0, *)
-    private func mapWeatherKitCondition(_ condition: WeatherKit.WeatherCondition) -> WeatherCondition {
-        switch condition {
-        case .clear, .mostlyClear, .hot, .frigid:
-            return .sunny
-        case .cloudy, .mostlyCloudy, .partlyCloudy:
-            return .cloudy
-        case .rain, .heavyRain, .drizzle, .thunderstorms, .tropicalStorm, .hurricane,
-             .isolatedThunderstorms, .scatteredThunderstorms, .strongStorms, .sunShowers, .hail:
-            return .rainy
-        case .windy, .breezy, .blowingDust:
-            return .windy
-        case .snow, .heavySnow, .flurries, .sleet, .freezingRain, .freezingDrizzle,
-             .blizzard, .blowingSnow, .wintryMix, .sunFlurries:
-            return .snowy
-        case .foggy, .haze, .smoky:
-            return .foggy
-        @unknown default:
-            return .cloudy
+        @available(iOS 16.0, *)
+        private func fetchWeatherKitForecast(for location: CLLocation, days: Int) async throws -> [WeatherSnapshot] {
+            do {
+                let weather = try await weatherKitService.weather(for: location)
+                let dailyForecast = weather.dailyForecast
+
+                let locationName = await getLocationName(for: location)
+
+                return dailyForecast.prefix(days).map { day in
+                    WeatherSnapshot(
+                        temperature: day.highTemperature.value,
+                        humidity: 50, // Daily forecast doesn't include hourly humidity
+                        uvIndex: day.uvIndex.value,
+                        airQuality: .good,
+                        condition: mapWeatherKitCondition(day.condition),
+                        recordedAt: day.date,
+                        location: locationName
+                    )
+                }
+            } catch {
+                throw WeatherError.weatherUnavailable
+            }
         }
-    }
+
+        @available(iOS 16.0, *)
+        private func mapWeatherKitCondition(_ condition: WeatherKit.WeatherCondition) -> WeatherCondition {
+            switch condition {
+            case .clear, .mostlyClear, .hot, .frigid:
+                return .sunny
+            case .cloudy, .mostlyCloudy, .partlyCloudy:
+                return .cloudy
+            case .rain, .heavyRain, .drizzle, .thunderstorms, .tropicalStorm, .hurricane,
+                 .isolatedThunderstorms, .scatteredThunderstorms, .strongStorms, .sunShowers, .hail:
+                return .rainy
+            case .windy, .breezy, .blowingDust:
+                return .windy
+            case .snow, .heavySnow, .flurries, .sleet, .freezingRain, .freezingDrizzle,
+                 .blizzard, .blowingSnow, .wintryMix, .sunFlurries:
+                return .snowy
+            case .foggy, .haze, .smoky:
+                return .foggy
+            @unknown default:
+                return .cloudy
+            }
+        }
     #endif
 
     // MARK: - Location Name
@@ -299,34 +290,32 @@ actor WeatherService: WeatherServiceProtocol {
         let month = Calendar.current.component(.month, from: Date())
 
         // Temperature based on season and time
-        let baseTemp: Double
-        switch month {
-        case 12, 1, 2:  // Winter
-            baseTemp = 5
-        case 3, 4, 5:   // Spring
-            baseTemp = 18
-        case 6, 7, 8:   // Summer
-            baseTemp = 28
-        default:        // Fall
-            baseTemp = 15
+        let baseTemp: Double = switch month {
+        case 12, 1, 2: // Winter
+            5
+        case 3, 4, 5: // Spring
+            18
+        case 6, 7, 8: // Summer
+            28
+        default: // Fall
+            15
         }
 
         // Adjust for time of day
         let timeAdjustment = hour >= 10 && hour <= 16 ? 5.0 : -3.0
-        let temperature = baseTemp + timeAdjustment + Double.random(in: -3...3)
+        let temperature = baseTemp + timeAdjustment + Double.random(in: -3 ... 3)
 
         // UV based on time
-        let uvIndex: Int
-        if hour >= 10 && hour <= 16 {
-            uvIndex = Int.random(in: 4...8)
-        } else if hour >= 7 && hour <= 19 {
-            uvIndex = Int.random(in: 1...4)
+        let uvIndex = if hour >= 10, hour <= 16 {
+            Int.random(in: 4 ... 8)
+        } else if hour >= 7, hour <= 19 {
+            Int.random(in: 1 ... 4)
         } else {
-            uvIndex = 0
+            0
         }
 
         // Random humidity
-        let humidity = Double.random(in: 40...70)
+        let humidity = Double.random(in: 40 ... 70)
 
         // Random condition weighted towards sunny
         let conditions: [WeatherCondition] = [
@@ -351,26 +340,25 @@ actor WeatherService: WeatherServiceProtocol {
         var forecasts: [WeatherSnapshot] = []
         let today = Date()
 
-        for dayOffset in 0..<days {
+        for dayOffset in 0 ..< days {
             let forecastDate = Calendar.current.date(byAdding: .day, value: dayOffset, to: today) ?? today
             let month = Calendar.current.component(.month, from: forecastDate)
 
             // Base temperature by season
-            let baseTemp: Double
-            switch month {
+            let baseTemp: Double = switch month {
             case 12, 1, 2:
-                baseTemp = 5
+                5
             case 3, 4, 5:
-                baseTemp = 18
+                18
             case 6, 7, 8:
-                baseTemp = 28
+                28
             default:
-                baseTemp = 15
+                15
             }
 
-            let temperature = baseTemp + Double.random(in: -5...5)
-            let uvIndex = Int.random(in: 3...7)
-            let humidity = Double.random(in: 35...75)
+            let temperature = baseTemp + Double.random(in: -5 ... 5)
+            let uvIndex = Int.random(in: 3 ... 7)
+            let humidity = Double.random(in: 35 ... 75)
 
             let conditions: [WeatherCondition] = [.sunny, .sunny, .cloudy, .cloudy, .rainy]
             let condition = conditions.randomElement() ?? .sunny

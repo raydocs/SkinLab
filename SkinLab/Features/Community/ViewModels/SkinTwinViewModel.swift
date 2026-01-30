@@ -1,7 +1,7 @@
 // SkinLab/Features/Community/ViewModels/SkinTwinViewModel.swift
 import Foundation
-import SwiftData
 import Observation
+import SwiftData
 
 /// 皮肤双胞胎视图模型 - 管理匹配流程和状态
 ///
@@ -13,7 +13,6 @@ import Observation
 @MainActor
 @Observable
 final class SkinTwinViewModel {
-
     // MARK: - Dependencies
 
     private var matcher: SkinMatcher?
@@ -66,8 +65,8 @@ final class SkinTwinViewModel {
     /// 是否可以进行匹配
     var canMatch: Bool {
         currentUserProfile != nil &&
-        currentUserProfile?.skinType != nil &&
-        consentLevel != .none
+            currentUserProfile?.skinType != nil &&
+            consentLevel != .none
     }
 
     /// 是否有匹配结果
@@ -182,9 +181,9 @@ final class SkinTwinViewModel {
             }
 
             // 4. 执行新的匹配
-            guard let repository = repository,
-                  let matcher = matcher,
-                  let recommendationEngine = recommendationEngine else {
+            guard let repository,
+                  let matcher,
+                  let recommendationEngine else {
                 throw MatchError.serviceUnavailable
             }
 
@@ -270,7 +269,7 @@ final class SkinTwinViewModel {
         isHelpful: Bool,
         feedbackText: String? = nil
     ) async {
-        guard let modelContext = modelContext else { return }
+        guard let modelContext else { return }
 
         let feedback = UserFeedbackRecord(
             matchId: matchId,
@@ -305,7 +304,7 @@ final class SkinTwinViewModel {
         currentUserProfile?.updateConsentLevel(level)
         consentLevel = level
 
-        if let modelContext = modelContext {
+        if let modelContext {
             do {
                 try modelContext.save()
                 AppLogger.data(operation: .save, entity: "UserProfile", success: true)
@@ -350,7 +349,7 @@ final class SkinTwinViewModel {
 
     /// 加载当前用户资料
     private func loadCurrentUserProfile() {
-        guard let modelContext = modelContext else { return }
+        guard let modelContext else { return }
 
         let descriptor = FetchDescriptor<UserProfile>(
             sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
@@ -372,7 +371,7 @@ final class SkinTwinViewModel {
     private func loadEffectiveProducts(for twins: [SkinTwin]) async -> [SkinTwin] {
         // 实际实现中，这里会从 TrackingSession 获取每个用户验证有效的产品
         // 目前返回模拟数据
-        return twins.map { twin in
+        twins.map { twin in
             var mutableTwin = twin
             // 根据用户ID查询其有效产品记录
             mutableTwin.effectiveProducts = loadEffectiveProductsForUser(twin.userId)
@@ -389,7 +388,7 @@ final class SkinTwinViewModel {
         let descriptor = FetchDescriptor<MatchResultRecord>(
             predicate: #Predicate { record in
                 record.userId == currentUserId &&
-                record.twinUserId == userId
+                    record.twinUserId == userId
             },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
@@ -445,11 +444,11 @@ struct MatchStats {
     /// 摘要文本
     var summary: String {
         if twinCount > 0 {
-            return "找到\(twinCount)位皮肤双胞胎和\(verySimilarCount)位相似用户"
+            "找到\(twinCount)位皮肤双胞胎和\(verySimilarCount)位相似用户"
         } else if verySimilarCount > 0 {
-            return "找到\(verySimilarCount)位非常相似的用户"
+            "找到\(verySimilarCount)位非常相似的用户"
         } else {
-            return "找到\(totalMatches)位相似用户"
+            "找到\(totalMatches)位相似用户"
         }
     }
 }
@@ -467,15 +466,15 @@ enum MatchError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidFingerprint:
-            return "无法生成皮肤指纹，请完善个人资料"
+            "无法生成皮肤指纹，请完善个人资料"
         case .noMatches:
-            return "暂无匹配的皮肤双胞胎，请稍后再试"
+            "暂无匹配的皮肤双胞胎，请稍后再试"
         case .emptyPool:
-            return "匹配池为空，暂无其他用户参与匹配"
+            "匹配池为空，暂无其他用户参与匹配"
         case .serviceUnavailable:
-            return "服务暂不可用，请稍后重试"
+            "服务暂不可用，请稍后重试"
         case .cacheError:
-            return "缓存读取错误"
+            "缓存读取错误"
         }
     }
 }

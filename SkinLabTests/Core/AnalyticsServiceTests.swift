@@ -1,9 +1,8 @@
-import XCTest
 @testable import SkinLab
+import XCTest
 
 /// Unit tests for AnalyticsService and AnalyticsEvents
 final class AnalyticsServiceTests: XCTestCase {
-
     // MARK: - Mock Analytics Provider
 
     /// Mock provider for testing analytics calls

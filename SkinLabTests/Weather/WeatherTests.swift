@@ -1,12 +1,10 @@
 // SkinLabTests/Weather/WeatherTests.swift
-import XCTest
-
 @testable import SkinLab
+import XCTest
 
 // MARK: - WeatherSnapshot Tests
 
 final class WeatherSnapshotTests: XCTestCase {
-
     // MARK: - UV Level Computed Property Tests
 
     func testUVLevel_low_forIndex0() {
@@ -76,44 +74,44 @@ final class WeatherSnapshotTests: XCTestCase {
         let snapshot = WeatherSnapshot(
             temperature: 22,
             humidity: 55,
-            uvIndex: 4,  // moderate UV
+            uvIndex: 4, // moderate UV
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 90)  // -10 for moderate UV
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 90) // -10 for moderate UV
     }
 
     func testSkinFriendlinessScore_highUV() {
         let snapshot = WeatherSnapshot(
             temperature: 22,
             humidity: 55,
-            uvIndex: 7,  // high UV
+            uvIndex: 7, // high UV
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 80)  // -20 for high UV
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 80) // -20 for high UV
     }
 
     func testSkinFriendlinessScore_veryHighUV() {
         let snapshot = WeatherSnapshot(
             temperature: 22,
             humidity: 55,
-            uvIndex: 9,  // very high UV
+            uvIndex: 9, // very high UV
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 75)  // -25 for very high UV
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 75) // -25 for very high UV
     }
 
     func testSkinFriendlinessScore_extremeUV() {
         let snapshot = WeatherSnapshot(
             temperature: 22,
             humidity: 55,
-            uvIndex: 12,  // extreme UV
+            uvIndex: 12, // extreme UV
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 70)  // -30 for extreme UV
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 70) // -30 for extreme UV
     }
 
     func testSkinFriendlinessScore_poorAirQuality() {
@@ -124,7 +122,7 @@ final class WeatherSnapshotTests: XCTestCase {
             airQuality: .unhealthy,
             condition: .cloudy
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 85)  // -15 for unhealthy AQI
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 85) // -15 for unhealthy AQI
     }
 
     func testSkinFriendlinessScore_hazardousAirQuality() {
@@ -135,95 +133,95 @@ final class WeatherSnapshotTests: XCTestCase {
             airQuality: .hazardous,
             condition: .cloudy
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 75)  // -25 for hazardous AQI
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 75) // -25 for hazardous AQI
     }
 
     func testSkinFriendlinessScore_veryDryHumidity() {
         let snapshot = WeatherSnapshot(
             temperature: 22,
-            humidity: 20,  // < 30, very dry
+            humidity: 20, // < 30, very dry
             uvIndex: 1,
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 85)  // -15 for very dry
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 85) // -15 for very dry
     }
 
     func testSkinFriendlinessScore_dryHumidity() {
         let snapshot = WeatherSnapshot(
             temperature: 22,
-            humidity: 35,  // 30-40, dry
+            humidity: 35, // 30-40, dry
             uvIndex: 1,
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 90)  // -10 for dry
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 90) // -10 for dry
     }
 
     func testSkinFriendlinessScore_veryHighHumidity() {
         let snapshot = WeatherSnapshot(
             temperature: 22,
-            humidity: 85,  // > 80
+            humidity: 85, // > 80
             uvIndex: 1,
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 90)  // -10 for very humid
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 90) // -10 for very humid
     }
 
     func testSkinFriendlinessScore_highHumidity() {
         let snapshot = WeatherSnapshot(
             temperature: 22,
-            humidity: 75,  // 70-80
+            humidity: 75, // 70-80
             uvIndex: 1,
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 95)  // -5 for humid
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 95) // -5 for humid
     }
 
     func testSkinFriendlinessScore_veryColdTemperature() {
         let snapshot = WeatherSnapshot(
-            temperature: 0,  // < 5
+            temperature: 0, // < 5
             humidity: 55,
             uvIndex: 1,
             airQuality: .good,
             condition: .snowy
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 75)  // -15 for very cold, -10 for snowy
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 75) // -15 for very cold, -10 for snowy
     }
 
     func testSkinFriendlinessScore_coldTemperature() {
         let snapshot = WeatherSnapshot(
-            temperature: 8,  // 5-10
+            temperature: 8, // 5-10
             humidity: 55,
             uvIndex: 1,
             airQuality: .good,
             condition: .cloudy
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 90)  // -10 for cold
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 90) // -10 for cold
     }
 
     func testSkinFriendlinessScore_veryHotTemperature() {
         let snapshot = WeatherSnapshot(
-            temperature: 38,  // > 35
+            temperature: 38, // > 35
             humidity: 55,
             uvIndex: 1,
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 85)  // -15 for very hot
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 85) // -15 for very hot
     }
 
     func testSkinFriendlinessScore_hotTemperature() {
         let snapshot = WeatherSnapshot(
-            temperature: 32,  // 30-35
+            temperature: 32, // 30-35
             humidity: 55,
             uvIndex: 1,
             airQuality: .good,
             condition: .sunny
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 90)  // -10 for hot
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 90) // -10 for hot
     }
 
     func testSkinFriendlinessScore_windyCondition() {
@@ -234,7 +232,7 @@ final class WeatherSnapshotTests: XCTestCase {
             airQuality: .good,
             condition: .windy
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 90)  // -10 for windy
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 90) // -10 for windy
     }
 
     func testSkinFriendlinessScore_foggyCondition() {
@@ -245,7 +243,7 @@ final class WeatherSnapshotTests: XCTestCase {
             airQuality: .good,
             condition: .foggy
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 85)  // -15 for foggy
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 85) // -15 for foggy
     }
 
     func testSkinFriendlinessScore_rainyCondition() {
@@ -256,16 +254,16 @@ final class WeatherSnapshotTests: XCTestCase {
             airQuality: .good,
             condition: .rainy
         )
-        XCTAssertEqual(snapshot.skinFriendlinessScore, 95)  // -5 for rainy
+        XCTAssertEqual(snapshot.skinFriendlinessScore, 95) // -5 for rainy
     }
 
     func testSkinFriendlinessScore_worstCase() {
         let snapshot = WeatherSnapshot(
-            temperature: 0,       // -15 for very cold
-            humidity: 20,         // -15 for very dry
-            uvIndex: 12,          // -30 for extreme UV
-            airQuality: .hazardous,  // -25 for hazardous
-            condition: .foggy     // -15 for foggy
+            temperature: 0, // -15 for very cold
+            humidity: 20, // -15 for very dry
+            uvIndex: 12, // -30 for extreme UV
+            airQuality: .hazardous, // -25 for hazardous
+            condition: .foggy // -15 for foggy
         )
         // 100 - 15 - 15 - 30 - 25 - 15 = 0
         XCTAssertEqual(snapshot.skinFriendlinessScore, 0)
@@ -366,7 +364,6 @@ final class WeatherSnapshotTests: XCTestCase {
 // MARK: - AQILevel Tests
 
 final class AQILevelTests: XCTestCase {
-
     func testAQILevel_rawValues() {
         XCTAssertEqual(AQILevel.good.rawValue, "优")
         XCTAssertEqual(AQILevel.moderate.rawValue, "良")
@@ -420,7 +417,6 @@ final class AQILevelTests: XCTestCase {
 // MARK: - UVLevel Tests
 
 final class UVLevelTests: XCTestCase {
-
     func testUVLevel_rawValues() {
         XCTAssertEqual(UVLevel.low.rawValue, "低")
         XCTAssertEqual(UVLevel.moderate.rawValue, "中等")
@@ -477,7 +473,6 @@ final class UVLevelTests: XCTestCase {
 // MARK: - WeatherCondition Tests
 
 final class WeatherConditionTests: XCTestCase {
-
     func testWeatherCondition_rawValues() {
         XCTAssertEqual(WeatherCondition.sunny.rawValue, "sunny")
         XCTAssertEqual(WeatherCondition.cloudy.rawValue, "cloudy")
@@ -511,13 +506,16 @@ final class WeatherConditionTests: XCTestCase {
         // Cloudy should still mention UV
         XCTAssertTrue(WeatherCondition.cloudy.skincareTip.contains("紫外线"))
         // Rainy should mention humidity or oil
-        XCTAssertTrue(WeatherCondition.rainy.skincareTip.contains("湿度") || WeatherCondition.rainy.skincareTip.contains("控油"))
+        XCTAssertTrue(WeatherCondition.rainy.skincareTip.contains("湿度") || WeatherCondition.rainy.skincareTip
+            .contains("控油"))
         // Windy should mention dryness or moisturizing
-        XCTAssertTrue(WeatherCondition.windy.skincareTip.contains("干燥") || WeatherCondition.windy.skincareTip.contains("保湿"))
+        XCTAssertTrue(WeatherCondition.windy.skincareTip.contains("干燥") || WeatherCondition.windy.skincareTip
+            .contains("保湿"))
         // Snowy should mention UV
         XCTAssertTrue(WeatherCondition.snowy.skincareTip.contains("紫外线"))
         // Foggy should mention pollution or cleansing
-        XCTAssertTrue(WeatherCondition.foggy.skincareTip.contains("污染") || WeatherCondition.foggy.skincareTip.contains("清洁"))
+        XCTAssertTrue(WeatherCondition.foggy.skincareTip.contains("污染") || WeatherCondition.foggy.skincareTip
+            .contains("清洁"))
     }
 
     func testWeatherCondition_caseIterable() {
@@ -528,7 +526,6 @@ final class WeatherConditionTests: XCTestCase {
 // MARK: - LifestyleFactorKey Weather Cases Tests
 
 final class LifestyleFactorKeyWeatherTests: XCTestCase {
-
     func testLifestyleFactorKey_humidityLabel() {
         let factor = LifestyleCorrelationInsight.LifestyleFactorKey.humidity
         XCTAssertEqual(factor.label, "湿度")

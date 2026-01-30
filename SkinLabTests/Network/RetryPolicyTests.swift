@@ -1,15 +1,7 @@
-//
-//  RetryPolicyTests.swift
-//  SkinLabTests
-//
-//  Unit tests for RetryPolicy and retry logic.
-//
-
-import XCTest
 @testable import SkinLab
+import XCTest
 
 final class RetryPolicyTests: XCTestCase {
-
     // MARK: - RetryPolicy Tests
 
     func testDefaultPolicyValues() {
@@ -75,7 +67,7 @@ final class RetryPolicyTests: XCTestCase {
             maxAttempts: 5,
             baseDelay: 1.0,
             maxDelay: 100.0,
-            jitterFactor: 0.0  // No jitter for predictable testing
+            jitterFactor: 0.0 // No jitter for predictable testing
         )
 
         // Attempt 0: 1 * 2^0 = 1
@@ -111,12 +103,12 @@ final class RetryPolicyTests: XCTestCase {
             maxAttempts: 3,
             baseDelay: 10.0,
             maxDelay: 100.0,
-            jitterFactor: 0.5  // 50% jitter
+            jitterFactor: 0.5 // 50% jitter
         )
 
         // Run multiple times to verify jitter adds randomness
         var delays: Set<Double> = []
-        for _ in 0..<20 {
+        for _ in 0 ..< 20 {
             let delay = policy.delay(for: 0)
             delays.insert(delay)
 
@@ -134,11 +126,11 @@ final class RetryPolicyTests: XCTestCase {
             maxAttempts: 3,
             baseDelay: 1.0,
             maxDelay: 10.0,
-            jitterFactor: 1.0  // 100% jitter could theoretically go negative
+            jitterFactor: 1.0 // 100% jitter could theoretically go negative
         )
 
-        for attempt in 0..<10 {
-            for _ in 0..<50 {
+        for attempt in 0 ..< 10 {
+            for _ in 0 ..< 50 {
                 let delay = policy.delay(for: attempt)
                 XCTAssertGreaterThanOrEqual(delay, 0, "Delay should never be negative")
             }
@@ -230,9 +222,9 @@ final class RetryPolicyTests: XCTestCase {
         }
     }
 
-    func testHTTPErrorRetryAfterHeader() {
+    func testHTTPErrorRetryAfterHeader() throws {
         // Create response with Retry-After header
-        let url = URL(string: "https://example.com")!
+        let url = try XCTUnwrap(URL(string: "https://example.com"))
         let response = HTTPURLResponse(
             url: url,
             statusCode: 429,
@@ -250,7 +242,7 @@ final class RetryPolicyTests: XCTestCase {
         XCTAssertNil(error.retryAfter)
     }
 
-    func testHTTPErrorRetryAfterDateHeader() {
+    func testHTTPErrorRetryAfterDateHeader() throws {
         // Create a date 60 seconds in the future
         let futureDate = Date().addingTimeInterval(60)
         let formatter = DateFormatter()
@@ -259,7 +251,7 @@ final class RetryPolicyTests: XCTestCase {
         formatter.timeZone = TimeZone(identifier: "GMT")
         let dateString = formatter.string(from: futureDate)
 
-        let url = URL(string: "https://example.com")!
+        let url = try XCTUnwrap(URL(string: "https://example.com"))
         let response = HTTPURLResponse(
             url: url,
             statusCode: 429,
@@ -361,7 +353,7 @@ final class RetryPolicyTests: XCTestCase {
                 policy: RetryPolicy(maxAttempts: 3, baseDelay: 0.01, maxDelay: 0.1, jitterFactor: 0)
             ) {
                 attemptCount += 1
-                throw URLError(.badURL)  // Non-retryable error
+                throw URLError(.badURL) // Non-retryable error
             }
             XCTFail("Should have thrown error")
         } catch {
@@ -376,7 +368,7 @@ final class RetryPolicyTests: XCTestCase {
         do {
             _ = try await withRetry(policy: policy) { () -> String in
                 attemptCount += 1
-                throw URLError(.timedOut)  // Always fail
+                throw URLError(.timedOut) // Always fail
             }
             XCTFail("Should have thrown error")
         } catch {
@@ -405,7 +397,7 @@ final class RetryPolicyTests: XCTestCase {
         try await super.setUp()
         // Reset the global limiter before each test to ensure isolation
         #if DEBUG
-        await GlobalRetryLimiter.shared.reset()
+            await GlobalRetryLimiter.shared.reset()
         #endif
     }
 

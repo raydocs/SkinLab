@@ -1,6 +1,6 @@
 import Foundation
 #if canImport(FirebaseAnalytics)
-import FirebaseAnalytics
+    import FirebaseAnalytics
 #endif
 
 // MARK: - Analytics Provider Protocol
@@ -15,20 +15,20 @@ protocol AnalyticsProvider {
 // MARK: - Firebase Analytics Provider
 
 #if canImport(FirebaseAnalytics)
-/// Firebase Analytics implementation
-final class FirebaseAnalyticsProvider: AnalyticsProvider {
-    func logEvent(_ name: String, parameters: [String: Any]?) {
-        Analytics.logEvent(name, parameters: parameters)
-    }
+    /// Firebase Analytics implementation
+    final class FirebaseAnalyticsProvider: AnalyticsProvider {
+        func logEvent(_ name: String, parameters: [String: Any]?) {
+            Analytics.logEvent(name, parameters: parameters)
+        }
 
-    func setUserProperty(_ value: String?, forName name: String) {
-        Analytics.setUserProperty(value, forName: name)
-    }
+        func setUserProperty(_ value: String?, forName name: String) {
+            Analytics.setUserProperty(value, forName: name)
+        }
 
-    func setUserId(_ userId: String?) {
-        Analytics.setUserID(userId)
+        func setUserId(_ userId: String?) {
+            Analytics.setUserID(userId)
+        }
     }
-}
 #endif
 
 // MARK: - Debug Analytics Provider
@@ -83,17 +83,17 @@ final class AnalyticsService: @unchecked Sendable {
         defer { lock.unlock() }
 
         #if canImport(FirebaseAnalytics)
-        self._provider = FirebaseAnalyticsProvider()
-        self._isConfigured = true
-        #if DEBUG
-        print("[Analytics] Configured with Firebase Analytics")
-        #endif
+            self._provider = FirebaseAnalyticsProvider()
+            self._isConfigured = true
+            #if DEBUG
+                AppLogger.debug("Analytics configured with Firebase Analytics")
+            #endif
         #else
-        self._provider = DebugAnalyticsProvider()
-        self._isConfigured = true
-        #if DEBUG
-        print("[Analytics] Configured with Debug provider (Firebase not available)")
-        #endif
+            self._provider = DebugAnalyticsProvider()
+            self._isConfigured = true
+            #if DEBUG
+                AppLogger.debug("Analytics configured with debug provider (Firebase not available)")
+            #endif
         #endif
     }
 
@@ -101,7 +101,7 @@ final class AnalyticsService: @unchecked Sendable {
     func logEvent(_ name: String, parameters: [String: Any]? = nil) {
         // Always log to console in DEBUG mode
         #if DEBUG
-        print("[Analytics] \(name): \(parameters ?? [:])")
+            AppLogger.debug("Analytics event: \(name) params: \(parameters ?? [:])")
         #endif
 
         // Forward to the configured provider
@@ -115,7 +115,7 @@ final class AnalyticsService: @unchecked Sendable {
     /// Set a user property
     func setUserProperty(_ value: String?, forName name: String) {
         #if DEBUG
-        print("[Analytics] User property '\(name)': \(value ?? "nil")")
+            AppLogger.debug("Analytics user property '\(name)': \(value ?? "nil")")
         #endif
 
         lock.lock()
@@ -128,7 +128,7 @@ final class AnalyticsService: @unchecked Sendable {
     /// Set the user ID for analytics
     func setUserId(_ userId: String?) {
         #if DEBUG
-        print("[Analytics] User ID: \(userId ?? "nil")")
+            AppLogger.debug("Analytics user ID: \(userId ?? "nil")")
         #endif
 
         lock.lock()
@@ -150,7 +150,7 @@ final class AnalyticsService: @unchecked Sendable {
 
 /// Analytics event logging facade
 /// Provides convenient static methods that delegate to AnalyticsService
-struct AnalyticsEvents {
+enum AnalyticsEvents {
     /// Log an analytics event
     static func logEvent(name: String, parameters: [String: Any]? = nil) {
         AnalyticsService.shared.logEvent(name, parameters: parameters)
@@ -170,8 +170,8 @@ struct AnalyticsEvents {
 
     /// Source of skin analysis
     enum AnalysisSource: String {
-        case camera = "camera"
-        case library = "library"
+        case camera
+        case library
         case homeButton = "home_button"
     }
 
@@ -213,9 +213,9 @@ struct AnalyticsEvents {
 
     /// Source of product addition
     enum ProductAddSource: String {
-        case manual = "manual"
-        case scan = "scan"
-        case search = "search"
+        case manual
+        case scan
+        case search
     }
 
     /// Log product added event
@@ -224,7 +224,7 @@ struct AnalyticsEvents {
             "product_name": name,
             "source": source.rawValue
         ]
-        if let brand = brand {
+        if let brand {
             params["product_brand"] = brand
         }
         logEvent(name: "product_added", parameters: params)

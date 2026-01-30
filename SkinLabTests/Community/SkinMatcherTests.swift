@@ -1,9 +1,8 @@
 // SkinLabTests/Community/SkinMatcherTests.swift
-import XCTest
 @testable import SkinLab
+import XCTest
 
 final class SkinMatcherTests: XCTestCase {
-
     var matcher: SkinMatcher!
 
     override func setUp() {
@@ -229,7 +228,7 @@ final class SkinMatcherTests: XCTestCase {
         XCTAssertEqual(batchResults[1].count, singleResult2.count, "Batch and single should have same count for fp2")
 
         // Verify ordering matches
-        if !batchResults[0].isEmpty && !singleResult1.isEmpty {
+        if !batchResults[0].isEmpty, !singleResult1.isEmpty {
             XCTAssertEqual(batchResults[0][0].userId, singleResult1[0].userId, "Top match should be same")
         }
     }
@@ -248,7 +247,7 @@ final class SkinMatcherTests: XCTestCase {
         // Use high similarity threshold
         let strictMatcher = SkinMatcher(config: SkinMatcher.BatchConfig(
             maxBatchSize: 5,
-            minSimilarity: 0.9,  // Very high threshold
+            minSimilarity: 0.9, // Very high threshold
             enableParallelProcessing: true
         ))
 
@@ -447,13 +446,12 @@ extension SkinMatcher {
         let skinTypeBonus = user.skinType == other.skinType ? 0.2 : -0.3
 
         let ageDiff = abs(user.ageRange.normalized - other.ageRange.normalized)
-        let ageBonus: Double
-        if ageDiff < 0.2 {
-            ageBonus = 0.1
+        let ageBonus: Double = if ageDiff < 0.2 {
+            0.1
         } else if ageDiff > 0.4 {
-            ageBonus = -0.1
+            -0.1
         } else {
-            ageBonus = 0
+            0
         }
 
         let concernOverlap = Set(user.concerns).intersection(other.concerns)

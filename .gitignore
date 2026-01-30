@@ -8,6 +8,7 @@ DerivedData/
 *.ipa
 *.dSYM.zip
 *.dSYM
+*.xcresult
 
 # CocoaPods / SPM
 Pods/
@@ -16,11 +17,28 @@ Pods/
 # Secrets - NEVER commit!
 Secrets.xcconfig
 *.secrets
+.env
+.env.*
+!.env.template
 
 # macOS
 .DS_Store
 *.swp
 *~.nib
 
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
 # Build
 build/
+
+# Coverage
+coverage.json
+*.gcda
+*.gcno
+
+# Misc
+*.log
+*.tmp

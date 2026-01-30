@@ -1,11 +1,10 @@
+@testable import SkinLab
 import SwiftData
+
 // SkinLabTests/Community/ProductRecommendationEngineTests.swift
 import XCTest
 
-@testable import SkinLab
-
 final class ProductRecommendationEngineTests: XCTestCase {
-
     // MARK: - ProductRecommendationScore Tests
 
     func testRecommendationLevel_highlyRecommended() {
@@ -102,7 +101,8 @@ final class ProductRecommendationEngineTests: XCTestCase {
         for (concern, expectedFunction) in mappings {
             let function = concernToFunction(concern)
             XCTAssertEqual(
-                function, expectedFunction, "Concern \(concern) should map to \(expectedFunction)")
+                function, expectedFunction, "Concern \(concern) should map to \(expectedFunction)"
+            )
         }
     }
 
@@ -119,14 +119,14 @@ final class ProductRecommendationEngineTests: XCTestCase {
 
     private func concernToFunction(_ concern: SkinConcern) -> IngredientFunction {
         switch concern {
-        case .acne: return .acneFighting
-        case .aging: return .antiAging
-        case .dryness: return .moisturizing
-        case .oiliness: return .other
-        case .sensitivity: return .soothing
-        case .pigmentation: return .brightening
-        case .pores: return .exfoliating
-        case .redness: return .soothing
+        case .acne: .acneFighting
+        case .aging: .antiAging
+        case .dryness: .moisturizing
+        case .oiliness: .other
+        case .sensitivity: .soothing
+        case .pigmentation: .brightening
+        case .pores: .exfoliating
+        case .redness: .soothing
         }
     }
 }
@@ -134,7 +134,6 @@ final class ProductRecommendationEngineTests: XCTestCase {
 // MARK: - EffectiveProduct Tests
 
 final class EffectiveProductTests: XCTestCase {
-
     func testEffectiveness_veryEffective() {
         let product = createEffectiveProduct(improvement: 0.75)
         XCTAssertEqual(product.effectiveness, .veryEffective)
@@ -183,7 +182,6 @@ final class EffectiveProductTests: XCTestCase {
 // MARK: - IngredientEffectStats Tests
 
 final class IngredientEffectStatsTests: XCTestCase {
-
     func testAvgEffectiveness_allBetter() {
         let stats = IngredientEffectStats(
             ingredientName: "Test",

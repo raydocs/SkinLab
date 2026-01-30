@@ -1,8 +1,8 @@
-import SwiftUI
-import SwiftData
 import os.log
+import SwiftData
+import SwiftUI
 #if canImport(FirebaseCore)
-import FirebaseCore
+    import FirebaseCore
 #endif
 
 @main
@@ -24,7 +24,7 @@ struct SkinLabApp: App {
     /// Possible initialization states
     private enum InitializationState {
         case success
-        case recoveryNeeded(Error)  // Reset+retry failed, needs user intervention (may have in-memory fallback)
+        case recoveryNeeded(Error) // Reset+retry failed, needs user intervention (may have in-memory fallback)
     }
 
     /// Explicit store URL for reliable data reset
@@ -73,11 +73,11 @@ struct SkinLabApp: App {
     /// Configures Firebase and Analytics services
     private static func configureAnalytics() {
         #if canImport(FirebaseCore)
-        // Configure Firebase first (required before using Firebase Analytics)
-        FirebaseApp.configure()
-        logger.info("Firebase configured successfully")
+            // Configure Firebase first (required before using Firebase Analytics)
+            FirebaseApp.configure()
+            logger.info("Firebase configured successfully")
         #else
-        logger.info("Firebase SDK not available - using debug analytics only")
+            logger.info("Firebase SDK not available - using debug analytics only")
         #endif
 
         // Configure the analytics service (will use Firebase if available, debug otherwise)
@@ -142,7 +142,7 @@ struct SkinLabApp: App {
 
             // Step 2: Attempt reset + retry (per acceptance criteria #2)
             Self.logger.info("Attempting store reset and retry...")
-            _ = Self.deleteStoreFiles()  // Always attempt delete, even if no files found
+            _ = Self.deleteStoreFiles() // Always attempt delete, even if no files found
 
             // Retry persistent initialization after reset attempt
             do {
@@ -171,7 +171,10 @@ struct SkinLabApp: App {
                 Self.logger.warning("Reset+retry failed. Showing recovery UI with in-memory fallback.")
             } catch let recoveryError {
                 // Complete failure - no container at all
-                Self.logger.critical("All recovery attempts failed: \(recoveryError.localizedDescription). Original error: \(primaryError.localizedDescription)")
+                Self.logger
+                    .critical(
+                        "All recovery attempts failed: \(recoveryError.localizedDescription). Original error: \(primaryError.localizedDescription)"
+                    )
                 self.modelContainer = nil
                 self._initializationState = State(initialValue: .recoveryNeeded(primaryError))
             }
@@ -217,7 +220,7 @@ struct SkinLabApp: App {
                 AppRecoveryView(error: nil, onResetData: resetAppData)
             }
 
-        case .recoveryNeeded(let error):
+        case let .recoveryNeeded(error):
             // Reset+retry failed - show recovery UI (per acceptance criteria #3)
             // AppRecoveryView provides both "Reset Data" and "Contact Support" options
             AppRecoveryView(error: error, onResetData: resetAppData)

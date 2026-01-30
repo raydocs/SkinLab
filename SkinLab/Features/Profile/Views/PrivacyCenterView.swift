@@ -1,6 +1,6 @@
 // SkinLab/Features/Profile/Views/PrivacyCenterView.swift
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// 隐私控制中心 - P0-2 Privacy Control Center
 ///
@@ -24,7 +24,9 @@ struct PrivacyCenterView: View {
     @State private var showDeleteAlert = false
     private let initialAction: PrivacyCenterInitialAction?
 
-    private var profile: UserProfile? { profiles.first }
+    private var profile: UserProfile? {
+        profiles.first
+    }
 
     private var currentConsent: ConsentLevel {
         ConsentLevel(rawValue: consentLevel) ?? .anonymous
@@ -77,7 +79,7 @@ struct PrivacyCenterView: View {
                 DataExportView()
             }
             .alert("删除所有数据", isPresented: $showDeleteAlert) {
-                Button("取消", role: .cancel) { }
+                Button("取消", role: .cancel) {}
                 Button("删除", role: .destructive) {
                     deleteAllData()
                 }
@@ -129,6 +131,7 @@ struct PrivacyCenterView: View {
     }
 
     // MARK: - Header Section
+
     private var headerSection: some View {
         VStack(spacing: 12) {
             ZStack {
@@ -155,6 +158,7 @@ struct PrivacyCenterView: View {
     }
 
     // MARK: - Consent Level Card
+
     private var consentLevelCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 8) {
@@ -211,6 +215,7 @@ struct PrivacyCenterView: View {
     }
 
     // MARK: - Local Mode Card
+
     private var localModeCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 8) {
@@ -230,8 +235,8 @@ struct PrivacyCenterView: View {
                         .foregroundColor(.skinLabText)
 
                     Text(localOnlyMode ?
-                         "所有数据仅存储在您的设备上，不会上传云端" :
-                         "允许云端同步以获得更好的体验")
+                        "所有数据仅存储在您的设备上，不会上传云端" :
+                        "允许云端同步以获得更好的体验")
                         .font(.skinLabCaption)
                         .foregroundColor(.skinLabSubtext)
                 }
@@ -267,6 +272,7 @@ struct PrivacyCenterView: View {
     }
 
     // MARK: - Photo Storage Card
+
     private var photoStorageCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 8) {
@@ -315,6 +321,7 @@ struct PrivacyCenterView: View {
     }
 
     // MARK: - Data Transparency Card
+
     private var dataTransparencyCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 8) {
@@ -364,6 +371,7 @@ struct PrivacyCenterView: View {
     }
 
     // MARK: - Data Management Card
+
     private var dataManagementCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 8) {
@@ -436,6 +444,7 @@ struct PrivacyCenterView: View {
 }
 
 // MARK: - Feature Status Row
+
 struct FeatureStatus: View {
     let available: Bool
     let text: String
@@ -454,6 +463,7 @@ struct FeatureStatus: View {
 }
 
 // MARK: - Data Flow Row
+
 struct DataFlowRow: View {
     let icon: String
     let title: String
@@ -506,6 +516,7 @@ enum PrivacyCenterInitialAction {
 }
 
 // MARK: - Consent Level Sheet
+
 struct ConsentLevelSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var selectedLevel: String
@@ -534,7 +545,10 @@ struct ConsentLevelSheet: View {
                             HStack(alignment: .top, spacing: 12) {
                                 ZStack {
                                     Circle()
-                                        .stroke(tempSelection == level ? Color.skinLabPrimary : Color.gray.opacity(0.3), lineWidth: 2)
+                                        .stroke(
+                                            tempSelection == level ? Color.skinLabPrimary : Color.gray.opacity(0.3),
+                                            lineWidth: 2
+                                        )
                                         .frame(width: 22, height: 22)
 
                                     if tempSelection == level {
@@ -579,6 +593,7 @@ struct ConsentLevelSheet: View {
 }
 
 // MARK: - Data Export View
+
 struct DataExportView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -664,7 +679,7 @@ struct DataExportView: View {
         .alert("导出失败", isPresented: .constant(exportError != nil)) {
             Button("确定") { exportError = nil }
         } message: {
-            if let exportError = exportError {
+            if let exportError {
                 Text(exportError)
             }
         }
@@ -786,12 +801,20 @@ struct DataExportView: View {
             skinAge = record.skinAge
             overallScore = record.overallScore
             issues = Self.decodeOrNil(IssueScores.self, from: record.issuesData, label: "SkinAnalysisRecord.issuesData")
-            regions = Self.decodeOrNil(RegionScores.self, from: record.regionsData, label: "SkinAnalysisRecord.regionsData")
+            regions = Self.decodeOrNil(
+                RegionScores.self,
+                from: record.regionsData,
+                label: "SkinAnalysisRecord.regionsData"
+            )
             recommendations = record.recommendations
             analyzedAt = record.analyzedAt
             photoPath = record.photoPath
             confidenceScore = record.confidenceScore
-            imageQuality = Self.decodeOrNil(ImageQuality.self, from: record.qualityData, label: "SkinAnalysisRecord.qualityData")
+            imageQuality = Self.decodeOrNil(
+                ImageQuality.self,
+                from: record.qualityData,
+                label: "SkinAnalysisRecord.qualityData"
+            )
         }
 
         /// Decode with logging on failure, returning nil to avoid interrupting export
@@ -846,7 +869,11 @@ struct DataExportView: View {
             name = record.name
             brand = record.brand
             categoryRaw = record.categoryRaw
-            ingredients = Self.decodeOrNil([Ingredient].self, from: record.ingredientsData, label: "ProductRecord.ingredientsData")
+            ingredients = Self.decodeOrNil(
+                [Ingredient].self,
+                from: record.ingredientsData,
+                label: "ProductRecord.ingredientsData"
+            )
             skinTypesRaw = record.skinTypesRaw
             concernsRaw = record.concernsRaw
             priceRangeRaw = record.priceRangeRaw

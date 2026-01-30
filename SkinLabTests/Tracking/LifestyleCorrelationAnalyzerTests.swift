@@ -1,9 +1,8 @@
 // SkinLabTests/Tracking/LifestyleCorrelationAnalyzerTests.swift
-import XCTest
 @testable import SkinLab
+import XCTest
 
 final class LifestyleCorrelationAnalyzerTests: XCTestCase {
-
     var analyzer: LifestyleCorrelationAnalyzer!
 
     override func setUp() {
@@ -62,7 +61,7 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
         day: Int,
         overallScore: Int
     ) -> ScorePoint {
-        return ScorePoint(
+        ScorePoint(
             id: UUID(),
             day: day,
             date: Date(),
@@ -79,7 +78,7 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
         score: Double,
         level: ReliabilityMetadata.ReliabilityLevel = .medium
     ) -> ReliabilityMetadata {
-        return ReliabilityMetadata(
+        ReliabilityMetadata(
             score: score,
             level: level,
             reasons: [],
@@ -219,8 +218,8 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
 
         // First 2 check-ins have low reliability (<0.5), should be filtered
         let reliability: [UUID: ReliabilityMetadata] = [
-            checkIn0Id: makeReliability(score: 0.3, level: .low),  // < 0.5, filtered
-            checkIn1Id: makeReliability(score: 0.4, level: .low),  // < 0.5, filtered
+            checkIn0Id: makeReliability(score: 0.3, level: .low), // < 0.5, filtered
+            checkIn1Id: makeReliability(score: 0.4, level: .low), // < 0.5, filtered
             checkIn2Id: makeReliability(score: 0.8, level: .high),
             checkIn3Id: makeReliability(score: 0.9, level: .high)
         ]
@@ -255,11 +254,11 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
         // Factor values (alcohol of current): [0, 1, 0, 1]
         // We design deltas to correlate negatively with alcohol
         let checkIns = [
-            makeCheckIn(id: checkIn0Id, sessionId: sessionId, day: 0, alcoholConsumed: false),  // factor=0
-            makeCheckIn(id: checkIn1Id, sessionId: sessionId, day: 7, alcoholConsumed: true),   // factor=1
+            makeCheckIn(id: checkIn0Id, sessionId: sessionId, day: 0, alcoholConsumed: false), // factor=0
+            makeCheckIn(id: checkIn1Id, sessionId: sessionId, day: 7, alcoholConsumed: true), // factor=1
             makeCheckIn(id: checkIn2Id, sessionId: sessionId, day: 14, alcoholConsumed: false), // factor=0
-            makeCheckIn(id: checkIn3Id, sessionId: sessionId, day: 21, alcoholConsumed: true),  // factor=1
-            makeCheckIn(id: checkIn4Id, sessionId: sessionId, day: 28, alcoholConsumed: false)  // not used in pairs
+            makeCheckIn(id: checkIn3Id, sessionId: sessionId, day: 21, alcoholConsumed: true), // factor=1
+            makeCheckIn(id: checkIn4Id, sessionId: sessionId, day: 28, alcoholConsumed: false) // not used in pairs
         ]
 
         // Scores: 70 -> 75 -> 68 -> 73 -> 66
@@ -328,7 +327,7 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
         // The correct scores by checkInId: 80 -> 75 -> 68 -> 60
         // Deltas: -5, -7, -8 (negative correlation with stress)
         let timeline = [
-            makeScorePoint(checkInId: checkIn0Id, day: 999, overallScore: 80),  // day is wrong, checkInId is correct
+            makeScorePoint(checkInId: checkIn0Id, day: 999, overallScore: 80), // day is wrong, checkInId is correct
             makeScorePoint(checkInId: checkIn1Id, day: 888, overallScore: 75),
             makeScorePoint(checkInId: checkIn2Id, day: 777, overallScore: 68),
             makeScorePoint(checkInId: checkIn3Id, day: 666, overallScore: 60)
@@ -487,7 +486,7 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
 
     /// Test 10: Water intake and sun exposure factors
     /// Uses monotonic fixture to ensure both insights MUST exist
-    func testWaterAndSunExposureFactors() {
+    func testWaterAndSunExposureFactors() throws {
         // Given: Check-ins with water intake and sun exposure data
         let sessionId = UUID()
         let checkIn0Id = UUID()
@@ -540,13 +539,21 @@ final class LifestyleCorrelationAnalyzerTests: XCTestCase {
         XCTAssertNotNil(sunInsight, "Fixture should produce sun exposure insight")
 
         // Force unwrap is safe due to above assertions
-        XCTAssertGreaterThan(waterInsight!.correlation, 0, "Water correlation should be positive")
-        XCTAssertGreaterThanOrEqual(abs(waterInsight!.correlation), 0.3, "Water correlation should be significant")
-        XCTAssertEqual(waterInsight!.sampleCount, 3, "Should have 3 pairs")
+        XCTAssertGreaterThan(try XCTUnwrap(waterInsight?.correlation), 0, "Water correlation should be positive")
+        XCTAssertGreaterThanOrEqual(
+            try abs(XCTUnwrap(waterInsight?.correlation)),
+            0.3,
+            "Water correlation should be significant"
+        )
+        XCTAssertEqual(try XCTUnwrap(waterInsight?.sampleCount), 3, "Should have 3 pairs")
 
         // Sun should show negative correlation (less sun -> better scores)
-        XCTAssertLessThan(sunInsight!.correlation, 0, "Sun correlation should be negative")
-        XCTAssertGreaterThanOrEqual(abs(sunInsight!.correlation), 0.3, "Sun correlation should be significant")
-        XCTAssertEqual(sunInsight!.sampleCount, 3, "Should have 3 pairs")
+        XCTAssertLessThan(try XCTUnwrap(sunInsight?.correlation), 0, "Sun correlation should be negative")
+        XCTAssertGreaterThanOrEqual(
+            try abs(XCTUnwrap(sunInsight?.correlation)),
+            0.3,
+            "Sun correlation should be significant"
+        )
+        XCTAssertEqual(try XCTUnwrap(sunInsight?.sampleCount), 3, "Should have 3 pairs")
     }
 }

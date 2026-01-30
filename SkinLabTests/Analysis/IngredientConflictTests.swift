@@ -1,10 +1,8 @@
 // SkinLabTests/Analysis/IngredientConflictTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class IngredientConflictTests: XCTestCase {
-
     // MARK: - Knowledge Base Tests
 
     func testConflictKnowledgeBase_hasAtLeast15ConflictPairs() {
@@ -20,7 +18,7 @@ final class IngredientConflictTests: XCTestCase {
         // Verify retinol + AHA conflict exists and is marked as danger
         let retinolAHAConflict = ConflictKnowledgeBase.conflicts.first {
             ($0.ingredient1 == "retinol" && $0.ingredient2 == "aha") ||
-            ($0.ingredient1 == "aha" && $0.ingredient2 == "retinol")
+                ($0.ingredient1 == "aha" && $0.ingredient2 == "retinol")
         }
 
         XCTAssertNotNil(retinolAHAConflict, "Retinol + AHA conflict should exist")
@@ -31,7 +29,7 @@ final class IngredientConflictTests: XCTestCase {
         // Verify vitamin C + niacinamide conflict exists and is marked as warning
         let vcNiacinamideConflict = ConflictKnowledgeBase.conflicts.first {
             ($0.ingredient1 == "vitamin c" && $0.ingredient2 == "niacinamide") ||
-            ($0.ingredient1 == "niacinamide" && $0.ingredient2 == "vitamin c")
+                ($0.ingredient1 == "niacinamide" && $0.ingredient2 == "vitamin c")
         }
 
         XCTAssertNotNil(vcNiacinamideConflict, "Vitamin C + Niacinamide conflict should exist")
@@ -97,7 +95,7 @@ final class IngredientConflictTests: XCTestCase {
     // MARK: - Conflict Detection Tests (via IngredientRiskAnalyzer)
 
     @MainActor
-    func testDetectConflicts_findsRetinolAHAConflict() async {
+    func testDetectConflicts_findsRetinolAHAConflict() {
         let analyzer = IngredientRiskAnalyzer()
 
         // Create ingredients with retinol and AHA (glycolic acid)
@@ -117,13 +115,13 @@ final class IngredientConflictTests: XCTestCase {
         // Verify the specific conflict
         let hasRetinolAHAConflict = result.conflicts.contains { conflict in
             (conflict.ingredient1 == "retinol" && conflict.ingredient2 == "aha") ||
-            (conflict.ingredient1 == "aha" && conflict.ingredient2 == "retinol")
+                (conflict.ingredient1 == "aha" && conflict.ingredient2 == "retinol")
         }
         XCTAssertTrue(hasRetinolAHAConflict, "Should find retinol + AHA conflict")
     }
 
     @MainActor
-    func testDetectConflicts_findsVitaminCNiacinamideConflict() async {
+    func testDetectConflicts_findsVitaminCNiacinamideConflict() {
         let analyzer = IngredientRiskAnalyzer()
 
         // Create ingredients with Vitamin C and Niacinamide
@@ -143,13 +141,13 @@ final class IngredientConflictTests: XCTestCase {
         // Verify the specific conflict
         let hasVCNiacinamideConflict = result.conflicts.contains { conflict in
             (conflict.ingredient1 == "vitamin c" && conflict.ingredient2 == "niacinamide") ||
-            (conflict.ingredient1 == "niacinamide" && conflict.ingredient2 == "vitamin c")
+                (conflict.ingredient1 == "niacinamide" && conflict.ingredient2 == "vitamin c")
         }
         XCTAssertTrue(hasVCNiacinamideConflict, "Should find vitamin C + niacinamide conflict")
     }
 
     @MainActor
-    func testDetectConflicts_noConflictsWhenIngredientsDoNotConflict() async {
+    func testDetectConflicts_noConflictsWhenIngredientsDoNotConflict() {
         let analyzer = IngredientRiskAnalyzer()
 
         // Create ingredients that don't conflict with each other
@@ -170,7 +168,7 @@ final class IngredientConflictTests: XCTestCase {
     }
 
     @MainActor
-    func testDetectConflicts_aliasMatching_ascorbicAcidMatchesVitaminC() async {
+    func testDetectConflicts_aliasMatching_ascorbicAcidMatchesVitaminC() {
         let analyzer = IngredientRiskAnalyzer()
 
         // Use "Ascorbic Acid" which should match "vitamin c" conflicts
@@ -192,7 +190,7 @@ final class IngredientConflictTests: XCTestCase {
     }
 
     @MainActor
-    func testDetectConflicts_multipleConflicts() async {
+    func testDetectConflicts_multipleConflicts() {
         let analyzer = IngredientRiskAnalyzer()
 
         // Create a "bad routine" with multiple conflicting ingredients
@@ -213,7 +211,7 @@ final class IngredientConflictTests: XCTestCase {
     // MARK: - EnhancedIngredientScanResult Conflict Properties Tests
 
     @MainActor
-    func testEnhancedResult_conflictComputedProperties() async {
+    func testEnhancedResult_conflictComputedProperties() {
         let analyzer = IngredientRiskAnalyzer()
 
         // Create ingredients with both danger and warning conflicts
@@ -243,7 +241,7 @@ final class IngredientConflictTests: XCTestCase {
     }
 
     @MainActor
-    func testEnhancedResult_hasPersonalizedInfo_includesConflicts() async {
+    func testEnhancedResult_hasPersonalizedInfo_includesConflicts() {
         let analyzer = IngredientRiskAnalyzer()
 
         let ingredients = [
@@ -263,7 +261,7 @@ final class IngredientConflictTests: XCTestCase {
     // MARK: - Additional Alias Matching Tests
 
     @MainActor
-    func testDetectConflicts_salicylicAcidMatchesBHA() async {
+    func testDetectConflicts_salicylicAcidMatchesBHA() {
         let analyzer = IngredientRiskAnalyzer()
 
         let ingredients = [
@@ -277,15 +275,15 @@ final class IngredientConflictTests: XCTestCase {
         // Salicylic Acid should match BHA conflict with retinol
         let hasBHAConflict = result.conflicts.contains { conflict in
             (conflict.ingredient1 == "retinol" && conflict.ingredient2 == "bha") ||
-            (conflict.ingredient1 == "bha" && conflict.ingredient2 == "retinol") ||
-            (conflict.ingredient1 == "retinol" && conflict.ingredient2 == "salicylic acid") ||
-            (conflict.ingredient1 == "salicylic acid" && conflict.ingredient2 == "retinol")
+                (conflict.ingredient1 == "bha" && conflict.ingredient2 == "retinol") ||
+                (conflict.ingredient1 == "retinol" && conflict.ingredient2 == "salicylic acid") ||
+                (conflict.ingredient1 == "salicylic acid" && conflict.ingredient2 == "retinol")
         }
         XCTAssertTrue(hasBHAConflict, "Salicylic Acid should trigger BHA conflict with retinol")
     }
 
     @MainActor
-    func testDetectConflicts_lacticAcidMatchesAHA() async {
+    func testDetectConflicts_lacticAcidMatchesAHA() {
         let analyzer = IngredientRiskAnalyzer()
 
         let ingredients = [
@@ -311,7 +309,7 @@ final class IngredientConflictTests: XCTestCase {
         isHighlight: Bool = false,
         isWarning: Bool = false
     ) -> IngredientScanResult.ParsedIngredient {
-        return IngredientScanResult.ParsedIngredient(
+        IngredientScanResult.ParsedIngredient(
             name: name,
             normalizedName: normalizedName,
             function: function,
@@ -324,8 +322,8 @@ final class IngredientConflictTests: XCTestCase {
     private func createScanResult(
         ingredients: [IngredientScanResult.ParsedIngredient]
     ) -> IngredientScanResult {
-        return IngredientScanResult(
-            rawText: ingredients.map { $0.name }.joined(separator: ", "),
+        IngredientScanResult(
+            rawText: ingredients.map(\.name).joined(separator: ", "),
             ingredients: ingredients,
             overallSafety: .safe,
             highlights: [],

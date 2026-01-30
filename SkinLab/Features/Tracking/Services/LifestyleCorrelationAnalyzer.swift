@@ -3,7 +3,6 @@ import SwiftData
 
 /// Analyzes correlations between lifestyle factors and skin condition changes
 struct LifestyleCorrelationAnalyzer {
-
     private let analyzer = TimeSeriesAnalyzer()
 
     /// Analyze lifestyle factors vs skin metrics using lagged correlation
@@ -69,7 +68,7 @@ struct LifestyleCorrelationAnalyzer {
         let sorted = checkIns.sorted { $0.day < $1.day }
         var pairs: [(CheckIn, CheckIn, Double)] = []
 
-        for i in 0..<(sorted.count - 1) {
+        for i in 0 ..< (sorted.count - 1) {
             let current = sorted[i]
             let next = sorted[i + 1]
 
@@ -164,12 +163,12 @@ struct LifestyleCorrelationAnalyzer {
             // Convert AQI level to numeric scale (1-6, lower is better)
             return checkIn.weather.map { weather in
                 switch weather.airQuality {
-                case .good: return 1.0
-                case .moderate: return 2.0
-                case .unhealthySensitive: return 3.0
-                case .unhealthy: return 4.0
-                case .veryUnhealthy: return 5.0
-                case .hazardous: return 6.0
+                case .good: 1.0
+                case .moderate: 2.0
+                case .unhealthySensitive: 3.0
+                case .unhealthy: 4.0
+                case .veryUnhealthy: 5.0
+                case .hazardous: 6.0
                 }
             }
         default:
@@ -190,7 +189,7 @@ struct LifestyleCorrelationAnalyzer {
             case .sunExposureLevel:
                 return lifestyle.sunExposureLevel.map(Double.init)
             case .humidity, .uvIndex, .airQuality:
-                return nil  // Already handled above
+                return nil // Already handled above
             }
         }
     }
@@ -204,7 +203,8 @@ struct LifestyleCorrelationAnalyzer {
         let sampleContribution = min(0.7, Double(sampleCount) / 8.0 * 0.7)
 
         // Reliability contribution
-        let avgReliability = reliabilityScores.isEmpty ? 0.5 : reliabilityScores.reduce(0, +) / Double(reliabilityScores.count)
+        let avgReliability = reliabilityScores.isEmpty ? 0.5 : reliabilityScores
+            .reduce(0, +) / Double(reliabilityScores.count)
         let reliabilityContribution = avgReliability * 0.3
 
         let value = sampleContribution + reliabilityContribution

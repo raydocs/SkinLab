@@ -1,10 +1,8 @@
 // SkinLabTests/Analysis/SkinAnalysisTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class SkinAnalysisTests: XCTestCase {
-
     // MARK: - SkinType Tests
 
     func testSkinType_displayName() {
@@ -47,11 +45,14 @@ final class SkinAnalysisTests: XCTestCase {
 
     func testIssueScores_equatable() {
         let scores1 = IssueScores(
-            spots: 3, acne: 4, pores: 5, wrinkles: 2, redness: 3, evenness: 4, texture: 3)
+            spots: 3, acne: 4, pores: 5, wrinkles: 2, redness: 3, evenness: 4, texture: 3
+        )
         let scores2 = IssueScores(
-            spots: 3, acne: 4, pores: 5, wrinkles: 2, redness: 3, evenness: 4, texture: 3)
+            spots: 3, acne: 4, pores: 5, wrinkles: 2, redness: 3, evenness: 4, texture: 3
+        )
         let scores3 = IssueScores(
-            spots: 5, acne: 4, pores: 5, wrinkles: 2, redness: 3, evenness: 4, texture: 3)
+            spots: 5, acne: 4, pores: 5, wrinkles: 2, redness: 3, evenness: 4, texture: 3
+        )
 
         XCTAssertEqual(scores1, scores2)
         XCTAssertNotEqual(scores1, scores3)
@@ -59,7 +60,8 @@ final class SkinAnalysisTests: XCTestCase {
 
     func testIssueScores_codable() throws {
         let original = IssueScores(
-            spots: 3, acne: 4, pores: 5, wrinkles: 2, redness: 3, evenness: 4, texture: 3)
+            spots: 3, acne: 4, pores: 5, wrinkles: 2, redness: 3, evenness: 4, texture: 3
+        )
         let encoded = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(IssueScores.self, from: encoded)
         XCTAssertEqual(original, decoded)
@@ -190,7 +192,6 @@ final class SkinAnalysisTests: XCTestCase {
 // MARK: - SkincareRoutine Tests
 
 final class SkincareRoutineTests: XCTestCase {
-
     // MARK: - RoutinePhase Tests
 
     func testRoutinePhase_displayName() {
@@ -266,10 +267,12 @@ final class SkincareRoutineTests: XCTestCase {
     func testRoutineStep_hashable() {
         let step1 = RoutineStep(
             phase: .am, order: 1, title: "Step", productType: "Type", instructions: "Inst",
-            frequency: "Daily")
+            frequency: "Daily"
+        )
         let step2 = RoutineStep(
             phase: .am, order: 1, title: "Step", productType: "Type", instructions: "Inst",
-            frequency: "Daily")
+            frequency: "Daily"
+        )
 
         // Different IDs make them different
         XCTAssertNotEqual(step1, step2)
@@ -284,11 +287,14 @@ final class SkincareRoutineTests: XCTestCase {
 
     func testSkincareRoutine_amSteps() {
         let amStep1 = RoutineStep(
-            phase: .am, order: 2, title: "AM2", productType: "T", instructions: "I", frequency: "F")
+            phase: .am, order: 2, title: "AM2", productType: "T", instructions: "I", frequency: "F"
+        )
         let amStep2 = RoutineStep(
-            phase: .am, order: 1, title: "AM1", productType: "T", instructions: "I", frequency: "F")
+            phase: .am, order: 1, title: "AM1", productType: "T", instructions: "I", frequency: "F"
+        )
         let pmStep = RoutineStep(
-            phase: .pm, order: 1, title: "PM1", productType: "T", instructions: "I", frequency: "F")
+            phase: .pm, order: 1, title: "PM1", productType: "T", instructions: "I", frequency: "F"
+        )
 
         let routine = SkincareRoutine(
             skinType: .combination,
@@ -300,17 +306,20 @@ final class SkincareRoutineTests: XCTestCase {
 
         let amSteps = routine.amSteps
         XCTAssertEqual(amSteps.count, 2)
-        XCTAssertEqual(amSteps[0].order, 1)  // Sorted by order
+        XCTAssertEqual(amSteps[0].order, 1) // Sorted by order
         XCTAssertEqual(amSteps[1].order, 2)
     }
 
     func testSkincareRoutine_pmSteps() {
         let amStep = RoutineStep(
-            phase: .am, order: 1, title: "AM1", productType: "T", instructions: "I", frequency: "F")
+            phase: .am, order: 1, title: "AM1", productType: "T", instructions: "I", frequency: "F"
+        )
         let pmStep1 = RoutineStep(
-            phase: .pm, order: 2, title: "PM2", productType: "T", instructions: "I", frequency: "F")
+            phase: .pm, order: 2, title: "PM2", productType: "T", instructions: "I", frequency: "F"
+        )
         let pmStep2 = RoutineStep(
-            phase: .pm, order: 1, title: "PM1", productType: "T", instructions: "I", frequency: "F")
+            phase: .pm, order: 1, title: "PM1", productType: "T", instructions: "I", frequency: "F"
+        )
 
         let routine = SkincareRoutine(
             skinType: .dry,
@@ -335,7 +344,7 @@ final class SkincareRoutineTests: XCTestCase {
             notes: []
         )
 
-        XCTAssertEqual(routine.weeksDuration, 4)  // Default value
+        XCTAssertEqual(routine.weeksDuration, 4) // Default value
     }
 
     func testSkincareRoutine_weeksDuration_custom() {
@@ -354,7 +363,8 @@ final class SkincareRoutineTests: XCTestCase {
     func testSkincareRoutine_codable() throws {
         let step = RoutineStep(
             phase: .am, order: 1, title: "Test", productType: "Type", instructions: "Inst",
-            frequency: "Daily")
+            frequency: "Daily"
+        )
         let routine = SkincareRoutine(
             skinType: .combination,
             concerns: [.acne, .pores],

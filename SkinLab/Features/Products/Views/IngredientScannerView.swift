@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct IngredientScannerFullView: View {
     @Environment(\.dismiss) private var dismiss
@@ -20,7 +20,7 @@ struct IngredientScannerFullView: View {
     private var historyStore: UserHistoryStore {
         UserHistoryStore(modelContext: modelContext)
     }
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -35,13 +35,13 @@ struct IngredientScannerFullView: View {
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
-                
+
                 switch viewModel.state {
                 case .idle:
                     idleView
                 case .scanning:
                     scanningView
-                case .result(let baseResult, let enhancedResult):
+                case let .result(baseResult, enhancedResult):
                     if let enhanced = enhancedResult {
                         EnhancedIngredientResultView(
                             enhancedResult: enhanced,
@@ -58,7 +58,7 @@ struct IngredientScannerFullView: View {
                     } else {
                         resultView(baseResult)
                     }
-                case .error(let error):
+                case let .error(error):
                     errorView(error)
                 }
             }
@@ -92,41 +92,42 @@ struct IngredientScannerFullView: View {
             }
         }
     }
-    
+
     // MARK: - Idle View
+
     private var idleView: some View {
         VStack(spacing: 28) {
             Spacer()
-            
+
             // Icon with sparkle effect
             ZStack {
                 Circle()
                     .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.12))
                     .frame(width: 130, height: 130)
-                
+
                 Circle()
                     .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.2))
                     .frame(width: 100, height: 100)
-                
+
                 Image(systemName: "text.viewfinder")
                     .font(.system(size: 48))
                     .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
-                
+
                 SparkleView(size: 16)
                     .offset(x: 50, y: -45)
             }
-            
+
             VStack(spacing: 12) {
                 Text("扫描护肤品成分表")
                     .font(.skinLabTitle2)
                     .foregroundColor(.skinLabText)
-                
+
                 Text("拍摄成分表照片\nAI将自动识别并解读成分")
                     .font(.skinLabBody)
                     .foregroundColor(.skinLabSubtext)
                     .multilineTextAlignment(.center)
             }
-            
+
             // Feature hints with beautiful styling
             VStack(alignment: .leading, spacing: 16) {
                 BeautifulHintRow(icon: "checkmark.circle.fill", text: "识别成分功效", gradient: .skinLabPrimaryGradient)
@@ -149,9 +150,9 @@ struct IngredientScannerFullView: View {
                         lineWidth: 1
                     )
             )
-            
+
             Spacer()
-            
+
             // Action buttons
             VStack(spacing: 14) {
                 Button {
@@ -202,8 +203,9 @@ struct IngredientScannerFullView: View {
         }
         .padding()
     }
-    
+
     // MARK: - Scanning View
+
     private var scanningView: some View {
         VStack(spacing: 32) {
             // Animated scanning indicator
@@ -227,39 +229,40 @@ struct IngredientScannerFullView: View {
                     .font(.system(size: 36))
                     .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
             }
-            
+
             VStack(spacing: 10) {
                 Text("正在识别成分...")
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
-                
+
                 Text("AI 正在分析成分表")
                     .font(.skinLabSubheadline)
                     .foregroundColor(.skinLabSubtext)
             }
         }
     }
-    
+
     // MARK: - Result View
+
     private func resultView(_ result: IngredientScanResult) -> some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Safety Summary with beautiful design
                 beautifulSafetySummary(result)
-                
+
                 // Highlights
                 if !result.highlights.isEmpty {
                     beautifulHighlightsSection(result.highlights)
                 }
-                
+
                 // Warnings
                 if !result.warnings.isEmpty {
                     beautifulWarningsSection(result.warnings)
                 }
-                
+
                 // All Ingredients
                 beautifulIngredientsList(result.ingredients)
-                
+
                 // Scan Again Button
                 Button {
                     viewModel.reset()
@@ -287,7 +290,7 @@ struct IngredientScannerFullView: View {
             .padding()
         }
     }
-    
+
     private func beautifulSafetySummary(_ result: IngredientScanResult) -> some View {
         HStack(spacing: 16) {
             // Safety indicator
@@ -295,7 +298,7 @@ struct IngredientScannerFullView: View {
                 Circle()
                     .fill(safetyGradient(result.overallSafety).opacity(0.15))
                     .frame(width: 70, height: 70)
-                
+
                 Circle()
                     .fill(safetyGradient(result.overallSafety))
                     .frame(width: 56, height: 56)
@@ -305,19 +308,19 @@ struct IngredientScannerFullView: View {
                             .foregroundColor(.white)
                     }
             }
-            
+
             VStack(alignment: .leading, spacing: 6) {
                 Text("整体评价")
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
-                
+
                 Text(result.overallSafety.rawValue)
                     .font(.skinLabTitle3)
                     .foregroundStyle(safetyGradient(result.overallSafety))
             }
-            
+
             Spacer()
-            
+
             VStack(alignment: .trailing, spacing: 4) {
                 Text("\(result.ingredients.count)")
                     .font(.system(size: 28, weight: .bold))
@@ -334,7 +337,7 @@ struct IngredientScannerFullView: View {
         )
         .shadow(color: .black.opacity(0.05), radius: 12, y: 4)
     }
-    
+
     private func beautifulHighlightsSection(_ highlights: [String]) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
@@ -350,7 +353,7 @@ struct IngredientScannerFullView: View {
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabSuccess)
             }
-            
+
             ForEach(highlights, id: \.self) { highlight in
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "checkmark.circle.fill")
@@ -373,7 +376,7 @@ struct IngredientScannerFullView: View {
                 .stroke(Color.skinLabSuccess.opacity(0.2), lineWidth: 1)
         )
     }
-    
+
     private func beautifulWarningsSection(_ warnings: [String]) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
@@ -389,7 +392,7 @@ struct IngredientScannerFullView: View {
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabWarning)
             }
-            
+
             ForEach(warnings, id: \.self) { warning in
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "exclamationmark.circle.fill")
@@ -412,7 +415,7 @@ struct IngredientScannerFullView: View {
                 .stroke(Color.skinLabWarning.opacity(0.2), lineWidth: 1)
         )
     }
-    
+
     private func beautifulIngredientsList(_ ingredients: [IngredientScanResult.ParsedIngredient]) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
@@ -424,7 +427,7 @@ struct IngredientScannerFullView: View {
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
             }
-            
+
             FlowLayout(spacing: 8) {
                 ForEach(ingredients) { ingredient in
                     BeautifulIngredientChip(ingredient: ingredient)
@@ -439,8 +442,9 @@ struct IngredientScannerFullView: View {
         )
         .shadow(color: .black.opacity(0.04), radius: 10, y: 4)
     }
-    
+
     // MARK: - Error View
+
     private func errorView(_ error: Error) -> some View {
         ErrorRecoveryView(
             error: error,
@@ -463,37 +467,47 @@ struct IngredientScannerFullView: View {
         )
         // Note: ErrorRecoveryView has internal padding, no additional padding needed
     }
-    
+
     // MARK: - Helpers
+
     private func safetyGradient(_ level: IngredientScanResult.SafetyLevel) -> LinearGradient {
         switch level {
         case .safe:
-            return LinearGradient(colors: [.skinLabSuccess, .skinLabSuccess.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LinearGradient(
+                colors: [.skinLabSuccess, .skinLabSuccess.opacity(0.8)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         case .caution:
-            return LinearGradient.skinLabGoldGradient
+            LinearGradient.skinLabGoldGradient
         case .warning:
-            return LinearGradient(colors: [.skinLabError, .skinLabError.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            LinearGradient(
+                colors: [.skinLabError, .skinLabError.opacity(0.8)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         }
     }
-    
+
     private func safetyColor(_ level: IngredientScanResult.SafetyLevel) -> Color {
         switch level {
-        case .safe: return .skinLabSuccess
-        case .caution: return .skinLabWarning
-        case .warning: return .skinLabError
+        case .safe: .skinLabSuccess
+        case .caution: .skinLabWarning
+        case .warning: .skinLabError
         }
     }
-    
+
     private func safetyIcon(_ level: IngredientScanResult.SafetyLevel) -> String {
         switch level {
-        case .safe: return "checkmark"
-        case .caution: return "exclamationmark"
-        case .warning: return "xmark"
+        case .safe: "checkmark"
+        case .caution: "exclamationmark"
+        case .warning: "xmark"
         }
     }
 }
 
 // MARK: - Beautiful Hint Row
+
 struct BeautifulHintRow: View {
     let icon: String
     let text: String
@@ -522,6 +536,7 @@ struct BeautifulHintRow: View {
 }
 
 // MARK: - Beautiful Ingredient Chip
+
 struct BeautifulIngredientChip: View {
     let ingredient: IngredientScanResult.ParsedIngredient
 
@@ -562,13 +577,13 @@ struct BeautifulIngredientChip: View {
         }
         return label
     }
-    
+
     private var chipTextColor: Color {
         if ingredient.isWarning { return .skinLabWarning }
         if ingredient.isHighlight { return .skinLabSuccess }
         return .skinLabText
     }
-    
+
     private var chipBackground: some View {
         Group {
             if ingredient.isWarning {
@@ -586,37 +601,41 @@ struct BeautifulIngredientChip: View {
 }
 
 // MARK: - Simple Image Picker (for camera)
+
 struct SimpleImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
     @Environment(\.dismiss) private var dismiss
-    
+
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.sourceType = .camera
         picker.delegate = context.coordinator
         return picker
     }
-    
+
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let parent: SimpleImagePicker
-        
+
         init(_ parent: SimpleImagePicker) {
             self.parent = parent
         }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+
+        func imagePickerController(
+            _ picker: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+        ) {
             if let image = info[.originalImage] as? UIImage {
                 parent.selectedImage = image
             }
             parent.dismiss()
         }
-        
+
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.dismiss()
         }
@@ -624,6 +643,7 @@ struct SimpleImagePicker: UIViewControllerRepresentable {
 }
 
 // MARK: - View Model
+
 @MainActor
 class IngredientScannerViewModel: ObservableObject {
     enum State {
@@ -632,24 +652,24 @@ class IngredientScannerViewModel: ObservableObject {
         case result(IngredientScanResult, EnhancedIngredientScanResult?)
         case error(Error)
     }
-    
+
     @Published var state: State = .idle
     @Published var aiStatus: AIAnalysisStatus = .idle
     @Published var aiResult: IngredientAIResult?
     @Published var aiErrorMessage: String?
-    
+
     private let ocrService = IngredientOCRService.shared
     private let database = IngredientDatabase.shared
     private let riskAnalyzer = IngredientRiskAnalyzer()
     private let aiAnalyzer = IngredientAIAnalyzer.shared
-    
+
     // Store for AI analysis
     private var currentBaseResult: IngredientScanResult?
     private var currentEnhancedResult: EnhancedIngredientScanResult?
     private var currentProfile: UserProfile?
     private var currentHistoryStore: UserHistoryStore?
     private var currentPreferences: [UserIngredientPreference] = []
-    
+
     @MainActor
     func scan(
         image: UIImage,
@@ -678,7 +698,7 @@ class IngredientScannerViewModel: ObservableObject {
                 historyStore: historyStore,
                 userPreferences: preferences
             )
-            
+
             // Store for AI analysis
             currentBaseResult = baseResult
             currentEnhancedResult = enhancedResult
@@ -704,9 +724,9 @@ class IngredientScannerViewModel: ObservableObject {
 
     func runAIAnalysis() async {
         guard let baseResult = currentBaseResult else { return }
-        
+
         aiStatus = .analyzing
-        
+
         do {
             let result = try await aiAnalyzer.analyze(
                 baseResult: baseResult,
@@ -714,7 +734,7 @@ class IngredientScannerViewModel: ObservableObject {
                 historyStore: currentHistoryStore,
                 preferences: currentPreferences
             )
-            
+
             aiResult = result
             aiStatus = .success
         } catch {
@@ -722,11 +742,11 @@ class IngredientScannerViewModel: ObservableObject {
             aiStatus = .failed
         }
     }
-    
+
     func retryAIAnalysis() async {
         await runAIAnalysis()
     }
-    
+
     func reset() {
         state = .idle
         aiStatus = .idle

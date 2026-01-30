@@ -2,11 +2,12 @@ import Foundation
 import UIKit
 
 // MARK: - OpenRouter Configuration (Gemini via OpenRouter)
+
 enum GeminiConfig {
     static let model = AppConfiguration.API.skinAnalysisModel
     static let baseURL = AppConfiguration.API.baseURL
 
-    // API Key from environment or Info.plist (NEVER hardcode!)
+    /// API Key from environment or Info.plist (NEVER hardcode!)
     static var apiKey: String {
         // 1. Try environment variable (for development)
         if let envKey = ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"], !envKey.isEmpty {
@@ -26,16 +27,19 @@ enum GeminiConfig {
 }
 
 // MARK: - Skin Analysis Service Protocol (for dependency injection)
+
 protocol SkinAnalysisServiceProtocol: Sendable {
     func analyzeSkin(image: UIImage) async throws -> SkinAnalysis
 }
 
 // MARK: - Ingredient AI Service Protocol
+
 protocol IngredientAIServiceProtocol: Sendable {
     func analyzeIngredients(request: IngredientAIRequest) async throws -> IngredientAIResult
 }
 
 // MARK: - Gemini Errors
+
 enum GeminiError: LocalizedError {
     case invalidImage
     case invalidAPIKey
@@ -44,29 +48,32 @@ enum GeminiError: LocalizedError {
     case parseError
     case rateLimited
     case unauthorized
-    
+
     var errorDescription: String? {
         switch self {
-        case .invalidImage: return "图片无效，请重新拍摄"
-        case .invalidAPIKey: return "API Key未配置"
-        case .networkError(let error): return "网络错误: \(error.localizedDescription)"
-        case .apiError(let message): return "API错误: \(message)"
-        case .parseError: return "解析失败，请重试"
-        case .rateLimited: return "请求过于频繁，请稍后再试"
-        case .unauthorized: return "认证失败"
+        case .invalidImage: "图片无效，请重新拍摄"
+        case .invalidAPIKey: "API Key未配置"
+        case let .networkError(error): "网络错误: \(error.localizedDescription)"
+        case let .apiError(message): "API错误: \(message)"
+        case .parseError: "解析失败，请重试"
+        case .rateLimited: "请求过于频繁，请稍后再试"
+        case .unauthorized: "认证失败"
         }
     }
 }
 
 // MARK: - Gemini Service
+
 actor GeminiService: SkinAnalysisServiceProtocol {
     static let shared = GeminiService()
-    
+
     private let session: URLSession
     private let decoder = JSONDecoder()
-    
-    init(session: URLSession? = nil) {
-        if let session = session {
+    private let apiKeyOverride: String?
+
+    init(session: URLSession? = nil, apiKey: String? = nil) {
+        self.apiKeyOverride = apiKey
+        if let session {
             self.session = session
         } else {
             let config = URLSessionConfiguration.default
@@ -75,43 +82,48 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             self.session = URLSession(configuration: config)
         }
     }
-    
-    // MARK: - Skin Analysis
-    // Protocol conformance
-    func analyzeSkin(image: UIImage) async throws -> SkinAnalysis {
-        return try await analyzeSkin(image: image, previousAnalysis: nil, retryCount: 0)
+
+    private var apiKey: String {
+        apiKeyOverride ?? GeminiConfig.apiKey
     }
 
-    // Enhanced version with context
+    // MARK: - Skin Analysis
+
+    /// Protocol conformance
+    func analyzeSkin(image: UIImage) async throws -> SkinAnalysis {
+        try await analyzeSkin(image: image, previousAnalysis: nil, retryCount: 0)
+    }
+
+    /// Enhanced version with context
     func analyzeSkin(
         image: UIImage,
         previousAnalysis: SkinAnalysis? = nil,
         retryCount: Int = 0
     ) async throws -> SkinAnalysis {
-        guard !GeminiConfig.apiKey.isEmpty else {
+        guard !apiKey.isEmpty else {
             throw GeminiError.invalidAPIKey
         }
-        
+
         // Optimize image before upload
         let optimizedImage = optimizeImage(image)
-        
+
         guard let imageData = optimizedImage.jpegData(compressionQuality: GeminiConfig.imageCompressionQuality) else {
             throw GeminiError.invalidImage
         }
-        
+
         let base64Image = imageData.base64EncodedString()
         let request = try buildAnalysisRequest(
             base64Image: base64Image,
             previousAnalysis: previousAnalysis
         )
-        
+
         do {
             let (data, response) = try await session.data(for: request)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw GeminiError.networkError(URLError(.badServerResponse))
             }
-            
+
             switch httpResponse.statusCode {
             case 200:
                 return try parseAnalysisResponse(data)
@@ -149,35 +161,36 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             throw GeminiError.networkError(error)
         }
     }
-    
+
     // MARK: - Image Optimization
+
     private func optimizeImage(_ image: UIImage) -> UIImage {
         let maxDimension = GeminiConfig.maxImageDimension
         let size = image.size
-        
+
         // Check if resizing is needed
         guard size.width > maxDimension || size.height > maxDimension else {
             return image
         }
-        
+
         // Calculate new size maintaining aspect ratio
-        let scale: CGFloat
-        if size.width > size.height {
-            scale = maxDimension / size.width
+        let scale: CGFloat = if size.width > size.height {
+            maxDimension / size.width
         } else {
-            scale = maxDimension / size.height
+            maxDimension / size.height
         }
-        
+
         let newSize = CGSize(width: size.width * scale, height: size.height * scale)
-        
+
         // Resize image
         let renderer = UIGraphicsImageRenderer(size: newSize)
         return renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: newSize))
         }
     }
-    
+
     // MARK: - Request Building (OpenRouter Format)
+
     private func buildAnalysisRequest(
         base64Image: String,
         previousAnalysis: SkinAnalysis?
@@ -189,7 +202,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue(AppConfiguration.API.referer, forHTTPHeaderField: "HTTP-Referer")
         request.setValue(AppConfiguration.API.title, forHTTPHeaderField: "X-Title")
 
@@ -219,35 +232,38 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             "temperature": AppConfiguration.API.defaultTemperature,
             "max_tokens": AppConfiguration.Limits.skinAnalysisMaxTokens
         ]
-        
+
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         return request
     }
-    
+
     // MARK: - Response Parsing (OpenRouter/OpenAI Format)
+
     private func parseAnalysisResponse(_ data: Data) throws -> SkinAnalysis {
         struct OpenRouterResponse: Codable {
             struct Choice: Codable {
                 struct Message: Codable {
                     let content: String?
                 }
+
                 let message: Message
             }
+
             let choices: [Choice]
         }
-        
+
         let response = try decoder.decode(OpenRouterResponse.self, from: data)
-        
+
         guard let text = response.choices.first?.message.content else {
             throw GeminiError.parseError
         }
-        
+
         // Extract JSON object from text (handle markdown, extra text, etc.)
         guard let jsonString = extractJSON(from: text),
               let jsonData = jsonString.data(using: .utf8) else {
             throw GeminiError.parseError
         }
-        
+
         // Helper function to clamp values
         func clamp(_ value: Int, _ min: Int, _ max: Int) -> Int {
             Swift.max(min, Swift.min(max, value))
@@ -326,7 +342,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             let occlusion: DoubleOrInt
             let faceCoverage: DoubleOrInt
             let notes: [String]
-            
+
             func toImageQuality() -> ImageQuality {
                 func clamp(_ value: Int, _ min: Int, _ max: Int) -> Int {
                     Swift.max(min, Swift.min(max, value))
@@ -341,7 +357,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
                 )
             }
         }
-        
+
         // Flexible JSON structure that accepts both Int and Double
         struct AnalysisJSON: Codable {
             let skinType: String
@@ -353,13 +369,13 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             let confidenceScore: DoubleOrInt?
             let imageQuality: FlexibleImageQuality?
         }
-        
+
         let analysisJSON = try decoder.decode(AnalysisJSON.self, from: jsonData)
-        
+
         guard let skinType = SkinType(rawValue: analysisJSON.skinType) else {
             throw GeminiError.parseError
         }
-        
+
         return SkinAnalysis(
             skinType: skinType,
             skinAge: clamp(analysisJSON.skinAge.value, 15, 80),
@@ -371,7 +387,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             imageQuality: analysisJSON.imageQuality?.toImageQuality()
         )
     }
-    
+
     /// Extract first JSON object from text
     private func extractJSON(from text: String) -> String? {
         // Remove markdown code blocks
@@ -379,20 +395,21 @@ actor GeminiService: SkinAnalysisServiceProtocol {
             .replacingOccurrences(of: "```json", with: "")
             .replacingOccurrences(of: "```", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         // Find first { and last }
         guard let start = cleaned.firstIndex(of: "{"),
               let end = cleaned.lastIndex(of: "}") else {
             return nil
         }
-        
-        return String(cleaned[start...end])
+
+        return String(cleaned[start ... end])
     }
-    
+
     // MARK: - Prompt Building
+
     private func buildPrompt(with previousAnalysis: SkinAnalysis?) -> String {
         var prompt = baseAnalysisPrompt
-        
+
         // Add historical context if available
         if let previous = previousAnalysis {
             let historyContext = """
@@ -406,13 +423,13 @@ actor GeminiService: SkinAnalysisServiceProtocol {
 
             **重要提示**：如果当前照片的评分与历史相比变化超过2级（如痘痘从3变到6+，或泛红从7降到4-），请在recommendations中说明可能的原因。
             """
-            
+
             prompt += historyContext
         }
-        
+
         return prompt
     }
-    
+
     private var baseAnalysisPrompt: String {
         """
         你是一位专业皮肤科医生，拥有20年临床经验。请仔细分析这张面部照片。
@@ -464,7 +481,7 @@ actor GeminiService: SkinAnalysisServiceProtocol {
         如果照片质量良好，imageQuality可以省略。
         """
     }
-    
+
     private func daysAgo(from date: Date) -> Int {
         let days = Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? 0
         return max(0, days)
@@ -472,10 +489,10 @@ actor GeminiService: SkinAnalysisServiceProtocol {
 }
 
 // MARK: - Ingredient AI Analysis Extension
+
 extension GeminiService: IngredientAIServiceProtocol {
-    
     func analyzeIngredients(request: IngredientAIRequest) async throws -> IngredientAIResult {
-        guard !GeminiConfig.apiKey.isEmpty else {
+        guard !apiKey.isEmpty else {
             throw GeminiError.invalidAPIKey
         }
 
@@ -483,7 +500,7 @@ extension GeminiService: IngredientAIServiceProtocol {
         let maxRetries = AppConfiguration.API.maxRetryAttempts
         var retryDelay: TimeInterval = 1.0
 
-        for attempt in 0..<maxRetries {
+        for attempt in 0 ..< maxRetries {
             // Check if task is cancelled
             if Task.isCancelled {
                 throw CancellationError()
@@ -514,12 +531,12 @@ extension GeminiService: IngredientAIServiceProtocol {
                     // Only retry if we have attempts left
                     if attempt < maxRetries - 1 {
                         try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
-                        retryDelay *= 2  // Exponential backoff
+                        retryDelay *= 2 // Exponential backoff
                         continue
                     }
                     throw GeminiError.rateLimited
 
-                case 500...599:
+                case 500 ... 599:
                     // Server error - retry with backoff
                     if attempt < maxRetries - 1 {
                         try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
@@ -552,7 +569,7 @@ extension GeminiService: IngredientAIServiceProtocol {
         // Should never reach here
         throw GeminiError.networkError(URLError(.unknown))
     }
-    
+
     private func buildIngredientAnalysisRequest(request: IngredientAIRequest) throws -> URLRequest {
         guard let url = URL(string: AppConfiguration.API.chatCompletionsEndpoint) else {
             throw GeminiError.apiError("Invalid URL")
@@ -561,7 +578,7 @@ extension GeminiService: IngredientAIServiceProtocol {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        urlRequest.setValue("Bearer \(GeminiConfig.apiKey)", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue(AppConfiguration.API.referer, forHTTPHeaderField: "HTTP-Referer")
         urlRequest.setValue(AppConfiguration.API.title, forHTTPHeaderField: "X-Title")
 
@@ -625,13 +642,13 @@ extension GeminiService: IngredientAIServiceProtocol {
             // Allergies - critical safety check
             if !profile.allergies.isEmpty {
                 prompt += "\n**⚠️ 过敏史（极高优先级）**：\(profile.allergies.joined(separator: ", "))"
-                prompt += "\n→ 如果成分列表中包含这些或相关成分，必须在ingredientConcerns中标记为high风险"
+                prompt += "\n→ 如果成分列表中包含这些或相关成分，必须在ingredientConcerns中特别说明"
             }
 
             // Pregnancy status - safety critical
-            if let pregnancy = profile.pregnancyStatus, pregnancy != "none" && pregnancy != "无" {
+            if let pregnancy = profile.pregnancyStatus, pregnancy != "none", pregnancy != "无" {
                 prompt += "\n**⚠️ 孕期状态**：\(pregnancy)"
-                prompt += "\n→ 必须筛查孕妇禁用成分（如维A醇类、水杨酸高浓度、某些精油等），并在riskTags中标注"
+                prompt += "\n→ 必须筛查孕妇禁用成分（如维A醇类、高浓度水杨酸、某些精油等），并在riskTags中标注"
             }
 
             // Fragrance tolerance
@@ -655,7 +672,8 @@ extension GeminiService: IngredientAIServiceProtocol {
 
             // Add ingredient effectiveness data if available
             if !history.ingredientStats.isEmpty {
-                let problematicIngredients = history.ingredientStats.filter { $0.value.worseCount > $0.value.betterCount }
+                let problematicIngredients = history.ingredientStats
+                    .filter { $0.value.worseCount > $0.value.betterCount }
                 if !problematicIngredients.isEmpty {
                     prompt += """
                     **用户使用历史记录中的问题成分**：
@@ -772,31 +790,33 @@ extension GeminiService: IngredientAIServiceProtocol {
 
         return prompt
     }
-    
+
     private func parseIngredientAnalysisResponse(_ data: Data) throws -> IngredientAIResult {
         struct OpenRouterResponse: Codable {
             struct Choice: Codable {
                 struct Message: Codable {
                     let content: String?
                 }
+
                 let message: Message
             }
+
             let choices: [Choice]
         }
-        
+
         let response = try decoder.decode(OpenRouterResponse.self, from: data)
-        
+
         guard let text = response.choices.first?.message.content else {
             throw GeminiError.parseError
         }
-        
+
         guard let jsonString = extractJSON(from: text),
               let jsonData = jsonString.data(using: .utf8) else {
             throw GeminiError.parseError
         }
-        
+
         let result = try decoder.decode(IngredientAIResult.self, from: jsonData)
-        
+
         return IngredientAIResult(
             summary: result.summary,
             riskTags: result.riskTags,

@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// Achievement dashboard with badge grid and category filtering
 struct AchievementDashboardView: View {
@@ -55,21 +55,21 @@ struct AchievementDashboardView: View {
         VStack(spacing: 12) {
             // Stats
             HStack(spacing: 24) {
-    AchievementStatItem(
+                AchievementStatItem(
                     icon: "trophy.fill",
                     title: "已解锁",
                     value: "\(unlockedCount)",
                     color: .yellow
                 )
 
-    AchievementStatItem(
+                AchievementStatItem(
                     icon: "lock.fill",
                     title: "未解锁",
                     value: "\(lockedCount)",
                     color: .gray
                 )
 
-    AchievementStatItem(
+                AchievementStatItem(
                     icon: "chart.line.uptrend.xyaxis",
                     title: "完成率",
                     value: "\(completionPercentage)%",
@@ -127,7 +127,7 @@ struct AchievementDashboardView: View {
         if !searchText.isEmpty {
             badges = badges.filter { badge in
                 badge.title.localizedCaseInsensitiveContains(searchText) ||
-                badge.description.localizedCaseInsensitiveContains(searchText)
+                    badge.description.localizedCaseInsensitiveContains(searchText)
             }
         }
 
@@ -150,7 +150,7 @@ struct AchievementDashboardView: View {
     }
 
     private var unlockedCount: Int {
-        achievementProgress.filter { $0.isUnlocked }.count
+        achievementProgress.filter(\.isUnlocked).count
     }
 
     private var lockedCount: Int {

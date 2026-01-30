@@ -54,7 +54,7 @@ struct AchievementUnlockAnimationView: View {
                         }(),
                         size: .large
                     ) {}
-                    .scaleEffect(scale)
+                        .scaleEffect(scale)
                 }
 
                 // Text
@@ -148,13 +148,13 @@ struct AchievementUnlockAnimationView: View {
     private var categoryColor: Color {
         switch badge.category {
         case .streaks:
-            return .orange
+            .orange
         case .completeness:
-            return .blue
+            .blue
         case .social:
-            return .green
+            .green
         case .knowledge:
-            return .yellow
+            .yellow
         }
     }
 }
@@ -172,20 +172,22 @@ struct ConfettiParticle: View {
         Circle()
             .fill(color)
             .frame(width: 8, height: 8)
-            .offset(x: position.x - UIScreen.main.bounds.width / 2,
-                    y: position.y - UIScreen.main.bounds.height / 2 + offset)
+            .offset(
+                x: position.x - UIScreen.main.bounds.width / 2,
+                y: position.y - UIScreen.main.bounds.height / 2 + offset
+            )
             .rotationEffect(.degrees(rotation))
             .opacity(opacity)
             .onAppear {
-                withAnimation(.linear(duration: 2).delay(Double.random(in: 0...0.3))) {
+                withAnimation(.linear(duration: 2).delay(Double.random(in: 0 ... 0.3))) {
                     offset = UIScreen.main.bounds.height / 2 + 100
                 }
 
-                withAnimation(.linear(duration: 2).delay(Double.random(in: 0...0.3))) {
-                    rotation = Double.random(in: 0...720)
+                withAnimation(.linear(duration: 2).delay(Double.random(in: 0 ... 0.3))) {
+                    rotation = Double.random(in: 0 ... 720)
                 }
 
-                withAnimation(.easeOut(duration: 1).delay(Double.random(in: 0...0.5))) {
+                withAnimation(.easeOut(duration: 1).delay(Double.random(in: 0 ... 0.5))) {
                     opacity = 0
                 }
             }

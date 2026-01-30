@@ -1,9 +1,10 @@
 import SwiftUI
 
 // MARK: - 浪漫粉紫金色系 Color System
+
 extension Color {
     // MARK: - 清新高级感 Color System (Fresh & Airy)
-    
+
     // 清新主色 - 薄荷绿/青色系
     static let freshPrimary = Color(red: 0.24, green: 0.76, blue: 0.68) // 清新薄荷绿
     static let freshPrimaryLight = Color(red: 0.85, green: 0.96, blue: 0.94) // 极淡薄荷背景
@@ -17,13 +18,13 @@ extension Color {
     // 玻璃质感背景色
     static let freshWhite = Color(red: 0.99, green: 0.99, blue: 1.0) // 纯净白
     static let freshBackground = Color(red: 0.98, green: 0.99, blue: 0.99) // 极淡灰白背景
-    
+
     // 暗黑模式适配
     static let freshBackgroundDark = Color(red: 0.08, green: 0.10, blue: 0.12)
     static let freshCardDark = Color(red: 0.12, green: 0.15, blue: 0.18)
 
     // MARK: - Legacy Compatibility (Mapped to New Theme)
-    
+
     static let romanticPink = freshPrimary
     static let romanticPinkLight = freshPrimaryLight
     static let romanticPinkDark = freshPrimaryDark
@@ -95,17 +96,17 @@ extension Color {
 
     static func scoreColor(for score: Int) -> Color {
         switch score {
-        case 80...100: return .skinLabScoreExcellent
-        case 60..<80: return .skinLabScoreGood
-        case 40..<60: return .skinLabScoreFair
-        case 20..<40: return .skinLabScorePoor
-        default: return .skinLabScoreBad
+        case 80 ... 100: .skinLabScoreExcellent
+        case 60 ..< 80: .skinLabScoreGood
+        case 40 ..< 60: .skinLabScoreFair
+        case 20 ..< 40: .skinLabScorePoor
+        default: .skinLabScoreBad
         }
     }
 }
 
 extension LinearGradient {
-    // 清新渐变系统
+    /// 清新渐变系统
     static let skinLabRoseGradient = LinearGradient(
         colors: [Color.freshPrimaryLight, Color.freshPrimary],
         startPoint: .topLeading,
@@ -137,21 +138,21 @@ extension LinearGradient {
         endPoint: .bottomLeading
     )
 
-    // Accent gradient for tracking reports
+    /// Accent gradient for tracking reports
     static let skinLabAccentGradient = LinearGradient(
         colors: [Color.skinLabAccent, Color.skinLabAccent.opacity(0.7)],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
-    // Success gradient (green tones)
+    /// Success gradient (green tones)
     static let skinLabSuccessGradient = LinearGradient(
         colors: [Color.skinLabSuccess, Color.skinLabSuccess.opacity(0.7)],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
-    // Warning gradient (orange/yellow tones)
+    /// Warning gradient (orange/yellow tones)
     static let skinLabWarningGradient = LinearGradient(
         colors: [Color.orange, Color.orange.opacity(0.7)],
         startPoint: .topLeading,

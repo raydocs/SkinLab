@@ -1,6 +1,7 @@
 import Foundation
 
 // MARK: - Score Point for Timeline Charts
+
 struct ScorePoint: Codable, Identifiable {
     let id: UUID
     let day: Int
@@ -11,7 +12,16 @@ struct ScorePoint: Codable, Identifiable {
     let regionScores: RegionScores?
     let checkInId: UUID
 
-    init(id: UUID = UUID(), day: Int, date: Date, overallScore: Int, skinAge: Int, issueScores: IssueScores? = nil, regionScores: RegionScores? = nil, checkInId: UUID = UUID()) {
+    init(
+        id: UUID = UUID(),
+        day: Int,
+        date: Date,
+        overallScore: Int,
+        skinAge: Int,
+        issueScores: IssueScores? = nil,
+        regionScores: RegionScores? = nil,
+        checkInId: UUID = UUID()
+    ) {
         self.id = id
         self.day = day
         self.date = date
@@ -24,6 +34,7 @@ struct ScorePoint: Codable, Identifiable {
 }
 
 // MARK: - Trend Data
+
 struct TrendData: Codable {
     let metric: String
     let slope: Double // Linear regression slope
@@ -38,6 +49,7 @@ struct TrendData: Codable {
 }
 
 // MARK: - Enhanced Tracking Report
+
 struct EnhancedTrackingReport: Codable {
     let sessionId: UUID
     let duration: Int
@@ -57,10 +69,10 @@ struct EnhancedTrackingReport: Codable {
     let scoreChange: Int
     let skinAgeChange: Int
 
-    // Timeline data for charts
+    /// Timeline data for charts
     let timeline: [ScorePoint]
 
-    // Trend analysis
+    /// Trend analysis
     let trendData: [TrendData]
 
     // Dimension changes
@@ -68,27 +80,27 @@ struct EnhancedTrackingReport: Codable {
     let usedProducts: [TrackingReport.ProductUsage]
     let aiSummary: String?
     let recommendations: [String]
-    
+
     // MARK: - AI-Enhanced Analytics Fields
-    
+
     /// 异常检测结果
     let anomalies: [AnomalyDetectionResult]
-    
+
     /// 趋势预测列表
     let forecasts: [TrendForecast]
-    
+
     /// 热力图数据
     let heatmap: HeatmapData?
-    
+
     /// 季节性模式分析
     let seasonalPatterns: [SeasonalPattern]
-    
+
     /// 整体数据置信度
     let dataConfidence: ConfidenceScore
-    
+
     /// 产品效果深度分析
     let productInsights: [ProductEffectInsight]
-    
+
     /// 数据质量评估
     let dataQualityScore: Double?
     let dataQualityDescription: String?
@@ -112,7 +124,7 @@ struct EnhancedTrackingReport: Codable {
     /// 生活方式数据完整度（有生活方式数据的打卡比例）
     let lifestyleDataCoverage: Double
 
-    // Computed properties for UI
+    /// Computed properties for UI
     var hasSignificantImprovement: Bool {
         overallImprovement > 10
     }
@@ -139,17 +151,17 @@ struct EnhancedTrackingReport: Codable {
             .prefix(3)
             .map { $0 }
     }
-    
+
     /// 高风险预警列表
     var riskAlerts: [PredictiveAlert] {
-        forecasts.compactMap { $0.riskAlert }
+        forecasts.compactMap(\.riskAlert)
     }
-    
+
     /// 是否有异常需要关注
     var hasAnomalies: Bool {
         !anomalies.isEmpty
     }
-    
+
     /// 严重异常数量
     var severeAnomaliesCount: Int {
         anomalies.filter { $0.severity == .severe }.count
@@ -157,6 +169,7 @@ struct EnhancedTrackingReport: Codable {
 }
 
 // MARK: - Report Generator
+
 @MainActor
 final class TrackingReportGenerator {
     private let geminiService: GeminiService
@@ -220,25 +233,25 @@ final class TrackingReportGenerator {
             analyses: analyses,
             productDatabase: productDatabase
         )
-        
+
         // MARK: - AI-Enhanced Analytics Integration
-        
+
         // Initialize analyzers
         let tsAnalyzer = TimeSeriesAnalyzer()
         let anomalyDetector = AnomalyDetector()
         let forecastEngine = ForecastEngine()
         let seasonalityAnalyzer = SeasonalityAnalyzer()
         let productAnalyzer = ProductEffectAnalyzer()
-        
+
         // 1. Anomaly Detection
         let anomalies = detectAnomalies(timeline: timeline, detector: anomalyDetector)
-        
+
         // 2. Trend Forecasting
         let forecasts = generateForecasts(timeline: timeline, analyses: analyses, engine: forecastEngine)
-        
+
         // 3. Heatmap Data
         let heatmap = generateHeatmap(timeline: timeline)
-        
+
         // 4. Seasonal Analysis
         let seasonalPatterns = await analyzeSeasonality(
             analyses: analyses,
@@ -246,11 +259,11 @@ final class TrackingReportGenerator {
             analyzer: seasonalityAnalyzer,
             historyStore: historyStore
         )
-        
+
         // 5. Data Quality Assessment
         let overallScores = timeline.map { Double($0.overallScore) }
         let dataQuality = anomalyDetector.assessDataQuality(values: overallScores)
-        
+
         // 6. Enhanced Product Insights
         let productInsights = await productAnalyzer.evaluate(
             checkIns: sortedCheckIns,
@@ -258,7 +271,7 @@ final class TrackingReportGenerator {
             productDatabase: productDatabase,
             historyStore: historyStore
         )
-        
+
         // 7. Overall Confidence Score
         let dataConfidence = calculateOverallConfidence(
             timeline: timeline,
@@ -368,6 +381,7 @@ final class TrackingReportGenerator {
     }
 
     // MARK: - Advanced Trend Analysis
+
     private func calculateTrendAnalysis(timeline: [ScorePoint]) -> [TrendData] {
         guard timeline.count >= 3 else { return [] }
 
@@ -397,14 +411,14 @@ final class TrackingReportGenerator {
 
         // Linear regression
         let n = Double(values.count)
-        let xValues = Array(0..<values.count).map { Double($0) }
+        let xValues = Array(0 ..< values.count).map { Double($0) }
         let xMean = xValues.reduce(0, +) / n
         let yMean = values.reduce(0, +) / n
 
         var numerator = 0.0
         var denominator = 0.0
 
-        for i in 0..<values.count {
+        for i in 0 ..< values.count {
             let xDiff = xValues[i] - xMean
             let yDiff = values[i] - yMean
             numerator += xDiff * yDiff
@@ -417,22 +431,21 @@ final class TrackingReportGenerator {
         var movingAverage: [Double] = []
         let window = min(3, values.count)
 
-        for i in 0..<values.count {
+        for i in 0 ..< values.count {
             let start = max(0, i - window + 1)
-            let range = start...i
+            let range = start ... i
             let avg = range.map { values[$0] }.reduce(0, +) / Double(range.count)
             movingAverage.append(avg)
         }
 
         // Determine trend direction
         let effectiveSlope = invertDirection ? -slope : slope
-        let trend: TrendData.TrendDirection
-        if effectiveSlope > 0.5 {
-            trend = .improving
+        let trend: TrendData.TrendDirection = if effectiveSlope > 0.5 {
+            .improving
         } else if effectiveSlope < -0.5 {
-            trend = .worsening
+            .worsening
         } else {
-            trend = .stable
+            .stable
         }
 
         return TrendData(
@@ -444,6 +457,7 @@ final class TrackingReportGenerator {
     }
 
     // MARK: - Product Effectiveness Calculation
+
     private func calculateProductEffectiveness(
         checkIns: [CheckIn],
         analyses: [UUID: SkinAnalysis],
@@ -452,7 +466,7 @@ final class TrackingReportGenerator {
         var productScores: [String: (totalScore: Double, count: Int, usageDays: Int)] = [:]
 
         // Calculate score changes for each product
-        for i in 0..<(checkIns.count - 1) {
+        for i in 0 ..< (checkIns.count - 1) {
             let currentCheckIn = checkIns[i]
             let nextCheckIn = checkIns[i + 1]
 
@@ -487,7 +501,7 @@ final class TrackingReportGenerator {
         }
 
         // Convert to ProductUsage with effectiveness rating
-        return productScores.map { (productId, data) in
+        return productScores.map { productId, data in
             let avgScore = data.totalScore / Double(data.count)
             let effectiveness = classifyEffectiveness(score: avgScore, sampleSize: data.count)
             let productName = productDatabase[productId]?.name ?? productId
@@ -504,11 +518,11 @@ final class TrackingReportGenerator {
     private func calculateTimeWeight(daysDiff: Int) -> Double {
         // Optimal: 3-10 days between check-ins
         if daysDiff < 3 {
-            return 0.5 // Too soon, might not see effect
+            0.5 // Too soon, might not see effect
         } else if daysDiff <= 10 {
-            return 1.0 // Ideal window
+            1.0 // Ideal window
         } else {
-            return 0.7 // Too long, other factors may interfere
+            0.7 // Too long, other factors may interfere
         }
     }
 
@@ -526,6 +540,7 @@ final class TrackingReportGenerator {
     }
 
     // MARK: - AI Summary Generation
+
     private func generateAISummary(
         trendData: [TrendData],
         dimensionChanges: [TrackingReport.DimensionChange],
@@ -549,8 +564,10 @@ final class TrackingReportGenerator {
         }
 
         // Top improvements and concerns
-        let top3Improvements = dimensionChanges.filter { $0.improvement > 0 }.sorted { $0.improvement > $1.improvement }.prefix(3)
-        let top3Concerns = dimensionChanges.filter { $0.improvement < 0 }.sorted { $0.improvement < $1.improvement }.prefix(3)
+        let top3Improvements = dimensionChanges.filter { $0.improvement > 0 }.sorted { $0.improvement > $1.improvement }
+            .prefix(3)
+        let top3Concerns = dimensionChanges.filter { $0.improvement < 0 }.sorted { $0.improvement < $1.improvement }
+            .prefix(3)
 
         if !top3Improvements.isEmpty {
             prompt += "\n改善：\n"
@@ -569,7 +586,7 @@ final class TrackingReportGenerator {
         // Effective products
         let effectiveProducts = productUsage.filter { $0.effectiveness == .effective }.prefix(2)
         if !effectiveProducts.isEmpty {
-            prompt += "\n有效产品：\(effectiveProducts.map { $0.productName }.joined(separator: "、"))\n"
+            prompt += "\n有效产品：\(effectiveProducts.map(\.productName).joined(separator: "、"))\n"
         }
 
         prompt += """
@@ -604,8 +621,12 @@ final class TrackingReportGenerator {
     }
 
     // MARK: - Dimension Changes
-    private func calculateDimensionChanges(before: SkinAnalysis, after: SkinAnalysis) -> [TrackingReport.DimensionChange] {
-        return [
+
+    private func calculateDimensionChanges(
+        before: SkinAnalysis,
+        after: SkinAnalysis
+    ) -> [TrackingReport.DimensionChange] {
+        [
             TrackingReport.DimensionChange(
                 dimension: "斑点",
                 beforeScore: before.issues.spots,
@@ -652,6 +673,7 @@ final class TrackingReportGenerator {
     }
 
     // MARK: - Recommendations
+
     private func generateRecommendations(
         changes: [TrackingReport.DimensionChange],
         improvement: Double,
@@ -688,22 +710,22 @@ final class TrackingReportGenerator {
 
         return Array(recommendations.prefix(5))
     }
-    
+
     // MARK: - AI-Enhanced Analytics Helper Methods
-    
+
     /// 检测异常点
     private func detectAnomalies(
         timeline: [ScorePoint],
         detector: AnomalyDetector
     ) -> [AnomalyDetectionResult] {
         guard timeline.count >= 3 else { return [] }
-        
+
         let values = timeline.map { Double($0.overallScore) }
-        let days = timeline.map { $0.day }
-        let dates = timeline.map { $0.date }
-        
+        let days = timeline.map(\.day)
+        let dates = timeline.map(\.date)
+
         var allAnomalies: [AnomalyDetectionResult] = []
-        
+
         // 检测综合评分异常
         allAnomalies.append(contentsOf: detector.detect(
             values: values,
@@ -712,7 +734,7 @@ final class TrackingReportGenerator {
             metric: "综合评分",
             method: .mad
         ))
-        
+
         // 检测痘痘异常
         let acneValues = timeline.compactMap { $0.issueScores?.acne }.map { Double($0) }
         if acneValues.count >= 3 {
@@ -724,7 +746,7 @@ final class TrackingReportGenerator {
                 method: .mad
             ))
         }
-        
+
         // 检测泛红异常
         let rednessValues = timeline.compactMap { $0.issueScores?.redness }.map { Double($0) }
         if rednessValues.count >= 3 {
@@ -736,10 +758,10 @@ final class TrackingReportGenerator {
                 method: .mad
             ))
         }
-        
+
         return allAnomalies.sorted { $0.severity.rawValue > $1.severity.rawValue }
     }
-    
+
     /// 生成趋势预测
     private func generateForecasts(
         timeline: [ScorePoint],
@@ -747,12 +769,12 @@ final class TrackingReportGenerator {
         engine: ForecastEngine
     ) -> [TrendForecast] {
         guard timeline.count >= 3 else { return [] }
-        
+
         var forecasts: [TrendForecast] = []
-        
+
         // 综合评分预测
         let overallValues = timeline.map { Double($0.overallScore) }
-        let days = timeline.map { $0.day }
+        let days = timeline.map(\.day)
         if let overallForecast = engine.forecast(
             values: overallValues,
             days: days,
@@ -761,7 +783,7 @@ final class TrackingReportGenerator {
         ) {
             forecasts.append(overallForecast)
         }
-        
+
         // 痘痘趋势预测
         let acneValues = timeline.compactMap { $0.issueScores?.acne }.map { Double($0) }
         if acneValues.count >= 3 {
@@ -774,7 +796,7 @@ final class TrackingReportGenerator {
                 forecasts.append(forecast)
             }
         }
-        
+
         // 皮肤年龄预测
         let skinAgeValues = timeline.map { Double($0.skinAge) }
         if let ageForecast = engine.forecast(
@@ -785,20 +807,20 @@ final class TrackingReportGenerator {
         ) {
             forecasts.append(ageForecast)
         }
-        
+
         return forecasts
     }
-    
+
     /// 生成热力图数据
     private func generateHeatmap(timeline: [ScorePoint]) -> HeatmapData? {
         guard timeline.count >= 3 else { return nil }
-        
+
         var cells: [HeatmapCell] = []
-        
+
         // 为每个时间点的各个维度生成热力图单元
         for point in timeline {
             guard let issues = point.issueScores else { continue }
-            
+
             let dimensions: [(String, Int)] = [
                 ("痘痘", issues.acne),
                 ("斑点", issues.spots),
@@ -808,23 +830,23 @@ final class TrackingReportGenerator {
                 ("质感", issues.texture),
                 ("均匀度", issues.evenness)
             ]
-            
+
             for (dimension, value) in dimensions {
                 cells.append(HeatmapCell(
                     day: point.day,
                     dimension: dimension,
-                    value: Double(value) / 10.0  // 归一化到0-1
+                    value: Double(value) / 10.0 // 归一化到0-1
                 ))
             }
         }
-        
+
         return HeatmapData(
             title: "皮肤问题热力图",
             cells: cells,
-            valueRange: 0...1
+            valueRange: 0 ... 1
         )
     }
-    
+
     /// 分析季节性模式
     private func analyzeSeasonality(
         analyses: [UUID: SkinAnalysis],
@@ -832,7 +854,6 @@ final class TrackingReportGenerator {
         analyzer: SeasonalityAnalyzer,
         historyStore: UserHistoryStore?
     ) async -> [SeasonalPattern] {
-        
         // 将当前追踪的分析数据转换为带日期的格式
         let analysesWithDates = checkIns.compactMap { checkIn -> SkinAnalysisWithDate? in
             guard let analysisId = checkIn.analysisId,
@@ -841,20 +862,20 @@ final class TrackingReportGenerator {
             }
             return SkinAnalysisWithDate(analysis: analysis, date: checkIn.captureDate)
         }
-        
+
         // 如果有历史数据,合并进来
         var allAnalyses = analysesWithDates
-        if let historyStore = historyStore {
+        if let historyStore {
             let historyAnalyses = await historyStore.getRecentAnalyses(limit: 20)
             let historyWithDates = historyAnalyses.map {
                 SkinAnalysisWithDate(analysis: $0, date: $0.analyzedAt)
             }
             allAnalyses.append(contentsOf: historyWithDates)
         }
-        
+
         return analyzer.analyzeSeasonalPattern(analyses: allAnalyses)
     }
-    
+
     /// 计算整体置信度
     private func calculateOverallConfidence(
         timeline: [ScorePoint],
@@ -862,24 +883,23 @@ final class TrackingReportGenerator {
         anomalyCount: Int,
         analyzer: TimeSeriesAnalyzer
     ) -> ConfidenceScore {
-        
         let sampleCount = timeline.count
         let qualityScore = dataQuality.score
-        
+
         // 异常点惩罚
         let anomalyPenalty = min(0.3, Double(anomalyCount) * 0.1)
-        
+
         // 综合置信度
         var confidenceValue = qualityScore - anomalyPenalty
         confidenceValue = max(0, min(1, confidenceValue))
-        
+
         return ConfidenceScore(
             value: confidenceValue,
             sampleCount: sampleCount,
             method: "综合评估"
         )
     }
-    
+
     /// 生成增强版AI摘要
     private func generateEnhancedAISummary(
         trendData: [TrendData],
@@ -890,7 +910,6 @@ final class TrackingReportGenerator {
         forecasts: [TrendForecast],
         productInsights: [ProductEffectInsight]
     ) async -> String? {
-        
         var prompt = """
         根据以下追踪数据，生成3-5条简洁的bullet摘要（每条不超过20字）：
 
@@ -905,7 +924,7 @@ final class TrackingReportGenerator {
                 prompt += "- \(trend.metric)：\(trend.trend.rawValue)（斜率\(String(format: "%.2f", trend.slope))）\n"
             }
         }
-        
+
         // Anomaly alerts
         if !anomalies.isEmpty {
             prompt += "\n异常检测：\n"
@@ -914,7 +933,7 @@ final class TrackingReportGenerator {
                 prompt += "- \(anomaly.metric)在第\(anomaly.day)天出现\(anomaly.severity.rawValue)异常\n"
             }
         }
-        
+
         // Forecast alerts
         let riskForecasts = forecasts.filter { $0.riskAlert != nil }
         if !riskForecasts.isEmpty {
@@ -927,8 +946,10 @@ final class TrackingReportGenerator {
         }
 
         // Top improvements and concerns
-        let top3Improvements = dimensionChanges.filter { $0.improvement > 0 }.sorted { $0.improvement > $1.improvement }.prefix(3)
-        let top3Concerns = dimensionChanges.filter { $0.improvement < 0 }.sorted { $0.improvement < $1.improvement }.prefix(3)
+        let top3Improvements = dimensionChanges.filter { $0.improvement > 0 }.sorted { $0.improvement > $1.improvement }
+            .prefix(3)
+        let top3Concerns = dimensionChanges.filter { $0.improvement < 0 }.sorted { $0.improvement < $1.improvement }
+            .prefix(3)
 
         if !top3Improvements.isEmpty {
             prompt += "\n改善：\n"
@@ -947,7 +968,7 @@ final class TrackingReportGenerator {
         // Enhanced product insights
         let highlyEffective = productInsights.filter { $0.effectLevel == .highlyEffective }.prefix(2)
         if !highlyEffective.isEmpty {
-            prompt += "\n高效产品：\(highlyEffective.map { $0.productName }.joined(separator: "、"))\n"
+            prompt += "\n高效产品：\(highlyEffective.map(\.productName).joined(separator: "、"))\n"
         }
 
         prompt += """

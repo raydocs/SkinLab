@@ -1,11 +1,12 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// ViewModel for AnalysisResultView
 /// Handles routine generation and tracking baseline creation
 @MainActor
 class AnalysisResultViewModel: ObservableObject {
     // MARK: - Published State
+
     @Published var isGeneratingRoutine = false
     @Published var generatedRoutine: SkincareRoutine?
     @Published var showRoutine = false
@@ -15,10 +16,12 @@ class AnalysisResultViewModel: ObservableObject {
     @Published var showTrackingError = false
 
     // MARK: - Dependencies
+
     private let routineService: RoutineService
     private let modelContext: ModelContext
 
     // MARK: - Initialization
+
     init(
         routineService: RoutineService = RoutineService(),
         modelContext: ModelContext
@@ -49,7 +52,7 @@ class AnalysisResultViewModel: ObservableObject {
 
         // Create new tracking session
         let session = TrackingSession(targetProducts: defaultTargetProducts)
-        if let notes = notes, !notes.isEmpty {
+        if let notes, !notes.isEmpty {
             session.notes = notes
         }
         modelContext.insert(session)
@@ -65,8 +68,8 @@ class AnalysisResultViewModel: ObservableObject {
             notes: notes,
             feeling: nil,
             photoStandardization: standardization,
-            lifestyle: nil,  // Day 0 has no lifestyle data
-            reliability: nil  // Will be computed later if needed
+            lifestyle: nil, // Day 0 has no lifestyle data
+            reliability: nil // Will be computed later if needed
         )
 
         session.addCheckIn(day0CheckIn)
@@ -81,7 +84,7 @@ class AnalysisResultViewModel: ObservableObject {
         var errorDescription: String? {
             switch self {
             case .activeSessionExists:
-                return "您已有进行中的追踪计划，请先完成或取消当前计划"
+                "您已有进行中的追踪计划，请先完成或取消当前计划"
             }
         }
     }
@@ -172,7 +175,7 @@ class AnalysisResultViewModel: ObservableObject {
             session: recentSession,
             checkIns: recentSession.checkIns,
             analyses: analyses,
-            productDatabase: [:]  // Could be enhanced with actual product database
+            productDatabase: [:] // Could be enhanced with actual product database
         )
     }
 }

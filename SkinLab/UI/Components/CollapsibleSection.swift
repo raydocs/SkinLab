@@ -6,7 +6,7 @@ import SwiftUI
 @MainActor
 final class CollapsibleSectionManager: ObservableObject {
     @AppStorage("report.expandedSections")
-    private var expandedSectionsData: Data = Data()
+    private var expandedSectionsData: Data = .init()
 
     /// Default sections that should be expanded on first load
     /// Uses actual section IDs from TrackingReportView
@@ -132,7 +132,7 @@ struct CollapsibleSection<Content: View>: View {
                         .foregroundColor(.skinLabText)
 
                     // Badge (optional)
-                    if let badge = badge {
+                    if let badge {
                         Text(badge)
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
@@ -279,7 +279,7 @@ struct SectionSummaryBadge: View {
                             manager: manager
                         ) {
                             VStack(spacing: 8) {
-                                ForEach(1...3, id: \.self) { index in
+                                ForEach(1 ... 3, id: \.self) { index in
                                     Text("项目 \(index)")
                                         .padding()
                                         .frame(maxWidth: .infinity)

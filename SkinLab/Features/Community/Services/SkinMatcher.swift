@@ -25,7 +25,6 @@ struct MatchCandidate: Sendable {
 /// - Methods accepting `[MatchCandidate]` are safe for background execution
 /// - All computation is performed via static functions to avoid capturing `self`
 final class SkinMatcher: Sendable {
-
     // MARK: - Configuration
 
     /// 批处理配置
@@ -69,7 +68,7 @@ final class SkinMatcher: Sendable {
             return MatchCandidate(
                 userId: profile.id,
                 fingerprint: fingerprint,
-                vector: fingerprint.vector,  // Pre-compute vector once
+                vector: fingerprint.vector, // Pre-compute vector once
                 anonymousProfile: profile.toAnonymousProfile()
             )
         }
@@ -149,7 +148,7 @@ final class SkinMatcher: Sendable {
         // Process in chunks to control concurrency
         for start in stride(from: 0, to: indexed.count, by: maxBatchSize) {
             let end = min(start + maxBatchSize, indexed.count)
-            let batch = indexed[start..<end]
+            let batch = indexed[start ..< end]
 
             if enableParallel {
                 // Parallel processing within batch
@@ -257,13 +256,12 @@ final class SkinMatcher: Sendable {
 
         // 3. 年龄段接近加成 (±10%)
         let ageDiff = abs(userFingerprint.ageRange.normalized - candidateFingerprint.ageRange.normalized)
-        let ageBonus: Double
-        if ageDiff < 0.2 {
-            ageBonus = 0.1      // 年龄非常接近
+        let ageBonus: Double = if ageDiff < 0.2 {
+            0.1 // 年龄非常接近
         } else if ageDiff > 0.4 {
-            ageBonus = -0.1     // 年龄差距较大
+            -0.1 // 年龄差距较大
         } else {
-            ageBonus = 0        // 年龄适中
+            0 // 年龄适中
         }
 
         // 4. 共同关注点加成 (0-10%)
@@ -307,7 +305,7 @@ extension Array {
     func chunked(into size: Int) -> [[Element]] {
         guard size > 0 else { return [] }
         return stride(from: 0, to: count, by: size).map {
-            Array(self[$0..<Swift.min($0 + size, count)])
+            Array(self[$0 ..< Swift.min($0 + size, count)])
         }
     }
 }

@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
@@ -270,6 +270,7 @@ struct HomeView: View {
     }
 
     // MARK: - 28 Day Tracking Prompt Card
+
     private var trackingPromptCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 12) {
@@ -277,25 +278,25 @@ struct HomeView: View {
                     Circle()
                         .fill(LinearGradient.skinLabPrimaryGradient.opacity(0.2))
                         .frame(width: 48, height: 48)
-                    
+
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.system(size: 22))
                         .foregroundStyle(LinearGradient.skinLabPrimaryGradient)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("28天效果验证")
                         .font(.skinLabHeadline)
                         .foregroundColor(.skinLabText)
-                    
+
                     Text(activeSessionPrompt)
                         .font(.skinLabCaption)
                         .foregroundColor(.skinLabSubtext)
                 }
-                
+
                 Spacer()
             }
-            
+
             if let session = activeSessions.first {
                 // Show progress for active session
                 VStack(alignment: .leading, spacing: 8) {
@@ -303,9 +304,9 @@ struct HomeView: View {
                         Text("已记录 \(session.checkIns.count) 次")
                             .font(.skinLabSubheadline)
                             .foregroundColor(.skinLabPrimary)
-                        
+
                         Spacer()
-                        
+
                         if let nextDay = session.nextCheckInDay {
                             let currentDay = session.duration
                             let daysUntil = nextDay - currentDay
@@ -316,11 +317,11 @@ struct HomeView: View {
                             }
                         }
                     }
-                    
+
                     ProgressView(value: Double(session.checkIns.count), total: 5.0)
                         .tint(LinearGradient.skinLabPrimaryGradient)
                         .scaleEffect(y: 1.5)
-                    
+
                     NavigationLink {
                         TrackingView()
                     } label: {
@@ -349,7 +350,7 @@ struct HomeView: View {
                             .font(.skinLabCaption)
                             .foregroundColor(.skinLabSubtext)
                     }
-                    
+
                     Button {
                         showNewTracking = true
                     } label: {
@@ -380,7 +381,7 @@ struct HomeView: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("28天效果验证")
     }
-    
+
     private var activeSessionPrompt: String {
         if activeSessions.isEmpty {
             return "记录护肤效果，科学验证产品是否有效"
@@ -451,10 +452,34 @@ struct HomeView: View {
                 .foregroundColor(.skinLabText)
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 14) {
-                FeatureCard(icon: "chart.line.uptrend.xyaxis", title: "28天追踪", description: "记录肌肤变化", gradient: .skinLabPrimaryGradient)
-                FeatureCard(icon: "person.2.fill", title: "肌肤双胞胎", description: "找到相似用户", gradient: .skinLabLavenderGradient)
-                FeatureCard(icon: "list.bullet.rectangle.fill", title: "成分分析", description: "智能解读配方", gradient: .skinLabGoldGradient)
-                FeatureCard(icon: "star.fill", title: "产品推荐", description: "个性化好物", gradient: LinearGradient(colors: [.skinLabMint, .skinLabMint.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                FeatureCard(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "28天追踪",
+                    description: "记录肌肤变化",
+                    gradient: .skinLabPrimaryGradient
+                )
+                FeatureCard(
+                    icon: "person.2.fill",
+                    title: "肌肤双胞胎",
+                    description: "找到相似用户",
+                    gradient: .skinLabLavenderGradient
+                )
+                FeatureCard(
+                    icon: "list.bullet.rectangle.fill",
+                    title: "成分分析",
+                    description: "智能解读配方",
+                    gradient: .skinLabGoldGradient
+                )
+                FeatureCard(
+                    icon: "star.fill",
+                    title: "产品推荐",
+                    description: "个性化好物",
+                    gradient: LinearGradient(
+                        colors: [.skinLabMint, .skinLabMint.opacity(0.6)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
             }
         }
     }
@@ -473,7 +498,10 @@ struct RecentAnalysisCard: View {
                     .trim(from: 0, to: CGFloat(analysis.overallScore) / 100)
                     .stroke(
                         LinearGradient(
-                            colors: [Color.scoreColor(for: analysis.overallScore), Color.scoreColor(for: analysis.overallScore).opacity(0.6)],
+                            colors: [
+                                Color.scoreColor(for: analysis.overallScore),
+                                Color.scoreColor(for: analysis.overallScore).opacity(0.6)
+                            ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -485,7 +513,10 @@ struct RecentAnalysisCard: View {
                     .font(.system(size: 15, weight: .bold, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Color.scoreColor(for: analysis.overallScore), Color.scoreColor(for: analysis.overallScore).opacity(0.8)],
+                            colors: [
+                                Color.scoreColor(for: analysis.overallScore),
+                                Color.scoreColor(for: analysis.overallScore).opacity(0.8)
+                            ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
@@ -537,7 +568,9 @@ struct RecentAnalysisCard: View {
                 )
         )
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(analysis.skinType.displayName)，评分\(analysis.overallScore)分，\(analysis.analyzedAt.formatted(date: .abbreviated, time: .shortened))")
+        .accessibilityLabel(
+            "\(analysis.skinType.displayName)，评分\(analysis.overallScore)分，\(analysis.analyzedAt.formatted(date: .abbreviated, time: .shortened))"
+        )
         .accessibilityHint("双击查看详情")
     }
 }

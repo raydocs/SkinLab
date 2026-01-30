@@ -29,12 +29,13 @@
 		2BF1731243556DB802617922 /* ProductRecommendationEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83088D4EEFA516F79EB25EE1 /* ProductRecommendationEngineTests.swift */; };
 		2CD70D6FB0428F359EE717FC /* TrendAnalyticsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97C8AFE89FBEA292CA488AB /* TrendAnalyticsModels.swift */; };
 		2CE956CE8AC0B49CBC530845 /* IngredientAIInsightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E3C69A912A089C3C055662 /* IngredientAIInsightView.swift */; };
+		2E72FD0315FC7C3080053B5B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F3B0D89FD0428597A7C0516 /* Foundation.framework */; };
 		34FD77791A382AE52770F9E4 /* ErrorHandlingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B94F96CB181E794F7D649CF /* ErrorHandlingTests.swift */; };
-		ANALYTICS0001 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ANALYTICS0002 /* AnalyticsServiceTests.swift */; };
 		3B0B99359B6CD65A51CEE9F6 /* TrackingMetadataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65ED8CCF0F67719203868C01 /* TrackingMetadataModels.swift */; };
 		3B14FDF424032D3EDF954D86 /* IngredientRiskAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC24F5570D8E1F73373DA94 /* IngredientRiskAnalyzer.swift */; };
 		3BEB398DDDD7077A90999B22 /* SkinAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E492412869BCF377917304 /* SkinAnalysisTests.swift */; };
 		3D4A64FF06C5FD0516547900 /* FeedbackAnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5E121DD7AE09146D2E6CC9 /* FeedbackAnalyticsService.swift */; };
+		3D9134BCB09CE5CE0174839D /* OnboardingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075A7ABBB4056BB41DAD20F7 /* OnboardingUITests.swift */; };
 		3F2A62BAB4DE1C75424E3487 /* SkincareRoutine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553386FE85CB219F08ACDA07 /* SkincareRoutine.swift */; };
 		3F822D76DFB5991E34253B08 /* ProductAttributionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BEB085722948839A690675 /* ProductAttributionTests.swift */; };
 		3FA7B2C5D9E1F34A8B6C0123 /* PredictiveAlertTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2B4D6E8F1A3057C4D89A12 /* PredictiveAlertTests.swift */; };
@@ -53,7 +54,6 @@
 		6169EE2C112735758342F48A /* MatchCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0524C937D6E7E6A8530533F1 /* MatchCache.swift */; };
 		696A0C9229E697F858F973E3 /* PrivacyCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CB7D333F287D00A4913F54 /* PrivacyCenterView.swift */; };
 		6EA56C7FA61BBD36350A2C42 /* AnalyticsEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DA830865D75E6D4590F73A /* AnalyticsEvents.swift */; };
-		FUNNEL0001BUILDFILE0001 /* FunnelTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = FUNNEL0001FILEREF0001 /* FunnelTracker.swift */; };
 		6FE3E0C7801A585B4BDDF557 /* ImageCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F413A2243C540175BA3743D /* ImageCacheTests.swift */; };
 		7A869E10823B5851FD6F928C /* AchievementUnlockAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C639974907E7B54590EC13 /* AchievementUnlockAnimationView.swift */; };
 		7BCBF3A344692ADF2781885F /* IngredientAIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98D02551ADBF9AEBDF16E24B /* IngredientAIModels.swift */; };
@@ -67,12 +67,14 @@
 		86D3A96F89087B45F0F703F3 /* SkinTwinDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7551BCDBC96ED5FBA80E1DDA /* SkinTwinDetailView.swift */; };
 		873B3CA9502F3759BD595F40 /* ErrorRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E551B56CAB16F872AF9A005A /* ErrorRecoveryView.swift */; };
 		8C220A652E3BF84B034F0F0F /* IngredientAIAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71175FB49EB76BABEE91712 /* IngredientAIAnalyzer.swift */; };
+		9181F5CFFCB9F6F9F0A7CBBB /* AnalysisFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B5D474A4C98EA36D6F7C93 /* AnalysisFlowUITests.swift */; };
 		934C7257FE649E829D275A45 /* SeasonalityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176175C87A79A04F115018EA /* SeasonalityAnalyzer.swift */; };
 		9834A1C1D237F9C8F07CFAAC /* IngredientExposureRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07946CB369F610D5C517AE6B /* IngredientExposureRecord.swift */; };
 		9874FA10EBEA54C653B12E9C /* UserEngagementMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F9DBC8B7733E05CB9DE395 /* UserEngagementMetrics.swift */; };
 		9880B44CC8527B78EF3B5569 /* TwinMatchCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49424533B2007108AD154BB /* TwinMatchCard.swift */; };
 		9A173C29F89D0EFF269816F5 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72371672A252B7B8E05C861 /* AppError.swift */; };
 		9C10B35C9061237FC10EF679 /* LifestyleCorrelationAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225B3AAF53AD6B134589486C /* LifestyleCorrelationAnalyzerTests.swift */; };
+		9E820C322971F77728C7A164 /* SkinLabUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB470EB2475B9229B7D218C7 /* SkinLabUITests.swift */; };
 		A1000001 /* SkinLabApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000001 /* SkinLabApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000002 /* ContentView.swift */; };
 		A1000010 /* GeminiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000010 /* GeminiService.swift */; };
@@ -108,10 +110,10 @@
 		A6EA712F1330C8B6CF300B92 /* ProductPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6AD55FD6D5510D7F3CCFB71 /* ProductPickerView.swift */; };
 		A7AD6E91750734BAF68982F2 /* SkinTwin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A58DF68D6DDCEAF216E43D7 /* SkinTwin.swift */; };
 		A8CE1040399C23F11981675F /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AC5B6BCA89D4D662011178 /* EmptyStateView.swift */; };
-		INFOHIER00001 /* InfoHierarchyComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = INFOHIER00002 /* InfoHierarchyComponents.swift */; };
 		A8F5C2909F3916C6AB15F71A /* AnalysisResultViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B35B1C23C4B636033B97C81 /* AnalysisResultViewModel.swift */; };
 		A9BC1BEBDE572094393A95A9 /* AnalyticsVisualizationViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26570A1CAB05DFDBA766336 /* AnalyticsVisualizationViews.swift */; };
 		AB34143BEA40AE7CE309E3C1 /* ScenarioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB99D818DD2005FDC13FE6B7 /* ScenarioTests.swift */; };
+		ANALYTICS0001 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ANALYTICS0002 /* AnalyticsServiceTests.swift */; };
 		APPCONFIG0002 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPCONFIG0001 /* AppConfiguration.swift */; };
 		ARV0000001 /* AppRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ARV0000002 /* AppRecoveryView.swift */; };
 		B0997141CAD76E221C33B61D /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50B7C51214A1FC1352887FC /* ImageCache.swift */; };
@@ -143,6 +145,8 @@
 		F7E10C6A057FD61A2A63EF84 /* StreakNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 989B46186C9A275C7FEFB1C7 /* StreakNotificationService.swift */; };
 		F9FA462A4B7B7F90D4F8B232 /* MatchLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C672A53F7F9166589623AED /* MatchLevel.swift */; };
 		FN5FOQ05CONFLICTTEST00001 /* IngredientConflictTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */; };
+		FUNNEL0001BUILDFILE0001 /* FunnelTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = FUNNEL0001FILEREF0001 /* FunnelTracker.swift */; };
+		INFOHIER00001 /* InfoHierarchyComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = INFOHIER00002 /* InfoHierarchyComponents.swift */; };
 		LM00000001 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LM00000002 /* LocationManager.swift */; };
 		PDF0000001 /* PhotoDataFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PDF0000002 /* PhotoDataFlowTests.swift */; };
 		PQC0000001 /* PhotoQualityCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PQC0000002 /* PhotoQualityCheckerTests.swift */; };
@@ -152,6 +156,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		047A1858EA7B122BD715A209 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = P1000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F1000001;
+			remoteInfo = SkinLab;
+		};
 		672AEACD9CCAC771DA15D1B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */;
@@ -181,6 +192,7 @@
 		0524C937D6E7E6A8530533F1 /* MatchCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchCache.swift; sourceTree = "<group>"; };
 		05BDE798895646C9291EBA7D /* AchievementService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementService.swift; sourceTree = "<group>"; };
 		06830A53E82C56C63F791419 /* SkinTwinViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinViewModel.swift; sourceTree = "<group>"; };
+		075A7ABBB4056BB41DAD20F7 /* OnboardingUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingUITests.swift; sourceTree = "<group>"; };
 		07946CB369F610D5C517AE6B /* IngredientExposureRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IngredientExposureRecord.swift; path = ../../../SkinLab/Features/Tracking/Models/IngredientExposureRecord.swift; sourceTree = "<group>"; };
 		0BEC74AD60A57749BBFBCE3B /* LifestyleCorrelationAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifestyleCorrelationAnalyzer.swift; sourceTree = "<group>"; };
 		0C38A9A9C2ED915AF0773BF6 /* ConsentSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConsentSettingsView.swift; sourceTree = "<group>"; };
@@ -203,7 +215,6 @@
 		313078DD5B48E3E27AABCCE3 /* UserIngredientPreference.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserIngredientPreference.swift; path = ../../../SkinLab/Features/Profile/Models/UserIngredientPreference.swift; sourceTree = "<group>"; };
 		34775FC70ED096A46BFA9333 /* Celebration */ = {isa = PBXFileReference; includeInIndex = 1; path = Celebration; sourceTree = "<group>"; };
 		3B94F96CB181E794F7D649CF /* ErrorHandlingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ErrorHandlingTests.swift; path = ../../SkinLabTests/Core/ErrorHandlingTests.swift; sourceTree = "<group>"; };
-		ANALYTICS0002 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnalyticsServiceTests.swift; path = ../../SkinLabTests/Core/AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		3D7E956BED795ED4617FDB9C /* GeminiServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeminiServiceTests.swift; sourceTree = "<group>"; };
 		3E5C9F2586D340041D58FDD8 /* TrackingDetailViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingDetailViewModel.swift; sourceTree = "<group>"; };
 		3F3EB7BFD9E873145B7A021B /* ProductRecommendationEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductRecommendationEngine.swift; sourceTree = "<group>"; };
@@ -211,7 +222,6 @@
 		46C639974907E7B54590EC13 /* AchievementUnlockAnimationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementUnlockAnimationView.swift; sourceTree = "<group>"; };
 		47BE876B0CF276DB7DDBB2F1 /* TrackingConstants.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingConstants.swift; sourceTree = "<group>"; };
 		53DA830865D75E6D4590F73A /* AnalyticsEvents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalyticsEvents.swift; sourceTree = "<group>"; };
-		FUNNEL0001FILEREF0001 /* FunnelTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FunnelTracker.swift; sourceTree = "<group>"; };
 		553386FE85CB219F08ACDA07 /* SkincareRoutine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SkincareRoutine.swift; path = ../../../SkinLab/Features/Analysis/Models/SkincareRoutine.swift; sourceTree = "<group>"; };
 		55CB7D333F287D00A4913F54 /* PrivacyCenterView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrivacyCenterView.swift; sourceTree = "<group>"; };
 		57327F7DE09064ADE7736BAF /* TimeSeriesAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TimeSeriesAnalyzer.swift; sourceTree = "<group>"; };
@@ -237,12 +247,14 @@
 		9C2B4D6E8F1A3057C4D89A12 /* PredictiveAlertTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PredictiveAlertTests.swift; sourceTree = "<group>"; };
 		9CE7886BB9B42D4B17EC4483 /* ScenarioAdvisor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScenarioAdvisor.swift; sourceTree = "<group>"; };
 		9DFB1033AB474D7ACEE79DF3 /* SkinTwinViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinViewModelTests.swift; sourceTree = "<group>"; };
+		9F7263A7F69BFA092AEAD6B0 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A06B8226FA6F257A587D6D1B /* RoutineView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RoutineView.swift; path = ../../../SkinLab/Features/Analysis/Views/RoutineView.swift; sourceTree = "<group>"; };
 		A5E2775EF6D0F3ED4872DB5A /* MatchPoolRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatchPoolRepository.swift; sourceTree = "<group>"; };
 		AC08BD0191DA4A7A255C5F82 /* ConsentLevel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ConsentLevel.swift; sourceTree = "<group>"; };
 		AC65AC35783AB2F86B445973 /* AchievementBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementBadgeView.swift; sourceTree = "<group>"; };
 		AEDE94003C210FE421D74DBB /* ReliabilityBadgeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReliabilityBadgeView.swift; sourceTree = "<group>"; };
 		AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SkinLab.xcodeproj; sourceTree = "<group>"; };
+		ANALYTICS0002 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnalyticsServiceTests.swift; path = ../../SkinLabTests/Core/AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		APPCONFIG0001 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		ARV0000002 /* AppRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRecoveryView.swift; sourceTree = "<group>"; };
 		B0F0C462C1084ECA826196B4 /* AchievementDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementDetailView.swift; sourceTree = "<group>"; };
@@ -276,11 +288,11 @@
 		B1000091 /* RomanticDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomanticDecorations.swift; sourceTree = "<group>"; };
 		B1000092 /* FreshThemeModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshThemeModifiers.swift; sourceTree = "<group>"; };
 		B3AC5B6BCA89D4D662011178 /* EmptyStateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
-		INFOHIER00002 /* InfoHierarchyComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InfoHierarchyComponents.swift; sourceTree = "<group>"; };
 		B49424533B2007108AD154BB /* TwinMatchCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TwinMatchCard.swift; sourceTree = "<group>"; };
 		B50B7C51214A1FC1352887FC /* ImageCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		B73C2A64FBC2E667D6933AC8 /* TrackingModelsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrackingModelsTests.swift; sourceTree = "<group>"; };
 		B81B66FC81B1E6D024AF70B4 /* LifestyleInsightRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LifestyleInsightRow.swift; sourceTree = "<group>"; };
+		BB470EB2475B9229B7D218C7 /* SkinLabUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinLabUITests.swift; sourceTree = "<group>"; };
 		BB99D818DD2005FDC13FE6B7 /* ScenarioTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScenarioTests.swift; path = ScenarioTests.swift; sourceTree = "<group>"; };
 		BE409C5ACEBDB17926A688A7 /* CachedImageView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CachedImageView.swift; sourceTree = "<group>"; };
 		C0693584B4125C0D8E8E7B9E /* StreakCelebrationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakCelebrationView.swift; sourceTree = "<group>"; };
@@ -304,10 +316,12 @@
 		E8E3C69A912A089C3C055662 /* IngredientAIInsightView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientAIInsightView.swift; sourceTree = "<group>"; };
 		E97C8AFE89FBEA292CA488AB /* TrendAnalyticsModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrendAnalyticsModels.swift; sourceTree = "<group>"; };
 		E980A6FCDB798763A00307CB /* ScenarioModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScenarioModels.swift; sourceTree = "<group>"; };
+		EB03B00D03BDA15578A7EE9E /* SkinLabUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SkinLabUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED5440E2EE340E9375719CE6 /* ProductEffectAnalyzer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductEffectAnalyzer.swift; sourceTree = "<group>"; };
 		EFA9B25CDF279BF4751FC0C3 /* AnalyticsEvents+Engagement.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "AnalyticsEvents+Engagement.swift"; sourceTree = "<group>"; };
 		EFBAB226955E3CA24C059B2F /* ForecastEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ForecastEngine.swift; sourceTree = "<group>"; };
 		EFCC64509F81AAA74D193AE3 /* FeedbackExporter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedbackExporter.swift; sourceTree = "<group>"; };
+		F0B5D474A4C98EA36D6F7C93 /* AnalysisFlowUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalysisFlowUITests.swift; sourceTree = "<group>"; };
 		F21C4E7B2AB0841A770CFE82 /* SkinTwinMatchView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkinTwinMatchView.swift; sourceTree = "<group>"; };
 		F23EEF448B75E8CDAD8A2F68 /* ReliabilityScorer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReliabilityScorer.swift; sourceTree = "<group>"; };
 		F2BEB085722948839A690675 /* ProductAttributionTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProductAttributionTests.swift; sourceTree = "<group>"; };
@@ -318,6 +332,8 @@
 		F82F74F3A438444A0C731F18 /* CheckInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInView.swift; sourceTree = "<group>"; };
 		FF43021AFFA32ECD37BFE812 /* StreakTrackingService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakTrackingService.swift; sourceTree = "<group>"; };
 		FN5FOQ05CONFLICTTEST00002 /* IngredientConflictTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IngredientConflictTests.swift; sourceTree = "<group>"; };
+		FUNNEL0001FILEREF0001 /* FunnelTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FunnelTracker.swift; sourceTree = "<group>"; };
+		INFOHIER00002 /* InfoHierarchyComponents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InfoHierarchyComponents.swift; sourceTree = "<group>"; };
 		LM00000002 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		PDF0000002 /* PhotoDataFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoDataFlowTests.swift; sourceTree = "<group>"; };
 		PQC0000002 /* PhotoQualityCheckerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoQualityCheckerTests.swift; sourceTree = "<group>"; };
@@ -332,6 +348,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F2A8FC155C0FD73533E4085 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B70B678F5E36DC588C614537 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E72FD0315FC7C3080053B5B /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -675,6 +699,18 @@
 			path = Celebration;
 			sourceTree = "<group>";
 		};
+		A4A27236C2561D8631E8BCB1 /* SkinLabUITests */ = {
+			isa = PBXGroup;
+			children = (
+				075A7ABBB4056BB41DAD20F7 /* OnboardingUITests.swift */,
+				F0B5D474A4C98EA36D6F7C93 /* AnalysisFlowUITests.swift */,
+				BB470EB2475B9229B7D218C7 /* SkinLabUITests.swift */,
+				9F7263A7F69BFA092AEAD6B0 /* Info.plist */,
+			);
+			name = SkinLabUITests;
+			path = SkinLabUITests;
+			sourceTree = "<group>";
+		};
 		AD75DD2C07FC2DF1AA974C60 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -782,6 +818,7 @@
 				0CBA451B84CCF085BFDC6F9C /* SkinLabTests */,
 				AF875B2CDE700D68F59DD78F /* SkinLab.xcodeproj */,
 				C603ED35C01BD0577344538A /* SkinLab */,
+				A4A27236C2561D8631E8BCB1 /* SkinLabUITests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -806,6 +843,7 @@
 				94F8128C52C294599BC4BCB4 /* SkinLabTests.xctest */,
 				E2DB8E99E15BC9E013A2BDFD /* SkinLab.app */,
 				553F3E33E204BC6663873CD5 /* SkinLabTests.xctest */,
+				EB03B00D03BDA15578A7EE9E /* SkinLabUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1164,6 +1202,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		003C0C5F354E81C10BD0494F /* SkinLabUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0D8464D9CB820EDB52DDC043 /* Build configuration list for PBXNativeTarget "SkinLabUITests" */;
+			buildPhases = (
+				4592C7BB29CD478BB020AC34 /* Sources */,
+				B70B678F5E36DC588C614537 /* Frameworks */,
+				6E42647F6AEF4AA839DB5B98 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3C56D6B0749A51AF7AE4FD42 /* PBXTargetDependency */,
+			);
+			name = SkinLabUITests;
+			productName = SkinLabUITests;
+			productReference = EB03B00D03BDA15578A7EE9E /* SkinLabUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		5F974190005108316A71F432 /* SkinLabTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 49B126CEF36106B2435A25EB /* Build configuration list for PBXNativeTarget "SkinLabTests" */;
@@ -1236,6 +1292,7 @@
 			targets = (
 				F1000001 /* SkinLab */,
 				5F974190005108316A71F432 /* SkinLabTests */,
+				003C0C5F354E81C10BD0494F /* SkinLabUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -1265,6 +1322,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6E42647F6AEF4AA839DB5B98 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F1000003 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1278,6 +1342,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4592C7BB29CD478BB020AC34 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D9134BCB09CE5CE0174839D /* OnboardingUITests.swift in Sources */,
+				9181F5CFFCB9F6F9F0A7CBBB /* AnalysisFlowUITests.swift in Sources */,
+				9E820C322971F77728C7A164 /* SkinLabUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F1000002 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1433,6 +1507,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		3C56D6B0749A51AF7AE4FD42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SkinLab;
+			target = F1000001 /* SkinLab */;
+			targetProxy = 047A1858EA7B122BD715A209 /* PBXContainerItemProxy */;
+		};
 		A20C7A95F677541B2E468FA5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SkinLab;
@@ -1468,6 +1548,23 @@
 			};
 			name = Debug;
 		};
+		3DA1277415A74BF9531B2587 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SkinLabUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.skinlab.app.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = SkinLab;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		7DB9571CDD61FCF76E51AE77 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1494,6 +1591,22 @@
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
+		};
+		BBECE94FDE4EDC425FE93353 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SkinLabUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.skinlab.app.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = SkinLab;
+			};
+			name = Debug;
 		};
 		H1000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1685,6 +1798,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0D8464D9CB820EDB52DDC043 /* Build configuration list for PBXNativeTarget "SkinLabUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3DA1277415A74BF9531B2587 /* Release */,
+				BBECE94FDE4EDC425FE93353 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		49B126CEF36106B2435A25EB /* Build configuration list for PBXNativeTarget "SkinLabTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

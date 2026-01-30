@@ -1,17 +1,16 @@
 // SkinLabTests/Core/GeminiServiceTests.swift
-import XCTest
-import UIKit
 @testable import SkinLab
+import UIKit
+import XCTest
 
 final class GeminiServiceTests: XCTestCase {
-
     var sut: GeminiService!
 
     override func setUp() {
         super.setUp()
         MockURLProtocol.reset()
         let mockSession = MockURLProtocol.createMockSession()
-        sut = GeminiService(session: mockSession)
+        sut = GeminiService(session: mockSession, apiKey: "test-key")
     }
 
     override func tearDown() {
@@ -203,7 +202,10 @@ final class GeminiServiceTests: XCTestCase {
                     }
                     return false
                 }
-                XCTAssertTrue(hasImageContent, "Body should contain base64 image data with data:image/jpeg;base64, prefix")
+                XCTAssertTrue(
+                    hasImageContent,
+                    "Body should contain base64 image data with data:image/jpeg;base64, prefix"
+                )
             } else {
                 XCTFail("Body should contain messages array with content")
             }
@@ -229,7 +231,11 @@ final class GeminiServiceTests: XCTestCase {
         let result = try await sut.analyzeIngredients(request: request)
 
         // Then
-        XCTAssertEqual(result.summary, "This formula is suitable for combination skin.", "Should parse summary correctly")
+        XCTAssertEqual(
+            result.summary,
+            "This formula is suitable for combination skin.",
+            "Should parse summary correctly"
+        )
         XCTAssertEqual(result.compatibilityScore, 75, "Should parse compatibility score correctly")
         XCTAssertEqual(result.confidence, 80, "Should parse confidence correctly")
         XCTAssertEqual(result.riskTags.count, 1, "Should parse risk tags")
@@ -281,7 +287,7 @@ final class GeminiServiceTests: XCTestCase {
             _ = try await sut.analyzeSkin(image: testImage)
             XCTFail("Should throw API error")
         } catch let error as GeminiError {
-            if case .apiError(let message) = error {
+            if case let .apiError(message) = error {
                 XCTAssertEqual(message, errorMessage, "Should contain error message")
             } else {
                 XCTFail("Expected apiError, got \(error)")

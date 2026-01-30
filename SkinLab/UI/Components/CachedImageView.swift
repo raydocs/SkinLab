@@ -1,10 +1,3 @@
-//
-//  CachedImageView.swift
-//  SkinLab
-//
-//  SwiftUI view for displaying cached images with automatic loading.
-//
-
 import SwiftUI
 
 /// A SwiftUI view that displays an image with automatic caching
@@ -45,7 +38,7 @@ struct CachedImageView: View {
     }
 
     private func loadImage() async {
-        guard let path = path else {
+        guard let path else {
             currentLoadingPath = nil
             loadedImage = nil
             return
@@ -104,7 +97,7 @@ struct CachedThumbnailView: View {
     }
 
     private func loadThumbnail() async {
-        guard let path = path else {
+        guard let path else {
             currentLoadingPath = nil
             loadedImage = nil
             return
@@ -133,6 +126,7 @@ struct CachedThumbnailView: View {
 }
 
 // MARK: - Preview
+
 #Preview("CachedImageView") {
     VStack(spacing: 20) {
         CachedImageView(path: nil)

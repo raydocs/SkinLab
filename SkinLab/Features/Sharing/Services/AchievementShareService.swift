@@ -35,7 +35,6 @@ final class AchievementShareService {
 
     // MARK: - Card Views
 
-    @ViewBuilder
     private func shareCard(badge: AchievementDefinition, streak: Int?) -> some View {
         ZStack {
             // Background gradient
@@ -54,7 +53,10 @@ final class AchievementShareService {
                         .font(.system(size: 40))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [Color(red: 1.0, green: 0.4, blue: 0.6), Color(red: 0.6, green: 0.4, blue: 1.0)],
+                                colors: [
+                                    Color(red: 1.0, green: 0.4, blue: 0.6),
+                                    Color(red: 0.6, green: 0.4, blue: 1.0)
+                                ],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -91,7 +93,7 @@ final class AchievementShareService {
                 }
 
                 // Streak info (if provided)
-                if let streak = streak {
+                if let streak {
                     HStack(spacing: 8) {
                         Image(systemName: "flame.fill")
                             .foregroundColor(.orange)
@@ -120,7 +122,6 @@ final class AchievementShareService {
         .frame(width: imageSize.width, height: imageSize.height)
     }
 
-    @ViewBuilder
     private func streakCard(milestone: Int) -> some View {
         ZStack {
             // Background gradient
@@ -194,20 +195,23 @@ final class AchievementShareService {
     private func milestoneMessage(for milestone: Int) -> String {
         switch milestone {
         case 7:
-            return "一周坚持，美丽可见"
+            "一周坚持，美丽可见"
         case 14:
-            return "两周养成，习惯成自然"
+            "两周养成，习惯成自然"
         case 28:
-            return "28天周期，蜕变完成"
+            "28天周期，蜕变完成"
         default:
-            return "继续加油，保持美丽"
+            "继续加油，保持美丽"
         }
     }
 }
 
 #Preview {
     VStack {
-        Image(uiImage: AchievementShareService().generateShareImage(for: AchievementDefinitions.allBadges[0], streak: 7) ?? UIImage())
+        Image(uiImage: AchievementShareService().generateShareImage(
+            for: AchievementDefinitions.allBadges[0],
+            streak: 7
+        ) ?? UIImage())
             .frame(width: 400, height: 400)
     }
 }

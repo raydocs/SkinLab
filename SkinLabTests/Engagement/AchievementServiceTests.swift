@@ -1,6 +1,6 @@
-import XCTest
-import SwiftData
 @testable import SkinLab
+import SwiftData
+import XCTest
 
 /// Unit tests for AchievementService
 final class AchievementServiceTests: XCTestCase {
@@ -33,7 +33,7 @@ final class AchievementServiceTests: XCTestCase {
 
     // MARK: - Badge Progress Tests
 
-    func testBadgeProgressCalculation() async throws {
+    func testBadgeProgressCalculation() {
         streakService.checkIn()
 
         // Check first analysis badge (requires 1 check-in)
@@ -55,16 +55,16 @@ final class AchievementServiceTests: XCTestCase {
         }
     }
 
-    func testBadgeUnlockOnThreshold() async throws {
+    func testBadgeUnlockOnThreshold() {
         let now = Date()
 
         // Build a 3-day streak
-        for i in 0..<3 {
+        for i in 0 ..< 3 {
             streakService.checkIn(at: now.addingTimeInterval(86400 * Double(i)))
         }
 
         let result = achievementService.checkAchievements()
-        let unlockedIds = result.unlockedBadges.map { $0.id }
+        let unlockedIds = result.unlockedBadges.map(\.id)
 
         // Should have unlocked 3-day streak badge
         XCTAssertTrue(unlockedIds.contains("streak_3"))
@@ -73,23 +73,23 @@ final class AchievementServiceTests: XCTestCase {
         XCTAssertTrue(unlockedIds.contains("first_analysis"))
     }
 
-    func testMultipleBadgeUnlocks() async throws {
+    func testMultipleBadgeUnlocks() {
         let now = Date()
 
         // Build a 7-day streak
-        for i in 0..<7 {
+        for i in 0 ..< 7 {
             streakService.checkIn(at: now.addingTimeInterval(86400 * Double(i)))
         }
 
         let result = achievementService.checkAchievements()
-        let unlockedIds = result.unlockedBadges.map { $0.id }
+        let unlockedIds = result.unlockedBadges.map(\.id)
 
         // Should unlock multiple streak badges
         XCTAssertTrue(unlockedIds.contains("streak_3"))
         XCTAssertTrue(unlockedIds.contains("streak_7"))
     }
 
-    func testBadgeProgressPersistence() async throws {
+    func testBadgeProgressPersistence() {
         let now = Date()
         streakService.checkIn(at: now)
 
@@ -106,7 +106,7 @@ final class AchievementServiceTests: XCTestCase {
 
     // MARK: - Manual Unlock Tests
 
-    func testManualUnlockAchievement() async throws {
+    func testManualUnlockAchievement() {
         achievementService.unlockAchievement("streak_3")
 
         let allProgress = achievementService.getAllProgress()
@@ -119,7 +119,7 @@ final class AchievementServiceTests: XCTestCase {
 
     // MARK: - Utility Tests
 
-    func testGetUnlockedCount() async throws {
+    func testGetUnlockedCount() {
         XCTAssertEqual(achievementService.getUnlockedCount(), 0)
 
         let now = Date()
@@ -131,7 +131,7 @@ final class AchievementServiceTests: XCTestCase {
         XCTAssertGreaterThan(count, 0)
     }
 
-    func testCheckAchievementsReturnsProgress() async throws {
+    func testCheckAchievementsReturnsProgress() {
         streakService.checkIn()
 
         let result = achievementService.checkAchievements()
@@ -139,14 +139,14 @@ final class AchievementServiceTests: XCTestCase {
         XCTAssertFalse(result.progressUpdates.isEmpty)
 
         // Verify progress updates contain expected badges
-        let badgeIds = result.progressUpdates.map { $0.achievement.id }
+        let badgeIds = result.progressUpdates.map(\.achievement.id)
         XCTAssertTrue(badgeIds.contains("first_analysis"))
         XCTAssertTrue(badgeIds.contains("streak_3"))
     }
 
     // MARK: - Category Tests
 
-    func testBadgeCategories() async throws {
+    func testBadgeCategories() {
         let allBadges = AchievementDefinitions.allBadges
 
         // Verify we have badges in each category
@@ -161,7 +161,7 @@ final class AchievementServiceTests: XCTestCase {
         XCTAssertEqual(knowledgeBadges.count, 3)
     }
 
-    func testBadgeRequirementTypes() async throws {
+    func testBadgeRequirementTypes() {
         let allBadges = AchievementDefinitions.allBadges
 
         let streakDaysBadges = allBadges.filter { $0.requirementType == .streakDays }

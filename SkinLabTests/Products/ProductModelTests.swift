@@ -1,10 +1,8 @@
 // SkinLabTests/Products/ProductModelTests.swift
+@testable import SkinLab
 import XCTest
 
-@testable import SkinLab
-
 final class ProductModelTests: XCTestCase {
-
     // MARK: - ProductCategory Tests
 
     func testProductCategory_allCases() {
@@ -145,7 +143,7 @@ final class ProductModelTests: XCTestCase {
         set.insert(ing1)
         set.insert(ing2)
 
-        XCTAssertEqual(set.count, 2)  // Different IDs
+        XCTAssertEqual(set.count, 2) // Different IDs
     }
 
     // MARK: - Product Tests
@@ -258,7 +256,6 @@ final class ProductModelTests: XCTestCase {
 // MARK: - IngredientFunction Extension Tests
 
 final class IngredientFunctionExtensionTests: XCTestCase {
-
     func testIngredientFunction_description() {
         XCTAssertEqual(IngredientFunction.moisturizing.description, "提供水分和锁水功效")
         XCTAssertEqual(IngredientFunction.brightening.description, "淡化色斑，提亮肤色")
@@ -276,7 +273,6 @@ final class IngredientFunctionExtensionTests: XCTestCase {
 // MARK: - FunctionGroup Tests
 
 final class FunctionGroupTests: XCTestCase {
-
     func testFunctionGroup_displayName() {
         let group = FunctionGroup(
             function: .moisturizing,
@@ -310,7 +306,6 @@ final class FunctionGroupTests: XCTestCase {
 // MARK: - IngredientUserReaction Tests
 
 final class IngredientUserReactionTests: XCTestCase {
-
     func testIngredientUserReaction_displaySummary_positive() {
         let reaction = IngredientUserReaction(
             ingredientName: "Niacinamide",

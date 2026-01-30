@@ -1,8 +1,9 @@
-import SwiftUI
 import PhotosUI
 import SwiftData
+import SwiftUI
 
 // MARK: - Analysis Run Result
+
 struct AnalysisRunResult: Sendable {
     let analysis: SkinAnalysis
     let analysisId: UUID
@@ -21,13 +22,13 @@ class AnalysisViewModel: ObservableObject {
         static func == (lhs: State, rhs: State) -> Bool {
             switch (lhs, rhs) {
             case (.camera, .camera), (.analyzing, .analyzing):
-                return true
-            case (.result(let a), .result(let b)):
-                return a.analysisId == b.analysisId
-            case (.error(let a), .error(let b)):
-                return a == b
+                true
+            case let (.result(a), .result(b)):
+                a.analysisId == b.analysisId
+            case let (.error(a), .error(b)):
+                a == b
             default:
-                return false
+                false
             }
         }
     }
@@ -46,10 +47,11 @@ class AnalysisViewModel: ObservableObject {
     private var lastCapturedImage: UIImage?
     private var lastStandardization: PhotoStandardizationMetadata?
 
-    // Track analysis timing for analytics
+    /// Track analysis timing for analytics
     private var analysisStartTime: Date?
 
     // MARK: - Dependency Injection
+
     init(
         analysisService: SkinAnalysisServiceProtocol = GeminiService.shared,
         modelContext: ModelContext? = nil
@@ -57,8 +59,9 @@ class AnalysisViewModel: ObservableObject {
         self.analysisService = analysisService
         self.modelContext = modelContext
     }
-    
+
     // MARK: - Actions
+
     func setModelContext(_ context: ModelContext) {
         self.modelContext = context
     }
@@ -87,6 +90,7 @@ class AnalysisViewModel: ObservableObject {
     }
 
     // MARK: - Analysis
+
     func analyzeImage(_ image: UIImage) async {
         selectedImage = image
         state = .analyzing
@@ -99,7 +103,7 @@ class AnalysisViewModel: ObservableObject {
 
             // Save photo and persist analysis if modelContext is available
             var photoPath: String? = nil
-            if let modelContext = modelContext,
+            if let modelContext,
                let capturedImage = lastCapturedImage {
                 // Move compression off main actor to avoid UI hitching
                 photoPath = await savePhotoOffMainActor(image: capturedImage, analysisId: analysis.id)
@@ -148,7 +152,7 @@ class AnalysisViewModel: ObservableObject {
     /// Save photo with compression off main actor to avoid UI hitching
     private func savePhotoOffMainActor(image: UIImage, analysisId: UUID) async -> String? {
         // Run compression and disk I/O on background thread
-        return await Task.detached(priority: .userInitiated) {
+        await Task.detached(priority: .userInitiated) {
             Self.compressAndSavePhoto(image: image, analysisId: analysisId)
         }.value
     }
@@ -211,11 +215,12 @@ class AnalysisViewModel: ObservableObject {
 }
 
 // MARK: - Mock Service for Testing/Previews
+
 #if DEBUG
-actor MockAnalysisService: SkinAnalysisServiceProtocol {
-    func analyzeSkin(image: UIImage) async throws -> SkinAnalysis {
-        try await Task.sleep(nanoseconds: 1_500_000_000)
-        return SkinAnalysis.mock
+    actor MockAnalysisService: SkinAnalysisServiceProtocol {
+        func analyzeSkin(image: UIImage) async throws -> SkinAnalysis {
+            try await Task.sleep(nanoseconds: 1_500_000_000)
+            return SkinAnalysis.mock
+        }
     }
-}
 #endif

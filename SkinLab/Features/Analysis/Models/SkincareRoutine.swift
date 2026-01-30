@@ -2,18 +2,20 @@ import Foundation
 import SwiftData
 
 // MARK: - Routine Phase
+
 enum RoutinePhase: String, Codable, CaseIterable, Sendable {
     case am, pm
-    
+
     var displayName: String {
         switch self {
-        case .am: return "早上"
-        case .pm: return "晚上"
+        case .am: "早上"
+        case .pm: "晚上"
         }
     }
 }
 
 // MARK: - Routine Goal
+
 enum RoutineGoal: String, Codable, CaseIterable, Sendable {
     case acne
     case sensitivity
@@ -21,20 +23,21 @@ enum RoutineGoal: String, Codable, CaseIterable, Sendable {
     case pores
     case pigmentation
     case antiAging
-    
+
     var displayName: String {
         switch self {
-        case .acne: return "控痘祛痘"
-        case .sensitivity: return "舒缓敏感"
-        case .dryness: return "补水保湿"
-        case .pores: return "细致毛孔"
-        case .pigmentation: return "淡化色斑"
-        case .antiAging: return "抗衰老化"
+        case .acne: "控痘祛痘"
+        case .sensitivity: "舒缓敏感"
+        case .dryness: "补水保湿"
+        case .pores: "细致毛孔"
+        case .pigmentation: "淡化色斑"
+        case .antiAging: "抗衰老化"
         }
     }
 }
 
 // MARK: - Routine Step
+
 struct RoutineStep: Codable, Identifiable, Sendable, Equatable, Hashable {
     let id: UUID
     let phase: RoutinePhase
@@ -45,8 +48,18 @@ struct RoutineStep: Codable, Identifiable, Sendable, Equatable, Hashable {
     let frequency: String
     let precautions: [String]
     let alternatives: [String]
-    
-    init(id: UUID = UUID(), phase: RoutinePhase, order: Int, title: String, productType: String, instructions: String, frequency: String, precautions: [String] = [], alternatives: [String] = []) {
+
+    init(
+        id: UUID = UUID(),
+        phase: RoutinePhase,
+        order: Int,
+        title: String,
+        productType: String,
+        instructions: String,
+        frequency: String,
+        precautions: [String] = [],
+        alternatives: [String] = []
+    ) {
         self.id = id
         self.phase = phase
         self.order = order
@@ -60,6 +73,7 @@ struct RoutineStep: Codable, Identifiable, Sendable, Equatable, Hashable {
 }
 
 // MARK: - Skincare Routine
+
 struct SkincareRoutine: Codable, Identifiable, Sendable, Equatable {
     let id: UUID
     let generatedAt: Date
@@ -69,8 +83,17 @@ struct SkincareRoutine: Codable, Identifiable, Sendable, Equatable {
     let steps: [RoutineStep]
     let notes: [String]
     let weeksDuration: Int
-    
-    init(id: UUID = UUID(), generatedAt: Date = Date(), skinType: SkinType?, concerns: [SkinConcern], goals: [RoutineGoal], steps: [RoutineStep], notes: [String], weeksDuration: Int = 4) {
+
+    init(
+        id: UUID = UUID(),
+        generatedAt: Date = Date(),
+        skinType: SkinType?,
+        concerns: [SkinConcern],
+        goals: [RoutineGoal],
+        steps: [RoutineStep],
+        notes: [String],
+        weeksDuration: Int = 4
+    ) {
         self.id = id
         self.generatedAt = generatedAt
         self.skinType = skinType
@@ -80,17 +103,18 @@ struct SkincareRoutine: Codable, Identifiable, Sendable, Equatable {
         self.notes = notes
         self.weeksDuration = weeksDuration
     }
-    
+
     var amSteps: [RoutineStep] {
         steps.filter { $0.phase == .am }.sorted { $0.order < $1.order }
     }
-    
+
     var pmSteps: [RoutineStep] {
         steps.filter { $0.phase == .pm }.sorted { $0.order < $1.order }
     }
 }
 
 // MARK: - SwiftData Record
+
 @Model
 final class SkincareRoutineRecord {
     @Attribute(.unique) var id: UUID
@@ -101,18 +125,18 @@ final class SkincareRoutineRecord {
     var stepsData: Data?
     var notes: [String]
     var weeksDuration: Int
-    
+
     init(from routine: SkincareRoutine) {
         self.id = routine.id
         self.generatedAt = routine.generatedAt
         self.skinTypeRaw = routine.skinType?.rawValue
-        self.concernsRaw = routine.concerns.map { $0.rawValue }
-        self.goalsRaw = routine.goals.map { $0.rawValue }
+        self.concernsRaw = routine.concerns.map(\.rawValue)
+        self.goalsRaw = routine.goals.map(\.rawValue)
         self.stepsData = try? JSONEncoder().encode(routine.steps)
         self.notes = routine.notes
         self.weeksDuration = routine.weeksDuration
     }
-    
+
     func toRoutine() -> SkincareRoutine? {
         let steps = (try? stepsData.flatMap { try JSONDecoder().decode([RoutineStep].self, from: $0) }) ?? []
         return SkincareRoutine(

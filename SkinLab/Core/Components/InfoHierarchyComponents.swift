@@ -17,17 +17,17 @@ struct KeyMetricCard: View {
 
         var icon: String {
             switch self {
-            case .up: return "arrow.up.right"
-            case .down: return "arrow.down.right"
-            case .neutral: return "arrow.right"
+            case .up: "arrow.up.right"
+            case .down: "arrow.down.right"
+            case .neutral: "arrow.right"
             }
         }
 
         var color: Color {
             switch self {
-            case .up: return .skinLabSuccess
-            case .down: return .skinLabError
-            case .neutral: return .skinLabSubtext
+            case .up: .skinLabSuccess
+            case .down: .skinLabError
+            case .neutral: .skinLabSubtext
             }
         }
     }
@@ -75,7 +75,7 @@ struct KeyMetricCard: View {
                 .foregroundColor(.skinLabSubtext)
 
             // Trend indicator (optional)
-            if let trend = trend, let trendLabel = trendLabel {
+            if let trend, let trendLabel {
                 HStack(spacing: 4) {
                     Image(systemName: trend.icon)
                         .font(.system(size: 12, weight: .semibold))
@@ -100,7 +100,7 @@ struct KeyMetricCard: View {
     }
 
     private var accessibilityDescription: String {
-        if let trendLabel = trendLabel {
+        if let trendLabel {
             return "\(label): \(value), \(trendLabel)"
         }
         return "\(label): \(value)"
@@ -277,7 +277,7 @@ struct QuickInsightCard: View {
                     .font(.skinLabTitle2)
                     .foregroundColor(.skinLabText)
 
-                if let subtitle = subtitle {
+                if let subtitle {
                     Text(subtitle)
                         .font(.skinLabCaption)
                         .foregroundColor(.skinLabSubtext)
@@ -331,7 +331,7 @@ struct AuxiliaryInfoText: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            if let icon = icon {
+            if let icon {
                 Image(systemName: icon)
                     .font(.system(size: 10))
             }
@@ -354,7 +354,7 @@ struct SectionDivider: View {
     }
 
     var body: some View {
-        if let title = title {
+        if let title {
             HStack(spacing: 12) {
                 Rectangle()
                     .fill(Color.skinLabSubtext.opacity(0.2))

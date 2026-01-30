@@ -1,117 +1,119 @@
-import Foundation
-import Vision
-import UIKit
 import CoreImage
+import Foundation
+import UIKit
+import Vision
 
 // MARK: - Ingredient OCR Service
+
 actor IngredientOCRService {
     static let shared = IngredientOCRService()
-    
+
     private let normalizer = IngredientNormalizer()
-    
+
     // MARK: - Image Preprocessing
+
     private func preprocessImage(_ image: UIImage) -> UIImage? {
         guard let cgImage = image.cgImage else { return nil }
-        
+
         // Step 1: Resize to reasonable dimensions (max 1024px on longest side)
         let resizedImage = resizeImage(image, maxDimension: 1024)
         guard let resized = resizedImage, let resizedCG = resized.cgImage else { return nil }
-        
+
         // Step 2: Convert to grayscale and enhance contrast
         let ciImage = CIImage(cgImage: resizedCG)
         let context = CIContext()
-        
+
         // Grayscale conversion
         guard let grayscaleFilter = CIFilter(name: "CIPhotoEffectMono") else { return resizedImage }
         grayscaleFilter.setValue(ciImage, forKey: kCIInputImageKey)
-        
+
         // Enhance contrast for better text recognition
         guard let contrastFilter = CIFilter(name: "CIColorControls"),
               let grayscaleOutput = grayscaleFilter.outputImage else { return resizedImage }
-        
+
         contrastFilter.setValue(grayscaleOutput, forKey: kCIInputImageKey)
-        contrastFilter.setValue(1.3, forKey: kCIInputContrastKey)  // Increase contrast
+        contrastFilter.setValue(1.3, forKey: kCIInputContrastKey) // Increase contrast
         contrastFilter.setValue(1.1, forKey: kCIInputBrightnessKey) // Slightly increase brightness
-        
+
         guard let outputImage = contrastFilter.outputImage,
               let processedCG = context.createCGImage(outputImage, from: outputImage.extent) else {
             return resizedImage
         }
-        
+
         return UIImage(cgImage: processedCG)
     }
-    
+
     private func resizeImage(_ image: UIImage, maxDimension: CGFloat) -> UIImage? {
         let size = image.size
         let maxSide = max(size.width, size.height)
-        
+
         if maxSide <= maxDimension {
             return image
         }
-        
+
         let scale = maxDimension / maxSide
         let newSize = CGSize(width: size.width * scale, height: size.height * scale)
-        
+
         UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
         image.draw(in: CGRect(origin: .zero, size: newSize))
         let resized = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        
+
         return resized
     }
-    
+
     // MARK: - Recognize Text
+
     func recognizeIngredients(from image: UIImage) async throws -> [String] {
         // Preprocess image for better OCR accuracy
         guard let processedImage = preprocessImage(image),
               let cgImage = processedImage.cgImage else {
             throw OCRError.invalidImage
         }
-        
+
         // Get correct orientation from original image
         let orientation = CGImagePropertyOrientation(image.imageOrientation)
-        
+
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = .accurate
         request.recognitionLanguages = ["en-US", "zh-Hans", "zh-Hant"]
         request.usesLanguageCorrection = true
         request.automaticallyDetectsLanguage = true
-        
+
         // Create handler with proper orientation
         let handler = VNImageRequestHandler(cgImage: cgImage, orientation: orientation, options: [:])
-        
+
         do {
             try handler.perform([request])
         } catch {
             throw OCRError.visionError(error)
         }
-        
+
         guard let observations = request.results, !observations.isEmpty else {
             throw OCRError.noTextFound
         }
-        
+
         // Calculate average confidence
         let confidenceSum = observations.compactMap { $0.topCandidates(1).first?.confidence }.reduce(0, +)
         let avgConfidence = Float(confidenceSum) / Float(observations.count)
-        
+
         // If confidence is too low, throw specific error
         if avgConfidence < 0.3 {
             throw OCRError.lowConfidence(avgConfidence)
         }
-        
+
         // Preserve line structure for better parsing
         let lines = observations
             .compactMap { $0.topCandidates(1).first }
-            .filter { $0.confidence > 0.5 }  // Filter out low-confidence results
-            .map { $0.string }
-        
+            .filter { $0.confidence > 0.5 } // Filter out low-confidence results
+            .map(\.string)
+
         // Parse ingredients from structured lines
-        let ingredients = parseIngredients(fromLines: lines)
-        
-        return ingredients
+        return parseIngredients(fromLines: lines)
     }
-    
+
     // MARK: - Parse Ingredients (from structured lines)
+
     private func parseIngredients(fromLines lines: [String]) -> [String] {
         var ingredientLines: [String] = []
         var foundHeader = false
@@ -184,8 +186,9 @@ actor IngredientOCRService {
         let fullText = ingredientLines.joined(separator: " ")
         return parseIngredientsAdvanced(from: fullText)
     }
-    
+
     // MARK: - Advanced Ingredient Parsing
+
     private func parseIngredientsAdvanced(from text: String) -> [String] {
         // Find the ingredients section
         var ingredientText = text
@@ -221,7 +224,7 @@ actor IngredientOCRService {
                 currentIngredient.append(char)
             case ",", "，", "、", ";", "；":
                 // Only split if not inside parentheses or brackets
-                if parenDepth == 0 && bracketDepth == 0 {
+                if parenDepth == 0, bracketDepth == 0 {
                     let trimmed = currentIngredient.trimmingCharacters(in: .whitespacesAndNewlines)
                     if !trimmed.isEmpty {
                         ingredients.append(trimmed)
@@ -233,7 +236,7 @@ actor IngredientOCRService {
             case "/":
                 // Handle "/" carefully - could be separator OR part of name
                 // Only treat as separator if surrounded by spaces and not in parens
-                if parenDepth == 0 && bracketDepth == 0 {
+                if parenDepth == 0, bracketDepth == 0 {
                     let lastChar = currentIngredient.last
                     if lastChar == " " || lastChar == nil {
                         // Likely a separator
@@ -267,6 +270,7 @@ actor IngredientOCRService {
     }
 
     // MARK: - Clean Individual Ingredient
+
     private func cleanIngredient(_ ingredient: String) -> String {
         var cleaned = ingredient
 
@@ -294,6 +298,7 @@ actor IngredientOCRService {
     }
 
     // MARK: - Validate Ingredient
+
     private func isValidIngredient(_ ingredient: String) -> Bool {
         let trimmed = ingredient.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -302,9 +307,9 @@ actor IngredientOCRService {
 
         // Filter out common non-ingredient text
         let invalidPatterns = [
-            "^\\d+$",              // Pure numbers
-            "^[^a-zA-Z\\u4e00-\\u9fa5\\uac00-\\ud7af\\u3040-\\u309f\\u30a0-\\u30ff]+$",  // No letters (any language)
-            "^(and|or|the|of|with)$",  // Common connecting words alone
+            "^\\d+$", // Pure numbers
+            "^[^a-zA-Z\\u4e00-\\u9fa5\\uac00-\\ud7af\\u3040-\\u309f\\u30a0-\\u30ff]+$", // No letters (any language)
+            "^(and|or|the|of|with)$", // Common connecting words alone
         ]
 
         for pattern in invalidPatterns {
@@ -333,43 +338,45 @@ actor IngredientOCRService {
 }
 
 // MARK: - OCR Errors
+
 enum OCRError: LocalizedError {
     case invalidImage
     case noTextFound
     case lowConfidence(Float)
     case visionError(Error)
     case parseError
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidImage:
-            return "图片无效"
+            "图片无效"
         case .noTextFound:
-            return "未识别到文字，请确保：\n• 图片清晰且光线充足\n• 成分表文字完整可见\n• 避免反光和阴影"
-        case .lowConfidence(let confidence):
-            return "识别置信度较低 (\(Int(confidence * 100))%)，请尝试：\n• 重新拍摄更清晰的照片\n• 确保成分表文字对焦清晰\n• 或点击手动输入"
-        case .visionError(let error):
-            return "OCR引擎错误: \(error.localizedDescription)"
+            "未识别到文字，请确保：\n• 图片清晰且光线充足\n• 成分表文字完整可见\n• 避免反光和阴影"
+        case let .lowConfidence(confidence):
+            "识别置信度较低 (\(Int(confidence * 100))%)，请尝试：\n• 重新拍摄更清晰的照片\n• 确保成分表文字对焦清晰\n• 或点击手动输入"
+        case let .visionError(error):
+            "OCR引擎错误: \(error.localizedDescription)"
         case .parseError:
-            return "解析成分失败，请尝试手动输入"
+            "解析成分失败，请尝试手动输入"
         }
     }
-    
+
     var recoverySuggestion: String? {
         switch self {
         case .noTextFound, .lowConfidence:
-            return "您可以选择手动输入成分表或重新拍摄"
+            "您可以选择手动输入成分表或重新拍摄"
         case .invalidImage:
-            return "请选择其他图片"
+            "请选择其他图片"
         case .visionError:
-            return "请重试或联系技术支持"
+            "请重试或联系技术支持"
         case .parseError:
-            return "请使用手动输入功能"
+            "请使用手动输入功能"
         }
     }
 }
 
 // MARK: - UIImage Orientation Extension
+
 extension CGImagePropertyOrientation {
     init(_ uiOrientation: UIImage.Orientation) {
         switch uiOrientation {
@@ -387,8 +394,9 @@ extension CGImagePropertyOrientation {
 }
 
 // MARK: - Ingredient Normalizer
+
 struct IngredientNormalizer {
-    // Comprehensive ingredient aliases mapping (multi-language)
+    /// Comprehensive ingredient aliases mapping (multi-language)
     private let aliasMap: [String: String] = [
         // ===== WATER & SOLVENTS =====
         "水": "Water",
@@ -658,24 +666,24 @@ struct IngredientNormalizer {
         return capitalizeIngredient(cleaned)
     }
 
-    // Check if a string is likely an INCI name
+    /// Check if a string is likely an INCI name
     private func isLikelyINCI(_ text: String) -> Bool {
         // INCI names are typically:
         // - Latin plant names (e.g., "Aloe Barbadensis")
         // - Chemical names in English (e.g., "Sodium Hyaluronate")
         // - Mostly ASCII characters
 
-        let latinPattern = "^[A-Za-z][a-z]+\\s+[A-Za-z][a-z]+$"  // "Genus species"
-        let chemicalPattern = "^[A-Z][a-z]+.*[A-Z][a-z]+.*$"  // Capitalized words
+        let latinPattern = "^[A-Za-z][a-z]+\\s+[A-Za-z][a-z]+$" // "Genus species"
+        let chemicalPattern = "^[A-Z][a-z]+.*[A-Z][a-z]+.*$" // Capitalized words
 
         return text.range(of: latinPattern, options: .regularExpression) != nil ||
-               text.range(of: chemicalPattern, options: .regularExpression) != nil
+            text.range(of: chemicalPattern, options: .regularExpression) != nil
     }
 
-    // Smart capitalization for ingredient names
+    /// Smart capitalization for ingredient names
     private func capitalizeIngredient(_ ingredient: String) -> String {
         // Don't capitalize if already in proper INCI format
-        if ingredient.contains(where: { $0.isUppercase }) {
+        if ingredient.contains(where: \.isUppercase) {
             return ingredient
         }
 
@@ -686,7 +694,7 @@ struct IngredientNormalizer {
 
             // Keep short words like "of", "and" lowercase unless first word
             let lowercaseWords = ["of", "and", "or", "the", "in", "with"]
-            if lowercaseWords.contains(word.lowercased()) && word != words.first {
+            if lowercaseWords.contains(word.lowercased()), word != words.first {
                 return word.lowercased()
             }
 
@@ -698,6 +706,7 @@ struct IngredientNormalizer {
 }
 
 // MARK: - Ingredient Analysis Result
+
 struct IngredientScanResult: Identifiable {
     let id = UUID()
     let rawText: String
@@ -706,7 +715,7 @@ struct IngredientScanResult: Identifiable {
     let highlights: [String]
     let warnings: [String]
     let scanDate: Date
-    
+
     struct ParsedIngredient: Identifiable {
         let id = UUID()
         let name: String
@@ -716,33 +725,34 @@ struct IngredientScanResult: Identifiable {
         let isHighlight: Bool
         let isWarning: Bool
     }
-    
+
     enum SafetyLevel: String {
         case safe = "安全"
         case caution = "谨慎"
         case warning = "警告"
-        
+
         var color: String {
             switch self {
-            case .safe: return "green"
-            case .caution: return "orange"
-            case .warning: return "red"
+            case .safe: "green"
+            case .caution: "orange"
+            case .warning: "red"
             }
         }
     }
 }
 
 // MARK: - Local Ingredient Database
+
 final class IngredientDatabase: Sendable {
     static let shared = IngredientDatabase()
 
-    // Immutable after init - thread safe
+    /// Immutable after init - thread safe
     private let ingredients: [String: IngredientInfo]
 
     struct IngredientInfo: Codable, Sendable {
         let name: String
         let function: String
-        let safetyRating: Int        // 1-10, 10 safest
+        let safetyRating: Int // 1-10, 10 safest
         let irritationRisk: String
         let benefits: [String]
         let warnings: [String]?
@@ -838,26 +848,26 @@ final class IngredientDatabase: Sendable {
         let key = name.lowercased()
         return ingredients[key]
     }
-    
+
     func analyze(_ ingredientNames: [String]) -> IngredientScanResult {
         var parsed: [IngredientScanResult.ParsedIngredient] = []
         var highlights: [String] = []
         var warnings: [String] = []
-        var totalSafety: Int = 0
+        var totalSafety = 0
         var ratedCount = 0
-        
+
         for name in ingredientNames {
             let info = lookup(name)
-            let isHighlight = info?.function == "brightening" || 
-                             info?.function == "antiAging" ||
-                             info?.function == "moisturizing"
+            let isHighlight = info?.function == "brightening" ||
+                info?.function == "antiAging" ||
+                info?.function == "moisturizing"
             let isWarning = (info?.safetyRating ?? 10) < 5
-            
+
             let function: IngredientFunction? = {
                 guard let funcStr = info?.function else { return nil }
                 return IngredientFunction(rawValue: funcStr)
             }()
-            
+
             parsed.append(IngredientScanResult.ParsedIngredient(
                 name: name,
                 normalizedName: name,
@@ -866,30 +876,28 @@ final class IngredientDatabase: Sendable {
                 isHighlight: isHighlight,
                 isWarning: isWarning
             ))
-            
-            if isHighlight, let info = info {
+
+            if isHighlight, let info {
                 highlights.append("\(info.name): \(info.benefits.joined(separator: "、"))")
             }
-            
+
             if let warning = info?.warnings?.first {
                 warnings.append("\(info?.name ?? name): \(warning)")
             }
-            
+
             if let rating = info?.safetyRating {
                 totalSafety += rating
                 ratedCount += 1
             }
         }
-        
+
         let avgSafety = ratedCount > 0 ? totalSafety / ratedCount : 7
-        let safetyLevel: IngredientScanResult.SafetyLevel = {
-            switch avgSafety {
-            case 8...10: return .safe
-            case 5..<8: return .caution
-            default: return .warning
-            }
-        }()
-        
+        let safetyLevel: IngredientScanResult.SafetyLevel = switch avgSafety {
+        case 8 ... 10: .safe
+        case 5 ..< 8: .caution
+        default: .warning
+        }
+
         return IngredientScanResult(
             rawText: ingredientNames.joined(separator: ", "),
             ingredients: parsed,

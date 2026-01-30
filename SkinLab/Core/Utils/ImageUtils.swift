@@ -1,13 +1,7 @@
-//
-//  ImageUtils.swift
-//  SkinLab
-//
-//  Image compression and thumbnail generation utilities.
-//
-
 import UIKit
 
 // MARK: - Image Compression Configuration
+
 enum ImageCompressionConfig {
     /// Default JPEG compression quality (0.7 = 70%)
     static let defaultQuality: CGFloat = 0.7
@@ -20,23 +14,23 @@ enum ImageCompressionConfig {
 
     /// Quality presets
     enum Quality {
-        case low        // 0.5 - smaller file size
-        case medium     // 0.7 - balanced
-        case high       // 0.85 - better quality
+        case low // 0.5 - smaller file size
+        case medium // 0.7 - balanced
+        case high // 0.85 - better quality
 
         var value: CGFloat {
             switch self {
-            case .low: return 0.5
-            case .medium: return 0.7
-            case .high: return 0.85
+            case .low: 0.5
+            case .medium: 0.7
+            case .high: 0.85
             }
         }
     }
 }
 
 // MARK: - UIImage Compression Extension
-extension UIImage {
 
+extension UIImage {
     /// Compress the image with optional resizing
     /// - Parameters:
     ///   - quality: JPEG compression quality (0.0-1.0). Default is 0.7
@@ -140,6 +134,7 @@ extension UIImage {
 }
 
 // MARK: - Data Extension for Image Loading
+
 extension Data {
     /// Create UIImage from data
     var asImage: UIImage? {

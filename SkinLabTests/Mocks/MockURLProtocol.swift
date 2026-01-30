@@ -4,7 +4,6 @@ import Foundation
 /// A URLProtocol subclass that intercepts network requests for testing.
 /// Configure with static properties before use.
 final class MockURLProtocol: URLProtocol {
-
     // MARK: - Static Configuration
 
     /// The mock response data to return
@@ -29,11 +28,11 @@ final class MockURLProtocol: URLProtocol {
 
     override class func canInit(with request: URLRequest) -> Bool {
         // Intercept all requests when using this protocol
-        return true
+        true
     }
 
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-        return request
+        request
     }
 
     override func startLoading() {

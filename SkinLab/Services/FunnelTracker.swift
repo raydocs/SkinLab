@@ -13,10 +13,7 @@ final class FunnelTracker: @unchecked Sendable {
     private let lock = NSLock()
 
     /// Static date formatter for session timestamps (avoid allocation per call)
-    private static let iso8601Formatter: ISO8601DateFormatter = {
-        let formatter = ISO8601DateFormatter()
-        return formatter
-    }()
+    private static let iso8601Formatter: ISO8601DateFormatter = .init()
 
     /// Keys for tracking first-time events
     private enum FirstTimeKey: String {
@@ -75,7 +72,7 @@ final class FunnelTracker: @unchecked Sendable {
             "age_group": ageGroup,
             "concerns_count": concernsCount
         ]
-        if let skinType = skinType {
+        if let skinType {
             params["skin_type"] = skinType
         }
 
@@ -272,7 +269,7 @@ final class FunnelTracker: @unchecked Sendable {
 
         guard shouldLog else {
             #if DEBUG
-            print("[FunnelTracker] Event '\(eventName)' already tracked, skipping")
+                AppLogger.debug("FunnelTracker event '\(eventName)' already tracked; skipping")
             #endif
             return
         }
@@ -281,34 +278,34 @@ final class FunnelTracker: @unchecked Sendable {
         AnalyticsEvents.logEvent(name: eventName, parameters: parameters)
 
         #if DEBUG
-        print("[FunnelTracker] First-time event tracked: \(eventName)")
+            AppLogger.debug("FunnelTracker first-time event tracked: \(eventName)")
         #endif
     }
 
     // MARK: - Testing Support
 
-    /// Reset all first-time tracking (for testing only)
+    // Reset all first-time tracking (for testing only)
     #if DEBUG
-    func resetAllTracking() {
-        lock.lock()
-        defer { lock.unlock() }
+        func resetAllTracking() {
+            lock.lock()
+            defer { lock.unlock() }
 
-        let keysToReset: [FirstTimeKey] = [
-            .firstOpen, .profileStarted, .profileCompleted,
-            .firstAnalysisCompleted, .firstCheckInCompleted,
-            .firstIngredientScanCompleted, .firstReportViewed,
-            .firstScenarioUsed, .firstWeatherViewed, .firstPredictionUsed
-        ]
+            let keysToReset: [FirstTimeKey] = [
+                .firstOpen, .profileStarted, .profileCompleted,
+                .firstAnalysisCompleted, .firstCheckInCompleted,
+                .firstIngredientScanCompleted, .firstReportViewed,
+                .firstScenarioUsed, .firstWeatherViewed, .firstPredictionUsed
+            ]
 
-        for key in keysToReset {
-            UserDefaults.standard.removeObject(forKey: key.rawValue)
+            for key in keysToReset {
+                UserDefaults.standard.removeObject(forKey: key.rawValue)
+            }
+
+            UserDefaults.standard.removeObject(forKey: "analytics.funnel.last_session_date")
+            UserDefaults.standard.removeObject(forKey: "analytics.funnel.days_active")
+
+            AppLogger.debug("FunnelTracker tracking reset")
         }
-
-        UserDefaults.standard.removeObject(forKey: "analytics.funnel.last_session_date")
-        UserDefaults.standard.removeObject(forKey: "analytics.funnel.days_active")
-
-        print("[FunnelTracker] All tracking reset")
-    }
     #endif
 }
 

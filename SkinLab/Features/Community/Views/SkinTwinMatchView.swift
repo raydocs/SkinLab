@@ -1,4 +1,5 @@
 import SwiftData
+
 // SkinLab/Features/Community/Views/SkinTwinMatchView.swift
 import SwiftUI
 
@@ -340,7 +341,8 @@ struct SkinTwinMatchView: View {
                 }
                 .staggered(
                     delay: Double(viewModel.topMatches.firstIndex(where: { $0.id == twin.id }) ?? 0)
-                        * 0.1)
+                        * 0.1
+                )
             }
         }
     }

@@ -1,20 +1,23 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// ViewModel for TrackingDetailView
 /// Handles tracking report generation
 @MainActor
 class TrackingDetailViewModel: ObservableObject {
     // MARK: - Published State
+
     @Published var isGeneratingReport = false
     @Published var generatedReport: EnhancedTrackingReport?
     @Published var showReport = false
     @Published var reportError: String?
 
     // MARK: - Dependencies
+
     private let modelContext: ModelContext
 
     // MARK: - Initialization
+
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
@@ -28,7 +31,7 @@ class TrackingDetailViewModel: ObservableObject {
 
         do {
             // Collect analysis IDs from current session's checkIns
-            let analysisIds = session.checkIns.compactMap { $0.analysisId }
+            let analysisIds = session.checkIns.compactMap(\.analysisId)
 
             guard analysisIds.count >= 2 else {
                 reportError = "需要至少2次打卡记录才能生成报告"

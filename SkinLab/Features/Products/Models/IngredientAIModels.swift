@@ -15,9 +15,9 @@ struct ProfileSnapshot: Codable, Sendable {
     let allergies: [String]
     let pregnancyStatus: String?
     let fragranceTolerance: String?
-    
+
     init(profile: UserProfile?) {
-        guard let profile = profile else {
+        guard let profile else {
             self.skinType = nil
             self.concerns = []
             self.allergies = []
@@ -25,9 +25,9 @@ struct ProfileSnapshot: Codable, Sendable {
             self.fragranceTolerance = nil
             return
         }
-        
+
         self.skinType = profile.skinType?.rawValue
-        self.concerns = profile.concerns.map { $0.rawValue }
+        self.concerns = profile.concerns.map(\.rawValue)
         self.allergies = profile.allergies
         self.pregnancyStatus = profile.pregnancyStatus.rawValue
         self.fragranceTolerance = profile.fragranceTolerance.rawValue
@@ -37,14 +37,14 @@ struct ProfileSnapshot: Codable, Sendable {
 struct HistorySnapshot: Codable, Sendable {
     let severeIssues: [String]
     let ingredientStats: [String: IngredientEffectSummary]
-    
+
     init(historyStore: UserHistoryStore?) {
         guard let store = historyStore else {
             self.severeIssues = []
             self.ingredientStats = [:]
             return
         }
-        
+
         var issues: [String] = []
         let issueTypes: [(SkinIssueType, String)] = [
             (.acne, "acne"),
@@ -58,7 +58,7 @@ struct HistorySnapshot: Codable, Sendable {
             }
         }
         self.severeIssues = issues
-        
+
         let allStats = store.getAllIngredientStats()
         self.ingredientStats = allStats.mapValues { stats in
             IngredientEffectSummary(
@@ -78,17 +78,17 @@ struct IngredientEffectSummary: Codable, Sendable {
 
 // MARK: - AI Response Models
 
-// Risk level enum for type safety
+/// Risk level enum for type safety
 enum RiskLevel: String, Codable, Sendable {
-    case low = "low"
-    case medium = "medium"
-    case high = "high"
+    case low
+    case medium
+    case high
 
     var color: String {
         switch self {
-        case .high: return "red"
-        case .medium: return "orange"
-        case .low: return "yellow"
+        case .high: "red"
+        case .medium: "orange"
+        case .low: "yellow"
         }
     }
 }
@@ -116,7 +116,7 @@ struct IngredientAIResult: Codable, Sendable {
         overallEvidenceLevel: nil
     )
 
-    // Custom decoding with validation and fallbacks
+    /// Custom decoding with validation and fallbacks
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -133,15 +133,23 @@ struct IngredientAIResult: Codable, Sendable {
 
         let rawConfidence = (try? container.decode(Int.self, forKey: .confidence)) ?? 0
         confidence = min(100, max(0, rawConfidence))
-        
+
         // Evidence fields with fallbacks
         evidence = (try? container.decode([IngredientEvidence].self, forKey: .evidence)) ?? []
         overallEvidenceLevel = try? container.decode(EvidenceLevel.self, forKey: .overallEvidenceLevel)
     }
 
-    init(summary: String, riskTags: [String], ingredientConcerns: [IngredientConcern],
-         compatibilityScore: Int, usageTips: [String], avoidCombos: [String], confidence: Int,
-         evidence: [IngredientEvidence] = [], overallEvidenceLevel: EvidenceLevel? = nil) {
+    init(
+        summary: String,
+        riskTags: [String],
+        ingredientConcerns: [IngredientConcern],
+        compatibilityScore: Int,
+        usageTips: [String],
+        avoidCombos: [String],
+        confidence: Int,
+        evidence: [IngredientEvidence] = [],
+        overallEvidenceLevel: EvidenceLevel? = nil
+    ) {
         self.summary = summary
         self.riskTags = riskTags
         self.ingredientConcerns = ingredientConcerns
@@ -154,12 +162,16 @@ struct IngredientAIResult: Codable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case summary, riskTags, ingredientConcerns, compatibilityScore, usageTips, avoidCombos, confidence, evidence, overallEvidenceLevel
+        case summary, riskTags, ingredientConcerns, compatibilityScore, usageTips, avoidCombos, confidence, evidence,
+             overallEvidenceLevel
     }
 }
 
 struct IngredientConcern: Codable, Sendable, Identifiable {
-    var id: String { name }
+    var id: String {
+        name
+    }
+
     let name: String
     let reason: String
     let riskLevel: RiskLevel
@@ -168,7 +180,7 @@ struct IngredientConcern: Codable, Sendable, Identifiable {
         riskLevel.color
     }
 
-    // Custom decoding with fallback for unknown risk levels
+    /// Custom decoding with fallback for unknown risk levels
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
@@ -179,7 +191,7 @@ struct IngredientConcern: Codable, Sendable, Identifiable {
            let level = RiskLevel(rawValue: levelStr.lowercased()) {
             riskLevel = level
         } else {
-            riskLevel = .low  // Safe default
+            riskLevel = .low // Safe default
         }
     }
 
@@ -210,11 +222,11 @@ struct EnhancedIngredientScanResultWithAI {
     let aiResult: IngredientAIResult?
     let aiStatus: AIAnalysisStatus
     let aiErrorMessage: String?
-    
+
     var hasAIInsights: Bool {
         aiResult != nil && aiStatus == .success
     }
-    
+
     init(
         baseEnhanced: EnhancedIngredientScanResult,
         aiResult: IngredientAIResult? = nil,
@@ -231,31 +243,31 @@ struct EnhancedIngredientScanResultWithAI {
 // MARK: - Evidence Models
 
 enum EvidenceLevel: String, Codable, Sendable {
-    case limited = "limited"
-    case moderate = "moderate"
-    case strong = "strong"
-    
+    case limited
+    case moderate
+    case strong
+
     var displayName: String {
         switch self {
-        case .limited: return "有限证据"
-        case .moderate: return "中等证据"
-        case .strong: return "充分证据"
+        case .limited: "有限证据"
+        case .moderate: "中等证据"
+        case .strong: "充分证据"
         }
     }
-    
+
     var icon: String {
         switch self {
-        case .limited: return "circle"
-        case .moderate: return "circle.lefthalf.filled"
-        case .strong: return "circle.fill"
+        case .limited: "circle"
+        case .moderate: "circle.lefthalf.filled"
+        case .strong: "circle.fill"
         }
     }
-    
+
     var color: String {
         switch self {
-        case .limited: return "gray"
-        case .moderate: return "orange"
-        case .strong: return "green"
+        case .limited: "gray"
+        case .moderate: "orange"
+        case .strong: "green"
         }
     }
 }
@@ -265,35 +277,44 @@ enum EvidenceSource: String, Codable, Sendable {
     case expertConsensus = "expert_consensus"
     case userFeedback = "user_feedback"
     case scientificReview = "scientific_review"
-    
+
     var displayName: String {
         switch self {
-        case .clinicalStudy: return "临床研究"
-        case .expertConsensus: return "专家共识"
-        case .userFeedback: return "用户反馈"
-        case .scientificReview: return "科学文献"
+        case .clinicalStudy: "临床研究"
+        case .expertConsensus: "专家共识"
+        case .userFeedback: "用户反馈"
+        case .scientificReview: "科学文献"
         }
     }
-    
+
     var icon: String {
         switch self {
-        case .clinicalStudy: return "cross.case"
-        case .expertConsensus: return "person.2"
-        case .userFeedback: return "bubble.left.and.bubble.right"
-        case .scientificReview: return "book"
+        case .clinicalStudy: "cross.case"
+        case .expertConsensus: "person.2"
+        case .userFeedback: "bubble.left.and.bubble.right"
+        case .scientificReview: "book"
         }
     }
 }
 
 struct IngredientEvidence: Codable, Sendable, Identifiable {
-    var id: String { ingredientName }
+    var id: String {
+        ingredientName
+    }
+
     let ingredientName: String
     let level: EvidenceLevel
     let sources: [EvidenceSource]
     let studyCount: Int?
     let description: String?
-    
-    init(ingredientName: String, level: EvidenceLevel, sources: [EvidenceSource], studyCount: Int? = nil, description: String? = nil) {
+
+    init(
+        ingredientName: String,
+        level: EvidenceLevel,
+        sources: [EvidenceSource],
+        studyCount: Int? = nil,
+        description: String? = nil
+    ) {
         self.ingredientName = ingredientName
         self.level = level
         self.sources = sources

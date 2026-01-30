@@ -5,13 +5,16 @@ import SwiftData
 @MainActor
 final class EngagementMigrationService {
     // MARK: - Dependencies
+
     private let modelContext: ModelContext
     private let streakService: StreakTrackingService
 
     // MARK: - Migration Keys
+
     private let migrationCompletedKey = "engagement_migration_completed"
 
     // MARK: - Initialization
+
     init(modelContext: ModelContext, streakService: StreakTrackingService) {
         self.modelContext = modelContext
         self.streakService = streakService

@@ -1,0 +1,172 @@
+# SkinLab CI Pipeline
+# Runs on push to main/develop and all PRs
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  XCODE_VERSION: '15.2'
+  SIMULATOR_NAME: 'iPhone 15'
+  SIMULATOR_OS: '17.2'
+
+jobs:
+  # ============================================
+  # Lint Job - Check code style
+  # ============================================
+  lint:
+    name: SwiftLint
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint lint --strict --reporter github-actions-logging
+
+  # ============================================
+  # Format Check Job
+  # ============================================
+  format:
+    name: SwiftFormat Check
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install SwiftFormat
+        run: brew install swiftformat
+
+      - name: Check Formatting
+        run: swiftformat --lint . --verbose
+
+  # ============================================
+  # Build and Test Job
+  # ============================================
+  build-and-test:
+    name: Build & Test
+    runs-on: macos-14
+    needs: [lint, format]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
+
+      - name: Show Xcode Version
+        run: xcodebuild -version
+
+      - name: List Available Simulators
+        run: xcrun simctl list devices available
+
+      - name: Create Secrets.xcconfig
+        run: |
+          cat > Secrets.xcconfig << EOF
+          GEMINI_API_KEY = CI_PLACEHOLDER_KEY
+          EOF
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project SkinLab.xcodeproj \
+            -scheme SkinLab \
+            -destination 'platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=${{ env.SIMULATOR_OS }}' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            | xcpretty --color
+
+      - name: Run Tests
+        run: |
+          xcodebuild test \
+            -project SkinLab.xcodeproj \
+            -scheme SkinLab \
+            -destination 'platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=${{ env.SIMULATOR_OS }}' \
+            -configuration Debug \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            | xcpretty --color --report junit
+
+      - name: Generate Coverage Report
+        if: success()
+        run: |
+          xcrun xccov view --report TestResults.xcresult || true
+          xcrun xccov view --report --json TestResults.xcresult > coverage.json || true
+
+      - name: Check Coverage Threshold
+        if: success()
+        run: |
+          if [ -f coverage.json ]; then
+            COVERAGE=$(cat coverage.json | jq -r '.lineCoverage // 0')
+            echo "Line Coverage: $COVERAGE"
+            THRESHOLD=0.30
+            if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+              echo "⚠️ Coverage ($COVERAGE) is below threshold ($THRESHOLD)"
+              # Don't fail yet, just warn
+            fi
+          fi
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            TestResults.xcresult
+            build/reports/
+          retention-days: 7
+
+  # ============================================
+  # Secrets Scan Job
+  # ============================================
+  secrets-scan:
+    name: Secrets Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================
+  # Tech Debt Report Job
+  # ============================================
+  tech-debt:
+    name: Tech Debt Report
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Count TODOs/FIXMEs
+        run: |
+          echo "## Tech Debt Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+
+          TODO_COUNT=$(grep -r "TODO" SkinLab --include="*.swift" 2>/dev/null | wc -l || echo "0")
+          FIXME_COUNT=$(grep -r "FIXME" SkinLab --include="*.swift" 2>/dev/null | wc -l || echo "0")
+          HACK_COUNT=$(grep -r "HACK" SkinLab --include="*.swift" 2>/dev/null | wc -l || echo "0")
+
+          echo "| TODO | $TODO_COUNT |" >> $GITHUB_STEP_SUMMARY
+          echo "| FIXME | $FIXME_COUNT |" >> $GITHUB_STEP_SUMMARY
+          echo "| HACK | $HACK_COUNT |" >> $GITHUB_STEP_SUMMARY

@@ -1,11 +1,3 @@
-//
-//  RetryPolicy.swift
-//  SkinLab
-//
-//  Intelligent network retry strategy with exponential backoff.
-//  Provides consistent retry behavior across all network services.
-//
-
 import Foundation
 
 // MARK: - Retry Policy
@@ -88,7 +80,7 @@ struct RetryPolicy: Sendable {
 
         // Add jitter: random value between -jitter% and +jitter%
         let jitterRange = cappedDelay * jitterFactor
-        let jitter = Double.random(in: -jitterRange...jitterRange)
+        let jitter = Double.random(in: -jitterRange ... jitterRange)
 
         // Ensure delay is never negative
         return max(0, cappedDelay + jitter)
@@ -96,7 +88,7 @@ struct RetryPolicy: Sendable {
 
     /// Check if another retry attempt is allowed
     func shouldRetry(attempt: Int) -> Bool {
-        return attempt < maxAttempts
+        attempt < maxAttempts
     }
 }
 
@@ -145,19 +137,19 @@ extension URLError {
              .internationalRoamingOff,
              .callIsActive,
              .dataNotAllowed:
-            return true
+            true
 
         // Server-side issues - retryable
         case .badServerResponse,
              .zeroByteResource,
              .cannotParseResponse:
-            return true
+            true
 
         // SSL/TLS issues - usually permanent (cert config, clock, MITM)
         case .secureConnectionFailed,
              .serverCertificateHasBadDate,
              .serverCertificateNotYetValid:
-            return false
+            false
 
         // Client errors or permanent failures - not retryable
         case .cancelled,
@@ -169,11 +161,11 @@ extension URLError {
              .userCancelledAuthentication,
              .userAuthenticationRequired,
              .appTransportSecurityRequiresSecureConnection:
-            return false
+            false
 
         // Unknown errors - don't retry by default
         default:
-            return false
+            false
         }
     }
 }
@@ -196,32 +188,32 @@ struct HTTPError: Error, Sendable {
     var isRetryable: Bool {
         switch statusCode {
         // 5xx Server errors - usually retryable
-        case 500...599:
-            return true
+        case 500 ... 599:
+            true
 
         // 429 Too Many Requests - retryable with backoff
         case 429:
-            return true
+            true
 
         // 408 Request Timeout - retryable
         case 408:
-            return true
+            true
 
         // 4xx Client errors (except 408, 429) - not retryable
-        case 400...499:
-            return false
+        case 400 ... 499:
+            false
 
         // 3xx Redirects - not retryable (should follow redirect)
-        case 300...399:
-            return false
+        case 300 ... 399:
+            false
 
         // 2xx Success - not an error, shouldn't retry
-        case 200...299:
-            return false
+        case 200 ... 299:
+            false
 
         // Unknown status - don't retry
         default:
-            return false
+            false
         }
     }
 
@@ -258,11 +250,11 @@ extension GeminiError {
     /// via HTTPError for proper retryability detection.
     var isRetryable: Bool {
         switch self {
-        case .networkError(let underlying):
+        case let .networkError(underlying):
             // Delegate to underlying error's retryability
-            return underlying.isRetryable
+            underlying.isRetryable
         case .rateLimited:
-            return true
+            true
         case .apiError,
              .invalidImage,
              .invalidAPIKey,
@@ -270,7 +262,7 @@ extension GeminiError {
              .unauthorized:
             // apiError could be 4xx client error - not retryable without status code
             // Client-side errors - not retryable
-            return false
+            false
         }
     }
 }
@@ -282,14 +274,14 @@ extension WeatherError {
     var isRetryable: Bool {
         switch self {
         case .networkError:
-            return true
+            true
         case .weatherUnavailable:
             // Service might be temporarily unavailable
-            return true
+            true
         case .locationUnavailable,
              .notAuthorized:
             // Permission/location issues won't fix with retry
-            return false
+            false
         }
     }
 }
@@ -320,14 +312,14 @@ actor GlobalRetryLimiter {
 
     /// Get current retry count (for monitoring)
     func currentRetryCount() -> Int {
-        return activeRetries
+        activeRetries
     }
 
     #if DEBUG
-    /// Reset for testing (only available in DEBUG builds)
-    func reset() {
-        activeRetries = 0
-    }
+        /// Reset for testing (only available in DEBUG builds)
+        func reset() {
+            activeRetries = 0
+        }
     #endif
 }
 
@@ -346,7 +338,7 @@ func withRetry<T>(
 
     // Safe iteration even if maxAttempts is 0 (just initial attempt)
     let totalAttempts = policy.maxAttempts + 1
-    for attempt in 0..<totalAttempts {
+    for attempt in 0 ..< totalAttempts {
         do {
             return try await operation()
         } catch {

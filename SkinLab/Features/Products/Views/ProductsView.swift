@@ -14,7 +14,7 @@ struct ProductsView: View {
         let lowercasedSearch = trimmedSearch.lowercased()
         return RealProductData.products.filter { product in
             product.name.lowercased().contains(lowercasedSearch) ||
-            product.brand.lowercased().contains(lowercasedSearch)
+                product.brand.lowercased().contains(lowercasedSearch)
         }
     }
 
@@ -32,7 +32,7 @@ struct ProductsView: View {
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
-                
+
                 // Decorative bubbles
                 GeometryReader { geometry in
                     FloatingBubble(size: 80, color: .skinLabSecondary)
@@ -43,7 +43,7 @@ struct ProductsView: View {
                         .offset(x: geometry.size.width * 0.75, y: geometry.size.height * 0.45)
                 }
                 .accessibilityHidden(true)
-                
+
                 ScrollView {
                     VStack(spacing: 24) {
                         // Quick Actions with glass effect
@@ -76,7 +76,7 @@ struct ProductsView: View {
                             .accessibilityLabel("对比产品")
                             .accessibilityHint("对比两款产品的成分")
                         }
-                        
+
                         // Categories with beautiful chips
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 10) {
@@ -87,7 +87,7 @@ struct ProductsView: View {
                                 ) {
                                     selectedCategory = nil
                                 }
-                                
+
                                 ForEach(ProductCategory.allCases, id: \.self) { category in
                                     BeautifulCategoryChip(
                                         name: category.displayName,
@@ -100,7 +100,7 @@ struct ProductsView: View {
                             }
                             .padding(.horizontal, 2)
                         }
-                        
+
                         // Section title
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
@@ -121,7 +121,7 @@ struct ProductsView: View {
                                     .foregroundColor(.skinLabSubtext)
                             }
                         }
-                        
+
                         // Product List with filtering
                         if filteredProducts.isEmpty {
                             productsEmptyState
@@ -161,30 +161,31 @@ struct ProductsView: View {
 }
 
 // MARK: - Beautiful Quick Action Card
+
 struct BeautifulQuickActionCard: View {
     let icon: String
     let title: String
     let subtitle: String
     var gradient: LinearGradient = .skinLabPrimaryGradient
-    
+
     var body: some View {
         VStack(spacing: 12) {
             ZStack {
                 Circle()
                     .fill(gradient.opacity(0.15))
                     .frame(width: 54, height: 54)
-                
+
                 Image(systemName: icon)
                     .font(.system(size: 22))
                     .foregroundStyle(gradient)
             }
-            
+
             VStack(spacing: 3) {
                 Text(title)
                     .font(.skinLabSubheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.skinLabText)
-                
+
                 Text(subtitle)
                     .font(.system(size: 11))
                     .foregroundColor(.skinLabSubtext)
@@ -213,6 +214,7 @@ struct BeautifulQuickActionCard: View {
 }
 
 // MARK: - Beautiful Category Chip
+
 struct BeautifulCategoryChip: View {
     let name: String
     var icon: String = ""
@@ -235,7 +237,11 @@ struct BeautifulCategoryChip: View {
             .padding(.vertical, 10)
             .background(
                 Capsule()
-                    .fill(isSelected ? LinearGradient.skinLabPrimaryGradient : LinearGradient(colors: [Color.skinLabCardBackground], startPoint: .leading, endPoint: .trailing))
+                    .fill(isSelected ? LinearGradient.skinLabPrimaryGradient : LinearGradient(
+                        colors: [Color.skinLabCardBackground],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ))
             )
             .shadow(color: isSelected ? .skinLabPrimary.opacity(0.3) : .clear, radius: 6, y: 3)
         }
@@ -246,6 +252,7 @@ struct BeautifulCategoryChip: View {
 }
 
 // MARK: - Real Product Data (from iHerb & Sephora)
+
 struct RealProductData {
     let name: String
     let brand: String
@@ -254,7 +261,7 @@ struct RealProductData {
     let effectRate: String
     let icon: String
     let userReview: String
-    
+
     static let products: [RealProductData] = [
         RealProductData(
             name: "B5全面修复霜",
@@ -314,6 +321,7 @@ struct RealProductData {
 }
 
 // MARK: - Beautiful Product Card
+
 struct BeautifulProductCard: View {
     let product: RealProductData
 
@@ -419,23 +427,26 @@ struct BeautifulProductCard: View {
         )
         .shadow(color: .black.opacity(0.04), radius: 10, y: 4)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(product.name)，\(product.brand)，评分\(product.rating)星，\(product.reviewCount)条评价，好评率\(product.effectRate)")
+        .accessibilityLabel(
+            "\(product.name)，\(product.brand)，评分\(product.rating)星，\(product.reviewCount)条评价，好评率\(product.effectRate)"
+        )
         .accessibilityHint("用户评价：\(product.userReview)")
     }
 }
 
 // MARK: - Legacy Components (kept for compatibility)
+
 struct QuickActionCard: View {
     let icon: String
     let title: String
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             Text(title)
                 .font(.skinLabSubheadline)
                 .foregroundColor(.skinLabText)
@@ -451,7 +462,7 @@ struct CategoryChip: View {
     let name: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(name)
@@ -471,38 +482,38 @@ struct ProductCard: View {
             RoundedRectangle(cornerRadius: 8)
                 .fill(Color.gray.opacity(0.2))
                 .frame(width: 60, height: 60)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text("理肤泉B5修复霜")
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabText)
-                
+
                 Text("La Roche-Posay")
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)
-                
+
                 HStack(spacing: 4) {
                     Image(systemName: "star.fill")
                         .font(.caption2)
                         .foregroundColor(.skinLabAccent)
-                    
+
                     Text("4.8")
                         .font(.skinLabCaption)
                         .foregroundColor(.skinLabText)
-                    
+
                     Text("(328人验证)")
                         .font(.skinLabCaption)
                         .foregroundColor(.skinLabSubtext)
                 }
             }
-            
+
             Spacer()
-            
+
             VStack(alignment: .trailing, spacing: 4) {
                 Text("67%")
                     .font(.skinLabHeadline)
                     .foregroundColor(.skinLabSuccess)
-                
+
                 Text("有效率")
                     .font(.skinLabCaption)
                     .foregroundColor(.skinLabSubtext)

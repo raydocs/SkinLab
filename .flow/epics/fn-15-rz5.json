@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-15-rz5",
+  "created_at": "2026-01-30T09:38:08.434837Z",
+  "depends_on_epics": [],
+  "id": "fn-15-rz5",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-15-rz5.md",
+  "status": "open",
+  "title": "Agent readiness improvements",
+  "updated_at": "2026-01-30T09:38:08.435414Z"
+}
