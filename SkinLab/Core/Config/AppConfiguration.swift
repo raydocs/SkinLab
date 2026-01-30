@@ -156,6 +156,11 @@ enum AppConfiguration {
             true
         }
 
+        /// Block analysis when photo quality is too low
+        static var lowQualityPhotoBlockingEnabled: Bool {
+            true
+        }
+
         /// Analytics enabled (disabled in debug)
         static var analyticsEnabled: Bool {
             !current.isDebug

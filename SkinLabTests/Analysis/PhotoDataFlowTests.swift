@@ -217,7 +217,8 @@ final class PhotoDataFlowTests: XCTestCase {
             analysis: analysis,
             analysisId: analysisId,
             photoPath: photoPath,
-            standardization: standardization
+            standardization: standardization,
+            photoQualityReport: nil
         )
 
         XCTAssertEqual(result.analysisId, analysisId)

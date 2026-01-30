@@ -1,0 +1,13 @@
+{
+  "tests": [
+    {
+      "name": "xcodebuild test",
+      "command": "xcodebuild -scheme SkinLab -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.2' test",
+      "result": "passed"
+    }
+  ],
+  "files": [
+    "SkinLab/Core/Config/AppConfiguration.swift",
+    "SkinLab/Features/Analysis/ViewModels/AnalysisViewModel.swift"
+  ]
+}

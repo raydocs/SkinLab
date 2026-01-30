@@ -9,6 +9,7 @@ struct AnalysisRunResult: Sendable {
     let analysisId: UUID
     let photoPath: String?
     let standardization: PhotoStandardizationMetadata?
+    let photoQualityReport: PhotoQualityReport?
 }
 
 @MainActor
@@ -41,11 +42,13 @@ class AnalysisViewModel: ObservableObject {
     @Published private(set) var lastError: Error?
 
     private let analysisService: SkinAnalysisServiceProtocol
+    private let photoQualityEvaluator: PhotoQualityEvaluator
     private var modelContext: ModelContext?
 
     // Store captured data for persistence
     private var lastCapturedImage: UIImage?
     private var lastStandardization: PhotoStandardizationMetadata?
+    private var lastPhotoQualityReport: PhotoQualityReport?
 
     /// Track analysis timing for analytics
     private var analysisStartTime: Date?
@@ -54,9 +57,11 @@ class AnalysisViewModel: ObservableObject {
 
     init(
         analysisService: SkinAnalysisServiceProtocol = GeminiService.shared,
+        photoQualityEvaluator: PhotoQualityEvaluator = PhotoQualityEvaluator(),
         modelContext: ModelContext? = nil
     ) {
         self.analysisService = analysisService
+        self.photoQualityEvaluator = photoQualityEvaluator
         self.modelContext = modelContext
     }
 
@@ -77,6 +82,7 @@ class AnalysisViewModel: ObservableObject {
         analysisProgress = ""
         lastCapturedImage = nil
         lastStandardization = nil
+        lastPhotoQualityReport = nil
         lastError = nil
     }
 
@@ -94,12 +100,39 @@ class AnalysisViewModel: ObservableObject {
     func analyzeImage(_ image: UIImage) async {
         selectedImage = image
         state = .analyzing
-        analysisProgress = "正在优化图片..."
+        analysisProgress = "正在评估照片质量..."
         analysisStartTime = Date()
 
         do {
+            // Step 1: Evaluate photo quality locally
+            let photoQualityReport = await photoQualityEvaluator.evaluate(image: image)
+            lastPhotoQualityReport = photoQualityReport
+
+            if AppConfiguration.Features.lowQualityPhotoBlockingEnabled, !photoQualityReport.isAcceptable {
+                throw AppError.operationFailed(
+                    operation: "照片质量检查",
+                    reason: "照片质量较低，请根据提示重新拍摄"
+                )
+            }
+
+            // Step 2: AI analysis
             analysisProgress = "AI正在分析你的皮肤..."
-            let analysis = try await analysisService.analyzeSkin(image: image)
+            let baseAnalysis = try await analysisService.analyzeSkin(image: image)
+
+            // Step 3: Combine analysis with local photo quality report
+            let analysis = SkinAnalysis(
+                id: baseAnalysis.id,
+                skinType: baseAnalysis.skinType,
+                skinAge: baseAnalysis.skinAge,
+                overallScore: baseAnalysis.overallScore,
+                issues: baseAnalysis.issues,
+                regions: baseAnalysis.regions,
+                recommendations: baseAnalysis.recommendations,
+                analyzedAt: baseAnalysis.analyzedAt,
+                confidenceScore: baseAnalysis.confidenceScore,
+                imageQuality: baseAnalysis.imageQuality,
+                photoQualityReport: photoQualityReport
+            )
 
             // Save photo and persist analysis if modelContext is available
             var photoPath: String? = nil
@@ -119,7 +152,8 @@ class AnalysisViewModel: ObservableObject {
                 analysis: analysis,
                 analysisId: analysis.id,
                 photoPath: photoPath,
-                standardization: lastStandardization
+                standardization: lastStandardization,
+                photoQualityReport: photoQualityReport
             )
 
             state = .result(result)
@@ -139,6 +173,9 @@ class AnalysisViewModel: ObservableObject {
                 score: analysis.overallScore
             )
         } catch let error as GeminiError {
+            lastError = error
+            state = .error(error.localizedDescription)
+        } catch let error as AppError {
             lastError = error
             state = .error(error.localizedDescription)
         } catch {

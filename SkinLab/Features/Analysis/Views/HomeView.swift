@@ -429,7 +429,8 @@ struct HomeView: View {
                             analysis: analysis,
                             analysisId: record.id,
                             photoPath: record.photoPath,
-                            standardization: nil
+                            standardization: nil,
+                            photoQualityReport: analysis.photoQualityReport
                         ))
                         .onAppear {
                             AnalyticsEvents.reportViewed(

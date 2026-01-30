@@ -86,6 +86,7 @@ extension Color {
 
     // 语义色 - 浪漫风格
     static let skinLabSuccess = Color(red: 0.60, green: 0.88, blue: 0.75)
+    static let skinLabInfo = Color(red: 0.45, green: 0.68, blue: 0.92)
     static let skinLabWarning = Color(red: 1.0, green: 0.78, blue: 0.55)
     static let skinLabError = Color(red: 1.0, green: 0.60, blue: 0.65)
     static let skinLabScoreExcellent = Color(red: 0.60, green: 0.88, blue: 0.75)
