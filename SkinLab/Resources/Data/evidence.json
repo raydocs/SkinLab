@@ -1,0 +1,30 @@
+{
+  "niacinamide": {
+    "ingredientName": "Niacinamide",
+    "level": "strong",
+    "sources": ["clinical_study", "scientific_review"],
+    "studyCount": 18,
+    "description": "可改善肤色不均与屏障功能，证据较充分。"
+  },
+  "salicylic_acid": {
+    "ingredientName": "Salicylic Acid",
+    "level": "strong",
+    "sources": ["clinical_study"],
+    "studyCount": 22,
+    "description": "对黑头与粉刺有效，常用于油痘肌护理。"
+  },
+  "hyaluronic_acid": {
+    "ingredientName": "Hyaluronic Acid",
+    "level": "moderate",
+    "sources": ["scientific_review", "expert_consensus"],
+    "studyCount": 12,
+    "description": "保湿功效明确，证据较稳定。"
+  },
+  "retinol": {
+    "ingredientName": "Retinol",
+    "level": "strong",
+    "sources": ["clinical_study", "expert_consensus"],
+    "studyCount": 30,
+    "description": "抗老化证据充分，但需注意耐受度。"
+  }
+}

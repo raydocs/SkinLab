@@ -58,6 +58,7 @@
 		77C5E42FA15CF615F2C16575 /* PhotoQualityEvaluatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E6FBC0724815B46064AC34 /* PhotoQualityEvaluatorTests.swift */; };
 		7A869E10823B5851FD6F928C /* AchievementUnlockAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C639974907E7B54590EC13 /* AchievementUnlockAnimationView.swift */; };
 		7BCBF3A344692ADF2781885F /* IngredientAIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98D02551ADBF9AEBDF16E24B /* IngredientAIModels.swift */; };
+		7F5D33C2B2A4B6A1F0C1E1A1 /* EvidenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F5D33C1B2A4B6A1F0C1E1A1 /* EvidenceModels.swift */; };
 		7E704BF8034C838F0F952D24 /* UserHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFAD1851E0FB2F410EE993 /* UserHistoryStore.swift */; };
 		7ECD6D2604E0FD727BA245FB /* ReliabilityScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23EEF448B75E8CDAD8A2F68 /* ReliabilityScorer.swift */; };
 		7F2A8FC155C0FD73533E4085 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F3B0D89FD0428597A7C0516 /* Foundation.framework */; };
@@ -101,6 +102,7 @@
 		A1000071 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000071 /* ProfileView.swift */; };
 		A1000080 /* products.json in Resources */ = {isa = PBXBuildFile; fileRef = B1000080 /* products.json */; };
 		A1000081 /* ingredients.json in Resources */ = {isa = PBXBuildFile; fileRef = B1000081 /* ingredients.json */; };
+		A1000083 /* evidence.json in Resources */ = {isa = PBXBuildFile; fileRef = B1000083 /* evidence.json */; };
 		A1000082 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1000082 /* Assets.xcassets */; };
 		A1000090 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000090 /* CommunityView.swift */; };
 		A1000091 /* RomanticDecorations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000091 /* RomanticDecorations.swift */; };
@@ -289,7 +291,9 @@
 		B1000080 /* products.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = products.json; sourceTree = "<group>"; };
 		B1000081 /* ingredients.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ingredients.json; sourceTree = "<group>"; };
 		B1000082 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B1000083 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B1000083 /* evidence.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = evidence.json; sourceTree = "<group>"; };
+		B1000084 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7F5D33C1B2A4B6A1F0C1E1A1 /* EvidenceModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EvidenceModels.swift; sourceTree = "<group>"; };
 		B1000090 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
 		B1000091 /* RomanticDecorations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RomanticDecorations.swift; sourceTree = "<group>"; };
 		B1000092 /* FreshThemeModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshThemeModifiers.swift; sourceTree = "<group>"; };
@@ -837,7 +841,7 @@
 				E1000030 /* Features */,
 				E1000040 /* UI */,
 				E1000050 /* Resources */,
-				B1000083 /* Info.plist */,
+				B1000084 /* Info.plist */,
 				C4074A0BFFB9A96D90317E9D /* Services */,
 			);
 			path = SkinLab;
@@ -1007,6 +1011,7 @@
 			children = (
 				B1000060 /* Product.swift */,
 				98D02551ADBF9AEBDF16E24B /* IngredientAIModels.swift */,
+				7F5D33C1B2A4B6A1F0C1E1A1 /* EvidenceModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1117,6 +1122,7 @@
 			children = (
 				B1000080 /* products.json */,
 				B1000081 /* ingredients.json */,
+				B1000083 /* evidence.json */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1344,6 +1350,7 @@
 			files = (
 				A1000080 /* products.json in Resources */,
 				A1000081 /* ingredients.json in Resources */,
+				A1000083 /* evidence.json in Resources */,
 				A1000082 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1389,6 +1396,7 @@
 				A1000060 /* Product.swift in Sources */,
 				A1000061 /* ProductsView.swift in Sources */,
 				A1000062 /* IngredientScannerView.swift in Sources */,
+				7F5D33C2B2A4B6A1F0C1E1A1 /* EvidenceModels.swift in Sources */,
 				A1000070 /* UserProfile.swift in Sources */,
 				A1000071 /* ProfileView.swift in Sources */,
 				A1000090 /* CommunityView.swift in Sources */,
