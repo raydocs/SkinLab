@@ -91,14 +91,13 @@ actor GeminiService: SkinAnalysisServiceProtocol {
 
     /// Protocol conformance
     func analyzeSkin(image: UIImage) async throws -> SkinAnalysis {
-        try await analyzeSkin(image: image, previousAnalysis: nil, retryCount: 0)
+        try await analyzeSkin(image: image, previousAnalysis: nil)
     }
 
     /// Enhanced version with context
     func analyzeSkin(
         image: UIImage,
-        previousAnalysis: SkinAnalysis? = nil,
-        retryCount: Int = 0
+        previousAnalysis: SkinAnalysis? = nil
     ) async throws -> SkinAnalysis {
         guard !apiKey.isEmpty else {
             throw GeminiError.invalidAPIKey
@@ -118,47 +117,12 @@ actor GeminiService: SkinAnalysisServiceProtocol {
         )
 
         do {
-            let (data, response) = try await session.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw GeminiError.networkError(URLError(.badServerResponse))
-            }
-
-            switch httpResponse.statusCode {
-            case 200:
-                return try parseAnalysisResponse(data)
-            case 401:
-                throw GeminiError.unauthorized
-            case 429:
-                // Rate limited - retry with exponential backoff
-                if retryCount < AppConfiguration.API.maxRetryAttempts {
-                    let delay = pow(2.0, Double(retryCount)) // 1s, 2s, 4s
-                    try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                    return try await analyzeSkin(
-                        image: image,
-                        previousAnalysis: previousAnalysis,
-                        retryCount: retryCount + 1
-                    )
-                }
-                throw GeminiError.rateLimited
-            default:
-                let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                throw GeminiError.apiError(errorMessage)
-            }
-        } catch let error as GeminiError {
-            throw error
+            let data = try await requestDataWithRetry(for: request)
+            return try parseAnalysisResponse(data)
+        } catch is CancellationError {
+            throw CancellationError()
         } catch {
-            // Network error - retry
-            if retryCount < AppConfiguration.API.maxNetworkRetryAttempts {
-                let delay = pow(2.0, Double(retryCount))
-                try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                return try await analyzeSkin(
-                    image: image,
-                    previousAnalysis: previousAnalysis,
-                    retryCount: retryCount + 1
-                )
-            }
-            throw GeminiError.networkError(error)
+            throw mapRequestError(error)
         }
     }
 
@@ -235,6 +199,50 @@ actor GeminiService: SkinAnalysisServiceProtocol {
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         return request
+    }
+
+    private func requestDataWithRetry(for request: URLRequest) async throws -> Data {
+        try await withRetry {
+            let (data, response) = try await session.data(for: request)
+            return try validateResponseData(data, response: response)
+        }
+    }
+
+    private func validateResponseData(_ data: Data, response: URLResponse) throws -> Data {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GeminiError.networkError(URLError(.badServerResponse))
+        }
+
+        switch httpResponse.statusCode {
+        case 200:
+            return data
+        case 401:
+            throw GeminiError.unauthorized
+        case 408, 429:
+            throw HTTPError(statusCode: httpResponse.statusCode, data: data, response: httpResponse)
+        case 500 ... 599:
+            throw HTTPError(statusCode: httpResponse.statusCode, data: data, response: httpResponse)
+        default:
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw GeminiError.apiError(errorMessage)
+        }
+    }
+
+    private func mapRequestError(_ error: Error) -> GeminiError {
+        if let geminiError = error as? GeminiError {
+            return geminiError
+        }
+
+        if let httpError = error as? HTTPError {
+            if httpError.statusCode == 429 {
+                return GeminiError.rateLimited
+            }
+            let errorMessage = String(data: httpError.data ?? Data(), encoding: .utf8)
+                ?? "HTTP \(httpError.statusCode)"
+            return GeminiError.apiError(errorMessage)
+        }
+
+        return GeminiError.networkError(error)
     }
 
     // MARK: - Response Parsing (OpenRouter/OpenAI Format)
@@ -495,79 +503,15 @@ extension GeminiService: IngredientAIServiceProtocol {
         guard !apiKey.isEmpty else {
             throw GeminiError.invalidAPIKey
         }
-
-        // Retry logic with exponential backoff
-        let maxRetries = AppConfiguration.API.maxRetryAttempts
-        var retryDelay: TimeInterval = 1.0
-
-        for attempt in 0 ..< maxRetries {
-            // Check if task is cancelled
-            if Task.isCancelled {
-                throw CancellationError()
-            }
-
-            do {
-                let apiRequest = try buildIngredientAnalysisRequest(request: request)
-                let (data, response) = try await session.data(for: apiRequest)
-
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    throw GeminiError.networkError(URLError(.badServerResponse))
-                }
-
-                switch httpResponse.statusCode {
-                case 200:
-                    return try parseIngredientAnalysisResponse(data)
-
-                case 401:
-                    throw GeminiError.unauthorized
-
-                case 429:
-                    // Rate limited - respect Retry-After header if present
-                    if let retryAfter = httpResponse.value(forHTTPHeaderField: "Retry-After"),
-                       let seconds = TimeInterval(retryAfter) {
-                        retryDelay = seconds
-                    }
-
-                    // Only retry if we have attempts left
-                    if attempt < maxRetries - 1 {
-                        try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
-                        retryDelay *= 2 // Exponential backoff
-                        continue
-                    }
-                    throw GeminiError.rateLimited
-
-                case 500 ... 599:
-                    // Server error - retry with backoff
-                    if attempt < maxRetries - 1 {
-                        try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
-                        retryDelay *= 2
-                        continue
-                    }
-                    let errorMessage = String(data: data, encoding: .utf8) ?? "Server error"
-                    throw GeminiError.apiError(errorMessage)
-
-                default:
-                    let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-                    throw GeminiError.apiError(errorMessage)
-                }
-            } catch let error as GeminiError {
-                // Don't retry on client errors (401, invalid key, parse errors)
-                throw error
-            } catch is CancellationError {
-                throw CancellationError()
-            } catch {
-                // Network errors - retry
-                if attempt < maxRetries - 1 {
-                    try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
-                    retryDelay *= 2
-                    continue
-                }
-                throw GeminiError.networkError(error)
-            }
+        do {
+            let apiRequest = try buildIngredientAnalysisRequest(request: request)
+            let data = try await requestDataWithRetry(for: apiRequest)
+            return try parseIngredientAnalysisResponse(data)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch {
+            throw mapRequestError(error)
         }
-
-        // Should never reach here
-        throw GeminiError.networkError(URLError(.unknown))
     }
 
     private func buildIngredientAnalysisRequest(request: IngredientAIRequest) throws -> URLRequest {

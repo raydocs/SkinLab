@@ -12,7 +12,7 @@ final class MatchCache {
     // MARK: - Configuration
 
     /// 缓存过期时间 (24小时)
-    private let cacheExpiration: TimeInterval = 86400
+    private static let cacheExpiration: TimeInterval = 86400
 
     /// 最大缓存用户数
     private let maxCacheSize: Int = 100
@@ -36,7 +36,7 @@ final class MatchCache {
 
         /// 是否已过期
         var isExpired: Bool {
-            Date().timeIntervalSince(timestamp) > 86400
+            Date().timeIntervalSince(timestamp) > MatchCache.cacheExpiration
         }
 
         /// 缓存年龄 (秒)
@@ -80,7 +80,10 @@ final class MatchCache {
     /// - Parameter userId: 用户ID
     /// - Returns: 缓存的产品推荐，如果无效则返回nil
     func getRecommendations(for userId: UUID) -> [ProductRecommendationScore]? {
-        guard let entry = cache[userId], !entry.isExpired else {
+        guard let entry = cache[userId] else { return nil }
+
+        guard !entry.isExpired else {
+            invalidate(for: userId)
             return nil
         }
 
@@ -92,7 +95,10 @@ final class MatchCache {
     /// - Parameter userId: 用户ID
     /// - Returns: 缓存条目
     func getEntry(for userId: UUID) -> CacheEntry? {
-        guard let entry = cache[userId], !entry.isExpired else {
+        guard let entry = cache[userId] else { return nil }
+
+        guard !entry.isExpired else {
+            invalidate(for: userId)
             return nil
         }
 

@@ -71,6 +71,8 @@ actor WeatherService: WeatherServiceProtocol {
     private var cache: CachedWeather?
     private var forecastCache: (data: [WeatherSnapshot], expiry: Date)?
     private let cacheInterval: TimeInterval = 3600 // 1 hour
+    private let locationChangeThreshold: CLLocationDistance = 5000
+    private var lastKnownLocation: CLLocation?
 
     // MARK: - Dependencies
 
@@ -93,14 +95,15 @@ actor WeatherService: WeatherServiceProtocol {
     /// Returns cached data if available and valid, or fetches new data
     /// Falls back to cached data on network failure
     func getCurrentWeather() async throws -> WeatherSnapshot {
-        // Return valid cached data
-        if let cached = cache, cached.isValid {
-            return cached.data
-        }
-
         do {
             // Get location
             let location = try await getLocation()
+            updateLocationCacheState(for: location)
+
+            // Return valid cached data
+            if let cached = cache, cached.isValid {
+                return cached.data
+            }
 
             // Fetch weather
             let weather = try await fetchCurrentWeather(for: location)
@@ -127,14 +130,15 @@ actor WeatherService: WeatherServiceProtocol {
         // Clamp days to reasonable range
         let requestedDays = max(1, min(days, 7))
 
-        // Return valid cached data
-        if let cached = forecastCache, Date() < cached.expiry {
-            return Array(cached.data.prefix(requestedDays))
-        }
-
         do {
             // Get location
             let location = try await getLocation()
+            updateLocationCacheState(for: location)
+
+            // Return valid cached data
+            if let cached = forecastCache, Date() < cached.expiry {
+                return Array(cached.data.prefix(requestedDays))
+            }
 
             // Fetch forecast
             let forecast = try await fetchForecast(for: location, days: requestedDays)
@@ -280,6 +284,14 @@ actor WeatherService: WeatherServiceProtocol {
         } catch {
             return nil
         }
+    }
+
+    private func updateLocationCacheState(for location: CLLocation) {
+        if let lastLocation = lastKnownLocation,
+           location.distance(from: lastLocation) > locationChangeThreshold {
+            invalidateCache()
+        }
+        lastKnownLocation = location
     }
 
     // MARK: - Mock Data (Development Fallback)

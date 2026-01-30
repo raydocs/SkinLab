@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-01-30T12:14:30.898057Z",
+  "depends_on": [],
+  "epic": "fn-17-vfs",
+  "id": "fn-17-vfs.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-17-vfs.2.md",
+  "status": "todo",
+  "title": "Unify GeminiService retry policy",
+  "updated_at": "2026-01-30T12:15:01.584732Z"
+}

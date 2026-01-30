@@ -9,6 +9,7 @@ actor IngredientOCRService {
     static let shared = IngredientOCRService()
 
     private let normalizer = IngredientNormalizer()
+    private let ciContext = CIContext()
 
     // MARK: - Image Preprocessing
 
@@ -21,7 +22,7 @@ actor IngredientOCRService {
 
         // Step 2: Convert to grayscale and enhance contrast
         let ciImage = CIImage(cgImage: resizedCG)
-        let context = CIContext()
+        let context = ciContext
 
         // Grayscale conversion
         guard let grayscaleFilter = CIFilter(name: "CIPhotoEffectMono") else { return resizedImage }

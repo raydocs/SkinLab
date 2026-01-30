@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-17-optimization",
+  "created_at": "2026-01-30T12:12:35.947254Z",
+  "depends_on_epics": [],
+  "id": "fn-17-vfs",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-17-vfs.md",
+  "status": "open",
+  "title": "Optimization cleanup from full scan",
+  "updated_at": "2026-01-30T12:12:35.947723Z"
+}
